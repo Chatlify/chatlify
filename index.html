@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatlify - İletişimin Yeni Boyutu</title>
+    <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/loading.css">
+    <script src="js/loading.js" defer></script>
+    <!-- Preload home.html -->
+    <link rel="prefetch" href="home.html">
+</head>
+
+<body>
+    <div class="loading-container">
+        <div class="logo-container">
+            <svg class="logo" width="200" height="200" viewBox="0 0 200 200">
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#6a11cb" />
+                        <stop offset="100%" stop-color="#2575fc" />
+                    </linearGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="8" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                    <clipPath id="circle-clip">
+                        <circle cx="100" cy="100" r="85" />
+                    </clipPath>
+                </defs>
+                <!-- Ana Logo Dairesi -->
+                <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#gradient)" stroke-width="5"
+                    opacity="0.7" />
+                <!-- Logo Yolu -->
+                <path class="logo-path" d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100"
+                    fill="none" stroke="url(#gradient)" stroke-width="10" stroke-linecap="round" filter="url(#glow)" />
+                <!-- C Harfi -->
+                <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Arial, sans-serif"
+                    font-weight="bold" filter="url(#glow)">C</text>
+                <!-- Animasyonlu Parçacıklar -->
+                <g class="particles" clip-path="url(#circle-clip)">
+                    <circle class="particle" cx="70" cy="50" r="3" fill="white" opacity="0.7" />
+                    <circle class="particle" cx="130" cy="60" r="2" fill="white" opacity="0.5" />
+                    <circle class="particle" cx="150" cy="100" r="2.5" fill="white" opacity="0.6" />
+                    <circle class="particle" cx="120" cy="140" r="2" fill="white" opacity="0.7" />
+                    <circle class="particle" cx="60" cy="130" r="3" fill="white" opacity="0.5" />
+                </g>
+            </svg>
+        </div>
+        <div class="loading-text">
+            <span>C</span>
+            <span>H</span>
+            <span>A</span>
+            <span>T</span>
+            <span>L</span>
+            <span>I</span>
+            <span>F</span>
+            <span>Y</span>
+        </div>
+        <p class="loading-info">Yeni nesil iletişim platformu yükleniyor...</p>
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+    </div>
+
+    <div class="particles-background"></div>
+
+    <script>
+        // Ana sayfa yüklendikten sonra home.html'e yönlendir
+        document.addEventListener('DOMContentLoaded', function () {
+            // Home.html'i önceden yükle
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.href = 'home.html';
+            link.as = 'document';
+            document.head.appendChild(link);
+
+            // 5 saniye sonra yönlendir
+            setTimeout(function () {
+                const loadingContainer = document.querySelector('.loading-container');
+                loadingContainer.classList.add('fade-out');
+
+                setTimeout(function () {
+                    window.location.href = 'home.html';
+                }, 1000); // Fade-out animasyonundan sonra yönlendir
+            }, 3500);
+        });
+    </script>
+</body>
+
+</html>

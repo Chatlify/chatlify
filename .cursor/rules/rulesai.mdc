@@ -1,0 +1,15 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+- Yaptığın her işlemi sıkıca takip etmek zorundasın
+- Yaptığın İş Test yada sıradan işlemler değil gerçek bir topluluk oluşturuyoruz.
+- Yazılacak her kod güvenilir, Leak sorunları yaşatmayacak güvenli bir platform içindir.
+- Yazacağın kodlar profesyonelce yazılmalıdır
+- Sorun çıktığı zaman çözüme çözüm gibi saçmalıklar yapılmamalı, hatayı bulmalı ve hatayı çözmelisin
+- Eğer bir sorunla karşılaşırsan internetten araştırma yaparak (Forum sayfaları gibi) yerlerden çözüm aratmak en mantıklısı olacaktır.
+- Alternatif çözümler yada sonradan yapmak gibi şeyler olmayacak, yazılacak kodlar en kaliteli şekilde olacak
+- Yaptığın her işlem bittikten sonra teşekkürler yazılacak
+- Oluşturulacak kodlar veya dosyalar düzgün bir şekilde düzgün konumlatılacak
+- Oluşturacağın kodlar ileri vakitlerde domain'e eklenip global olacak, oyüzden kodların konumlarını ve yazımlarına dikkat etmelisin.
