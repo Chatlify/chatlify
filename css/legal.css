@@ -68,6 +68,7 @@
     overflow-y: auto;
     padding-right: 1rem;
     scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
 }
 
 .sidebar-content {
@@ -103,14 +104,37 @@
     display: block;
     padding: 0.5rem;
     border-radius: 4px;
-    transition: none;
+    transition: none !important;
+    transform: none !important;
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.sidebar-content a:hover {
-    background-color: var(--highlight-bg);
+.sidebar-content a:hover,
+.sidebar-content a:focus,
+.sidebar-content a:active {
     color: var(--primary-gradient-start);
-    transform: none;
-    padding-left: 0.5rem;
+    background: none;
+    transform: none !important;
+    transition: none !important;
+    padding: 0.5rem;
+}
+
+/* Tamamen yeni bir hover efekti ekleyelim */
+.sidebar-content a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 0;
+}
+
+.sidebar-content a:hover::after {
+    width: 0;
+    height: 0;
 }
 
 /* Main Content Styling */
