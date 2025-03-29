@@ -57,84 +57,72 @@
 
     <main>
         <section class="community-banner">
-            <div class="community-header">
-                <div class="community-header-content">
+            <div class="container">
+                <div class="community-content">
                     <h1>Harika Toplulukları Keşfet</h1>
                     <p>İlgi alanlarını ve tutkularını paylaşan kişilerle bağlantı kur. Binlerce aktif topluluk arasından
                         seç veya kendi topluluğunu oluştur.</p>
 
-                    <!-- Trend etiketleri ekliyorum -->
-                    <div class="trending-tags">
-                        <span class="trending-label">Trend Konular:</span>
-                        <div class="tag-chips">
-                            <a href="#" class="tag-chip">Oyun <i class="fas fa-arrow-trend-up"></i></a>
-                            <a href="#" class="tag-chip">Yazılım <i class="fas fa-arrow-trend-up"></i></a>
-                            <a href="#" class="tag-chip">Müzik</a>
-                            <a href="#" class="tag-chip">Sanat</a>
-                            <a href="#" class="tag-chip">E-Spor</a>
+                    <div class="trend-topics">
+                        <p class="trend-label">Trend Konular:</p>
+                        <div class="trend-tags">
+                            <a href="#" class="trend-tag"><i class="fas fa-gamepad"></i> Oyun <i
+                                    class="fas fa-arrow-trend-up"></i></a>
+                            <a href="#" class="trend-tag"><i class="fas fa-code"></i> Yazılım <i
+                                    class="fas fa-arrow-trend-up"></i></a>
+                            <a href="#" class="trend-tag"><i class="fas fa-music"></i> Müzik</a>
+                            <a href="#" class="trend-tag"><i class="fas fa-palette"></i> Sanat</a>
+                            <a href="#" class="trend-tag"><i class="fas fa-trophy"></i> E-Spor</a>
                         </div>
                     </div>
 
-                    <div class="search-wrapper">
-                        <i class="fas fa-search search-icon"></i>
-                        <input type="text" class="search-input" placeholder="Toplulukları ara...">
-                        <button class="search-btn">Ara</button>
+                    <div class="search-box">
+                        <input type="text" placeholder="Toplulukları ara...">
+                        <button type="button" class="search-button">Ara</button>
                     </div>
 
-                    <!-- Hızlı erişim butonları ekliyorum -->
-                    <div class="quick-actions">
-                        <a href="#" class="quick-action-btn"><i class="fas fa-compass"></i> Rastgele Keşfet</a>
-                        <a href="#" class="quick-action-btn"><i class="fas fa-star"></i> Önerilen</a>
-                        <a href="#" class="quick-action-btn primary"><i class="fas fa-plus"></i> Topluluk Oluştur</a>
+                    <div class="action-buttons">
+                        <a href="#" class="action-button"><i class="fas fa-compass"></i> Rastgele Keşfet</a>
+                        <a href="#" class="action-button"><i class="fas fa-star"></i> Önerilen</a>
+                        <a href="#" class="action-button primary"><i class="fas fa-plus"></i> Topluluk Oluştur</a>
                     </div>
                 </div>
-                <div class="community-visual">
-                    <!-- Sadece logo gösteriliyor, floating-tags kaldırıldı -->
-                    <div class="logo-container">
-                        <svg class="large-logo-svg" width="300" height="300" viewBox="0 0 200 200">
-                            <defs>
-                                <linearGradient id="visual-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#6a11cb" />
-                                    <stop offset="100%" stop-color="#2575fc" />
-                                </linearGradient>
-                                <filter id="visual-glow">
-                                    <feGaussianBlur stdDeviation="5" result="blur" />
-                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                                </filter>
-                                <clipPath id="visual-circle-clip">
-                                    <circle cx="100" cy="100" r="85" />
-                                </clipPath>
-                            </defs>
-                            <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#visual-gradient)"
-                                stroke-width="5" opacity="0.7" />
-                            <path class="logo-path"
-                                d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100"
-                                fill="none" stroke="url(#visual-gradient)" stroke-width="10" stroke-linecap="round"
-                                filter="url(#visual-glow)" />
-                            <text x="75" y="125" class="logo-text" fill="white" font-size="80"
-                                font-family="Poppins, sans-serif" font-weight="bold" filter="url(#visual-glow)">C</text>
-                        </svg>
-                    </div>
+
+                <div class="community-logo">
+                    <svg class="logo-large" viewBox="0 0 200 200">
+                        <defs>
+                            <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#6a11cb" />
+                                <stop offset="100%" stop-color="#2575fc" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#logo-gradient)" stroke-width="5"
+                            opacity="0.7" />
+                        <path class="logo-path"
+                            d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
+                            stroke="url(#logo-gradient)" stroke-width="10" stroke-linecap="round" />
+                        <text x="75" y="125" fill="white" font-size="80" font-family="Poppins, sans-serif"
+                            font-weight="bold">C</text>
+                    </svg>
                 </div>
             </div>
 
-            <!-- Aktif topluluk istatistiklerini gösteren bölüm ekliyorum -->
-            <div class="community-stats">
-                <div class="stat-counter">
-                    <div class="counter-value">14,287</div>
-                    <div class="counter-label">Aktif Topluluk</div>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value">14,287</div>
+                    <div class="stat-label">Aktif Topluluk</div>
                 </div>
-                <div class="stat-counter">
-                    <div class="counter-value">3.5M+</div>
-                    <div class="counter-label">Mesaj / Gün</div>
+                <div class="stat-item">
+                    <div class="stat-value">3.5M+</div>
+                    <div class="stat-label">Mesaj / Gün</div>
                 </div>
-                <div class="stat-counter">
-                    <div class="counter-value">865K+</div>
-                    <div class="counter-label">Çevrimiçi Kullanıcı</div>
+                <div class="stat-item">
+                    <div class="stat-value">865K+</div>
+                    <div class="stat-label">Çevrimiçi Kullanıcı</div>
                 </div>
-                <div class="stat-counter">
-                    <div class="counter-value">192</div>
-                    <div class="counter-label">Yeni Topluluk / Gün</div>
+                <div class="stat-item">
+                    <div class="stat-value">192</div>
+                    <div class="stat-label">Yeni Topluluk / Gün</div>
                 </div>
             </div>
         </section>
