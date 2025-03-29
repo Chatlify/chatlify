@@ -1,0 +1,8 @@
+{
+    "name": "chatlify",
+    "version": "1.0.0",
+    "description": "Chatlify website",
+    "scripts": {
+        "build": "echo 'No build required'"
+    }
+}
