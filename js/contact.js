@@ -153,7 +153,41 @@ document.addEventListener('DOMContentLoaded', function () {
         textarea.addEventListener('input', function () {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
+
+            // Hide error message when typing
+            const errorMsg = document.getElementById('messageError');
+            if (errorMsg) errorMsg.style.display = 'none';
         });
+    });
+
+    // Add input event listeners to hide error messages when user types
+    document.getElementById('name').addEventListener('input', function () {
+        document.getElementById('nameError').style.display = 'none';
+        this.classList.remove('error');
+    });
+
+    document.getElementById('email').addEventListener('input', function () {
+        document.getElementById('emailError').style.display = 'none';
+        this.classList.remove('error');
+    });
+
+    document.getElementById('subject').addEventListener('change', function () {
+        document.getElementById('subjectError').style.display = 'none';
+        this.classList.remove('error');
+    });
+
+    document.getElementById('privacy').addEventListener('change', function () {
+        document.getElementById('privacyError').style.display = 'none';
+        this.classList.remove('error');
+    });
+
+    // Fix subject dropdown text color
+    const subjectSelect = document.getElementById('subject');
+    subjectSelect.style.color = '#ffffff';
+    subjectSelect.addEventListener('change', function () {
+        if (this.value) {
+            this.style.color = '#ffffff';
+        }
     });
 
     // Initial animations when page first loads
