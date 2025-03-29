@@ -232,7 +232,7 @@
     margin: 30px auto 0;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 16px;
-    padding: 24px 40px;
+    padding: 35px 40px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(5px);
@@ -243,17 +243,17 @@
 }
 
 .stat-value {
-    font-size: 1.8rem;
+    font-size: 2.2rem;
     font-weight: 700;
     background: linear-gradient(90deg, #6a11cb, #2575fc);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    margin-bottom: 6px;
+    margin-bottom: 10px;
 }
 
 .stat-label {
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: rgba(255, 255, 255, 0.6);
 }
 
