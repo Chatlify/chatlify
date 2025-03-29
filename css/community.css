@@ -986,3 +986,39 @@
         flex-direction: column;
     }
 }
+
+/* Hero Section */
+.hero-section {
+    display: flex;
+    align-items: center;
+    padding: 6rem var(--section-padding) 4rem;
+    position: relative;
+    overflow: visible;
+    min-height: 75vh;
+    z-index: 2;
+}
+
+.hero-content {
+    flex: 1;
+    max-width: 600px;
+    position: relative;
+    z-index: 5;
+}
+
+.hero-content h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+    display: inline-block;
+    width: 100%;
+}
+
+.bg-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
