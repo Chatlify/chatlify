@@ -348,12 +348,12 @@
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
 }
 
 .server-info {
     text-align: center;
     margin-bottom: 1.5rem;
-    flex-grow: 1;
 }
 
 .server-name {
@@ -374,12 +374,15 @@
     border-radius: 12px;
     padding: 1rem;
     margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .server-stats {
     display: flex;
     justify-content: space-around;
-    margin-bottom: 1rem;
+    margin-bottom: 0;
 }
 
 .stat-item {
@@ -426,6 +429,8 @@
     cursor: pointer;
     transition: all 0.3s ease;
     text-align: center;
+    display: block;
+    text-decoration: none;
 }
 
 .join-btn:hover {
@@ -896,6 +901,11 @@
         grid-template-columns: 1fr;
         max-width: 400px;
         margin: 0 auto;
+    }
+
+    .server-card {
+        min-height: auto;
+        height: auto;
     }
 }
 
