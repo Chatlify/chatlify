@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatlify - Yükleniyor</title>
+    <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/loading-new.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="background">
+        <div class="gradient-blur"></div>
+        <div class="noise"></div>
+    </div>
+
+    <div class="loading-container">
+        <div class="logo-animation">
+            <svg class="logo-svg" width="120" height="120" viewBox="0 0 200 200" overflow="visible">
+                <defs>
+                    <linearGradient id="main-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#6a11cb" />
+                        <stop offset="100%" stop-color="#2575fc" />
+                    </linearGradient>
+                    <filter id="glow-filter">
+                        <feGaussianBlur stdDeviation="8" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                    <clipPath id="circle-mask">
+                        <circle cx="100" cy="100" r="85" />
+                    </clipPath>
+                </defs>
+
+                <!-- Pulsating Background Circle -->
+                <circle class="pulse-circle" cx="100" cy="100" r="90" fill="none" stroke="url(#main-gradient)"
+                    stroke-width="1" opacity="0.2" />
+
+                <!-- Main Logo Circle -->
+                <circle class="main-circle" cx="100" cy="100" r="85" fill="#16213e" stroke="url(#main-gradient)"
+                    stroke-width="4" opacity="0.9" />
+
+                <!-- Logo Path Animation -->
+                <path class="logo-path" d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100"
+                    fill="none" stroke="url(#main-gradient)" stroke-width="10" stroke-linecap="round"
+                    filter="url(#glow-filter)" />
+
+                <!-- Chatlify C Letter -->
+                <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
+                    font-weight="bold" filter="url(#glow-filter)">C</text>
+            </svg>
+
+            <!-- Floating Message Bubbles -->
+            <div class="message-bubbles">
+                <div class="message-bubble b1">
+                    <i class="fas fa-comment-alt"></i>
+                </div>
+                <div class="message-bubble b2">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="message-bubble b3">
+                    <i class="fas fa-video"></i>
+                </div>
+                <div class="message-bubble b4">
+                    <i class="fas fa-headset"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading-text">
+            <div class="letters">
+                <span>C</span>
+                <span>H</span>
+                <span>A</span>
+                <span>T</span>
+                <span>L</span>
+                <span>I</span>
+                <span>F</span>
+                <span>Y</span>
+            </div>
+        </div>
+
+        <div class="tagline">
+            <span>Bağlan. Paylaş. Keşfet.</span>
+        </div>
+
+        <div class="loading-bar-container">
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const progressBar = document.querySelector('.loading-progress');
+            const loadingContainer = document.querySelector('.loading-container');
+
+            // Simulating loading progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+
+                    // Wait a moment then redirect to home
+                    setTimeout(() => {
+                        loadingContainer.classList.add('fade-out');
+                        setTimeout(() => {
+                            window.location.href = 'home.html';
+                        }, 1000);
+                    }, 800);
+                }
+                progressBar.style.width = `${progress}%`;
+            }, 500);
+
+            // Create floating particles in background
+            const background = document.querySelector('.background');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                background.appendChild(particle);
+            }
+        });
+    </script>
+</body>
+
+</html>
