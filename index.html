@@ -110,8 +110,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            background-color: rgba(10, 10, 26, 0.8);
             padding: 40px;
-            text-shadow: 0 0 20px rgba(106, 17, 203, 0.6);
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(106, 17, 203, 0.2);
         }
 
         .loading-title {
@@ -124,7 +126,7 @@
             background-clip: text;
             -webkit-text-fill-color: transparent;
             text-fill-color: transparent;
-            filter: drop-shadow(0 0 15px rgba(106, 17, 203, 0.8));
+            filter: drop-shadow(0 0 15px rgba(106, 17, 203, 0.6));
             animation: glow 2s ease-in-out infinite alternate;
         }
 
@@ -140,22 +142,16 @@
 
         .loading-subtitle {
             font-size: 1rem;
-            color: var(--text-color);
+            color: var(--text-secondary);
             letter-spacing: 2px;
             margin-bottom: 50px;
             text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(106, 17, 203, 0.8);
         }
 
         /* Progress Bar */
         .progress-container {
             width: 300px;
             position: relative;
-            backdrop-filter: blur(5px);
-            background-color: rgba(10, 10, 26, 0.3);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 0 30px rgba(106, 17, 203, 0.2);
         }
 
         .progress-bar {
@@ -200,12 +196,23 @@
             }
         }
 
+        /* Progress Text */
         .progress-text {
             font-size: 0.9rem;
-            color: var(--text-color);
+            color: var(--text-secondary);
             margin-top: 15px;
             letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(106, 17, 203, 0.6);
+            font-weight: 500;
+        }
+
+        .loading-text-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-word {
+            margin-right: 8px;
         }
 
         .connecting-dots {
@@ -261,17 +268,6 @@
             border-radius: 50%;
             pointer-events: none;
             opacity: 0.6;
-            animation: rain linear infinite;
-        }
-
-        @keyframes rain {
-            0% {
-                transform: translateY(-10vh);
-            }
-
-            100% {
-                transform: translateY(110vh);
-            }
         }
 
         /* Media Queries */
@@ -329,12 +325,14 @@
                     <div class="progress-fill" id="progress-fill"></div>
                 </div>
                 <div class="progress-text">
-                    Topluluğa bağlanılıyor
-                    <span class="connecting-dots">
-                        <span class="dot">.</span>
-                        <span class="dot">.</span>
-                        <span class="dot">.</span>
-                    </span>
+                    <div class="loading-text-container">
+                        <span class="loading-word">Loading</span>
+                        <span class="connecting-dots">
+                            <span class="dot">.</span>
+                            <span class="dot">.</span>
+                            <span class="dot">.</span>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -347,7 +345,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Create particles
             const particlesContainer = document.getElementById('particles-container');
-            const particleCount = 50;
+            const particleCount = 30;
 
             for (let i = 0; i < particleCount; i++) {
                 createParticle(particlesContainer);
@@ -382,27 +380,41 @@
             particle.classList.add('particle');
 
             // Random size
-            const size = Math.random() * 6 + 1;
+            const size = Math.random() * 5 + 2;
             particle.style.width = `${size}px`;
             particle.style.height = `${size}px`;
 
-            // Random horizontal position
+            // Random position
             const posX = Math.random() * 100;
+            const posY = Math.random() * 100;
             particle.style.left = `${posX}%`;
-            particle.style.top = '-10px';
+            particle.style.top = `${posY}%`;
 
-            // Random opacity and speed
+            // Random opacity
             particle.style.opacity = Math.random() * 0.5 + 0.2;
 
-            // Random fall speed
-            const duration = Math.random() * 15 + 5;
-            particle.style.animation = `rain ${duration}s linear infinite`;
-
-            // Random delay
+            // Animation properties
+            const duration = Math.random() * 30 + 20;
+            particle.style.animation = `float ${duration}s infinite alternate ease-in-out`;
             particle.style.animationDelay = `${Math.random() * 10}s`;
 
             // Add particle to container
             container.appendChild(particle);
+
+            // Additional keyframe animation for individual float effect
+            const keyframes = `
+                @keyframes float-${posX.toFixed(0)} {
+                    0% { transform: translate(0, 0); }
+                    50% { transform: translate(${Math.random() * 40 - 20}px, ${Math.random() * 40 - 20}px); }
+                    100% { transform: translate(${Math.random() * 40 - 20}px, ${Math.random() * 40 - 20}px); }
+                }
+            `;
+
+            const style = document.createElement('style');
+            style.innerHTML = keyframes;
+            document.head.appendChild(style);
+
+            particle.style.animation = `float-${posX.toFixed(0)} ${duration}s infinite alternate ease-in-out`;
         }
     </script>
 </body>
