@@ -11,121 +11,156 @@
 </head>
 
 <body>
-    <div class="background">
-        <div class="gradient-blur"></div>
-        <div class="noise"></div>
+    <div class="bg-animation">
+        <div class="stars"></div>
+        <div class="twinkling"></div>
+        <div class="clouds"></div>
     </div>
 
-    <div class="loading-container">
-        <div class="logo-animation">
-            <svg class="logo-svg" width="120" height="120" viewBox="0 0 200 200" overflow="visible">
-                <defs>
-                    <linearGradient id="main-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#6a11cb" />
-                        <stop offset="100%" stop-color="#2575fc" />
-                    </linearGradient>
-                    <filter id="glow-filter">
-                        <feGaussianBlur stdDeviation="8" result="blur" />
-                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                    </filter>
-                    <clipPath id="circle-mask">
-                        <circle cx="100" cy="100" r="85" />
-                    </clipPath>
-                </defs>
+    <div class="loading-wrapper">
+        <div class="glitch-logo">
+            <div class="logo-container">
+                <svg class="logo-svg" width="180" height="180" viewBox="0 0 200 200">
+                    <defs>
+                        <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#6a11cb" />
+                            <stop offset="100%" stop-color="#2575fc" />
+                        </linearGradient>
+                        <filter id="glow-effect">
+                            <feGaussianBlur result="blur" stdDeviation="10"></feGaussianBlur>
+                            <feComposite in="SourceGraphic" in2="blur" operator="over"></feComposite>
+                        </filter>
+                        <mask id="logo-mask">
+                            <rect width="100%" height="100%" fill="white" />
+                            <circle cx="100" cy="100" r="75" fill="black" />
+                        </mask>
+                    </defs>
 
-                <!-- Pulsating Background Circle -->
-                <circle class="pulse-circle" cx="100" cy="100" r="90" fill="none" stroke="url(#main-gradient)"
-                    stroke-width="1" opacity="0.2" />
+                    <g class="logo-animation">
+                        <!-- Radial lines -->
+                        <g class="radial-lines" stroke="url(#logo-gradient)" stroke-width="1">
+                            <line x1="100" y1="10" x2="100" y2="35" />
+                            <line x1="100" y1="165" x2="100" y2="190" />
+                            <line x1="10" y1="100" x2="35" y2="100" />
+                            <line x1="165" y1="100" x2="190" y2="100" />
 
-                <!-- Main Logo Circle -->
-                <circle class="main-circle" cx="100" cy="100" r="85" fill="#16213e" stroke="url(#main-gradient)"
-                    stroke-width="4" opacity="0.9" />
+                            <line x1="29" y1="29" x2="47" y2="47" />
+                            <line x1="153" y1="153" x2="171" y2="171" />
+                            <line x1="29" y1="171" x2="47" y2="153" />
+                            <line x1="153" y1="47" x2="171" y2="29" />
+                        </g>
 
-                <!-- Logo Path Animation -->
-                <path class="logo-path" d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100"
-                    fill="none" stroke="url(#main-gradient)" stroke-width="10" stroke-linecap="round"
-                    filter="url(#glow-filter)" />
+                        <!-- Aura rings -->
+                        <circle class="aura-ring ring1" cx="100" cy="100" r="90" fill="none"
+                            stroke="url(#logo-gradient)" stroke-width="2" />
+                        <circle class="aura-ring ring2" cx="100" cy="100" r="82" fill="none"
+                            stroke="url(#logo-gradient)" stroke-width="2" />
 
-                <!-- Chatlify C Letter -->
-                <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
-                    font-weight="bold" filter="url(#glow-filter)">C</text>
-            </svg>
+                        <!-- Main circle -->
+                        <circle class="main-circle" cx="100" cy="100" r="75" fill="#16213e" stroke="url(#logo-gradient)"
+                            stroke-width="3" />
 
-            <!-- Floating Message Bubbles -->
-            <div class="message-bubbles">
-                <div class="message-bubble b1">
-                    <i class="fas fa-comment-alt"></i>
-                </div>
-                <div class="message-bubble b2">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="message-bubble b3">
-                    <i class="fas fa-video"></i>
-                </div>
-                <div class="message-bubble b4">
-                    <i class="fas fa-headset"></i>
-                </div>
+                        <!-- C Logo -->
+                        <path class="c-path"
+                            d="M100,45 C70,45 45,70 45,100 C45,130 70,155 100,155 C130,155 155,130 155,100" fill="none"
+                            stroke="url(#logo-gradient)" stroke-width="12" stroke-linecap="round" />
+
+                        <text class="c-text" x="78" y="120" fill="white" font-size="70"
+                            font-family="Poppins, sans-serif" font-weight="800">C</text>
+                    </g>
+
+                    <!-- Rotating outer ring -->
+                    <circle class="rotating-ring" cx="100" cy="100" r="98" fill="none" stroke="url(#logo-gradient)"
+                        stroke-width="1" stroke-dasharray="10 15" />
+                </svg>
+
+                <!-- Particles -->
+                <div class="particles"></div>
             </div>
         </div>
 
-        <div class="loading-text">
-            <div class="letters">
-                <span>C</span>
-                <span>H</span>
-                <span>A</span>
-                <span>T</span>
-                <span>L</span>
-                <span>I</span>
-                <span>F</span>
-                <span>Y</span>
-            </div>
-        </div>
+        <div class="loading-text-container">
+            <h1 class="loading-title">CHATLIFY</h1>
+            <div class="loading-subtitle">İLETİŞİMİN YENİ BOYUTU</div>
 
-        <div class="tagline">
-            <span>Bağlan. Paylaş. Keşfet.</span>
-        </div>
-
-        <div class="loading-bar-container">
-            <div class="loading-bar">
-                <div class="loading-progress"></div>
+            <div class="loading-progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="progress-text">Yükleniyor <span
+                        class="dots"><span>.</span><span>.</span><span>.</span></span></div>
             </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const progressBar = document.querySelector('.loading-progress');
-            const loadingContainer = document.querySelector('.loading-container');
+        document.addEventListener('DOMContentLoaded', () => {
+            // Create particles
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = 25;
 
-            // Simulating loading progress
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+
+                // Random position
+                const posX = Math.random() * 340 - 170; // -170 to 170
+                const posY = Math.random() * 340 - 170; // -170 to 170
+
+                // Avoid center area
+                const distance = Math.sqrt(posX * posX + posY * posY);
+                if (distance < 70) {
+                    i--; // Try again
+                    continue;
+                }
+
+                particle.style.setProperty('--x', `${posX}px`);
+                particle.style.setProperty('--y', `${posY}px`);
+
+                // Random size
+                const size = Math.random() * 4 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+
+                // Random opacity
+                particle.style.opacity = Math.random() * 0.7 + 0.3;
+
+                // Random animation delay
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+
+                particlesContainer.appendChild(particle);
+            }
+
+            // Loading progress
+            const progressFill = document.querySelector('.progress-fill');
             let progress = 0;
+
             const interval = setInterval(() => {
-                progress += Math.random() * 15;
+                progress += Math.random() * 10;
                 if (progress >= 100) {
                     progress = 100;
                     clearInterval(interval);
 
-                    // Wait a moment then redirect to home
+                    // Wait a moment, then redirect
                     setTimeout(() => {
-                        loadingContainer.classList.add('fade-out');
+                        document.querySelector('.loading-wrapper').classList.add('fade-out');
                         setTimeout(() => {
                             window.location.href = 'home.html';
                         }, 1000);
                     }, 800);
                 }
-                progressBar.style.width = `${progress}%`;
-            }, 500);
 
-            // Create floating particles in background
-            const background = document.querySelector('.background');
-            for (let i = 0; i < 20; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.top = `${Math.random() * 100}%`;
-                particle.style.animationDelay = `${Math.random() * 5}s`;
-                background.appendChild(particle);
-            }
+                progressFill.style.width = `${progress}%`;
+            }, 400);
+
+            // Text glitch effect
+            const title = document.querySelector('.loading-title');
+            setInterval(() => {
+                title.classList.add('glitch');
+                setTimeout(() => {
+                    title.classList.remove('glitch');
+                }, 200);
+            }, 3000);
         });
     </script>
 </body>
