@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatlify - İletişimin Yeni Boyutu</title>
+    <title>Chatlify - The New Dimension of Communication</title>
     <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Genel Stiller */
+        /* General Styles */
         :root {
             --primary-color: #6a11cb;
             --primary-light: #8c52ff;
@@ -36,7 +36,7 @@
             position: relative;
         }
 
-        /* Uzay animasyonu arka planı */
+        /* Space animation background */
         .bg-animation {
             position: fixed;
             top: 0;
@@ -105,53 +105,139 @@
             z-index: 10;
         }
 
-        /* Loading Text */
-        .loading-text {
+        /* Minimalist Loading Animation */
+        .loader-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: rgba(10, 10, 26, 0.8);
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 0 30px rgba(106, 17, 203, 0.2);
+            justify-content: center;
+            gap: 40px;
         }
 
-        .loading-title {
-            font-size: 3rem;
-            font-weight: 800;
-            letter-spacing: 5px;
-            margin-bottom: 10px;
+        /* Dots Animation */
+        .dots-loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-fill-color: transparent;
-            filter: drop-shadow(0 0 15px rgba(106, 17, 203, 0.6));
-            animation: glow 2s ease-in-out infinite alternate;
+            animation: dot-pulse 1.5s ease-in-out infinite;
         }
 
-        @keyframes glow {
+        .dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .dot:nth-child(4) {
+            animation-delay: 0.6s;
+        }
+
+        .dot:nth-child(5) {
+            animation-delay: 0.8s;
+        }
+
+        @keyframes dot-pulse {
+
+            0%,
+            100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+                box-shadow: 0 0 0 rgba(106, 17, 203, 0);
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+                box-shadow: 0 0 20px rgba(106, 17, 203, 0.5);
+            }
+        }
+
+        /* Pulse Ring Animation */
+        .pulse-ring-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+        }
+
+        .pulse-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: transparent;
+            border: 3px solid rgba(106, 17, 203, 0.3);
+            animation: pulse 2s ease-out infinite;
+        }
+
+        .pulse-ring:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .pulse-ring:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        @keyframes pulse {
             0% {
-                filter: drop-shadow(0 0 5px rgba(106, 17, 203, 0.6));
+                width: 0;
+                height: 0;
+                opacity: 1;
+                border-color: rgba(106, 17, 203, 0.8);
+            }
+
+            90% {
+                width: 180px;
+                height: 180px;
+                opacity: 0;
+                border-color: rgba(37, 117, 252, 0.1);
             }
 
             100% {
-                filter: drop-shadow(0 0 20px rgba(106, 17, 203, 0.9));
+                opacity: 0;
             }
         }
 
-        .loading-subtitle {
-            font-size: 1rem;
-            color: var(--text-secondary);
+        /* Loading Text */
+        .loading-text {
+            font-size: 1.2rem;
+            font-weight: 500;
             letter-spacing: 2px;
-            margin-bottom: 50px;
-            text-transform: uppercase;
+            color: var(--text-secondary);
+            animation: text-fade 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes text-fade {
+            0% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
         }
 
         /* Progress Bar */
         .progress-container {
-            width: 300px;
+            width: 240px;
             position: relative;
+            margin-top: 30px;
         }
 
         .progress-bar {
@@ -196,61 +282,6 @@
             }
         }
 
-        /* Progress Text */
-        .progress-text {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-top: 15px;
-            letter-spacing: 1px;
-            font-weight: 500;
-        }
-
-        .loading-text-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .loading-word {
-            margin-right: 8px;
-        }
-
-        .connecting-dots {
-            display: inline-block;
-        }
-
-        .dot {
-            display: inline-block;
-            animation: dot-animation 1.5s infinite;
-            opacity: 0;
-        }
-
-        .dot:nth-child(1) {
-            animation-delay: 0s;
-        }
-
-        .dot:nth-child(2) {
-            animation-delay: 0.3s;
-        }
-
-        .dot:nth-child(3) {
-            animation-delay: 0.6s;
-        }
-
-        @keyframes dot-animation {
-            0% {
-                opacity: 0;
-            }
-
-            50% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0;
-            }
-        }
-
         /* Particles */
         .particles-container {
             position: absolute;
@@ -272,26 +303,82 @@
 
         /* Media Queries */
         @media (max-width: 768px) {
-            .loading-title {
-                font-size: 2.5rem;
+            .pulse-ring-container {
+                width: 150px;
+                height: 150px;
+            }
+
+            @keyframes pulse {
+                0% {
+                    width: 0;
+                    height: 0;
+                    opacity: 1;
+                }
+
+                90% {
+                    width: 150px;
+                    height: 150px;
+                    opacity: 0;
+                }
+
+                100% {
+                    opacity: 0;
+                }
+            }
+
+            .dots-loader {
+                gap: 12px;
+            }
+
+            .dot {
+                width: 15px;
+                height: 15px;
             }
 
             .progress-container {
-                width: 250px;
+                width: 200px;
             }
         }
 
         @media (max-width: 480px) {
-            .loading-title {
-                font-size: 2rem;
+            .pulse-ring-container {
+                width: 120px;
+                height: 120px;
             }
 
-            .loading-subtitle {
-                font-size: 0.8rem;
+            @keyframes pulse {
+                0% {
+                    width: 0;
+                    height: 0;
+                    opacity: 1;
+                }
+
+                90% {
+                    width: 120px;
+                    height: 120px;
+                    opacity: 0;
+                }
+
+                100% {
+                    opacity: 0;
+                }
+            }
+
+            .dots-loader {
+                gap: 10px;
+            }
+
+            .dot {
+                width: 12px;
+                height: 12px;
+            }
+
+            .loading-text {
+                font-size: 1rem;
             }
 
             .progress-container {
-                width: 220px;
+                width: 180px;
             }
         }
 
@@ -314,25 +401,30 @@
     </div>
 
     <div class="loading-container">
-        <!-- Loading Text -->
-        <div class="loading-text">
-            <h1 class="loading-title">CHATLIFY</h1>
-            <div class="loading-subtitle">İLETİŞİMİN YENİ BOYUTU</div>
+        <div class="loader-wrapper">
+            <!-- Pulse Rings Animation -->
+            <div class="pulse-ring-container">
+                <div class="pulse-ring"></div>
+                <div class="pulse-ring"></div>
+                <div class="pulse-ring"></div>
+            </div>
+
+            <!-- Dots Animation -->
+            <div class="dots-loader">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+
+            <!-- Loading Text -->
+            <div class="loading-text">LOADING</div>
 
             <!-- Progress Bar -->
             <div class="progress-container">
                 <div class="progress-bar">
                     <div class="progress-fill" id="progress-fill"></div>
-                </div>
-                <div class="progress-text">
-                    <div class="loading-text-container">
-                        <span class="loading-word">Loading</span>
-                        <span class="connecting-dots">
-                            <span class="dot">.</span>
-                            <span class="dot">.</span>
-                            <span class="dot">.</span>
-                        </span>
-                    </div>
                 </div>
             </div>
         </div>
