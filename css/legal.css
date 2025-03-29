@@ -103,14 +103,14 @@
     display: block;
     padding: 0.5rem;
     border-radius: 4px;
-    transition: all 0.2s ease;
+    transition: none;
 }
 
 .sidebar-content a:hover {
     background-color: var(--highlight-bg);
     color: var(--primary-gradient-start);
     transform: none;
-    padding-left: 8px;
+    padding-left: 0.5rem;
 }
 
 /* Main Content Styling */
