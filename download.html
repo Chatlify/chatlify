@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Chatlify - The New Dimension of Communication</title>
+    <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/download.css">
+    <script src="js/main.js" defer></script>
+    <script src="js/download.js" defer></script>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <svg class="logo-svg" width="40" height="40" viewBox="0 0 200 200">
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#6a11cb" />
+                            <stop offset="100%" stop-color="#2575fc" />
+                        </linearGradient>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="5" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                        <clipPath id="circle-clip">
+                            <circle cx="100" cy="100" r="85" />
+                        </clipPath>
+                    </defs>
+                    <!-- Main Logo Circle -->
+                    <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#gradient)" stroke-width="5"
+                        opacity="0.7" />
+                    <!-- Logo Path -->
+                    <path class="logo-path"
+                        d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
+                        stroke="url(#gradient)" stroke-width="10" stroke-linecap="round" filter="url(#glow)" />
+                    <!-- C Letter -->
+                    <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
+                        font-weight="bold" filter="url(#glow)">C</text>
+                </svg>
+                <span>CHATLIFY</span>
+            </div>
+            <div class="nav-links">
+                <a href="home.html">Home</a>
+                <a href="#">Community</a>
+                <a href="#">Support</a>
+                <a href="download.html" class="active">Download</a>
+            </div>
+            <div class="nav-buttons">
+                <a href="#" class="login-btn">Sign In</a>
+                <a href="#" class="download-btn">Download Now</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="download-hero">
+            <div class="download-hero-content">
+                <h1>DOWNLOAD <span class="highlight">CHATLIFY</span> NOW</h1>
+                <p>Available for all major platforms. Connect with your friends and communities from anywhere!</p>
+            </div>
+        </section>
+
+        <section class="download-options">
+            <div class="download-container">
+                <div class="download-card" data-platform="windows">
+                    <div class="download-icon">
+                        <i class="fab fa-windows"></i>
+                    </div>
+                    <div class="download-info">
+                        <h3>Windows</h3>
+                        <p>Windows 10+ (64-bit)</p>
+                        <a href="#" class="btn btn-primary download-btn-large" data-version="windows"><i
+                                class="fas fa-download"></i> Download for Windows</a>
+                        <span class="version">v2.5.1</span>
+                    </div>
+                </div>
+
+                <div class="download-card" data-platform="mac">
+                    <div class="download-icon">
+                        <i class="fab fa-apple"></i>
+                    </div>
+                    <div class="download-info">
+                        <h3>macOS</h3>
+                        <p>macOS 10.13+</p>
+                        <a href="#" class="btn btn-primary download-btn-large" data-version="mac"><i
+                                class="fas fa-download"></i> Download for Mac</a>
+                        <span class="version">v2.5.1</span>
+                    </div>
+                </div>
+
+                <div class="download-card" data-platform="linux">
+                    <div class="download-icon">
+                        <i class="fab fa-linux"></i>
+                    </div>
+                    <div class="download-info">
+                        <h3>Linux</h3>
+                        <p>Ubuntu, Debian, Fedora</p>
+                        <a href="#" class="btn btn-primary download-btn-large" data-version="linux"><i
+                                class="fas fa-download"></i> Download for Linux</a>
+                        <span class="version">v2.5.1</span>
+                    </div>
+                </div>
+
+                <div class="download-card" data-platform="android">
+                    <div class="download-icon">
+                        <i class="fab fa-android"></i>
+                    </div>
+                    <div class="download-info">
+                        <h3>Android</h3>
+                        <p>Android 8.0+</p>
+                        <a href="#" class="btn btn-primary download-btn-large" data-version="android"><i
+                                class="fas fa-download"></i> Download APK</a>
+                        <div class="store-buttons">
+                            <a href="#" class="store-btn"><img src="images/google-play.svg" alt="Google Play"></a>
+                        </div>
+                        <span class="version">v2.5.0</span>
+                    </div>
+                </div>
+
+                <div class="download-card" data-platform="ios">
+                    <div class="download-icon">
+                        <i class="fab fa-app-store-ios"></i>
+                    </div>
+                    <div class="download-info">
+                        <h3>iOS</h3>
+                        <p>iOS 14.0+</p>
+                        <a href="#" class="btn btn-primary download-btn-large" data-version="ios"><i
+                                class="fas fa-download"></i> Download IPA</a>
+                        <div class="store-buttons">
+                            <a href="#" class="store-btn"><img src="images/app-store.svg" alt="App Store"></a>
+                        </div>
+                        <span class="version">v2.5.0</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="system-requirements">
+            <div class="requirements-container">
+                <h2>SYSTEM <span class="highlight">REQUIREMENTS</span></h2>
+
+                <div class="requirements-grid">
+                    <div class="requirement-card">
+                        <h3><i class="fab fa-windows"></i> Windows</h3>
+                        <ul>
+                            <li><strong>OS:</strong> Windows 10/11 (64-bit)</li>
+                            <li><strong>Processor:</strong> Intel Core i3 or AMD equivalent</li>
+                            <li><strong>Memory:</strong> 4 GB RAM</li>
+                            <li><strong>Storage:</strong> 500 MB available space</li>
+                            <li><strong>Network:</strong> Broadband Internet connection</li>
+                            <li><strong>DirectX:</strong> Version 11</li>
+                        </ul>
+                    </div>
+
+                    <div class="requirement-card">
+                        <h3><i class="fab fa-apple"></i> macOS</h3>
+                        <ul>
+                            <li><strong>OS:</strong> macOS 10.13 High Sierra or newer</li>
+                            <li><strong>Processor:</strong> 64-bit Intel or Apple Silicon</li>
+                            <li><strong>Memory:</strong> 4 GB RAM</li>
+                            <li><strong>Storage:</strong> 500 MB available space</li>
+                            <li><strong>Network:</strong> Broadband Internet connection</li>
+                        </ul>
+                    </div>
+
+                    <div class="requirement-card">
+                        <h3><i class="fab fa-linux"></i> Linux</h3>
+                        <ul>
+                            <li><strong>OS:</strong> Ubuntu 18.04+, Debian 10+, Fedora 33+</li>
+                            <li><strong>Processor:</strong> 64-bit Intel or AMD</li>
+                            <li><strong>Memory:</strong> 4 GB RAM</li>
+                            <li><strong>Storage:</strong> 500 MB available space</li>
+                            <li><strong>Network:</strong> Broadband Internet connection</li>
+                        </ul>
+                    </div>
+
+                    <div class="requirement-card">
+                        <h3><i class="fab fa-android"></i> Android</h3>
+                        <ul>
+                            <li><strong>OS:</strong> Android 8.0 (Oreo) or newer</li>
+                            <li><strong>Processor:</strong> 1.5 GHz quad-core or better</li>
+                            <li><strong>Memory:</strong> 2 GB RAM</li>
+                            <li><strong>Storage:</strong> 200 MB available space</li>
+                            <li><strong>Network:</strong> WiFi or mobile data connection</li>
+                        </ul>
+                    </div>
+
+                    <div class="requirement-card">
+                        <h3><i class="fab fa-apple"></i> iOS</h3>
+                        <ul>
+                            <li><strong>OS:</strong> iOS 14.0 or newer</li>
+                            <li><strong>Device:</strong> iPhone 6s or newer, iPad 5th gen or newer</li>
+                            <li><strong>Storage:</strong> 200 MB available space</li>
+                            <li><strong>Network:</strong> WiFi or mobile data connection</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="cta-content">
+                <h2>Ready to Join?</h2>
+                <p>Download Chatlify now and start connecting with millions of users worldwide. Our platform is
+                    constantly evolving with new features for the best communication experience.</p>
+                <a href="#download-options" class="btn btn-primary">DOWNLOAD NOW</a>
+            </div>
+            <div class="cta-image">
+                <div class="devices">
+                    <div class="device desktop"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <svg class="logo-svg" width="40" height="40" viewBox="0 0 200 200">
+                    <defs>
+                        <linearGradient id="footer-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#6a11cb" />
+                            <stop offset="100%" stop-color="#2575fc" />
+                        </linearGradient>
+                        <filter id="footer-glow">
+                            <feGaussianBlur stdDeviation="5" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                        <clipPath id="footer-circle-clip">
+                            <circle cx="100" cy="100" r="85" />
+                        </clipPath>
+                    </defs>
+                    <!-- Main Logo Circle -->
+                    <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#footer-gradient)" stroke-width="5"
+                        opacity="0.7" />
+                    <!-- Logo Path -->
+                    <path class="logo-path"
+                        d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
+                        stroke="url(#footer-gradient)" stroke-width="10" stroke-linecap="round"
+                        filter="url(#footer-glow)" />
+                    <!-- C Letter -->
+                    <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
+                        font-weight="bold" filter="url(#footer-glow)">C</text>
+                </svg>
+                <span>CHATLIFY</span>
+            </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h3>Features</h3>
+                    <ul>
+                        <li><a href="#">Voice Chat</a></li>
+                        <li><a href="#">Chatlify Premium</a></li>
+                        <li><a href="#">Communities</a></li>
+                        <li><a href="#">Integrations</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Company</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press Room</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Community Guidelines</a></li>
+                        <li><a href="#">Announcements</a></li>
+                        <li><a href="#">Developer API</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Security</a></li>
+                        <li><a href="#">Data Protection</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="social-links">
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+                <a href="#"><i class="fab fa-tiktok"></i></a>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Chatlify Inc. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
