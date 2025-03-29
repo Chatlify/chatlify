@@ -47,11 +47,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const platform = this.getAttribute('data-version');
             const downloadLinks = {
-                windows: 'downloads/Chatlify-Setup-2.5.1.exe',
-                mac: 'downloads/Chatlify-2.5.1.dmg',
-                linux: 'downloads/Chatlify-2.5.1.AppImage',
-                android: 'downloads/Chatlify-2.5.0.apk',
-                ios: 'downloads/Chatlify-2.5.0.ipa'
+                windows: 'downloads/Chatlify-Setup-0.0.1.exe',
+                mac: 'downloads/Chatlify-0.0.1.dmg',
+                linux: 'downloads/Chatlify-0.0.1.AppImage',
+                android: 'downloads/Chatlify-0.0.1.apk',
+                ios: 'downloads/Chatlify-0.0.1.ipa'
             };
 
             // Platformun indirme bağlantısını al
