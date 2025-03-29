@@ -182,29 +182,29 @@
             <div class="footer-logo">
                 <svg class="logo-svg" width="40" height="40" viewBox="0 0 200 200">
                     <defs>
-                        <linearGradient id="gradient-footer" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <linearGradient id="footer-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stop-color="#6a11cb" />
                             <stop offset="100%" stop-color="#2575fc" />
                         </linearGradient>
-                        <filter id="glow-footer">
+                        <filter id="footer-glow">
                             <feGaussianBlur stdDeviation="5" result="blur" />
                             <feComposite in="SourceGraphic" in2="blur" operator="over" />
                         </filter>
-                        <clipPath id="circle-clip-footer">
+                        <clipPath id="footer-circle-clip">
                             <circle cx="100" cy="100" r="85" />
                         </clipPath>
                     </defs>
                     <!-- Main Logo Circle -->
-                    <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#gradient-footer)" stroke-width="5"
+                    <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#footer-gradient)" stroke-width="5"
                         opacity="0.7" />
                     <!-- Logo Path -->
                     <path class="logo-path"
                         d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
-                        stroke="url(#gradient-footer)" stroke-width="10" stroke-linecap="round"
-                        filter="url(#glow-footer)" />
+                        stroke="url(#footer-gradient)" stroke-width="10" stroke-linecap="round"
+                        filter="url(#footer-glow)" />
                     <!-- C Letter -->
                     <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
-                        font-weight="bold" filter="url(#glow-footer)">C</text>
+                        font-weight="bold" filter="url(#footer-glow)">C</text>
                 </svg>
                 <span>CHATLIFY</span>
             </div>

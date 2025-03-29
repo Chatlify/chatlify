@@ -1027,14 +1027,12 @@ main.loaded {
 
 /* Footer - Yeni Modern ve Şeffaf Tasarım */
 footer {
-    background-color: rgba(26, 26, 46, 0.1);
+    background-color: rgba(26, 26, 46, 0.3);
     padding: 3.5rem 5% 1.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     position: relative;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(15px);
     margin-top: 2rem;
-    z-index: 10;
 }
 
 footer::before {
@@ -1044,7 +1042,7 @@ footer::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at center, rgba(106, 17, 203, 0.03), transparent 70%);
+    background: radial-gradient(circle at center, rgba(106, 17, 203, 0.05), transparent 70%);
     z-index: -1;
 }
 
@@ -1066,14 +1064,15 @@ footer::before {
     margin-bottom: 1.2rem;
 }
 
-.footer-logo img {
+.footer-logo .logo-svg {
     height: 40px;
-    width: auto;
+    width: 40px;
+    margin-right: 10px;
     filter: drop-shadow(0 0 8px rgba(106, 17, 203, 0.6));
     transition: all 0.3s ease;
 }
 
-.footer-logo:hover img {
+.footer-logo:hover .logo-svg {
     filter: drop-shadow(0 0 12px rgba(106, 17, 203, 0.8));
     transform: scale(1.05);
 }
@@ -1128,17 +1127,12 @@ footer::before {
     position: relative;
     padding-left: 0;
     font-size: 0.9rem;
-    white-space: nowrap;
-    display: inline-block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
 }
 
 .footer-column a:hover {
     color: var(--text-color);
-    padding-left: 5px;
-    transform: translateX(0);
+    transform: translateX(5px);
+    padding-left: 0;
 }
 
 .footer-bottom {
