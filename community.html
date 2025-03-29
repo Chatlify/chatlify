@@ -89,23 +89,39 @@
                     </div>
                 </div>
                 <div class="community-visual">
-                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-                        alt="Community Visual">
+                    <!-- Resmi kaldırıp ana sayfa SVG logosu ekliyorum -->
+                    <div class="logo-container">
+                        <svg class="large-logo-svg" width="300" height="300" viewBox="0 0 200 200">
+                            <defs>
+                                <linearGradient id="visual-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#6a11cb" />
+                                    <stop offset="100%" stop-color="#2575fc" />
+                                </linearGradient>
+                                <filter id="visual-glow">
+                                    <feGaussianBlur stdDeviation="5" result="blur" />
+                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                </filter>
+                                <clipPath id="visual-circle-clip">
+                                    <circle cx="100" cy="100" r="85" />
+                                </clipPath>
+                            </defs>
+                            <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#visual-gradient)"
+                                stroke-width="5" opacity="0.7" />
+                            <path class="logo-path"
+                                d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100"
+                                fill="none" stroke="url(#visual-gradient)" stroke-width="10" stroke-linecap="round"
+                                filter="url(#visual-glow)" />
+                            <text x="75" y="125" class="logo-text" fill="white" font-size="80"
+                                font-family="Poppins, sans-serif" font-weight="bold" filter="url(#visual-glow)">C</text>
+                        </svg>
+                    </div>
                     <div class="floating-tags">
+                        <!-- Sadece "Anlık İletişim" ve "Güvenli Topluluklar" etiketlerini gösteriyorum -->
                         <div class="floating-tag tag-1">
-                            <i class="fas fa-users tag-icon"></i>
-                            <span>50M+ Kullanıcı</span>
-                        </div>
-                        <div class="floating-tag tag-2">
-                            <i class="fas fa-globe tag-icon"></i>
-                            <span>200+ Ülke</span>
-                        </div>
-                        <div class="floating-tag tag-3">
                             <i class="fas fa-comments tag-icon"></i>
                             <span>Anlık İletişim</span>
                         </div>
-                        <!-- Ekstra etiket ekliyorum -->
-                        <div class="floating-tag tag-4">
+                        <div class="floating-tag tag-2">
                             <i class="fas fa-shield-alt tag-icon"></i>
                             <span>Güvenli Topluluklar</span>
                         </div>
