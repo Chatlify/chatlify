@@ -165,11 +165,58 @@
             </div>
         </section>
 
-        <section class="faq-preview">
-            <div class="faq-preview-content">
-                <h2>FREQUENTLY ASKED QUESTIONS</h2>
-                <p>Find answers to common questions on our support page</p>
-                <a href="support.html" class="btn">View FAQ</a>
+        <section class="cta">
+            <div class="cta-content">
+                <h2>Still Have Questions?</h2>
+                <p>If you couldn't find what you're looking for or need further assistance, our support team is ready to
+                    help.</p>
+                <a href="support.html" class="btn btn-primary">VIEW FAQ</a>
+            </div>
+            <div class="cta-image">
+                <svg width="300" height="250" viewBox="0 0 600 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="contact-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#6a11cb" />
+                            <stop offset="100%" stop-color="#2575fc" />
+                        </linearGradient>
+                        <filter id="contact-glow">
+                            <feGaussianBlur stdDeviation="5" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                    </defs>
+                    <!-- Background Circles -->
+                    <circle cx="300" cy="250" r="200" fill="#16213e" opacity="0.1" />
+                    <circle cx="300" cy="250" r="150" fill="#16213e" opacity="0.2" />
+
+                    <!-- Envelope Base -->
+                    <rect x="150" y="200" width="300" height="200" rx="10" fill="#16213e"
+                        stroke="url(#contact-gradient)" stroke-width="5" opacity="0.8" />
+
+                    <!-- Envelope Flap (Open) -->
+                    <path d="M150,200 L300,130 L450,200" fill="none" stroke="url(#contact-gradient)" stroke-width="5"
+                        stroke-linecap="round" />
+
+                    <!-- Message -->
+                    <rect x="190" y="240" width="220" height="120" rx="5" fill="#ffffff" opacity="0.9" />
+
+                    <!-- Message Lines -->
+                    <line x1="210" y1="270" x2="390" y2="270" stroke="#6a11cb" stroke-width="3" opacity="0.6" />
+                    <line x1="210" y1="300" x2="390" y2="300" stroke="#6a11cb" stroke-width="3" opacity="0.6" />
+                    <line x1="210" y1="330" x2="320" y2="330" stroke="#6a11cb" stroke-width="3" opacity="0.6" />
+
+                    <!-- Notification Badge -->
+                    <circle cx="430" cy="190" r="25" fill="#ff4757" filter="url(#contact-glow)" />
+                    <text x="430" y="196" text-anchor="middle" fill="white" font-size="22"
+                        font-family="Poppins, sans-serif" font-weight="bold">!</text>
+
+                    <!-- Sparkles -->
+                    <path d="M500,150 L520,170 M510,150 L510,170 M500,160 L520,160" stroke="url(#contact-gradient)"
+                        stroke-width="4" stroke-linecap="round" opacity="0.9" filter="url(#contact-glow)" />
+                    <path d="M120,300 L140,320 M130,300 L130,320 M120,310 L140,310" stroke="url(#contact-gradient)"
+                        stroke-width="4" stroke-linecap="round" opacity="0.9" filter="url(#contact-glow)" />
+                    <path d="M450,380 L470,400 M460,380 L460,400 M450,390 L470,390" stroke="url(#contact-gradient)"
+                        stroke-width="4" stroke-linecap="round" opacity="0.9" filter="url(#contact-glow)" />
+                </svg>
             </div>
         </section>
     </main>
