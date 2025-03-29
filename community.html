@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 
 <head>
     <meta charset="UTF-8">
@@ -35,9 +35,6 @@
                             <feGaussianBlur stdDeviation="5" result="blur" />
                             <feComposite in="SourceGraphic" in2="blur" operator="over" />
                         </filter>
-                        <clipPath id="circle-clip">
-                            <circle cx="100" cy="100" r="85" />
-                        </clipPath>
                     </defs>
                     <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#gradient)" stroke-width="5"
                         opacity="0.7" />
@@ -63,359 +60,358 @@
     </header>
 
     <main>
-        <section class="community-banner">
-            <div class="container">
-                <div class="community-content">
-                    <h1>Harika Toplulukları Keşfet</h1>
-                    <p>İlgi alanlarını ve tutkularını paylaşan kişilerle bağlantı kur. Binlerce aktif topluluk arasından
-                        seç veya kendi topluluğunu oluştur.</p>
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1>Toplulukları <span class="gradient-text">Keşfet</span></h1>
+                <p>İlgi alanlarını ve tutkularını paylaşan kişilerle bağlantı kur.
+                    Binlerce aktif topluluk arasından seç veya kendi topluluğunu oluştur.</p>
 
-                    <div class="trend-topics">
-                        <p class="trend-label">Trend Konular:</p>
-                        <div class="trend-tags">
-                            <a href="#" class="trend-tag"><i class="fas fa-gamepad"></i> Oyun <i
-                                    class="fas fa-arrow-trend-up"></i></a>
-                            <a href="#" class="trend-tag"><i class="fas fa-code"></i> Yazılım <i
-                                    class="fas fa-arrow-trend-up"></i></a>
-                            <a href="#" class="trend-tag"><i class="fas fa-music"></i> Müzik</a>
-                            <a href="#" class="trend-tag"><i class="fas fa-palette"></i> Sanat</a>
-                            <a href="#" class="trend-tag"><i class="fas fa-trophy"></i> E-Spor</a>
-                        </div>
-                    </div>
-
-                    <div class="search-box">
-                        <input type="text" placeholder="Toplulukları ara...">
-                        <button type="button" class="search-button">Ara</button>
-                    </div>
-
-                    <div class="action-buttons">
-                        <a href="#" class="action-button"><i class="fas fa-compass"></i> Rastgele Keşfet</a>
-                        <a href="#" class="action-button"><i class="fas fa-star"></i> Önerilen</a>
-                        <a href="#" class="action-button primary"><i class="fas fa-plus"></i> Topluluk Oluştur</a>
+                <div class="hero-search">
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" placeholder="Topluluk ara...">
+                        <button class="search-btn">Ara</button>
                     </div>
                 </div>
 
-                <div class="community-logo">
-                    <svg class="logo-large" viewBox="0 0 200 200">
-                        <defs>
-                            <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#6a11cb" />
-                                <stop offset="100%" stop-color="#2575fc" />
-                            </linearGradient>
-                        </defs>
-                        <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#logo-gradient)" stroke-width="5"
-                            opacity="0.7" />
-                        <path class="logo-path"
-                            d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
-                            stroke="url(#logo-gradient)" stroke-width="10" stroke-linecap="round" />
-                        <text x="75" y="125" fill="white" font-size="80" font-family="Poppins, sans-serif"
-                            font-weight="bold">C</text>
-                    </svg>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">15K+</div>
+                        <div class="stat-label">Aktif Topluluk</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">3.8M+</div>
+                        <div class="stat-label">Mesaj / Gün</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">950K+</div>
+                        <div class="stat-label">Çevrimiçi Kullanıcı</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="stats-bar">
-                <div class="stat-item">
-                    <div class="stat-value">14,287</div>
-                    <div class="stat-label">Aktif Topluluk</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">3.5M+</div>
-                    <div class="stat-label">Mesaj / Gün</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">865K+</div>
-                    <div class="stat-label">Çevrimiçi Kullanıcı</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">192</div>
-                    <div class="stat-label">Yeni Topluluk / Gün</div>
+            <div class="hero-visual">
+                <div class="hero-image">
+                    <img src="images/community-illustration.svg" alt="Topluluk İllüstrasyonu">
                 </div>
             </div>
         </section>
 
-        <section class="categories-container">
-            <div class="section-title">
-                <h2>Kategorilere Göz At</h2>
-                <p>İlgi alanlarına göre düzenlenmiş toplulukları keşfet</p>
+        <section class="featured-section">
+            <div class="section-header">
+                <h2>Öne Çıkan <span class="gradient-text">Topluluklar</span></h2>
+                <p>En popüler ve aktif topluluklarımız</p>
             </div>
 
-            <div class="categories-wrapper">
-                <div class="categories-tabs">
-                    <div class="category-tab active"><i class="fas fa-fire"></i> Popüler</div>
-                    <div class="category-tab"><i class="fas fa-gamepad"></i> Oyun</div>
-                    <div class="category-tab"><i class="fas fa-laptop-code"></i> Teknoloji</div>
-                    <div class="category-tab"><i class="fas fa-music"></i> Müzik</div>
-                    <div class="category-tab"><i class="fas fa-palette"></i> Sanat</div>
-                    <div class="category-tab"><i class="fas fa-book"></i> Edebiyat</div>
-                    <div class="category-tab"><i class="fas fa-film"></i> Film & TV</div>
-                    <div class="category-tab"><i class="fas fa-ellipsis-h"></i> Daha Fazla</div>
+            <div class="featured-filter">
+                <button class="filter-btn active">Tümü</button>
+                <button class="filter-btn">Oyun</button>
+                <button class="filter-btn">Teknoloji</button>
+                <button class="filter-btn">Sanat</button>
+                <button class="filter-btn">Müzik</button>
+                <button class="filter-btn">Eğitim</button>
+            </div>
+
+            <div class="server-grid">
+                <!-- Server 1 -->
+                <div class="server-card">
+                    <div class="server-banner" style="background-image: url('images/server-banners/gaming.jpg')">
+                        <div class="server-banner-overlay"></div>
+                    </div>
+                    <div class="server-content">
+                        <div class="server-icon">
+                            <img src="images/server-icons/gaming.png" alt="Gaming Hub">
+                        </div>
+                        <h3 class="server-name">Gaming Hub</h3>
+                        <p class="server-description">Oyunlar, e-sporlar ve oyuncu buluşmaları için nihai topluluk.</p>
+
+                        <div class="server-meta">
+                            <div class="server-stats">
+                                <div class="members">
+                                    <i class="fas fa-user"></i> 128K+
+                                </div>
+                                <div class="online">
+                                    <i class="fas fa-circle"></i> 3.2K online
+                                </div>
+                            </div>
+                            <a href="#" class="join-btn">Katıl</a>
+                        </div>
+
+                        <div class="server-tags">
+                            <span class="tag">Oyun</span>
+                            <span class="tag">E-Spor</span>
+                            <span class="tag">Çok Oyunculu</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="servers-grid">
-                    <!-- Server 1 -->
-                    <div class="server-card">
-                        <div class="server-header">
-                            <div class="server-banner"
-                                style="background-image: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80');">
-                            </div>
-                            <div class="server-avatar">
-                                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
-                                    alt="Gaming Hub">
-                            </div>
+                <!-- Server 2 -->
+                <div class="server-card">
+                    <div class="server-banner" style="background-image: url('images/server-banners/coding.jpg')">
+                        <div class="server-banner-overlay"></div>
+                    </div>
+                    <div class="server-content">
+                        <div class="server-icon">
+                            <img src="images/server-icons/coding.png" alt="Kod Dünyası">
                         </div>
-                        <div class="server-content">
-                            <div class="server-info">
-                                <h3 class="server-name">Gaming Hub</h3>
-                                <p class="server-description">Oyunlar, e-sporlar ve oyuncu buluşmaları için nihai
-                                    topluluk. En son haberler ve canlı etkinlikler.</p>
-                            </div>
+                        <h3 class="server-name">Kod Dünyası</h3>
+                        <p class="server-description">Programcılar, geliştiriciler ve yazılım meraklıları için topluluk.
+                        </p>
 
-                            <div class="server-tags">
-                                <span class="server-tag">Oyun</span>
-                                <span class="server-tag">E-Spor</span>
-                                <span class="server-tag">Çok Oyunculu</span>
-                            </div>
-
+                        <div class="server-meta">
                             <div class="server-stats">
-                                <div class="stat-item">
-                                    <div class="stat-value">128K+</div>
-                                    <div class="stat-label">Üye</div>
+                                <div class="members">
+                                    <i class="fas fa-user"></i> 95K+
                                 </div>
-                                <div class="stat-item">
-                                    <div class="stat-value">3K+</div>
-                                    <div class="stat-label">Aktif</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value">245</div>
-                                    <div class="stat-label">Kanal</div>
+                                <div class="online">
+                                    <i class="fas fa-circle"></i> 2.4K online
                                 </div>
                             </div>
-
                             <a href="#" class="join-btn">Katıl</a>
+                        </div>
+
+                        <div class="server-tags">
+                            <span class="tag">Kodlama</span>
+                            <span class="tag">Web</span>
+                            <span class="tag">Yapay Zeka</span>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Server 2 -->
-                    <div class="server-card">
-                        <div class="server-header">
-                            <div class="server-banner"
-                                style="background-image: url('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80');">
-                            </div>
-                            <div class="server-avatar">
-                                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
-                                    alt="Tech Haven">
-                            </div>
+                <!-- Server 3 -->
+                <div class="server-card">
+                    <div class="server-banner" style="background-image: url('images/server-banners/music.jpg')">
+                        <div class="server-banner-overlay"></div>
+                    </div>
+                    <div class="server-content">
+                        <div class="server-icon">
+                            <img src="images/server-icons/music.png" alt="Müzik Kulübü">
                         </div>
-                        <div class="server-content">
-                            <div class="server-info">
-                                <h3 class="server-name">Tech Haven</h3>
-                                <p class="server-description">Programcılar, geliştiriciler ve teknoloji tutkunları için.
-                                    Yardım alın, bilgi paylaşın ve işbirliği yapın.</p>
-                            </div>
+                        <h3 class="server-name">Müzik Kulübü</h3>
+                        <p class="server-description">Müzikseverler için canlı konserler ve müzik paylaşımı.</p>
 
-                            <div class="server-tags">
-                                <span class="server-tag">Kodlama</span>
-                                <span class="server-tag">Web</span>
-                                <span class="server-tag">Yapay Zeka</span>
-                            </div>
-
+                        <div class="server-meta">
                             <div class="server-stats">
-                                <div class="stat-item">
-                                    <div class="stat-value">95K+</div>
-                                    <div class="stat-label">Üye</div>
+                                <div class="members">
+                                    <i class="fas fa-user"></i> 82K+
                                 </div>
-                                <div class="stat-item">
-                                    <div class="stat-value">2.4K+</div>
-                                    <div class="stat-label">Aktif</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value">187</div>
-                                    <div class="stat-label">Kanal</div>
+                                <div class="online">
+                                    <i class="fas fa-circle"></i> 1.8K online
                                 </div>
                             </div>
-
                             <a href="#" class="join-btn">Katıl</a>
+                        </div>
+
+                        <div class="server-tags">
+                            <span class="tag">Müzik</span>
+                            <span class="tag">Konserler</span>
+                            <span class="tag">Enstrümanlar</span>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Server 3 -->
-                    <div class="server-card">
-                        <div class="server-header">
-                            <div class="server-banner"
-                                style="background-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80');">
-                            </div>
-                            <div class="server-avatar">
-                                <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
-                                    alt="Music Lovers">
-                            </div>
+                <!-- Server 4 -->
+                <div class="server-card">
+                    <div class="server-banner" style="background-image: url('images/server-banners/art.jpg')">
+                        <div class="server-banner-overlay"></div>
+                    </div>
+                    <div class="server-content">
+                        <div class="server-icon">
+                            <img src="images/server-icons/art.png" alt="Sanat Galerisi">
                         </div>
-                        <div class="server-content">
-                            <div class="server-info">
-                                <h3 class="server-name">Music Lovers</h3>
-                                <p class="server-description">Yeni müzik keşfedin, çalma listeleri paylaşın, albümleri
-                                    tartışın ve diğer müzik tutkunlarıyla bağlantı kurun.</p>
-                            </div>
+                        <h3 class="server-name">Sanat Galerisi</h3>
+                        <p class="server-description">Dijital ve geleneksel sanat eserleri paylaşımı ve tartışma.</p>
 
-                            <div class="server-tags">
-                                <span class="server-tag">Müzik</span>
-                                <span class="server-tag">Sanatçılar</span>
-                                <span class="server-tag">Çalma Listeleri</span>
-                            </div>
-
+                        <div class="server-meta">
                             <div class="server-stats">
-                                <div class="stat-item">
-                                    <div class="stat-value">87K+</div>
-                                    <div class="stat-label">Üye</div>
+                                <div class="members">
+                                    <i class="fas fa-user"></i> 65K+
                                 </div>
-                                <div class="stat-item">
-                                    <div class="stat-value">1.7K+</div>
-                                    <div class="stat-label">Aktif</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value">156</div>
-                                    <div class="stat-label">Kanal</div>
+                                <div class="online">
+                                    <i class="fas fa-circle"></i> 1.2K online
                                 </div>
                             </div>
-
                             <a href="#" class="join-btn">Katıl</a>
+                        </div>
+
+                        <div class="server-tags">
+                            <span class="tag">Sanat</span>
+                            <span class="tag">Çizim</span>
+                            <span class="tag">Tasarım</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
 
-        <section class="featured-container">
-            <div class="featured-servers">
-                <div class="featured-header">
-                    <div class="featured-title">
-                        <h2>Öne Çıkan Topluluklar</h2>
-                        <p>Bu hafta yükselen ve en çok ilgi gören topluluklar</p>
-                    </div>
-                    <div class="featured-actions">
-                        <button class="featured-btn"><i class="fas fa-th-large"></i> Tümünü Göster</button>
-                        <button class="featured-btn primary"><i class="fas fa-plus"></i> Yeni Topluluk</button>
-                    </div>
-                </div>
-
-                <div class="featured-row">
-                    <div class="featured-card">
-                        <div class="featured-banner">
-                            <img src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
-                                alt="Tech Summit">
-                            <div class="featured-overlay">
-                                <div class="featured-details">
-                                    <h3>Tech Summit</h3>
-                                    <div class="featured-meta">
-                                        <div><i class="fas fa-calendar-alt"></i> 2 yıl</div>
-                                        <div><i class="fas fa-users"></i> 150K+</div>
-                                    </div>
-                                </div>
-                                <div class="featured-badge">POPÜLER</div>
-                            </div>
-                        </div>
-                        <div class="featured-content">
-                            <p class="featured-text">Teknoloji tutkunları için küresel topluluk. Yeni gelişmeler, teknik
-                                konularda tartışmalar ve kariyer fırsatları.</p>
-                            <div class="featured-categories">
-                                <span class="featured-category">Teknoloji</span>
-                                <span class="featured-category">Yazılım</span>
-                                <span class="featured-category">Kariyer</span>
-                            </div>
-                            <div class="featured-footer">
-                                <div class="featured-users">
-                                    <div class="user-avatars">
-                                        <div class="user-avatar">
-                                            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
-                                                alt="User">
-                                        </div>
-                                        <div class="user-avatar">
-                                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
-                                                alt="User">
-                                        </div>
-                                        <div class="user-avatar">
-                                            <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
-                                                alt="User">
-                                        </div>
-                                    </div>
-                                    <div class="user-count">+10K çevrimiçi</div>
-                                </div>
-                                <button class="featured-join">Katıl</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="featured-column">
-                        <div class="featured-card">
-                            <div class="featured-banner">
-                                <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
-                                    alt="Esports League">
-                                <div class="featured-overlay">
-                                    <div class="featured-details">
-                                        <h3>Esports League</h3>
-                                        <div class="featured-meta">
-                                            <div><i class="fas fa-trophy"></i> Turnuvalar</div>
-                                            <div><i class="fas fa-users"></i> 78K+</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="featured-content">
-                                <div class="featured-categories">
-                                    <span class="featured-category">E-Spor</span>
-                                    <span class="featured-category">Oyun</span>
-                                    <span class="featured-category">Rekabet</span>
-                                </div>
-                                <div class="featured-footer">
-                                    <div class="featured-users">
-                                        <div class="user-count">5.2K çevrimiçi</div>
-                                    </div>
-                                    <button class="featured-join">Katıl</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="featured-card">
-                            <div class="featured-banner">
-                                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
-                                    alt="Creative Hub">
-                                <div class="featured-overlay">
-                                    <div class="featured-details">
-                                        <h3>Creative Hub</h3>
-                                        <div class="featured-meta">
-                                            <div><i class="fas fa-paint-brush"></i> Sanat</div>
-                                            <div><i class="fas fa-users"></i> 42K+</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="featured-content">
-                                <div class="featured-categories">
-                                    <span class="featured-category">Sanat</span>
-                                    <span class="featured-category">Tasarım</span>
-                                    <span class="featured-category">İlham</span>
-                                </div>
-                                <div class="featured-footer">
-                                    <div class="featured-users">
-                                        <div class="user-count">2.8K çevrimiçi</div>
-                                    </div>
-                                    <button class="featured-join">Katıl</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="browse-more">
+                <a href="#" class="browse-btn">Daha Fazla Topluluk Keşfet <i class="fas fa-arrow-right"></i></a>
             </div>
         </section>
 
-        <section class="community-cta">
-            <div class="cta-container">
-                <h2>Kendi Topluluğunu Kur</h2>
-                <p>Aynı ilgi alanlarını paylaşan insanlarla bağlantı kurmak için kendi topluluğunu oluştur. Topluluk
-                    yönetimi kolay, güçlü araçlarla donatılmış ve tamamen ücretsiz.</p>
+        <section class="create-section">
+            <div class="create-content">
+                <h2>Kendi <span class="gradient-text">Topluluğunu</span> Oluştur</h2>
+                <p>Tutkunu paylaşacak, aynı fikirde olan kişileri bir araya getirecek bir alan oluştur.
+                    İster oyun, müzik, sanat veya herhangi bir ilgi alanı olsun, Chatlify tüm topluluklar için ideal
+                    platformdur.</p>
+                <div class="create-features">
+                    <div class="feature">
+                        <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                        <div class="feature-text">
+                            <h3>Güçlü Moderasyon</h3>
+                            <p>Topluluğunuzu güvende tutmak için tam kontrol</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon"><i class="fas fa-sliders-h"></i></div>
+                        <div class="feature-text">
+                            <h3>Özelleştirilebilir</h3>
+                            <p>Kendi renk şemanız, rolleri ve kanallarınız</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon"><i class="fas fa-rocket"></i></div>
+                        <div class="feature-text">
+                            <h3>Ölçeklenebilir</h3>
+                            <p>Binlerce üyeye kadar sorunsuz büyüme</p>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="create-btn">Topluluk Oluştur <i class="fas fa-plus"></i></a>
+            </div>
+
+            <div class="create-visual">
+                <img src="images/create-community.svg" alt="Topluluk Oluştur">
+            </div>
+        </section>
+
+        <section class="trending-section">
+            <div class="section-header">
+                <h2>Trend <span class="gradient-text">Konular</span></h2>
+                <p>Şu anda en çok konuşulanlar</p>
+            </div>
+
+            <div class="trending-tags">
+                <a href="#" class="trend-tag">
+                    <i class="fas fa-gamepad"></i>
+                    <span class="tag-name">Oyun</span>
+                    <span class="tag-count">+324K</span>
+                </a>
+                <a href="#" class="trend-tag">
+                    <i class="fas fa-code"></i>
+                    <span class="tag-name">Yazılım</span>
+                    <span class="tag-count">+215K</span>
+                </a>
+                <a href="#" class="trend-tag">
+                    <i class="fas fa-film"></i>
+                    <span class="tag-name">Sinema</span>
+                    <span class="tag-count">+182K</span>
+                </a>
+                <a href="#" class="trend-tag">
+                    <i class="fas fa-music"></i>
+                    <span class="tag-name">Müzik</span>
+                    <span class="tag-count">+156K</span>
+                </a>
+                <a href="#" class="trend-tag">
+                    <i class="fas fa-palette"></i>
+                    <span class="tag-name">Sanat</span>
+                    <span class="tag-count">+135K</span>
+                </a>
+                <a href="#" class="trend-tag">
+                    <i class="fas fa-book"></i>
+                    <span class="tag-name">Edebiyat</span>
+                    <span class="tag-count">+92K</span>
+                </a>
+                <a href="#" class="trend-tag">
+                    <i class="fas fa-trophy"></i>
+                    <span class="tag-name">E-Spor</span>
+                    <span class="tag-count">+86K</span>
+                </a>
+                <a href="#" class="trend-tag">
+                    <i class="fas fa-heart"></i>
+                    <span class="tag-name">Sağlık</span>
+                    <span class="tag-count">+78K</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="testimonial-section">
+            <div class="section-header">
+                <h2>Topluluk <span class="gradient-text">Yorumları</span></h2>
+                <p>Üyelerimizin deneyimleri</p>
+            </div>
+
+            <div class="testimonial-slider">
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <div class="quote">
+                            <i class="fas fa-quote-left"></i>
+                        </div>
+                        <p>Kod Dünyası topluluğuna katıldıktan sonra programlama becerilerim inanılmaz derecede gelişti.
+                            Her gün yeni şeyler öğreniyor ve harika insanlarla tanışıyorum.</p>
+                        <div class="testimonial-author">
+                            <img src="images/avatars/avatar1.jpg" alt="Ahmet K.">
+                            <div class="author-info">
+                                <h4>Ahmet K.</h4>
+                                <span>Kod Dünyası üyesi</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <div class="quote">
+                            <i class="fas fa-quote-left"></i>
+                        </div>
+                        <p>Müzik Kulübü'nde canlı konserler ve tartışmalarla müzik tutkumu paylaşabiliyorum. Benzer ilgi
+                            alanlarına sahip bu kadar çok kişiyle bağlantı kurmak harika.</p>
+                        <div class="testimonial-author">
+                            <img src="images/avatars/avatar2.jpg" alt="Zeynep M.">
+                            <div class="author-info">
+                                <h4>Zeynep M.</h4>
+                                <span>Müzik Kulübü üyesi</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <div class="quote">
+                            <i class="fas fa-quote-left"></i>
+                        </div>
+                        <p>Chatlify'da kendi oyun topluluğumu oluşturdum ve şimdi 10.000'den fazla üyemiz var.
+                            Moderasyon araçları ve özelleştirme seçenekleri mükemmel.</p>
+                        <div class="testimonial-author">
+                            <img src="images/avatars/avatar3.jpg" alt="Mehmet A.">
+                            <div class="author-info">
+                                <h4>Mehmet A.</h4>
+                                <span>Gaming Hub kurucusu</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slider-controls">
+                <button class="slider-arrow prev"><i class="fas fa-chevron-left"></i></button>
+                <div class="slider-dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <button class="slider-arrow next"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2>Topluluğa <span class="gradient-text">Katılmaya</span> Hazır mısın?</h2>
+                <p>Hemen şimdi Chatlify'ı indir ve binlerce topluluk arasında yerini al.</p>
                 <div class="cta-buttons">
-                    <a href="#" class="cta-btn primary">Topluluk Oluştur</a>
-                    <a href="#" class="cta-btn secondary">Daha Fazla Keşfet</a>
+                    <a href="download.html" class="cta-download">Şimdi İndir <i class="fas fa-download"></i></a>
+                    <a href="#" class="cta-explore">Toplulukları Keşfet</a>
                 </div>
             </div>
         </section>
@@ -434,16 +430,16 @@
                             <feGaussianBlur stdDeviation="5" result="blur" />
                             <feComposite in="SourceGraphic" in2="blur" operator="over" />
                         </filter>
-                        <clipPath id="footer-circle-clip">
-                            <circle cx="100" cy="100" r="85" />
-                        </clipPath>
                     </defs>
+                    <!-- Main Logo Circle -->
                     <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#footer-gradient)" stroke-width="5"
                         opacity="0.7" />
+                    <!-- Logo Path -->
                     <path class="logo-path"
                         d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
                         stroke="url(#footer-gradient)" stroke-width="10" stroke-linecap="round"
                         filter="url(#footer-glow)" />
+                    <!-- C Letter -->
                     <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
                         font-weight="bold" filter="url(#footer-glow)">C</text>
                 </svg>
@@ -451,56 +447,109 @@
             </div>
             <div class="footer-links">
                 <div class="footer-column">
-                    <h3>Özellikler</h3>
+                    <h3>Features</h3>
                     <ul>
-                        <li><a href="#">Sesli Sohbet</a></li>
+                        <li><a href="#">Voice Chat</a></li>
                         <li><a href="#">Chatlify Premium</a></li>
-                        <li><a href="#">Topluluklar</a></li>
-                        <li><a href="#">Entegrasyonlar</a></li>
+                        <li><a href="#">Communities</a></li>
+                        <li><a href="#">Integrations</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Şirket</h3>
+                    <h3>Company</h3>
                     <ul>
-                        <li><a href="#">Hakkımızda</a></li>
-                        <li><a href="#">Kariyer</a></li>
-                        <li><a href="#">Basın Odası</a></li>
-                        <li><a href="#">İletişim</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press Room</a></li>
+                        <li><a href="contact.html">Contact</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Kaynaklar</h3>
+                    <h3>Resources</h3>
                     <ul>
-                        <li><a href="#">Yardım Merkezi</a></li>
-                        <li><a href="#">Topluluk Kuralları</a></li>
-                        <li><a href="#">Duyurular</a></li>
-                        <li><a href="#">Geliştirici API</a></li>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Community Guidelines</a></li>
+                        <li><a href="#">Announcements</a></li>
+                        <li><a href="#">Developer API</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Yasal</h3>
+                    <h3>Legal</h3>
                     <ul>
-                        <li><a href="legal/terms-of-service.html">Kullanım Şartları</a></li>
-                        <li><a href="legal/privacy-policy.html">Gizlilik Politikası</a></li>
-                        <li><a href="legal/security.html">Güvenlik</a></li>
-                        <li><a href="legal/data-protection.html">Veri Koruma</a></li>
+                        <li><a href="legal/terms-of-service.html">Terms of Service</a></li>
+                        <li><a href="legal/privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="legal/security.html">Security</a></li>
+                        <li><a href="legal/data-protection.html">Data Protection</a></li>
                     </ul>
                 </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <div class="social-links">
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-youtube"></i></a>
-                <a href="#"><i class="fab fa-tiktok"></i></a>
-            </div>
             <div class="copyright">
-                <p>&copy; 2025 Chatlify Inc. Tüm hakları saklıdır.</p>
+                <p>&copy; 2023 Chatlify. Tüm hakları saklıdır.</p>
+            </div>
+            <div class="social-links">
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="Discord"><i class="fab fa-discord"></i></a>
+                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
             </div>
         </div>
     </footer>
+
+    <script>
+        // Testimonial slider functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const dots = document.querySelectorAll('.dot');
+            const prevArrow = document.querySelector('.slider-arrow.prev');
+            const nextArrow = document.querySelector('.slider-arrow.next');
+            const testimonials = document.querySelectorAll('.testimonial');
+
+            let currentSlide = 0;
+
+            function showSlide(index) {
+                testimonials.forEach((testimonial, i) => {
+                    testimonial.style.display = i === index ? 'block' : 'none';
+                });
+
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === index);
+                });
+
+                currentSlide = index;
+            }
+
+            // Initialize
+            showSlide(0);
+
+            // Event listeners
+            dots.forEach((dot, i) => {
+                dot.addEventListener('click', () => {
+                    showSlide(i);
+                });
+            });
+
+            prevArrow.addEventListener('click', () => {
+                let newIndex = currentSlide - 1;
+                if (newIndex < 0) newIndex = testimonials.length - 1;
+                showSlide(newIndex);
+            });
+
+            nextArrow.addEventListener('click', () => {
+                let newIndex = currentSlide + 1;
+                if (newIndex >= testimonials.length) newIndex = 0;
+                showSlide(newIndex);
+            });
+
+            // Auto slide every 5 seconds
+            setInterval(() => {
+                let newIndex = currentSlide + 1;
+                if (newIndex >= testimonials.length) newIndex = 0;
+                showSlide(newIndex);
+            }, 5000);
+        });
+    </script>
 </body>
 
 </html>

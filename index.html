@@ -101,7 +101,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Create particles
             const particlesContainer = document.querySelector('.particles');
-            const particleCount = 25;
+            const particleCount = 30;
 
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
@@ -140,7 +140,7 @@
             let progress = 0;
 
             const interval = setInterval(() => {
-                progress += Math.random() * 10;
+                progress += Math.random() * 8;
                 if (progress >= 100) {
                     progress = 100;
                     clearInterval(interval);
@@ -155,7 +155,7 @@
                 }
 
                 progressFill.style.width = `${progress}%`;
-            }, 400);
+            }, 300);
 
             // Text glitch effect
             const title = document.querySelector('.loading-title');

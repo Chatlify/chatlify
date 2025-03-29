@@ -1,15 +1,19 @@
 /* Community Page Yeniden Tasarım */
 :root {
-    --card-bg: rgba(20, 20, 40, 0.7);
-    --card-hover-bg: rgba(30, 30, 60, 0.8);
-    --accent-glow: rgba(106, 17, 203, 0.4);
-    --tag-bg: rgba(37, 117, 252, 0.15);
-    --tag-text: #a98aff;
-    --feature-gradient: linear-gradient(135deg, rgba(106, 17, 203, 0.8), rgba(37, 117, 252, 0.8));
-    --section-bg: rgba(16, 18, 27, 0.8);
-    --section-darker-bg: rgba(12, 15, 25, 0.8);
-    --text-secondary: rgba(255, 255, 255, 0.7);
+    --primary-color: #6a11cb;
+    --primary-light: #8c52ff;
+    --secondary-color: #2575fc;
+    --dark-bg: #0a0a1a;
+    --dark-secondary: #16213e;
     --text-color: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --success-color: #43b581;
+    --danger-color: #f04747;
+    --warning-color: #faa61a;
+    --border-radius: 10px;
+    --card-bg: rgba(22, 33, 62, 0.75);
+    --card-hover: rgba(22, 33, 62, 0.95);
+    --section-padding: 2rem;
 }
 
 /* Community Banner - Yeni Tasarım */
@@ -336,7 +340,7 @@
 }
 
 .category-tab.active {
-    background: var(--feature-gradient);
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
     color: white;
     border-color: transparent;
     box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
@@ -353,8 +357,8 @@
 }
 
 .server-card {
-    background: rgba(20, 20, 40, 0.5);
-    border-radius: 16px;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
     overflow: hidden;
     transition: all 0.3s ease;
     position: relative;
@@ -374,7 +378,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(180deg, transparent 50%, var(--card-hover-bg) 100%);
+    background: linear-gradient(180deg, transparent 50%, var(--card-hover) 100%);
     opacity: 0;
     transition: opacity 0.3s ease;
     z-index: -1;
@@ -471,8 +475,8 @@
 
 .server-tag {
     padding: 0.3rem 0.8rem;
-    background-color: var(--tag-bg);
-    color: var(--tag-text);
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 600;
@@ -482,7 +486,7 @@
     width: 100%;
     padding: 0.8rem;
     border: none;
-    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
     color: white;
     border-radius: 8px;
     font-weight: 600;
@@ -564,7 +568,7 @@
 }
 
 .featured-btn.primary {
-    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
     border-color: transparent;
 }
 
@@ -679,8 +683,8 @@
 
 .featured-category {
     padding: 0.3rem 0.8rem;
-    background-color: var(--tag-bg);
-    color: var(--tag-text);
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
     border-radius: 20px;
     font-size: 0.85rem;
     font-weight: 600;
@@ -731,7 +735,7 @@
 
 .featured-join {
     padding: 0.6rem 1.2rem;
-    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
     color: white;
     border-radius: 8px;
     font-weight: 600;
