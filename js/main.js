@@ -1,446 +1,247 @@
-// Particle Arka Plan Efekti
-let canvas;
-let ctx;
-let particlesArray = [];
-let maxParticles = 100;
+document.addEventListener('DOMContentLoaded', () => {
+    // Partikül arkaplan efekti için canvas oluştur
+    const body = document.querySelector('body');
+    const canvas = document.createElement('canvas');
 
-// Sayfa Yükleme
-document.addEventListener('DOMContentLoaded', function () {
-    // Canvas Ayarları
-    setupCanvas();
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.position = 'fixed';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.zIndex = '-2';
 
-    // Mobil Menü Ayarları
-    setupMobileMenu();
+    body.appendChild(canvas);
 
-    // Hero Bölümünü Yükle
-    const hero = document.querySelector('.hero');
-    if (hero) {
-        setTimeout(() => {
-            hero.classList.add('loaded');
-        }, 100);
-    }
+    const ctx = canvas.getContext('2d');
 
-    // Tüm sayfaları için yükleme animasyonu
-    const loadingElements = document.querySelectorAll('.loading-hidden');
-    loadingElements.forEach(element => {
-        setTimeout(() => {
-            element.classList.remove('loading-hidden');
-            element.classList.add('loading-visible');
-        }, 300);
+    // Pencere boyutu değiştiğinde canvas boyutunu güncelle
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
     });
 
-    // Scroll Animasyonları
-    setupScrollAnimations();
-
-    // Resimleri Lazy Load etme
-    setupLazyLoading();
-
-    // İletişim Sayfası İçin
-    initContactPage();
-});
-
-// Particle Arkaplan Efekti Ayarları
-function setupCanvas() {
-    canvas = document.getElementById('particles-canvas');
-
-    if (!canvas) {
-        const particleBackground = document.querySelector('.particle-background');
-        if (!particleBackground) return;
-
-        canvas = document.createElement('canvas');
-        canvas.id = 'particles-canvas';
-        particleBackground.appendChild(canvas);
-    }
-
-    ctx = canvas.getContext('2d');
-
-    resizeCanvas();
-    initParticles();
-
-    // Animasyon Başlat
-    animateParticles();
-
-    // Pencere Boyutu Değişince Yeniden Ölçekleme
-    window.addEventListener('resize', function () {
-        resizeCanvas();
-        initParticles();
-    });
-}
-
-// Canvas Ölçeklendirme
-function resizeCanvas() {
-    if (!canvas) return;
-
-    const particleBackground = canvas.parentElement;
-    canvas.width = particleBackground.offsetWidth;
-    canvas.height = particleBackground.offsetHeight;
-
-    // Ekran genişliğine göre parçacık sayısını ayarla
-    if (window.innerWidth < 768) {
-        maxParticles = 50;
-    } else if (window.innerWidth < 1200) {
-        maxParticles = 75;
-    } else {
-        maxParticles = 100;
-    }
-}
-
-// Particle Sınıfı
-class Particle {
-    constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 0.5;
-        this.speedX = Math.random() * 1 - 0.5;
-        this.speedY = Math.random() * 1 - 0.5;
-        this.color = `rgba(255, 255, 255, ${Math.random() * 0.3 + 0.1})`;
-    }
-
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-
-        if (this.x > canvas.width) {
-            this.x = 0;
-        } else if (this.x < 0) {
-            this.x = canvas.width;
+    // Partikül sınıfı
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2 + 0.5;
+            this.speedX = Math.random() * 0.5 - 0.25;
+            this.speedY = Math.random() * 0.5 - 0.25;
+            this.color = `rgba(${Math.floor(Math.random() * 100 + 100)}, ${Math.floor(Math.random() * 50 + 50)}, ${Math.floor(Math.random() * 200 + 55)}, ${Math.random() * 0.2 + 0.1})`;
         }
 
-        if (this.y > canvas.height) {
-            this.y = 0;
-        } else if (this.y < 0) {
-            this.y = canvas.height;
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+
+            if (this.x > canvas.width || this.x < 0) {
+                this.speedX = -this.speedX;
+            }
+
+            if (this.y > canvas.height || this.y < 0) {
+                this.speedY = -this.speedY;
+            }
+        }
+
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
         }
     }
 
-    draw() {
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-    }
-}
+    // Partikül dizisi oluştur
+    const particles = [];
+    const particleCount = Math.floor(window.innerWidth / 15); // Ekran genişliğine göre partikül sayısı
 
-// Parçacıkları Başlat
-function initParticles() {
-    particlesArray = [];
-    for (let i = 0; i < maxParticles; i++) {
-        particlesArray.push(new Particle());
-    }
-}
-
-// Parçacıkları Animasyon ile Hareket Ettir
-function animateParticles() {
-    if (!canvas || !ctx) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Parçacıkları güncelle ve çiz
-    for (let i = 0; i < particlesArray.length; i++) {
-        particlesArray[i].update();
-        particlesArray[i].draw();
+    for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
     }
 
-    // Parçacıkları bağla
-    connectParticles();
+    // Animasyon fonksiyonu
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    requestAnimationFrame(animateParticles);
-}
+        // Partikülleri çiz ve güncelle
+        particles.forEach(particle => {
+            particle.update();
+            particle.draw();
+        });
 
-// Birbirine yakın parçacıkları çizgi ile bağla
-function connectParticles() {
-    const maxDistance = canvas.width > 768 ? 100 : 80;
+        // Partiküller arasında bağlantı çiz
+        connectParticles();
 
-    for (let a = 0; a < particlesArray.length; a++) {
-        for (let b = a; b < particlesArray.length; b++) {
-            const dx = particlesArray[a].x - particlesArray[b].x;
-            const dy = particlesArray[a].y - particlesArray[b].y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+        requestAnimationFrame(animate);
+    }
 
-            if (distance < maxDistance) {
-                const opacity = 1 - (distance / maxDistance);
-                ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.15})`;
-                ctx.lineWidth = 0.5;
-                ctx.beginPath();
-                ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
-                ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
-                ctx.stroke();
+    // Partiküller arasında bağlantı çizme fonksiyonu
+    function connectParticles() {
+        const maxDistance = 100;
+
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < maxDistance) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(106, 17, 203, ${0.2 - distance / maxDistance})`;
+                    ctx.lineWidth = 0.2;
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.stroke();
+                }
             }
         }
     }
-}
 
-// Mobil Menü Kurulumu
-function setupMobileMenu() {
-    // Mobil menü butonunu kontrol et, yoksa oluştur
-    let mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-    let mobileMenu = document.querySelector('.mobile-menu');
-    let menuOverlay = document.querySelector('.menu-overlay');
+    // Animasyonu başlat
+    animate();
 
-    if (!mobileMenuBtn) {
-        mobileMenuBtn = document.createElement('button');
-        mobileMenuBtn.className = 'mobile-menu-btn';
-        mobileMenuBtn.innerHTML = `
-            <span></span>
-            <span></span>
-            <span></span>
-        `;
+    // Scroll animasyonları
+    const scrollElements = document.querySelectorAll('.feature-item, .stat-item, .testimonial');
 
-        const header = document.querySelector('.header');
-        if (header) {
-            const logo = header.querySelector('.logo');
-            if (logo) {
-                header.insertBefore(mobileMenuBtn, logo.nextSibling);
+    const elementInView = (el, percentageScroll = 100) => {
+        const elementTop = el.getBoundingClientRect().top;
+        const elementHeight = el.getBoundingClientRect().height;
+
+        return (
+            elementTop <=
+            ((window.innerHeight || document.documentElement.clientHeight) * (percentageScroll / 100))
+        );
+    };
+
+    const displayScrollElement = (element) => {
+        element.classList.add('scrolled');
+    };
+
+    const hideScrollElement = (element) => {
+        element.classList.remove('scrolled');
+    };
+
+    const handleScrollAnimation = () => {
+        scrollElements.forEach((el) => {
+            if (elementInView(el, 80)) {
+                displayScrollElement(el);
             } else {
-                header.appendChild(mobileMenuBtn);
-            }
-        }
-    }
-
-    // Mobil menü overlay'i oluştur (Yoksa)
-    if (!menuOverlay) {
-        menuOverlay = document.createElement('div');
-        menuOverlay.className = 'menu-overlay';
-        document.body.appendChild(menuOverlay);
-    }
-
-    // Mobil menüyü oluştur veya düzenle (Yoksa)
-    if (!mobileMenu) {
-        mobileMenu = document.createElement('div');
-        mobileMenu.className = 'mobile-menu';
-
-        // Nav bağlantılarını kopyala
-        const navLinks = document.querySelector('.nav-links');
-        if (navLinks) {
-            const mobileNavLinks = navLinks.cloneNode(true);
-            mobileMenu.appendChild(mobileNavLinks);
-        }
-
-        // Nav butonlarını kopyala
-        const navBtns = document.querySelector('.nav-btns');
-        if (navBtns) {
-            const mobileNavBtns = navBtns.cloneNode(true);
-            mobileNavBtns.classList.add('nav-btns');
-            mobileMenu.appendChild(mobileNavBtns);
-        }
-
-        document.body.appendChild(mobileMenu);
-    }
-
-    // Mobil menü toggle
-    mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-    menuOverlay.addEventListener('click', closeMobileMenu);
-
-    // Swipe ile menüyü kapatma
-    let touchStartX;
-    let touchEndX;
-
-    mobileMenu.addEventListener('touchstart', function (e) {
-        touchStartX = e.changedTouches[0].screenX;
-    });
-
-    mobileMenu.addEventListener('touchend', function (e) {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    });
-
-    // Sayfanın herhangi bir yerine dokunma ile menüyü kapatma
-    document.addEventListener('touchstart', function (e) {
-        if (mobileMenu.classList.contains('active') &&
-            !mobileMenu.contains(e.target) &&
-            !mobileMenuBtn.contains(e.target)) {
-            closeMobileMenu();
-        }
-    });
-
-    function handleSwipe() {
-        if (touchStartX - touchEndX > 70) { // Sağdan sola swipe
-            closeMobileMenu();
-        }
-    }
-
-    function toggleMobileMenu() {
-        mobileMenu.classList.toggle('active');
-        mobileMenuBtn.classList.toggle('active');
-        menuOverlay.classList.toggle('active');
-        document.body.classList.toggle('no-scroll');
-    }
-
-    function closeMobileMenu() {
-        mobileMenu.classList.remove('active');
-        mobileMenuBtn.classList.remove('active');
-        menuOverlay.classList.remove('active');
-        document.body.classList.remove('no-scroll');
-    }
-}
-
-// Scroll Animasyonları
-function setupScrollAnimations() {
-    const elements = document.querySelectorAll('.animate-on-scroll');
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('appear');
+                hideScrollElement(el);
             }
         });
-    }, {
-        threshold: 0.1
+    };
+
+    // İlk yükleme için ve scroll olayı için çağır
+    handleScrollAnimation();
+    window.addEventListener('scroll', () => {
+        handleScrollAnimation();
     });
 
-    elements.forEach(element => {
-        observer.observe(element);
-    });
+    // Navigasyon menüsü scroll olayı
+    const header = document.querySelector('header');
 
-    // Cihaz Hover Animasyonları
-    const cards = document.querySelectorAll('.feature-card, .pricing-card, .testimonial-card');
-
-    cards.forEach(card => {
-        if (window.matchMedia('(hover: hover)').matches) {
-            card.addEventListener('mouseenter', () => {
-                card.classList.add('hover');
-            });
-
-            card.addEventListener('mouseleave', () => {
-                card.classList.remove('hover');
-            });
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
         }
     });
-}
 
-// Lazy Loading
-function setupLazyLoading() {
-    if ('IntersectionObserver' in window) {
-        const lazyImages = document.querySelectorAll('.lazy-image');
+    // Mobil menü
+    const createMobileMenu = () => {
+        if (window.innerWidth <= 992 && !document.querySelector('.mobile-menu-btn')) {
+            const nav = document.querySelector('nav');
+            const mobileBtn = document.createElement('div');
+            mobileBtn.classList.add('mobile-menu-btn');
+            mobileBtn.innerHTML = `<i class="fas fa-bars"></i>`;
 
-        const imageObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.classList.remove('lazy-image');
-                    imageObserver.unobserve(img);
-                }
-            });
-        });
+            const mobileMenu = document.createElement('div');
+            mobileMenu.classList.add('mobile-menu');
 
-        lazyImages.forEach(image => {
-            imageObserver.observe(image);
-        });
-    } else {
-        // Intersection Observer desteği olmayan tarayıcılar için fallback
-        let lazyImages = document.querySelectorAll('.lazy-image');
+            const navLinksClone = document.querySelector('.nav-links').cloneNode(true);
+            const navButtonsClone = document.querySelector('.nav-buttons').cloneNode(true);
 
-        function lazyLoad() {
-            lazyImages.forEach(img => {
-                if (isInViewport(img)) {
-                    img.src = img.dataset.src;
-                    img.classList.remove('lazy-image');
-                }
-            });
+            mobileMenu.appendChild(navLinksClone);
+            mobileMenu.appendChild(navButtonsClone);
 
-            // Tüm lazy resimleri yüklenince dinlemeyi durdur
-            if (lazyImages.length === 0) {
-                document.removeEventListener('scroll', lazyLoad);
-                window.removeEventListener('resize', lazyLoad);
-                window.removeEventListener('orientationChange', lazyLoad);
-            }
-        }
+            nav.appendChild(mobileBtn);
+            body.appendChild(mobileMenu);
 
-        // Helper fonksiyon - görünür alanda mı?
-        function isInViewport(el) {
-            const rect = el.getBoundingClientRect();
-            return (
-                rect.bottom >= 0 &&
-                rect.right >= 0 &&
-                rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
-                rect.left <= (window.innerWidth || document.documentElement.clientWidth)
-            );
-        }
+            mobileBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('active');
+                mobileBtn.classList.toggle('active');
 
-        document.addEventListener('scroll', lazyLoad);
-        window.addEventListener('resize', lazyLoad);
-        window.addEventListener('orientationChange', lazyLoad);
-    }
-}
-
-// İletişim Sayfası İçin
-function initContactPage() {
-    const contactHero = document.querySelector('.contact-hero');
-    if (contactHero) {
-        setTimeout(() => {
-            contactHero.classList.add('loaded');
-        }, 100);
-
-        // İletişim Bilgi Kartlarını Canlandırma
-        const infoCards = document.querySelectorAll('.info-card');
-        infoCards.forEach((card, index) => {
-            setTimeout(() => {
-                card.classList.add('appear');
-            }, 300 + (index * 150));
-        });
-    }
-
-    // İletişim Formu
-    const contactForm = document.querySelector('.contact-form');
-    if (contactForm) {
-        contactForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            // Form validation
-            let isValid = true;
-            const inputs = contactForm.querySelectorAll('input, textarea, select');
-
-            inputs.forEach(input => {
-                const formGroup = input.closest('.form-group');
-                if (input.hasAttribute('required') && !input.value.trim()) {
-                    isValid = false;
-                    formGroup.classList.add('error');
-                    const errorMessage = formGroup.querySelector('.error-message');
-                    if (errorMessage) {
-                        errorMessage.textContent = 'Bu alan zorunludur.';
-                    }
-                } else if (input.type === 'email' && input.value.trim() && !validateEmail(input.value)) {
-                    isValid = false;
-                    formGroup.classList.add('error');
-                    const errorMessage = formGroup.querySelector('.error-message');
-                    if (errorMessage) {
-                        errorMessage.textContent = 'Geçerli bir e-posta adresi giriniz.';
-                    }
+                if (mobileBtn.classList.contains('active')) {
+                    mobileBtn.innerHTML = `<i class="fas fa-times"></i>`;
                 } else {
-                    formGroup.classList.remove('error');
+                    mobileBtn.innerHTML = `<i class="fas fa-bars"></i>`;
                 }
             });
 
-            if (isValid) {
-                const submitBtn = contactForm.querySelector('.submit-btn');
-                submitBtn.classList.add('loading');
-
-                // Form gönderimi simülasyonu
-                setTimeout(() => {
-                    submitBtn.classList.remove('loading');
-                    const successMessage = document.querySelector('.success-message');
-                    if (successMessage) {
-                        contactForm.style.display = 'none';
-                        successMessage.classList.add('show');
-                    }
-                }, 1500);
-            }
-        });
-
-        // Validation fonksiyonu
-        function validateEmail(email) {
-            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            return re.test(String(email).toLowerCase());
-        }
-
-        // Input değişikliklerinde error durumunu sıfırla
-        const inputs = contactForm.querySelectorAll('input, textarea, select');
-        inputs.forEach(input => {
-            input.addEventListener('input', function () {
-                const formGroup = this.closest('.form-group');
-                formGroup.classList.remove('error');
+            // Mobil menüde tıklama sonrası menüyü kapat
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.remove('active');
+                    mobileBtn.classList.remove('active');
+                    mobileBtn.innerHTML = `<i class="fas fa-bars"></i>`;
+                });
             });
+        }
+    };
+
+    createMobileMenu();
+
+    window.addEventListener('resize', () => {
+        // Mobil menü oluştur
+        createMobileMenu();
+    });
+
+    // Cihaz animasyonları
+    const devices = document.querySelectorAll('.device');
+
+    devices.forEach(device => {
+        device.addEventListener('mouseover', () => {
+            devices.forEach(d => d.classList.add('hover'));
         });
-    }
-}
+
+        device.addEventListener('mouseout', () => {
+            devices.forEach(d => d.classList.remove('hover'));
+        });
+    });
+
+    // Görseller için Lazy Loading
+    const lazyLoadImages = () => {
+        const lazyImages = document.querySelectorAll('img[data-src]');
+
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                        imageObserver.unobserve(img);
+                    }
+                });
+            });
+
+            lazyImages.forEach(img => {
+                imageObserver.observe(img);
+            });
+        } else {
+            // Intersection Observer desteklenmiyor, alternatif yöntem kullan
+            lazyImages.forEach(img => {
+                img.src = img.dataset.src;
+                img.removeAttribute('data-src');
+            });
+        }
+    };
+
+    lazyLoadImages();
+
+    // Sayfa yükleme animasyonu
+    const content = document.querySelector('main');
+    content.classList.add('loaded');
+});
