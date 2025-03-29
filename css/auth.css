@@ -488,49 +488,87 @@
 
 /* Şifre Gücü Göstergesi */
 .password-strength {
-    margin-bottom: 24px;
-    opacity: 0;
-    animation: formItemFadeIn 0.5s 0.5s ease forwards;
+    margin-bottom: 1.5rem;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.password-strength:hover {
+    opacity: 1;
 }
 
 .strength-meter {
     display: flex;
-    gap: 5px;
-    margin-bottom: 5px;
-    height: 4px;
+    gap: 4px;
+    margin-bottom: 0.5rem;
+    height: 6px;
 }
 
 .strength-segment {
     height: 100%;
     flex: 1;
+    border-radius: 3px;
     background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
     transition: all 0.3s ease;
 }
 
+/* Default state - inactive segments */
+.strength-segment {
+    opacity: 0.3;
+    transform: scaleY(0.7);
+}
+
+/* Active segments */
+.strength-segment.active {
+    opacity: 1;
+    transform: scaleY(1);
+}
+
 .strength-text {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
+    display: block;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
 }
 
-/* Şifre güç durumları */
-.password-strength.weak .strength-segment:nth-child(1) {
-    background-color: var(--danger-color);
+/* Strength colors */
+.password-strength.weak .strength-segment:nth-child(1).active {
+    background-color: #f44336;
+    /* Red */
 }
 
-.password-strength.medium .strength-segment:nth-child(1),
-.password-strength.medium .strength-segment:nth-child(2) {
-    background-color: var(--warning-color);
+.password-strength.medium .strength-segment:nth-child(1).active,
+.password-strength.medium .strength-segment:nth-child(2).active {
+    background-color: #ff9800;
+    /* Orange */
 }
 
-.password-strength.good .strength-segment:nth-child(1),
-.password-strength.good .strength-segment:nth-child(2),
-.password-strength.good .strength-segment:nth-child(3) {
-    background-color: #43b581;
+.password-strength.good .strength-segment:nth-child(1).active,
+.password-strength.good .strength-segment:nth-child(2).active,
+.password-strength.good .strength-segment:nth-child(3).active {
+    background-color: #4caf50;
+    /* Green */
 }
 
-.password-strength.strong .strength-segment {
-    background-color: #43b581;
+.password-strength.strong .strength-segment.active {
+    background-color: #2196f3;
+    /* Blue */
+}
+
+/* Password strength text colors */
+.password-strength.weak #strengthValue {
+    color: #f44336;
+}
+
+.password-strength.medium #strengthValue {
+    color: #ff9800;
+}
+
+.password-strength.good #strengthValue {
+    color: #4caf50;
+}
+
+.password-strength.strong #strengthValue {
+    color: #2196f3;
 }
 
 /* Form Ayarları */
