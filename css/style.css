@@ -923,17 +923,17 @@ main.loaded {
 
 /* CTA Bölümü */
 .cta {
-    padding: 5rem 5%;
+    padding: 4rem 5%;
     max-width: 1400px;
-    margin: 0 auto 5rem auto;
+    margin: 0 auto 4rem auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
     background: linear-gradient(135deg, rgba(106, 17, 203, 0.15), rgba(37, 117, 252, 0.15));
-    border-radius: 30px;
+    border-radius: 20px;
     overflow: hidden;
     position: relative;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
 }
@@ -950,24 +950,14 @@ main.loaded {
     z-index: -1;
 }
 
-@keyframes rotate {
-    0% {
-        transform: rotate(0);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
 .cta-content {
     width: 50%;
     padding-right: 2rem;
 }
 
 .cta h2 {
-    font-size: 2.8rem;
-    margin-bottom: 1.5rem;
+    font-size: 2.5rem;
+    margin-bottom: 1.2rem;
     background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
     -webkit-background-clip: text;
     background-clip: text;
@@ -978,58 +968,20 @@ main.loaded {
 
 .cta p {
     color: var(--text-secondary);
-    font-size: 1.2rem;
-    margin-bottom: 2.5rem;
-    max-width: 500px;
-    line-height: 1.8;
-}
-
-.cta-btn {
-    display: inline-block;
-    padding: 1.2rem 2.5rem;
-    border-radius: 40px;
-    font-weight: 600;
     font-size: 1.1rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 20px rgba(106, 17, 203, 0.4);
-    position: relative;
-    overflow: hidden;
-}
-
-.cta-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(45deg,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.4) 50%,
-            rgba(255, 255, 255, 0) 100%);
-    transform: translateX(-100%);
-    transition: all 0.6s ease;
-}
-
-.cta-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 25px rgba(106, 17, 203, 0.6);
-    color: white;
-}
-
-.cta-btn:hover::before {
-    transform: translateX(100%);
+    margin-bottom: 2rem;
+    max-width: 500px;
+    line-height: 1.6;
 }
 
 .cta-image {
-    width: 50%;
+    width: 45%;
     position: relative;
 }
 
 .devices {
     position: relative;
-    height: 400px;
+    height: 380px;
     perspective: 1200px;
 }
 
@@ -1066,20 +1018,21 @@ main.loaded {
     height: 100%;
     top: 0;
     right: 0;
-    transform: perspective(1200px) rotateX(5deg) rotateY(-10deg);
+    transform: perspective(1200px) rotateX(5deg) rotateY(-5deg);
     background-image: url('../images/hero-mockup.svg');
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
 }
 
-/* Footer */
+/* Footer - Yeni Modern ve Şeffaf Tasarım */
 footer {
-    background-color: rgba(26, 26, 46, 0.7);
-    padding: 5rem 5% 2rem;
+    background-color: rgba(26, 26, 46, 0.3);
+    padding: 3.5rem 5% 1.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     position: relative;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(15px);
+    margin-top: 2rem;
 }
 
 footer::before {
@@ -1099,8 +1052,8 @@ footer::before {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 3rem;
-    margin-bottom: 4rem;
+    gap: 2rem;
+    margin-bottom: 2.5rem;
 }
 
 .footer-logo {
@@ -1108,7 +1061,12 @@ footer::before {
     align-items: center;
     font-weight: bold;
     font-size: 1.2rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
+}
+
+.footer-logo img {
+    height: 40px;
+    width: auto;
 }
 
 .footer-logo span {
@@ -1123,13 +1081,13 @@ footer::before {
 
 .footer-links {
     display: flex;
-    gap: 4rem;
+    gap: 3rem;
     flex-wrap: wrap;
 }
 
 .footer-column h3 {
-    font-size: 1.2rem;
-    margin-bottom: 1.8rem;
+    font-size: 1.1rem;
+    margin-bottom: 1.2rem;
     color: var(--primary-light);
     font-weight: 700;
     position: relative;
@@ -1139,10 +1097,10 @@ footer::before {
 .footer-column h3::after {
     content: '';
     position: absolute;
-    width: 40px;
-    height: 3px;
+    width: 30px;
+    height: 2px;
     background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    bottom: -8px;
+    bottom: -6px;
     left: 0;
     border-radius: 2px;
 }
@@ -1152,7 +1110,7 @@ footer::before {
 }
 
 .footer-column li {
-    margin-bottom: 1.2rem;
+    margin-bottom: 0.8rem;
 }
 
 .footer-column a {
@@ -1160,27 +1118,12 @@ footer::before {
     transition: all 0.3s ease;
     position: relative;
     padding-left: 0;
-    font-size: 0.95rem;
-}
-
-.footer-column a::before {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 1px;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    bottom: -2px;
-    left: 0;
-    transition: all 0.3s ease;
+    font-size: 0.9rem;
 }
 
 .footer-column a:hover {
     color: var(--text-color);
-    padding-left: 8px;
-}
-
-.footer-column a:hover::before {
-    width: 100%;
+    padding-left: 5px;
 }
 
 .footer-bottom {
@@ -1189,20 +1132,20 @@ footer::before {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 2rem;
+    padding-top: 1.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .social-links {
     display: flex;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 .social-links a {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     transition: all 0.3s ease;
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1214,14 +1157,14 @@ footer::before {
 
 .social-links a:hover {
     color: var(--primary-light);
-    transform: translateY(-5px);
+    transform: translateY(-3px);
     background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
 .copyright {
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 /* Animasyonlar */
