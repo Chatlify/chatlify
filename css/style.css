@@ -299,8 +299,6 @@ nav {
 
     .desktop {
         transform: perspective(1200px) rotateX(5deg) rotateY(-5deg);
-        top: -3%;
-        right: 3%;
     }
 }
 
@@ -345,7 +343,6 @@ nav {
     .device.desktop {
         width: 100%;
         right: auto;
-        top: -2%;
         transform: perspective(1000px) rotateX(2deg) rotateY(0);
     }
 
@@ -1067,8 +1064,8 @@ main.loaded {
 .desktop {
     width: 100%;
     height: 100%;
-    top: -5%;
-    right: 5%;
+    top: 0;
+    right: 0;
     transform: perspective(1200px) rotateX(5deg) rotateY(-10deg);
     background-image: url('../images/hero-mockup.svg');
     background-size: contain;
