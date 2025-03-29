@@ -5,510 +5,267 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatlify - The New Dimension of Communication</title>
+    <meta name="description"
+        content="Chatlify is a next generation communication platform for connecting with friends, communities, and the world. Chat, voice chat, and video calls - all in one platform!">
     <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        /* General Styles */
-        :root {
-            --primary-color: #6a11cb;
-            --primary-light: #8c52ff;
-            --secondary-color: #2575fc;
-            --dark-bg: #0a0a1a;
-            --dark-secondary: #16213e;
-            --text-color: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.7);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--dark-bg);
-            color: var(--text-color);
-            min-height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* Space animation background */
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-
-        .stars {
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500"><circle fill="%23FFF" cx="10" cy="10" r="1"/><circle fill="%23FFF" cx="30" cy="40" r="0.5"/><circle fill="%23FFF" cx="50" cy="80" r="0.8"/><circle fill="%23FFF" cx="90" cy="30" r="0.6"/><circle fill="%23FFF" cx="130" cy="80" r="0.4"/><circle fill="%23FFF" cx="160" cy="15" r="0.7"/><circle fill="%23FFF" cx="180" cy="50" r="0.8"/><circle fill="%23FFF" cx="210" cy="110" r="0.6"/><circle fill="%23FFF" cx="240" cy="30" r="1"/><circle fill="%23FFF" cx="280" cy="60" r="0.5"/><circle fill="%23FFF" cx="320" cy="100" r="0.8"/><circle fill="%23FFF" cx="350" cy="10" r="0.6"/><circle fill="%23FFF" cx="380" cy="70" r="0.5"/><circle fill="%23FFF" cx="410" cy="30" r="0.7"/><circle fill="%23FFF" cx="440" cy="100" r="0.9"/><circle fill="%23FFF" cx="470" cy="40" r="0.8"/></svg>');
-            height: 100%;
-            width: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background-repeat: repeat;
-            background-size: 500px 500px;
-            opacity: 0.6;
-        }
-
-        .twinkling {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 30%, rgba(106, 17, 203, 0.3), transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(37, 117, 252, 0.3), transparent 40%);
-            animation: twinkle 8s ease-in-out infinite alternate;
-        }
-
-        @keyframes twinkle {
-            0% {
-                opacity: 0.3;
-                background-position: 0% 0%;
-            }
-
-            100% {
-                opacity: 0.8;
-                background-position: 100% 100%;
-            }
-        }
-
-        .clouds {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom,
-                    rgba(10, 10, 30, 0) 0%,
-                    rgba(10, 10, 30, 0.7) 80%,
-                    rgba(10, 10, 30, 0.9) 100%);
-        }
-
-        /* Loading Container */
-        .loading-container {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-        }
-
-        /* Minimalist Loading Animation */
-        .loader-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 40px;
-        }
-
-        /* Dots Animation */
-        .dots-loader {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .dot {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            animation: dot-pulse 1.5s ease-in-out infinite;
-        }
-
-        .dot:nth-child(1) {
-            animation-delay: 0s;
-        }
-
-        .dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        .dot:nth-child(4) {
-            animation-delay: 0.6s;
-        }
-
-        .dot:nth-child(5) {
-            animation-delay: 0.8s;
-        }
-
-        @keyframes dot-pulse {
-
-            0%,
-            100% {
-                transform: scale(0.8);
-                opacity: 0.5;
-                box-shadow: 0 0 0 rgba(106, 17, 203, 0);
-            }
-
-            50% {
-                transform: scale(1.2);
-                opacity: 1;
-                box-shadow: 0 0 20px rgba(106, 17, 203, 0.5);
-            }
-        }
-
-        /* Pulse Ring Animation */
-        .pulse-ring-container {
-            position: relative;
-            width: 180px;
-            height: 180px;
-        }
-
-        .pulse-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: transparent;
-            border: 3px solid rgba(106, 17, 203, 0.3);
-            animation: pulse 2s ease-out infinite;
-        }
-
-        .pulse-ring:nth-child(2) {
-            animation-delay: 0.5s;
-        }
-
-        .pulse-ring:nth-child(3) {
-            animation-delay: 1s;
-        }
-
-        @keyframes pulse {
-            0% {
-                width: 0;
-                height: 0;
-                opacity: 1;
-                border-color: rgba(106, 17, 203, 0.8);
-            }
-
-            90% {
-                width: 180px;
-                height: 180px;
-                opacity: 0;
-                border-color: rgba(37, 117, 252, 0.1);
-            }
-
-            100% {
-                opacity: 0;
-            }
-        }
-
-        /* Loading Text */
-        .loading-text {
-            font-size: 1.2rem;
-            font-weight: 500;
-            letter-spacing: 2px;
-            color: var(--text-secondary);
-            animation: text-fade 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes text-fade {
-            0% {
-                opacity: 0.5;
-            }
-
-            100% {
-                opacity: 1;
-            }
-        }
-
-        /* Progress Bar */
-        .progress-container {
-            width: 240px;
-            position: relative;
-            margin-top: 30px;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 0;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            border-radius: 4px;
-            position: relative;
-            transition: width 0.3s ease;
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg,
-                    transparent 0%,
-                    rgba(255, 255, 255, 0.4) 50%,
-                    transparent 100%);
-            animation: shimmer 1.5s infinite;
-        }
-
-        @keyframes shimmer {
-            0% {
-                transform: translateX(-100%);
-            }
-
-            100% {
-                transform: translateX(100%);
-            }
-        }
-
-        /* Particles */
-        .particles-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: -1;
-        }
-
-        .particle {
-            position: absolute;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            border-radius: 50%;
-            pointer-events: none;
-            opacity: 0.6;
-        }
-
-        /* Media Queries */
-        @media (max-width: 768px) {
-            .pulse-ring-container {
-                width: 150px;
-                height: 150px;
-            }
-
-            @keyframes pulse {
-                0% {
-                    width: 0;
-                    height: 0;
-                    opacity: 1;
-                }
-
-                90% {
-                    width: 150px;
-                    height: 150px;
-                    opacity: 0;
-                }
-
-                100% {
-                    opacity: 0;
-                }
-            }
-
-            .dots-loader {
-                gap: 12px;
-            }
-
-            .dot {
-                width: 15px;
-                height: 15px;
-            }
-
-            .progress-container {
-                width: 200px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .pulse-ring-container {
-                width: 120px;
-                height: 120px;
-            }
-
-            @keyframes pulse {
-                0% {
-                    width: 0;
-                    height: 0;
-                    opacity: 1;
-                }
-
-                90% {
-                    width: 120px;
-                    height: 120px;
-                    opacity: 0;
-                }
-
-                100% {
-                    opacity: 0;
-                }
-            }
-
-            .dots-loader {
-                gap: 10px;
-            }
-
-            .dot {
-                width: 12px;
-                height: 12px;
-            }
-
-            .loading-text {
-                font-size: 1rem;
-            }
-
-            .progress-container {
-                width: 180px;
-            }
-        }
-
-        /* Fade Out Animation */
-        .fade-out {
-            opacity: 0;
-            transform: translateY(-50px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-    </style>
-    <!-- Preload home.html -->
-    <link rel="prefetch" href="home.html">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/main.js" defer></script>
 </head>
 
 <body>
-    <div class="bg-animation">
-        <div class="stars"></div>
-        <div class="twinkling"></div>
-        <div class="clouds"></div>
-    </div>
+    <header>
+        <nav>
+            <div class="logo">
+                <svg class="logo-svg" width="40" height="40" viewBox="0 0 200 200">
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#6a11cb" />
+                            <stop offset="100%" stop-color="#2575fc" />
+                        </linearGradient>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="5" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                        <clipPath id="circle-clip">
+                            <circle cx="100" cy="100" r="85" />
+                        </clipPath>
+                    </defs>
+                    <!-- Main Logo Circle -->
+                    <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#gradient)" stroke-width="5"
+                        opacity="0.7" />
+                    <!-- Logo Path -->
+                    <path class="logo-path"
+                        d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
+                        stroke="url(#gradient)" stroke-width="10" stroke-linecap="round" filter="url(#glow)" />
+                    <!-- C Letter -->
+                    <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
+                        font-weight="bold" filter="url(#glow)">C</text>
+                </svg>
+                <span>CHATLIFY</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="active">Home</a>
+                <a href="community.html">Community</a>
+                <a href="support.html">Support</a>
+                <a href="download.html">Download</a>
+            </div>
+            <div class="nav-buttons">
+                <a href="#" class="login-btn">Sign In</a>
+                <a href="download.html" class="download-btn">Download Now</a>
+            </div>
+        </nav>
+    </header>
 
-    <div class="loading-container">
-        <div class="loader-wrapper">
-            <!-- Pulse Rings Animation -->
-            <div class="pulse-ring-container">
-                <div class="pulse-ring"></div>
-                <div class="pulse-ring"></div>
-                <div class="pulse-ring"></div>
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>NEXT GENERATION <span class="highlight">COMMUNICATION</span> PLATFORM</h1>
+                <p>The easiest way to connect with friends, communities, and the world. Chat, voice chat, and video
+                    calls - all in one platform!</p>
+                <div class="hero-buttons">
+                    <a href="download.html" class="download-btn"><i class="fas fa-download"></i> Download for
+                        Windows</a>
+                    <a href="#" class="browser-btn"><i class="fas fa-globe"></i> Open in Browser</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="images/hero-mockup.svg" alt="Chatlify Screenshot" class="mockup-img">
+                <div class="floating-elements">
+                    <div class="floating-element msg-1"><i class="fas fa-comment-alt"></i></div>
+                    <div class="floating-element msg-2"><i class="fas fa-users"></i></div>
+                    <div class="floating-element msg-3"><i class="fas fa-video"></i></div>
+                    <div class="floating-element msg-4"><i class="fas fa-headset"></i></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="feature-item">
+                <div class="feature-image">
+                    <i class="fas fa-users feature-icon"></i>
+                </div>
+                <div class="feature-content">
+                    <h2>JOIN COMMUNITIES</h2>
+                    <p>Choose from thousands of communities based on your interests, make new friends, and meet people
+                        with the same passions.</p>
+                </div>
             </div>
 
-            <!-- Dots Animation -->
-            <div class="dots-loader">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
+            <div class="feature-item reversed">
+                <div class="feature-content">
+                    <h2>HIGH QUALITY AUDIO</h2>
+                    <p>Low latency, crystal-clear audio quality for perfect communication while gaming, listening to
+                        music, or just chatting.</p>
+                </div>
+                <div class="feature-image">
+                    <i class="fas fa-headset feature-icon"></i>
+                </div>
             </div>
 
-            <!-- Loading Text -->
-            <div class="loading-text">LOADING</div>
+            <div class="feature-item">
+                <div class="feature-image">
+                    <i class="fas fa-shield-alt feature-icon"></i>
+                </div>
+                <div class="feature-content">
+                    <h2>SECURITY AND PRIVACY</h2>
+                    <p>End-to-end encryption and strong privacy controls ensure your conversations are secure. Your
+                        safety is our priority.</p>
+                </div>
+            </div>
+        </section>
 
-            <!-- Progress Bar -->
-            <div class="progress-container">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress-fill"></div>
+        <section class="community">
+            <h2>MILLIONS OF USERS WORLDWIDE</h2>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-number">40M+</span>
+                    <span class="stat-text">Monthly Active Users</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">150K+</span>
+                    <span class="stat-text">Communities</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">99.9%</span>
+                    <span class="stat-text">Uptime</span>
+                </div>
+            </div>
+            <div class="testimonials">
+                <div class="testimonial">
+                    <p>"Thanks to Chatlify, I connect with people from all over the world. Definitely the best social
+                        platform!"</p>
+                    <div class="user">
+                        <span class="user-name">Alex Y.</span>
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <p>"Perfect platform for our gaming community. The sound quality, ease of use, and customization
+                        options are unrivaled."</p>
+                    <div class="user">
+                        <span class="user-name">Sarah K.</span>
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="cta-content">
+                <h2>Join Us Today</h2>
+                <p>Discover a new dimension of communication with Chatlify. Stay connected with friends and colleagues,
+                    meet new people and build meaningful connections.</p>
+                <a href="#" class="btn btn-primary">JOIN NOW</a>
+            </div>
+            <div class="cta-image">
+                <div class="devices">
+                    <div class="device desktop"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <svg class="logo-svg" width="40" height="40" viewBox="0 0 200 200">
+                    <defs>
+                        <linearGradient id="footer-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#6a11cb" />
+                            <stop offset="100%" stop-color="#2575fc" />
+                        </linearGradient>
+                        <filter id="footer-glow">
+                            <feGaussianBlur stdDeviation="5" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                        <clipPath id="footer-circle-clip">
+                            <circle cx="100" cy="100" r="85" />
+                        </clipPath>
+                    </defs>
+                    <!-- Main Logo Circle -->
+                    <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#footer-gradient)" stroke-width="5"
+                        opacity="0.7" />
+                    <!-- Logo Path -->
+                    <path class="logo-path"
+                        d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
+                        stroke="url(#footer-gradient)" stroke-width="10" stroke-linecap="round"
+                        filter="url(#footer-glow)" />
+                    <!-- C Letter -->
+                    <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
+                        font-weight="bold" filter="url(#footer-glow)">C</text>
+                </svg>
+                <span>CHATLIFY</span>
+            </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h3>Features</h3>
+                    <ul>
+                        <li><a href="#">Voice Chat</a></li>
+                        <li><a href="#">Chatlify Premium</a></li>
+                        <li><a href="#">Communities</a></li>
+                        <li><a href="#">Integrations</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Company</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press Room</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Community Guidelines</a></li>
+                        <li><a href="#">Announcements</a></li>
+                        <li><a href="#">Developer API</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="legal/terms-of-service.html">Terms of Service</a></li>
+                        <li><a href="legal/privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="legal/security.html">Security</a></li>
+                        <li><a href="legal/data-protection.html">Data Protection</a></li>
+                    </ul>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Floating Particles -->
-    <div class="particles-container" id="particles-container"></div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Create particles
-            const particlesContainer = document.getElementById('particles-container');
-            const particleCount = 30;
-
-            for (let i = 0; i < particleCount; i++) {
-                createParticle(particlesContainer);
-            }
-
-            // Simulated loading progress
-            const progressFill = document.getElementById('progress-fill');
-            let progress = 0;
-
-            const interval = setInterval(() => {
-                progress += Math.random() * 8;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-
-                    // Wait a moment, then redirect
-                    setTimeout(() => {
-                        document.querySelector('.loading-container').classList.add('fade-out');
-                        setTimeout(() => {
-                            window.location.href = 'home.html';
-                        }, 800);
-                    }, 800);
-                }
-
-                progressFill.style.width = `${progress}%`;
-            }, 300);
-        });
-
-        // Function to create a particle
-        function createParticle(container) {
-            const particle = document.createElement('div');
-            particle.classList.add('particle');
-
-            // Random size
-            const size = Math.random() * 5 + 2;
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-
-            // Random position
-            const posX = Math.random() * 100;
-            const posY = Math.random() * 100;
-            particle.style.left = `${posX}%`;
-            particle.style.top = `${posY}%`;
-
-            // Random opacity
-            particle.style.opacity = Math.random() * 0.5 + 0.2;
-
-            // Animation properties
-            const duration = Math.random() * 30 + 20;
-            particle.style.animation = `float ${duration}s infinite alternate ease-in-out`;
-            particle.style.animationDelay = `${Math.random() * 10}s`;
-
-            // Add particle to container
-            container.appendChild(particle);
-
-            // Additional keyframe animation for individual float effect
-            const keyframes = `
-                @keyframes float-${posX.toFixed(0)} {
-                    0% { transform: translate(0, 0); }
-                    50% { transform: translate(${Math.random() * 40 - 20}px, ${Math.random() * 40 - 20}px); }
-                    100% { transform: translate(${Math.random() * 40 - 20}px, ${Math.random() * 40 - 20}px); }
-                }
-            `;
-
-            const style = document.createElement('style');
-            style.innerHTML = keyframes;
-            document.head.appendChild(style);
-
-            particle.style.animation = `float-${posX.toFixed(0)} ${duration}s infinite alternate ease-in-out`;
-        }
-    </script>
+        <div class="footer-bottom">
+            <div class="social-links">
+                <a href="https://x.com/Chatlifyapp" target="_blank" rel="noopener noreferrer"><i
+                        class="fab fa-twitter"></i></a>
+                <a href="https://www.instagram.com/chatlifyapp/" target="_blank" rel="noopener noreferrer"><i
+                        class="fab fa-instagram"></i></a>
+                <a href="https://www.youtube.com/@Chatlify" target="_blank" rel="noopener noreferrer"><i
+                        class="fab fa-youtube"></i></a>
+                <a href="https://www.tiktok.com/@chatlifyapp" target="_blank" rel="noopener noreferrer"><i
+                        class="fab fa-tiktok"></i></a>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Chatlify Inc. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 </body>
 
 </html>
