@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatlify - İletişim</title>
+    <title>Chatlify - Contact</title>
     <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
@@ -50,7 +50,7 @@
                 <a href="home.html">Home</a>
                 <a href="#">Community</a>
                 <a href="support.html">Support</a>
-                <a href="contact.html" class="active">İletişim</a>
+                <a href="contact.html" class="active">Contact</a>
                 <a href="download.html">Download</a>
             </div>
             <div class="nav-buttons">
@@ -63,48 +63,40 @@
     <main>
         <section class="contact-hero">
             <div class="contact-hero-content">
-                <h1>BİZE <span class="highlight">ULAŞIN</span></h1>
-                <p>Sorularınızı, önerilerinizi veya geri bildirimlerinizi bize iletmekten çekinmeyin. En kısa sürede
-                    sizinle iletişime geçeceğiz.</p>
+                <h1>CONTACT <span class="highlight">US</span></h1>
+                <p>Feel free to send us your questions, suggestions, or feedback. We'll get back to you as soon as
+                    possible.</p>
             </div>
         </section>
 
         <section class="contact-container">
             <div class="contact-info">
-                <div class="info-card">
-                    <div class="info-icon">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </div>
-                    <h3>Adres</h3>
-                    <p>Chatlify Merkez Ofisi<br>Tech Plaza, No: 123<br>34000 İstanbul, Türkiye</p>
-                </div>
-
-                <div class="info-card">
+                <div class="info-card phone">
                     <div class="info-icon">
                         <i class="fas fa-phone-alt"></i>
                     </div>
-                    <h3>Telefon</h3>
-                    <p>+90 212 123 45 67</p>
-                    <p>Pazartesi - Cuma: 09:00 - 18:00</p>
+                    <h3>Phone</h3>
+                    <p>+1 (555) 123-4567</p>
+                    <p>Mon-Fri, 9:00 AM - 6:00 PM</p>
                 </div>
 
-                <div class="info-card">
+                <div class="info-card email">
                     <div class="info-icon">
                         <i class="fas fa-envelope"></i>
                     </div>
-                    <h3>E-posta</h3>
-                    <p>bilgi@chatlify.com</p>
-                    <p>destek@chatlify.com</p>
+                    <h3>Email</h3>
+                    <p>support@chatlify.com</p>
+                    <p>info@chatlify.com</p>
                 </div>
 
-                <div class="info-card">
+                <div class="info-card social">
                     <div class="info-icon">
-                        <i class="fas fa-comments"></i>
+                        <i class="fas fa-share-alt"></i>
                     </div>
-                    <h3>Sosyal Medya</h3>
+                    <h3>Social Media</h3>
                     <div class="social-icons">
-                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                         <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
                     </div>
@@ -112,73 +104,79 @@
             </div>
 
             <div class="contact-form-container">
-                <h2>İLETİŞİM FORMU</h2>
+                <h2>Send us a message</h2>
                 <form id="contactForm" class="contact-form">
                     <div class="form-group">
-                        <label for="name">Ad Soyad</label>
-                        <input type="text" id="name" name="name" placeholder="Adınız ve soyadınız" required>
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" placeholder="Enter your full name">
+                        <div class="error-message" id="nameError">Please enter your name</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="email">E-posta Adresiniz</label>
-                        <input type="email" id="email" name="email" placeholder="ornek@email.com" required>
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email address">
+                        <div class="error-message" id="emailError">Please enter a valid email address</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="subject">Konu</label>
-                        <select id="subject" name="subject" required>
-                            <option value="" disabled selected>Bir konu seçin</option>
-                            <option value="general">Genel Bilgi</option>
-                            <option value="technical">Teknik Destek</option>
-                            <option value="sales">Satış & Fiyatlandırma</option>
-                            <option value="partnership">İş Ortaklığı</option>
-                            <option value="feedback">Öneri & Geri Bildirim</option>
-                            <option value="bug">Hata Bildirimi</option>
-                            <option value="other">Diğer</option>
+                        <label for="subject">Subject</label>
+                        <select id="subject" name="subject">
+                            <option value="" disabled selected>Select a topic</option>
+                            <option value="general">General Inquiry</option>
+                            <option value="support">Technical Support</option>
+                            <option value="feedback">Feedback</option>
+                            <option value="billing">Billing Question</option>
+                            <option value="partnership">Partnership Opportunity</option>
                         </select>
+                        <div class="error-message" id="subjectError">Please select a subject</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="message">Mesajınız</label>
-                        <textarea id="message" name="message" placeholder="Mesajınızı buraya yazın..." rows="6"
-                            required></textarea>
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" placeholder="Type your message here..."></textarea>
+                        <div class="error-message" id="messageError">Please enter your message</div>
                     </div>
 
                     <div class="form-group checkbox-group">
-                        <input type="checkbox" id="privacy" name="privacy" required>
-                        <label for="privacy">Kişisel verilerimin işlenmesini ve <a href="#">gizlilik politikası</a>
-                            koşullarını kabul ediyorum.</label>
+                        <input type="checkbox" id="privacy" name="privacy">
+                        <label for="privacy">I agree to the privacy policy and terms of service</label>
+                        <div class="error-message" id="privacyError">You must agree to the privacy policy</div>
                     </div>
 
-                    <button type="submit" class="submit-btn">GÖNDER</button>
+                    <button type="submit" class="submit-btn">
+                        <span class="btn-text">Send</span>
+                        <div class="loading-spinner">
+                            <div class="spinner"></div>
+                        </div>
+                    </button>
                 </form>
 
-                <div id="formSuccess" class="form-success">
+                <div class="success-message">
                     <div class="success-icon">
                         <i class="fas fa-check-circle"></i>
                     </div>
-                    <h3>Mesajınız Başarıyla Gönderildi!</h3>
-                    <p>En kısa sürede size geri dönüş yapacağız. Teşekkür ederiz.</p>
-                    <button id="newMessageBtn" class="submit-btn">YENİ MESAJ</button>
+                    <h3>Message Sent!</h3>
+                    <p>Thank you for contacting us. We've received your message and will respond shortly.</p>
+                    <button id="newMessageBtn" class="btn">Send Another Message</button>
                 </div>
             </div>
         </section>
 
         <section class="map-section">
-            <h2>BİZE ULAŞIN</h2>
+            <h2>FIND US</h2>
             <div class="map-container">
                 <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d96415.95537392763!2d28.871154973802748!3d41.005256145082966!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14caa7040068086b%3A0xe1ccfe98bc01b0d0!2zxLBzdGFuYnVs!5e0!3m2!1str!2str!4v1626789245897!5m2!1str!2str"
-                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d387193.30596552044!2d-74.25986867659858!3d40.69714941954754!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sus!4v1620144283692!5m2!1sen!2sus"
+                    width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
             </div>
         </section>
 
         <section class="faq-preview">
-            <h2>SIK SORULAN SORULAR</h2>
-            <p>Aradığınız bilgiyi hızlıca bulmak için SSS bölümümüzü ziyaret edebilirsiniz.</p>
-            <a href="support.html" class="btn btn-primary">SSS SAYFASINA GİT</a>
+            <div class="faq-preview-content">
+                <h2>FREQUENTLY ASKED QUESTIONS</h2>
+                <p>Find answers to common questions on our support page</p>
+                <a href="support.html" class="btn">View FAQ</a>
+            </div>
         </section>
     </main>
 
@@ -229,7 +227,7 @@
                         <li><a href="#">About Us</a></li>
                         <li><a href="#">Careers</a></li>
                         <li><a href="#">Press Room</a></li>
-                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="#">Contact</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">

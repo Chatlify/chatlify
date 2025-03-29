@@ -1,134 +1,134 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Tüm SSS sorularını içeren veri
+    // All FAQ questions data
     const allFaqs = [
         {
-            question: "Chatlify'ı nasıl indirebilirim?",
-            answer: "Chatlify'ı ana sayfamızda veya indirme sayfamızda bulunan 'İndir' butonuna tıklayarak indirebilirsiniz. Şu anda Windows, macOS, Linux, iOS ve Android için uygulamalarımız mevcuttur. Platformunuza uygun sürümü seçip indirme işlemini başlatabilirsiniz.",
+            question: "How can I download Chatlify?",
+            answer: "You can download Chatlify by clicking the 'Download' button on our homepage or download page. We currently have applications available for Windows, macOS, Linux, iOS, and Android. You can select the version suitable for your platform and start the download process.",
             visible: true
         },
         {
-            question: "Hesap oluşturmak ücretsiz mi?",
-            answer: "Evet, Chatlify'da hesap oluşturmak tamamen ücretsizdir. Temel özelliklerin çoğu ücretsiz hesap ile kullanılabilir. Premium özellikler için Chatlify Premium aboneliği sunuyoruz, ancak standart kullanım için ücret ödemeniz gerekmez.",
+            question: "Is creating an account free?",
+            answer: "Yes, creating an account on Chatlify is completely free. Most of the basic features can be used with a free account. We offer Chatlify Premium subscription for premium features, but you don't need to pay for standard usage.",
             visible: true
         },
         {
-            question: "Şifremi unuttum, ne yapmalıyım?",
-            answer: "Şifrenizi unuttuysanız, giriş ekranındaki 'Şifremi Unuttum' bağlantısına tıklayabilirsiniz. Hesabınızla ilişkili e-posta adresinizi girdiğinizde, şifre sıfırlama bağlantısı içeren bir e-posta alacaksınız. Bağlantıya tıklayarak yeni bir şifre oluşturabilirsiniz.",
+            question: "I forgot my password, what should I do?",
+            answer: "If you forgot your password, you can click on the 'Forgot Password' link on the login screen. When you enter the email address associated with your account, you will receive an email containing a password reset link. You can create a new password by clicking on the link.",
             visible: true
         },
         {
-            question: "Chatlify'da sesli görüşme nasıl yapılır?",
-            answer: "Sesli görüşme başlatmak için, konuşmak istediğiniz kişinin veya grubun sohbet penceresine gidin. Ekranın üst kısmındaki 'Ara' simgesine (telefon şeklinde) tıklayın. Karşı taraf aramanızı kabul ettiğinde sesli görüşme başlayacaktır. Grup aramalarında birden fazla kişi aynı anda katılabilir.",
+            question: "How do I make voice calls in Chatlify?",
+            answer: "To start a voice call, go to the chat window of the person or group you want to talk to. Click on the 'Call' icon (shaped like a phone) at the top of the screen. The voice call will start when the other party accepts your call. In group calls, multiple people can join at the same time.",
             visible: true
         },
         {
-            question: "Bir topluluğa nasıl katılabilirim?",
-            answer: "Bir topluluğa katılmak için birkaç yol vardır: Ana sayfadaki 'Topluluk Keşfet' bölümünden popüler toplulukları görüntüleyebilir, arama çubuğundan belirli toplulukları arayabilir veya bir davet bağlantısı ile doğrudan katılabilirsiniz. Topluluğu bulduğunuzda 'Katıl' butonuna tıklamanız yeterlidir.",
+            question: "How can I join a community?",
+            answer: "There are several ways to join a community: You can view popular communities from the 'Discover Communities' section on the homepage, search for specific communities using the search bar, or join directly with an invitation link. Once you find the community, simply click the 'Join' button.",
             visible: true
         },
         {
-            question: "Chatlify Premium ne sunuyor?",
-            answer: "Chatlify Premium ile yüksek kaliteli ses ve görüntü, özel emojiler ve çıkartmalar, gelişmiş güvenlik özellikleri, daha yüksek dosya yükleme limitleri, özel profil rozeti ve daha fazla özelleştirme seçeneği sunuyoruz. Aylık veya yıllık abonelik planlarımız mevcuttur.",
+            question: "What does Chatlify Premium offer?",
+            answer: "With Chatlify Premium, we offer high-quality audio and video, custom emojis and stickers, enhanced security features, higher file upload limits, special profile badges, and more customization options. We have monthly or annual subscription plans available.",
             visible: true
         },
         {
-            question: "Kendi topluluğumu nasıl oluşturabilirim?",
-            answer: "Kendi topluluğunuzu oluşturmak için ana menüden 'Topluluk Oluştur' seçeneğine tıklayın. Topluluğunuz için bir isim, açıklama ve simge belirleyin. Ardından kanallar oluşturabilir, izinleri ayarlayabilir ve arkadaşlarınızı davet edebilirsiniz. Topluluk ayarlarından her zaman özelleştirmeler yapabilirsiniz.",
+            question: "How can I create my own community?",
+            answer: "To create your own community, click on the 'Create Community' option from the main menu. Set a name, description, and icon for your community. Then you can create channels, set permissions, and invite your friends. You can always make customizations from the community settings.",
             visible: true
         },
         {
-            question: "Chatlify'da mesajlarımı nasıl silerim?",
-            answer: "Bir mesajı silmek için, silmek istediğiniz mesajın üzerine gelin ve beliren üç nokta (...) simgesine tıklayın. Açılan menüden 'Sil' seçeneğini seçin. Mesajı yalnızca kendiniz için mi yoksa herkes için mi silmek istediğinizi belirtin. Grup mesajlarında, yalnızca kendi mesajlarınızı silebilirsiniz.",
+            question: "How do I delete my messages in Chatlify?",
+            answer: "To delete a message, hover over the message you want to delete and click on the three dots (...) icon that appears. Select 'Delete' from the menu that opens. Specify whether you want to delete the message only for yourself or for everyone. In group messages, you can only delete your own messages.",
             visible: true
         },
         {
-            question: "Birini engellemek için ne yapmalıyım?",
-            answer: "Bir kullanıcıyı engellemek için, o kişinin profil sayfasına gidin ve sağ üst köşedeki üç nokta (...) simgesine tıklayın. Açılan menüden 'Engelle' seçeneğini seçin. Engellediğiniz kişiler size mesaj gönderemez, aramalar yapamaz ve topluluklarda içeriğinizi göremez. Engellemeleri istediğiniz zaman kaldırabilirsiniz.",
+            question: "What should I do to block someone?",
+            answer: "To block a user, go to that person's profile page and click on the three dots (...) icon in the top right corner. Select 'Block' from the menu that opens. Blocked users cannot send you messages, make calls, or see your content in communities. You can remove blocks at any time.",
             visible: true
         },
         {
-            question: "Bildirim ayarlarımı nasıl değiştirebilirim?",
-            answer: "Bildirim ayarlarınızı değiştirmek için Ayarlar > Bildirimler bölümüne gidin. Burada genel bildirimler, sesli aramalar, mesajlar ve topluluk bildirimleri için farklı seçenekleri özelleştirebilirsiniz. Belirli sohbetler veya topluluklar için özel bildirim ayarları da yapabilirsiniz.",
+            question: "How can I change my notification settings?",
+            answer: "To change your notification settings, go to Settings > Notifications. Here you can customize different options for general notifications, voice calls, messages, and community notifications. You can also set custom notification settings for specific chats or communities.",
             visible: true
         },
         {
-            question: "Chatlify'da ekran paylaşımı nasıl yapılır?",
-            answer: "Ekran paylaşımı yapmak için, görüntülü arama sırasında alt menüdeki 'Ekranı Paylaş' simgesine tıklayın. Tüm ekranınızı veya belirli bir pencereyi paylaşmayı seçebilirsiniz. Ekran paylaşımını durdurmak için tekrar aynı simgeye tıklamanız yeterlidir.",
+            question: "How do I share my screen in Chatlify?",
+            answer: "To share your screen, click on the 'Share Screen' icon in the bottom menu during a video call. You can choose to share your entire screen or a specific window. To stop screen sharing, simply click on the same icon again.",
             visible: false
         },
         {
-            question: "Chatlify'da grup sohbeti nasıl oluşturulur?",
-            answer: "Grup sohbeti oluşturmak için ana menüden 'Yeni Grup' seçeneğine tıklayın. Gruba katılmasını istediğiniz kişileri seçin, gruba bir isim verin ve isteğe bağlı olarak bir grup simgesi ekleyin. Oluştur'a tıkladığınızda grup sohbeti başlatılacaktır.",
+            question: "How do I create a group chat in Chatlify?",
+            answer: "To create a group chat, click on the 'New Group' option from the main menu. Select the people you want to include in the group, give the group a name, and optionally add a group icon. When you click Create, the group chat will be initiated.",
             visible: false
         },
         {
-            question: "Hesabımı nasıl silebilirim?",
-            answer: "Hesabınızı silmek için Ayarlar > Hesap > Hesabı Sil bölümüne gidin. Hesap silme işlemi geri alınamaz ve tüm verileriniz, sohbetleriniz ve ayarlarınız kalıcı olarak silinecektir. Onaylamadan önce bu bilgiyi dikkate alın.",
+            question: "How do I delete my account?",
+            answer: "To delete your account, go to Settings > Account > Delete Account. The account deletion process cannot be undone, and all your data, chats, and settings will be permanently deleted. Consider this information before confirming.",
             visible: false
         },
         {
-            question: "Ödeme bilgilerimi nasıl güncellerim?",
-            answer: "Ödeme bilgilerinizi güncellemek için Ayarlar > Faturalandırma bölümüne gidin. 'Ödeme Yöntemini Güncelle' seçeneğine tıklayın ve yeni kart bilgilerinizi girin. Değişiklikler anında uygulanacak ve bir sonraki ödemeniz güncel bilgilerinizle yapılacaktır.",
+            question: "How do I update my payment information?",
+            answer: "To update your payment information, go to Settings > Billing. Click on the 'Update Payment Method' option and enter your new card information. Changes will be applied immediately, and your next payment will be made with your updated information.",
             visible: false
         },
         {
-            question: "İki faktörlü kimlik doğrulamayı nasıl etkinleştirebilirim?",
-            answer: "İki faktörlü kimlik doğrulamayı etkinleştirmek için Ayarlar > Güvenlik > İki Faktörlü Kimlik Doğrulama bölümüne gidin. 'Etkinleştir' butonuna tıklayın ve tercih ettiğiniz doğrulama yöntemini seçin (SMS, e-posta veya kimlik doğrulama uygulaması). Verilen talimatları izleyerek kurulumu tamamlayın.",
+            question: "How can I enable two-factor authentication?",
+            answer: "To enable two-factor authentication, go to Settings > Security > Two-Factor Authentication. Click the 'Enable' button and select your preferred verification method (SMS, email, or authentication app). Complete the setup by following the instructions provided.",
             visible: false
         },
         {
-            question: "Chatlify'da dosya paylaşım limitleri nelerdir?",
-            answer: "Ücretsiz hesaplar için dosya paylaşım limiti her bir dosya için 100MB'dir. Premium kullanıcılar için bu limit 500MB'a yükseltilmiştir. Ayrıca, ücretsiz kullanıcılar aylık toplam 5GB, Premium kullanıcılar ise 50GB dosya paylaşabilir.",
+            question: "What are the file sharing limits in Chatlify?",
+            answer: "For free accounts, the file sharing limit is 100MB per file. This limit is increased to 500MB for Premium users. Additionally, free users can share a total of 5GB per month, while Premium users can share 50GB.",
             visible: false
         },
         {
-            question: "Profil resmimi nasıl değiştirebilirim?",
-            answer: "Profil resminizi değiştirmek için Ayarlar > Profil bölümüne gidin. Mevcut profil resminize tıklayın ve 'Değiştir' seçeneğini seçin. Cihazınızdan bir resim yükleyebilir veya önerilen avatarlardan birini seçebilirsiniz. Resmi ayarlamak için 'Kaydet' butonuna tıklayın.",
+            question: "How can I change my profile picture?",
+            answer: "To change your profile picture, go to Settings > Profile. Click on your current profile picture and select 'Change'. You can upload a picture from your device or choose one of the suggested avatars. Click the 'Save' button to set the picture.",
             visible: false
         },
         {
-            question: "Chatlify'da arkadaş nasıl eklenir?",
-            answer: "Arkadaş eklemek için kullanıcı adı, e-posta veya telefon numarası ile arama yapabilirsiniz. Ayrıca, kullanıcının profilini ziyaret edip 'Arkadaş Ekle' butonuna tıklayabilirsiniz. Karşı taraf arkadaşlık isteğinizi kabul ettiğinde arkadaş listenize eklenecektir.",
+            question: "How do I add friends in Chatlify?",
+            answer: "You can add friends by searching with a username, email, or phone number. You can also visit the user's profile and click the 'Add Friend' button. The person will be added to your friend list when they accept your friend request.",
             visible: false
         },
         {
-            question: "Chatlify'ı birden fazla cihazda kullanabilir miyim?",
-            answer: "Evet, Chatlify hesabınıza istediğiniz kadar cihazdan giriş yapabilirsiniz. Tüm sohbetleriniz ve ayarlarınız cihazlar arasında senkronize edilecektir. Aynı anda birden fazla cihazda aktif olabilirsiniz.",
+            question: "Can I use Chatlify on multiple devices?",
+            answer: "Yes, you can log in to your Chatlify account from as many devices as you want. All your chats and settings will be synchronized across devices. You can be active on multiple devices at the same time.",
             visible: false
         },
         {
-            question: "Chatlify'da mesajlarımı nasıl yedekleyebilirim?",
-            answer: "Mesajlarınızı yedeklemek için Ayarlar > Veri ve Depolama > Sohbet Yedekleme bölümüne gidin. 'Yedekle' butonuna tıklayın ve yedekleme konumunu seçin. Otomatik yedekleme için günlük, haftalık veya aylık seçeneklerden birini etkinleştirebilirsiniz.",
+            question: "How can I backup my messages in Chatlify?",
+            answer: "To backup your messages, go to Settings > Data and Storage > Chat Backup. Click the 'Backup' button and select a backup location. You can enable daily, weekly, or monthly options for automatic backup.",
             visible: false
         },
         {
-            question: "Chatlify'da koyu tema nasıl etkinleştirilir?",
-            answer: "Koyu temayı etkinleştirmek için Ayarlar > Görünüm > Tema bölümüne gidin. 'Koyu' seçeneğini işaretleyin. Ayrıca 'Otomatik' seçeneğini seçerek cihazınızın sistem ayarlarına göre temanın otomatik değişmesini sağlayabilirsiniz.",
+            question: "How is dark mode enabled in Chatlify?",
+            answer: "To enable dark mode, go to Settings > Appearance > Theme. Select the 'Dark' option. You can also select the 'Automatic' option to have the theme change automatically according to your device's system settings.",
             visible: false
         },
         {
-            question: "Chatlify sunucularının konumu nerededir?",
-            answer: "Chatlify sunucuları dünya genelinde stratejik konumlarda bulunmaktadır: Kuzey Amerika (ABD ve Kanada), Avrupa (Almanya, Fransa, İngiltere), Asya (Japonya, Singapur, Hindistan) ve Avustralya. Kullanıcılara en düşük gecikme süresini sağlamak için en yakın sunucuya otomatik olarak bağlanırlar.",
+            question: "Where are Chatlify servers located?",
+            answer: "Chatlify servers are located in strategic locations around the world: North America (USA and Canada), Europe (Germany, France, UK), Asia (Japan, Singapore, India), and Australia. They automatically connect to the nearest server to provide users with the lowest latency.",
             visible: false
         },
         {
-            question: "Chatlify'da dil ayarlarını nasıl değiştirebilirim?",
-            answer: "Dil ayarlarını değiştirmek için Ayarlar > Genel > Dil bölümüne gidin. Desteklenen 25+ dil arasından tercih ettiğiniz dili seçin. Değişiklik anında uygulanacaktır. Bazı çeviriler topluluk tarafından sağlanmaktadır ve eksiklikler olabilir.",
+            question: "How can I change language settings in Chatlify?",
+            answer: "To change language settings, go to Settings > General > Language. Choose your preferred language from the 25+ supported languages. The change will be applied immediately. Some translations are provided by the community and may have shortcomings.",
             visible: false
         },
         {
-            question: "Chatlify'da internet bağlantısı olmadan kullanabilir miyim?",
-            answer: "Hayır, Chatlify çevrimiçi bir iletişim platformudur ve temel özelliklerinin çoğu için internet bağlantısı gerektirir. Ancak, daha önce yüklenmiş olan medya dosyalarına çevrimdışıyken erişebilirsiniz. İnternet bağlantınız geri geldiğinde, tüm mesajlarınız otomatik olarak senkronize edilecektir.",
+            question: "Can I use Chatlify without an internet connection?",
+            answer: "No, Chatlify is an online communication platform and requires an internet connection for most of its basic features. However, you can access previously downloaded media files while offline. When your internet connection returns, all your messages will be automatically synchronized.",
             visible: false
         },
         {
-            question: "Chatlify hangi tarayıcılarla uyumludur?",
-            answer: "Chatlify web uygulaması Chrome, Firefox, Safari, Edge ve Opera'nın güncel sürümleriyle tam uyumludur. En iyi deneyim için tarayıcınızı güncel tutmanızı öneririz. Internet Explorer artık desteklenmemektedir.",
+            question: "Which browsers is Chatlify compatible with?",
+            answer: "The Chatlify web application is fully compatible with the current versions of Chrome, Firefox, Safari, Edge, and Opera. We recommend keeping your browser up to date for the best experience. Internet Explorer is no longer supported.",
             visible: false
         }
     ];
 
-    // SSS öğelerini sayfaya ekleyen fonksiyon
+    // Function that adds FAQ items to the page
     function renderFaqs(faqs) {
         const container = document.getElementById('faqContainer');
         container.innerHTML = '';
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             container.appendChild(faqItem);
 
-            // Soru tıklama olayını ekle
+            // Add question click event
             const questionElement = faqItem.querySelector('.faq-question');
             questionElement.addEventListener('click', () => {
                 faqItem.classList.toggle('active');
@@ -164,11 +164,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Sayfayı ilk yüklediğimizde görünür SSS'leri göster
+    // Show visible FAQs when the page first loads
     const visibleFaqs = allFaqs.filter(faq => faq.visible);
     renderFaqs(visibleFaqs);
 
-    // Arama fonksiyonu
+    // Search function
     function searchFaqs(query) {
         if (!query.trim()) {
             renderFaqs(visibleFaqs);
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
         renderFaqs(results);
     }
 
-    // Arama olaylarını ekle
+    // Add search events
     const searchInput = document.getElementById('searchInput');
     const searchButton = document.getElementById('searchButton');
 
@@ -199,10 +199,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Sayfa yüklenirken animasyon
+    // Animation when page loads
     document.querySelector('main').classList.add('loaded');
 
-    // Scroll animasyonları
+    // Scroll animations
     const addScrolledClass = (entries, observer) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function () {
         observer.observe(item);
     });
 
-    // Header scroll efekti
+    // Header scroll effect
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
             document.querySelector('header').classList.add('scrolled');

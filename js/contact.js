@@ -1,130 +1,153 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Form elemanları
+    // Form elements
     const contactForm = document.getElementById('contactForm');
-    const formSuccess = document.getElementById('formSuccess');
+    const successMessage = document.querySelector('.success-message');
     const newMessageBtn = document.getElementById('newMessageBtn');
 
-    // Form gönderimi
+    // Form submission
     contactForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        // Form doğrulama
+        // Form validation
         if (!validateForm()) {
             return;
         }
 
-        // Form gönderimi simülasyonu
+        // Form submission simulation
         const formData = new FormData(contactForm);
 
-        // Yükleme animasyonu gösterimi
+        // Show loading animation
         showLoadingState();
 
-        // API'ye gönderim simülasyonu (1.5 saniye)
+        // API submission simulation (1.5 seconds)
         setTimeout(() => {
-            // Form başarılı mesajını göster
+            // Show success message
             showSuccessMessage();
 
-            // Formu sıfırla
+            // Reset form
             contactForm.reset();
+
+            // Reset any expanded textareas
+            document.querySelectorAll('textarea').forEach(textarea => {
+                textarea.style.height = 'auto';
+            });
         }, 1500);
     });
 
-    // Yeni mesaj butonuna tıklandığında
+    // When new message button is clicked
     newMessageBtn.addEventListener('click', function () {
-        // Başarı mesajını gizle
+        // Hide success message
         hideSuccessMessage();
     });
 
-    // Form doğrulama fonksiyonu
+    // Form validation function
     function validateForm() {
         let isValid = true;
 
-        // Tüm gerekli alanları kontrol et
-        const requiredFields = contactForm.querySelectorAll('[required]');
-
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
-                isValid = false;
-                highlightErrorField(field);
-            } else {
-                removeErrorHighlight(field);
-            }
+        // Reset all error messages first
+        document.querySelectorAll('.error-message').forEach(msg => {
+            msg.style.display = 'none';
         });
 
-        // E-posta doğrulama
-        const emailField = document.getElementById('email');
-        if (emailField.value && !isValidEmail(emailField.value)) {
+        // Check name field
+        const nameField = document.getElementById('name');
+        if (!nameField.value.trim()) {
             isValid = false;
-            highlightErrorField(emailField, 'Lütfen geçerli bir e-posta adresi girin.');
+            document.getElementById('nameError').style.display = 'block';
+            highlightErrorField(nameField);
+        }
+
+        // Check email field
+        const emailField = document.getElementById('email');
+        if (!emailField.value.trim()) {
+            isValid = false;
+            document.getElementById('emailError').style.display = 'block';
+            highlightErrorField(emailField);
+        } else if (!isValidEmail(emailField.value)) {
+            isValid = false;
+            document.getElementById('emailError').style.display = 'block';
+            highlightErrorField(emailField);
+        }
+
+        // Check subject field
+        const subjectField = document.getElementById('subject');
+        if (!subjectField.value) {
+            isValid = false;
+            document.getElementById('subjectError').style.display = 'block';
+            highlightErrorField(subjectField);
+        }
+
+        // Check message field
+        const messageField = document.getElementById('message');
+        if (!messageField.value.trim()) {
+            isValid = false;
+            document.getElementById('messageError').style.display = 'block';
+            highlightErrorField(messageField);
+        }
+
+        // Check privacy checkbox
+        const privacyCheckbox = document.getElementById('privacy');
+        if (!privacyCheckbox.checked) {
+            isValid = false;
+            document.getElementById('privacyError').style.display = 'block';
+            highlightErrorField(privacyCheckbox);
         }
 
         return isValid;
     }
 
-    // E-posta doğrulama fonksiyonu
+    // Email validation function
     function isValidEmail(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     }
 
-    // Hatalı alanı vurgulama
-    function highlightErrorField(field, message) {
+    // Highlight error field
+    function highlightErrorField(field) {
         field.classList.add('error');
 
-        // Hata mesajı göster
-        let errorElement = field.parentElement.querySelector('.error-message');
-
-        if (!errorElement) {
-            errorElement = document.createElement('div');
-            errorElement.className = 'error-message';
-            field.parentElement.appendChild(errorElement);
-        }
-
-        errorElement.textContent = message || 'Bu alan zorunludur.';
-
-        // Hata vurgusunu 3 saniye sonra kaldır
+        // Remove error highlight after 3 seconds
         setTimeout(() => {
             removeErrorHighlight(field);
         }, 3000);
     }
 
-    // Hata vurgusunu kaldırma
+    // Remove error highlight
     function removeErrorHighlight(field) {
         field.classList.remove('error');
-
-        const errorElement = field.parentElement.querySelector('.error-message');
-        if (errorElement) {
-            errorElement.remove();
-        }
     }
 
-    // Yükleme durumu gösterimi
+    // Show loading state
     function showLoadingState() {
         const submitBtn = contactForm.querySelector('.submit-btn');
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
+        submitBtn.querySelector('.btn-text').style.display = 'none';
+        submitBtn.querySelector('.loading-spinner').style.display = 'block';
     }
 
-    // Başarı mesajı gösterimi
+    // Show success message
     function showSuccessMessage() {
-        formSuccess.classList.add('show');
+        contactForm.style.display = 'none';
+        successMessage.style.display = 'flex';
 
-        // Animasyon için scroll
+        // Smooth scroll to center the message
         const formContainer = document.querySelector('.contact-form-container');
         formContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
-    // Başarı mesajını gizleme
+    // Hide success message
     function hideSuccessMessage() {
-        formSuccess.classList.remove('show');
+        contactForm.style.display = 'block';
+        successMessage.style.display = 'none';
 
-        // Submit butonunu sıfırla
+        // Reset submit button
         const submitBtn = contactForm.querySelector('.submit-btn');
         submitBtn.disabled = false;
-        submitBtn.innerHTML = 'GÖNDER';
+        submitBtn.querySelector('.btn-text').style.display = 'block';
+        submitBtn.querySelector('.loading-spinner').style.display = 'none';
     }
 
-    // Input ve textarea'lar için otomatik yükseklik ayarı
+    // Auto height adjustment for textareas
     const textareas = document.querySelectorAll('textarea');
     textareas.forEach(textarea => {
         textarea.addEventListener('input', function () {
@@ -133,12 +156,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Sayfa ilk yüklendiğinde animasyonlar
+    // Initial animations when page first loads
     function initAnimations() {
-        // Hero bölümü için fade-in animasyonu
+        // Fade-in animation for hero section
         document.querySelector('.contact-hero').classList.add('loaded');
 
-        // Bilgi kartları için animasyon
+        // Animation for info cards
         const infoCards = document.querySelectorAll('.info-card');
         infoCards.forEach((card, index) => {
             setTimeout(() => {
@@ -146,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }, 300 + (index * 100));
         });
 
-        // Form elemanları için animasyon
+        // Animation for form elements
         const formElements = document.querySelectorAll('.form-group');
         formElements.forEach((element, index) => {
             setTimeout(() => {
@@ -155,13 +178,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Scroll animasyonları
+    // Scroll animations
     function setupScrollAnimations() {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('scrolled');
-                    // Gözlemlemeyi durdur
+                    // Stop observing once scrolled into view
                     observer.unobserve(entry.target);
                 }
             });
@@ -170,14 +193,14 @@ document.addEventListener('DOMContentLoaded', function () {
             rootMargin: '0px 0px -100px 0px'
         });
 
-        // Gözlemlenecek elementler
+        // Elements to observe
         const sections = document.querySelectorAll('.map-section, .faq-preview');
         sections.forEach(section => {
             observer.observe(section);
         });
     }
 
-    // Header scroll efekti
+    // Header scroll effect
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
             document.querySelector('header').classList.add('scrolled');
@@ -186,7 +209,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Animasyonları başlat
+    // Start animations
     initAnimations();
     setupScrollAnimations();
+
+    // Hide success message initially
+    successMessage.style.display = 'none';
 }); 
