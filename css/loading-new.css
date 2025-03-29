@@ -118,14 +118,14 @@ body {
 
 /* Logo bölümü */
 .glitch-logo {
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
     position: relative;
 }
 
 .logo-container {
     position: relative;
-    width: 300px;
-    height: 300px;
+    width: 200px;
+    height: 200px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -137,6 +137,8 @@ body {
     position: relative;
     z-index: 2;
     filter: drop-shadow(0 0 20px rgba(106, 17, 203, 0.4));
+    width: 180px;
+    height: 180px;
 }
 
 /* Logo animasyonları */
@@ -373,10 +375,11 @@ body {
     flex-direction: column;
     align-items: center;
     text-align: center;
+    margin-top: 1.5rem;
 }
 
 .loading-title {
-    font-size: 3.5rem;
+    font-size: 2.5rem;
     font-weight: 800;
     margin-bottom: 0.5rem;
     background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
@@ -442,7 +445,7 @@ body {
 .loading-subtitle {
     font-size: 1rem;
     color: var(--text-secondary);
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
     letter-spacing: 2px;
     text-transform: uppercase;
     opacity: 0;
@@ -464,7 +467,7 @@ body {
 /* Progress Bar */
 .loading-progress-container {
     width: 100%;
-    max-width: 350px;
+    max-width: 300px;
     text-align: center;
     opacity: 0;
     animation: fade-in 1s 4s forwards;
@@ -486,7 +489,7 @@ body {
     width: 100%;
     height: 3px;
     background: rgba(255, 255, 255, 0.1);
-    margin-bottom: 0.8rem;
+    margin-bottom: 1.2rem;
     position: relative;
     overflow: hidden;
     border-radius: 3px;
@@ -526,8 +529,8 @@ body {
 .progress-text {
     font-size: 0.9rem;
     color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 2px;
+    text-transform: none;
+    letter-spacing: 1px;
 }
 
 .dots span {
