@@ -1127,12 +1127,16 @@ footer::before {
     position: relative;
     padding-left: 0;
     font-size: 0.9rem;
+    display: inline-block;
+    white-space: nowrap;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .footer-column a:hover {
     color: var(--text-color);
-    transform: translateX(5px);
-    padding-left: 0;
+    padding-left: 5px;
 }
 
 .footer-bottom {
