@@ -104,7 +104,7 @@ nav {
     position: relative;
     font-weight: 600;
     padding: 0.5rem 0;
-    transition: all 0.3s ease;
+    transition: none !important;
 }
 
 .nav-links a::after {
@@ -115,12 +115,12 @@ nav {
     width: 0;
     height: 2px;
     background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    transition: width 0.3s ease;
+    transition: none !important;
 }
 
 .nav-links a:hover::after,
 .nav-links a.active::after {
-    width: 100%;
+    transition: none !important;
 }
 
 .nav-buttons {
@@ -1123,7 +1123,9 @@ footer::before {
 
 .footer-column a {
     color: var(--text-secondary);
-    transition: all 0.3s ease;
+    transition: none !important;
+    transform: none !important;
+    animation: none !important;
     position: relative;
     padding-left: 0;
     font-size: 0.9rem;
@@ -1319,4 +1321,35 @@ footer a[href*="data-protection"] {
     display: block !important;
     pointer-events: auto !important;
     cursor: pointer !important;
+}
+
+/* Footer menüsündeki tüm bağlantıların animasyonlarını kaldır */
+.footer-links a,
+.footer-column a {
+    transition: none !important;
+    transform: none !important;
+    animation: none !important;
+}
+
+.footer-links a:hover,
+.footer-column a:hover {
+    transform: none !important;
+    animation: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Üst kısımdaki menü butonları için de animasyonları kaldıralım */
+.nav-links a {
+    transition: none !important;
+}
+
+.nav-links a::after {
+    transition: none !important;
+}
+
+/* Ana nav linkler için */
+.nav-links a:hover::after,
+.nav-links a.active::after {
+    transition: none !important;
 }
