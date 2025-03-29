@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatlify - Discover Communities</title>
+    <title>Chatlify - Topluluğu Keşfet</title>
     <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
@@ -32,14 +32,11 @@
                             <circle cx="100" cy="100" r="85" />
                         </clipPath>
                     </defs>
-                    <!-- Main Logo Circle -->
                     <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#gradient)" stroke-width="5"
                         opacity="0.7" />
-                    <!-- Logo Path -->
                     <path class="logo-path"
                         d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
                         stroke="url(#gradient)" stroke-width="10" stroke-linecap="round" filter="url(#glow)" />
-                    <!-- C Letter -->
                     <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
                         font-weight="bold" filter="url(#glow)">C</text>
                 </svg>
@@ -59,295 +56,323 @@
     </header>
 
     <main>
-        <section class="community-hero">
-            <div class="community-hero-content">
-                <h1>DISCOVER <span class="highlight">COMMUNITIES</span></h1>
-                <p>Join thousands of communities and connect with people who share your interests, hobbies, and
-                    passions.</p>
-                <div class="search-container">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" placeholder="Search for communities by name, topic, or keywords...">
-                    <button type="button">Search</button>
-                </div>
-            </div>
-        </section>
-
-        <section class="popular-servers">
-            <div class="section-header">
-                <h2>POPULAR <span class="highlight">COMMUNITIES</span></h2>
-                <p>Discover trending communities that are gaining new members every day.</p>
-            </div>
-
-            <div class="servers-grid">
-                <!-- Server Card 1 -->
-                <div class="server-card">
-                    <div class="server-banner"
-                        style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80');">
-                        <div class="popular-badge">
-                            <i class="fas fa-fire-alt"></i> Popular
-                        </div>
-                    </div>
-                    <div class="server-icon">
-                        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
-                            alt="Gaming Hub Icon">
-                    </div>
-                    <div class="server-info">
-                        <h3 class="server-name">Gaming Hub</h3>
-                        <p class="server-description">The ultimate community for gamers. Discussions, news, and
-                            matchmaking for all your favorite games.</p>
-                        <div class="server-tags">
-                            <span class="server-tag">Gaming</span>
-                            <span class="server-tag">Esports</span>
-                            <span class="server-tag">Multiplayer</span>
-                        </div>
-                        <div class="server-footer">
-                            <div class="server-members">
-                                <i class="fas fa-users"></i> 128,456
-                            </div>
-                            <button class="join-server">Join</button>
-                        </div>
+        <section class="community-banner">
+            <div class="community-header">
+                <div class="community-header-content">
+                    <h1>Harika Toplulukları Keşfet</h1>
+                    <p>İlgi alanlarını ve tutkularını paylaşan kişilerle bağlantı kur. Binlerce aktif topluluk arasından
+                        seç veya kendi topluluğunu oluştur.</p>
+                    <div class="search-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" placeholder="Toplulukları ara...">
+                        <button class="search-btn">Ara</button>
                     </div>
                 </div>
-
-                <!-- Server Card 2 -->
-                <div class="server-card">
-                    <div class="server-banner"
-                        style="background-image: url('https://images.unsplash.com/photo-1560415755-bd80d06eda60?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80');">
-                        <div class="popular-badge">
-                            <i class="fas fa-fire-alt"></i> Popular
+                <div class="community-visual">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                        alt="Community Visual">
+                    <div class="floating-tags tag-1">
+                        <div class="floating-tag">
+                            <i class="fas fa-users tag-icon"></i>
+                            <span>50M+ Kullanıcı</span>
                         </div>
                     </div>
-                    <div class="server-icon">
-                        <img src="https://images.unsplash.com/photo-1526379095098-d400fd0bf935?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
-                            alt="Developers United Icon">
-                    </div>
-                    <div class="server-info">
-                        <h3 class="server-name">Developers United</h3>
-                        <p class="server-description">Community for programmers, developers and tech enthusiasts. Get
-                            help, share knowledge, and collaborate on projects.</p>
-                        <div class="server-tags">
-                            <span class="server-tag">Coding</span>
-                            <span class="server-tag">Tech</span>
-                            <span class="server-tag">Open Source</span>
-                        </div>
-                        <div class="server-footer">
-                            <div class="server-members">
-                                <i class="fas fa-users"></i> 95,213
-                            </div>
-                            <button class="join-server">Join</button>
+                    <div class="floating-tags tag-2">
+                        <div class="floating-tag">
+                            <i class="fas fa-globe tag-icon"></i>
+                            <span>200+ Ülke</span>
                         </div>
                     </div>
-                </div>
-
-                <!-- Server Card 3 -->
-                <div class="server-card">
-                    <div class="server-banner"
-                        style="background-image: url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80');">
-                        <div class="popular-badge">
-                            <i class="fas fa-fire-alt"></i> Popular
-                        </div>
-                    </div>
-                    <div class="server-icon">
-                        <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
-                            alt="Music Lovers Icon">
-                    </div>
-                    <div class="server-info">
-                        <h3 class="server-name">Music Lovers</h3>
-                        <p class="server-description">Discover new music, share playlists, discuss albums, and connect
-                            with other music enthusiasts.</p>
-                        <div class="server-tags">
-                            <span class="server-tag">Music</span>
-                            <span class="server-tag">Artists</span>
-                            <span class="server-tag">Playlists</span>
-                        </div>
-                        <div class="server-footer">
-                            <div class="server-members">
-                                <i class="fas fa-users"></i> 87,392
-                            </div>
-                            <button class="join-server">Join</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Server Card 4 -->
-                <div class="server-card">
-                    <div class="server-banner"
-                        style="background-image: url('https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80');">
-                    </div>
-                    <div class="server-icon">
-                        <img src="https://images.unsplash.com/photo-1548192746-dd526f154ed9?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
-                            alt="Art Collective Icon">
-                    </div>
-                    <div class="server-info">
-                        <h3 class="server-name">Art Collective</h3>
-                        <p class="server-description">For artists, designers, and creative minds. Share your work, get
-                            feedback, and find inspiration.</p>
-                        <div class="server-tags">
-                            <span class="server-tag">Art</span>
-                            <span class="server-tag">Design</span>
-                            <span class="server-tag">Creative</span>
-                        </div>
-                        <div class="server-footer">
-                            <div class="server-members">
-                                <i class="fas fa-users"></i> 64,785
-                            </div>
-                            <button class="join-server">Join</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Server Card 5 -->
-                <div class="server-card">
-                    <div class="server-banner"
-                        style="background-image: url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80');">
-                    </div>
-                    <div class="server-icon">
-                        <img src="https://images.unsplash.com/photo-1499028344343-cd173ffc68a9?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
-                            alt="Foodie Paradise Icon">
-                    </div>
-                    <div class="server-info">
-                        <h3 class="server-name">Foodie Paradise</h3>
-                        <p class="server-description">For food lovers and cooking enthusiasts. Share recipes, cooking
-                            tips, restaurant recommendations, and more.</p>
-                        <div class="server-tags">
-                            <span class="server-tag">Food</span>
-                            <span class="server-tag">Cooking</span>
-                            <span class="server-tag">Recipes</span>
-                        </div>
-                        <div class="server-footer">
-                            <div class="server-members">
-                                <i class="fas fa-users"></i> 58,431
-                            </div>
-                            <button class="join-server">Join</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Server Card 6 -->
-                <div class="server-card">
-                    <div class="server-banner"
-                        style="background-image: url('https://images.unsplash.com/photo-1494783367193-149034c05e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80');">
-                    </div>
-                    <div class="server-icon">
-                        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
-                            alt="Book Club Icon">
-                    </div>
-                    <div class="server-info">
-                        <h3 class="server-name">Book Club</h3>
-                        <p class="server-description">A community for book lovers. Discuss your favorite books, join
-                            reading challenges, and discover new authors.</p>
-                        <div class="server-tags">
-                            <span class="server-tag">Books</span>
-                            <span class="server-tag">Reading</span>
-                            <span class="server-tag">Literature</span>
-                        </div>
-                        <div class="server-footer">
-                            <div class="server-members">
-                                <i class="fas fa-users"></i> 46,128
-                            </div>
-                            <button class="join-server">Join</button>
+                    <div class="floating-tags tag-3">
+                        <div class="floating-tag">
+                            <i class="fas fa-comments tag-icon"></i>
+                            <span>Anlık İletişim</span>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="categories-section">
-            <div class="section-header">
-                <h2>BROWSE BY <span class="highlight">CATEGORY</span></h2>
-                <p>Find communities organized by topic and interest.</p>
+        <section class="categories-container">
+            <div class="section-title">
+                <h2>Kategorilere Göz At</h2>
+                <p>İlgi alanlarına göre düzenlenmiş toplulukları keşfet</p>
             </div>
 
-            <div class="categories-grid">
-                <!-- Category 1 -->
-                <div class="category-card">
-                    <div class="category-icon">
-                        <i class="fas fa-gamepad"></i>
-                    </div>
-                    <h3 class="category-name">Gaming</h3>
-                    <p class="category-count">1,254 communities</p>
-                    <a href="#" class="category-button">Browse</a>
+            <div class="categories-wrapper">
+                <div class="categories-tabs">
+                    <div class="category-tab active"><i class="fas fa-fire"></i> Popüler</div>
+                    <div class="category-tab"><i class="fas fa-gamepad"></i> Oyun</div>
+                    <div class="category-tab"><i class="fas fa-laptop-code"></i> Teknoloji</div>
+                    <div class="category-tab"><i class="fas fa-music"></i> Müzik</div>
+                    <div class="category-tab"><i class="fas fa-palette"></i> Sanat</div>
+                    <div class="category-tab"><i class="fas fa-book"></i> Edebiyat</div>
+                    <div class="category-tab"><i class="fas fa-film"></i> Film & TV</div>
+                    <div class="category-tab"><i class="fas fa-ellipsis-h"></i> Daha Fazla</div>
                 </div>
 
-                <!-- Category 2 -->
-                <div class="category-card">
-                    <div class="category-icon">
-                        <i class="fas fa-laptop-code"></i>
+                <div class="servers-grid">
+                    <!-- Server 1 -->
+                    <div class="server-card">
+                        <div class="server-header">
+                            <div class="server-banner"
+                                style="background-image: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80');">
+                            </div>
+                            <div class="server-avatar">
+                                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
+                                    alt="Gaming Hub">
+                            </div>
+                        </div>
+                        <div class="server-content">
+                            <div class="server-info">
+                                <h3 class="server-name">Gaming Hub</h3>
+                                <p class="server-description">Oyunlar, e-sporlar ve oyuncu buluşmaları için nihai
+                                    topluluk. En son haberler ve canlı etkinlikler.</p>
+                            </div>
+                            <div class="server-tags">
+                                <span class="server-tag">Oyun</span>
+                                <span class="server-tag">E-Spor</span>
+                                <span class="server-tag">Çok Oyunculu</span>
+                            </div>
+                            <div class="server-meta">
+                                <div class="server-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-value">128K+</div>
+                                        <div class="stat-label">Üye</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value">3K+</div>
+                                        <div class="stat-label">Aktif</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value">245</div>
+                                        <div class="stat-label">Kanal</div>
+                                    </div>
+                                </div>
+                                <a href="#" class="join-btn">Katıl</a>
+                            </div>
+                        </div>
                     </div>
-                    <h3 class="category-name">Technology</h3>
-                    <p class="category-count">876 communities</p>
-                    <a href="#" class="category-button">Browse</a>
+
+                    <!-- Server 2 -->
+                    <div class="server-card">
+                        <div class="server-header">
+                            <div class="server-banner"
+                                style="background-image: url('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80');">
+                            </div>
+                            <div class="server-avatar">
+                                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
+                                    alt="Tech Haven">
+                            </div>
+                        </div>
+                        <div class="server-content">
+                            <div class="server-info">
+                                <h3 class="server-name">Tech Haven</h3>
+                                <p class="server-description">Programcılar, geliştiriciler ve teknoloji tutkunları için.
+                                    Yardım alın, bilgi paylaşın ve işbirliği yapın.</p>
+                            </div>
+                            <div class="server-tags">
+                                <span class="server-tag">Kodlama</span>
+                                <span class="server-tag">Web</span>
+                                <span class="server-tag">Yapay Zeka</span>
+                            </div>
+                            <div class="server-meta">
+                                <div class="server-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-value">95K+</div>
+                                        <div class="stat-label">Üye</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value">2.4K+</div>
+                                        <div class="stat-label">Aktif</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value">187</div>
+                                        <div class="stat-label">Kanal</div>
+                                    </div>
+                                </div>
+                                <a href="#" class="join-btn">Katıl</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Server 3 -->
+                    <div class="server-card">
+                        <div class="server-header">
+                            <div class="server-banner"
+                                style="background-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80');">
+                            </div>
+                            <div class="server-avatar">
+                                <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
+                                    alt="Music Lovers">
+                            </div>
+                        </div>
+                        <div class="server-content">
+                            <div class="server-info">
+                                <h3 class="server-name">Music Lovers</h3>
+                                <p class="server-description">Yeni müzik keşfedin, çalma listeleri paylaşın, albümleri
+                                    tartışın ve diğer müzik tutkunlarıyla bağlantı kurun.</p>
+                            </div>
+                            <div class="server-tags">
+                                <span class="server-tag">Müzik</span>
+                                <span class="server-tag">Sanatçılar</span>
+                                <span class="server-tag">Çalma Listeleri</span>
+                            </div>
+                            <div class="server-meta">
+                                <div class="server-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-value">87K+</div>
+                                        <div class="stat-label">Üye</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value">1.7K+</div>
+                                        <div class="stat-label">Aktif</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value">156</div>
+                                        <div class="stat-label">Kanal</div>
+                                    </div>
+                                </div>
+                                <a href="#" class="join-btn">Katıl</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="featured-container">
+            <div class="featured-servers">
+                <div class="featured-header">
+                    <div class="featured-title">
+                        <h2>Öne Çıkan Topluluklar</h2>
+                        <p>Bu hafta yükselen ve en çok ilgi gören topluluklar</p>
+                    </div>
+                    <div class="featured-actions">
+                        <button class="featured-btn"><i class="fas fa-th-large"></i> Tümünü Göster</button>
+                        <button class="featured-btn primary"><i class="fas fa-plus"></i> Yeni Topluluk</button>
+                    </div>
                 </div>
 
-                <!-- Category 3 -->
-                <div class="category-card">
-                    <div class="category-icon">
-                        <i class="fas fa-music"></i>
+                <div class="featured-row">
+                    <div class="featured-card">
+                        <div class="featured-banner">
+                            <img src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+                                alt="Tech Summit">
+                            <div class="featured-overlay">
+                                <div class="featured-details">
+                                    <h3>Tech Summit</h3>
+                                    <div class="featured-meta">
+                                        <div><i class="fas fa-calendar-alt"></i> 2 yıl</div>
+                                        <div><i class="fas fa-users"></i> 150K+</div>
+                                    </div>
+                                </div>
+                                <div class="featured-badge">POPÜLER</div>
+                            </div>
+                        </div>
+                        <div class="featured-content">
+                            <p class="featured-text">Teknoloji tutkunları için küresel topluluk. Yeni gelişmeler, teknik
+                                konularda tartışmalar ve kariyer fırsatları.</p>
+                            <div class="featured-categories">
+                                <span class="featured-category">Teknoloji</span>
+                                <span class="featured-category">Yazılım</span>
+                                <span class="featured-category">Kariyer</span>
+                            </div>
+                            <div class="featured-footer">
+                                <div class="featured-users">
+                                    <div class="user-avatars">
+                                        <div class="user-avatar">
+                                            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
+                                                alt="User">
+                                        </div>
+                                        <div class="user-avatar">
+                                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
+                                                alt="User">
+                                        </div>
+                                        <div class="user-avatar">
+                                            <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
+                                                alt="User">
+                                        </div>
+                                    </div>
+                                    <div class="user-count">+10K çevrimiçi</div>
+                                </div>
+                                <button class="featured-join">Katıl</button>
+                            </div>
+                        </div>
                     </div>
-                    <h3 class="category-name">Music</h3>
-                    <p class="category-count">742 communities</p>
-                    <a href="#" class="category-button">Browse</a>
-                </div>
 
-                <!-- Category 4 -->
-                <div class="category-card">
-                    <div class="category-icon">
-                        <i class="fas fa-palette"></i>
-                    </div>
-                    <h3 class="category-name">Art & Design</h3>
-                    <p class="category-count">653 communities</p>
-                    <a href="#" class="category-button">Browse</a>
-                </div>
+                    <div class="featured-column">
+                        <div class="featured-card">
+                            <div class="featured-banner">
+                                <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+                                    alt="Esports League">
+                                <div class="featured-overlay">
+                                    <div class="featured-details">
+                                        <h3>Esports League</h3>
+                                        <div class="featured-meta">
+                                            <div><i class="fas fa-trophy"></i> Turnuvalar</div>
+                                            <div><i class="fas fa-users"></i> 78K+</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="featured-content">
+                                <div class="featured-categories">
+                                    <span class="featured-category">E-Spor</span>
+                                    <span class="featured-category">Oyun</span>
+                                    <span class="featured-category">Rekabet</span>
+                                </div>
+                                <div class="featured-footer">
+                                    <div class="featured-users">
+                                        <div class="user-count">5.2K çevrimiçi</div>
+                                    </div>
+                                    <button class="featured-join">Katıl</button>
+                                </div>
+                            </div>
+                        </div>
 
-                <!-- Category 5 -->
-                <div class="category-card">
-                    <div class="category-icon">
-                        <i class="fas fa-utensils"></i>
+                        <div class="featured-card">
+                            <div class="featured-banner">
+                                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+                                    alt="Creative Hub">
+                                <div class="featured-overlay">
+                                    <div class="featured-details">
+                                        <h3>Creative Hub</h3>
+                                        <div class="featured-meta">
+                                            <div><i class="fas fa-paint-brush"></i> Sanat</div>
+                                            <div><i class="fas fa-users"></i> 42K+</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="featured-content">
+                                <div class="featured-categories">
+                                    <span class="featured-category">Sanat</span>
+                                    <span class="featured-category">Tasarım</span>
+                                    <span class="featured-category">İlham</span>
+                                </div>
+                                <div class="featured-footer">
+                                    <div class="featured-users">
+                                        <div class="user-count">2.8K çevrimiçi</div>
+                                    </div>
+                                    <button class="featured-join">Katıl</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <h3 class="category-name">Food & Cooking</h3>
-                    <p class="category-count">521 communities</p>
-                    <a href="#" class="category-button">Browse</a>
-                </div>
-
-                <!-- Category 6 -->
-                <div class="category-card">
-                    <div class="category-icon">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <h3 class="category-name">Books & Literature</h3>
-                    <p class="category-count">487 communities</p>
-                    <a href="#" class="category-button">Browse</a>
-                </div>
-
-                <!-- Category 7 -->
-                <div class="category-card">
-                    <div class="category-icon">
-                        <i class="fas fa-film"></i>
-                    </div>
-                    <h3 class="category-name">Movies & TV</h3>
-                    <p class="category-count">432 communities</p>
-                    <a href="#" class="category-button">Browse</a>
-                </div>
-
-                <!-- Category 8 -->
-                <div class="category-card">
-                    <div class="category-icon">
-                        <i class="fas fa-dumbbell"></i>
-                    </div>
-                    <h3 class="category-name">Fitness & Health</h3>
-                    <p class="category-count">398 communities</p>
-                    <a href="#" class="category-button">Browse</a>
                 </div>
             </div>
         </section>
 
         <section class="community-cta">
-            <h2>CREATE YOUR OWN COMMUNITY</h2>
-            <p>Have an idea for a community? Create your own and invite friends, family, or anyone who shares your
-                interests.</p>
-            <div class="cta-buttons">
-                <a href="#" class="create-server-btn">Create Community</a>
-                <a href="#" class="browse-more-btn">Browse More</a>
+            <div class="cta-container">
+                <h2>Kendi Topluluğunu Kur</h2>
+                <p>Aynı ilgi alanlarını paylaşan insanlarla bağlantı kurmak için kendi topluluğunu oluştur. Topluluk
+                    yönetimi kolay, güçlü araçlarla donatılmış ve tamamen ücretsiz.</p>
+                <div class="cta-buttons">
+                    <a href="#" class="cta-btn primary">Topluluk Oluştur</a>
+                    <a href="#" class="cta-btn secondary">Daha Fazla Keşfet</a>
+                </div>
             </div>
         </section>
     </main>
@@ -369,15 +394,12 @@
                             <circle cx="100" cy="100" r="85" />
                         </clipPath>
                     </defs>
-                    <!-- Main Logo Circle -->
                     <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#footer-gradient)" stroke-width="5"
                         opacity="0.7" />
-                    <!-- Logo Path -->
                     <path class="logo-path"
                         d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
                         stroke="url(#footer-gradient)" stroke-width="10" stroke-linecap="round"
                         filter="url(#footer-glow)" />
-                    <!-- C Letter -->
                     <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
                         font-weight="bold" filter="url(#footer-glow)">C</text>
                 </svg>
@@ -385,39 +407,39 @@
             </div>
             <div class="footer-links">
                 <div class="footer-column">
-                    <h3>Features</h3>
+                    <h3>Özellikler</h3>
                     <ul>
-                        <li><a href="#">Voice Chat</a></li>
+                        <li><a href="#">Sesli Sohbet</a></li>
                         <li><a href="#">Chatlify Premium</a></li>
-                        <li><a href="#">Communities</a></li>
-                        <li><a href="#">Integrations</a></li>
+                        <li><a href="#">Topluluklar</a></li>
+                        <li><a href="#">Entegrasyonlar</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Company</h3>
+                    <h3>Şirket</h3>
                     <ul>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Press Room</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Hakkımızda</a></li>
+                        <li><a href="#">Kariyer</a></li>
+                        <li><a href="#">Basın Odası</a></li>
+                        <li><a href="#">İletişim</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Resources</h3>
+                    <h3>Kaynaklar</h3>
                     <ul>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Community Guidelines</a></li>
-                        <li><a href="#">Announcements</a></li>
-                        <li><a href="#">Developer API</a></li>
+                        <li><a href="#">Yardım Merkezi</a></li>
+                        <li><a href="#">Topluluk Kuralları</a></li>
+                        <li><a href="#">Duyurular</a></li>
+                        <li><a href="#">Geliştirici API</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Legal</h3>
+                    <h3>Yasal</h3>
                     <ul>
-                        <li><a href="legal/terms-of-service.html">Terms of Service</a></li>
-                        <li><a href="legal/privacy-policy.html">Privacy Policy</a></li>
-                        <li><a href="legal/security.html">Security</a></li>
-                        <li><a href="legal/data-protection.html">Data Protection</a></li>
+                        <li><a href="legal/terms-of-service.html">Kullanım Şartları</a></li>
+                        <li><a href="legal/privacy-policy.html">Gizlilik Politikası</a></li>
+                        <li><a href="legal/security.html">Güvenlik</a></li>
+                        <li><a href="legal/data-protection.html">Veri Koruma</a></li>
                     </ul>
                 </div>
             </div>
@@ -431,7 +453,7 @@
                 <a href="#"><i class="fab fa-tiktok"></i></a>
             </div>
             <div class="copyright">
-                <p>&copy; 2025 Chatlify Inc. All rights reserved.</p>
+                <p>&copy; 2025 Chatlify Inc. Tüm hakları saklıdır.</p>
             </div>
         </div>
     </footer>
