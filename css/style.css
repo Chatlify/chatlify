@@ -1168,6 +1168,14 @@ footer::before {
     backdrop-filter: blur(5px);
 }
 
+.social-links a,
+.social-links a:hover {
+    transform: none !important;
+    transition: color 0.3s ease !important;
+    box-shadow: none !important;
+    animation: none !important;
+}
+
 .social-links a:hover {
     color: var(--primary-light);
     background: rgba(255, 255, 255, 0.1);
@@ -1272,24 +1280,19 @@ footer::before {
     letter-spacing: 1px;
 }
 
-/* Footer link fix */
-.footer-column a.active {
-    color: var(--primary-light);
-    position: relative;
-}
-
-.footer-column a.active::after {
-    content: '';
-    position: absolute;
-    bottom: -3px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-}
-
-/* Legal links should be clickable */
-.footer-links .footer-column:last-child a {
+/* Footer link fix - daha kesin kurallar */
+.footer-links .footer-column:last-child a,
+footer .footer-links .footer-column:nth-child(4) a {
     pointer-events: auto !important;
     cursor: pointer !important;
+    position: relative !important;
+    z-index: 999 !important;
+    opacity: 1 !important;
+    transition: color 0.3s ease !important;
+}
+
+/* Legal kısmındaki başlık */
+.footer-links .footer-column:last-child h3,
+footer .footer-links .footer-column:nth-child(4) h3 {
+    color: var(--primary-light) !important;
 }
