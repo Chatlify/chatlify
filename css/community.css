@@ -974,3 +974,190 @@
         transform: none;
     }
 }
+
+/* Trend etiketleri için stiller */
+.trending-tags {
+    margin: 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.trending-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.8rem;
+}
+
+.tag-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.tag-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tag-chip i {
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    color: #6a11cb;
+}
+
+.tag-chip:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Hızlı erişim butonları için stiller */
+.quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 1.5rem;
+}
+
+.quick-action-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.7rem 1.2rem;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.quick-action-btn i {
+    margin-right: 0.5rem;
+}
+
+.quick-action-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.quick-action-btn.primary {
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    border: none;
+    box-shadow: 0 4px 12px rgba(106, 17, 203, 0.3);
+}
+
+.quick-action-btn.primary:hover {
+    opacity: 0.9;
+    box-shadow: 0 6px 15px rgba(106, 17, 203, 0.4);
+}
+
+/* Dördüncü floating tag için stil */
+.tag-4 {
+    bottom: 50%;
+    right: -35px;
+}
+
+/* İstatistik sayaçları için stiller */
+.community-stats {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 3rem auto 0;
+    padding: 1.5rem 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.stat-counter {
+    text-align: center;
+    padding: 0 1rem;
+}
+
+.counter-value {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.counter-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Responsive düzenlemeler */
+@media (max-width: 1200px) {
+    .community-stats {
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .stat-counter {
+        width: 45%;
+    }
+}
+
+@media (max-width: 768px) {
+    .quick-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .quick-action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .community-stats {
+        padding: 1.5rem 1rem;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .stat-counter {
+        width: 100%;
+    }
+
+    .trending-tags {
+        margin: 1rem 0;
+    }
+
+    .tag-chips {
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .tag-chips::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tag-chip {
+        white-space: nowrap;
+    }
+
+    .tag-4 {
+        position: static;
+        margin-top: 0.5rem;
+    }
+}
