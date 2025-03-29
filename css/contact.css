@@ -182,6 +182,8 @@
     display: flex;
     gap: 1rem;
     margin-top: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .social-icons a {
@@ -248,18 +250,10 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    opacity: 0;
-    transform: translateY(20px);
-}
-
-.form-group.appear {
-    opacity: 1;
-    transform: translateY(0);
-    transition: all 0.5s ease;
 }
 
 .form-group label {
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 500;
     color: var(--text-color);
 }
@@ -267,36 +261,234 @@
 .form-group input,
 .form-group select,
 .form-group textarea {
-    padding: 0.8rem 1rem;
-    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+    padding: 0.8rem 1rem;
     color: var(--text-color);
-    font-size: 1rem;
     font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
     transition: all 0.3s ease;
-    resize: none;
 }
 
-.form-group input.error,
-.form-group select.error,
-.form-group textarea.error {
-    border-color: var(--danger-color);
-    box-shadow: 0 0 10px rgba(240, 71, 71, 0.2);
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(106, 17, 203, 0.2);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.form-group textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-top: 0.2rem;
+}
+
+.checkbox-group label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    flex: 1;
 }
 
 .error-message {
-    color: #ff4d4d;
+    color: var(--danger-color);
     font-size: 0.85rem;
-    margin-top: 0.3rem;
     display: none;
-    animation: fadeIn 0.3s ease;
+    margin-top: 0.2rem;
 }
 
-@keyframes fadeIn {
+.form-group.error .error-message {
+    display: block;
+}
+
+.form-group.error input,
+.form-group.error select,
+.form-group.error textarea {
+    border-color: var(--danger-color);
+}
+
+.submit-btn {
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.submit-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.3s ease;
+}
+
+.submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.submit-btn:hover::before {
+    opacity: 0.3;
+}
+
+.submit-btn.loading .btn-text {
+    visibility: hidden;
+}
+
+.submit-btn.loading .loading-spinner {
+    visibility: visible;
+}
+
+.loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    visibility: hidden;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Başarı Mesajı */
+.success-message {
+    display: none;
+    text-align: center;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    animation: fadeScale 0.5s ease;
+}
+
+.success-message.show {
+    display: block;
+}
+
+.success-icon {
+    font-size: 4rem;
+    color: var(--success-color);
+    margin-bottom: 1.5rem;
+}
+
+.success-message h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.success-message p {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+/* FAQ Önizleme Bölümü */
+.faq-preview {
+    background-color: rgba(255, 255, 255, 0.02);
+    padding: 4rem 5%;
+    margin-top: 3rem;
+    border-radius: 10px;
+    margin-bottom: 3rem;
+}
+
+.faq-preview-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.faq-preview h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+}
+
+.faq-preview p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.faq-preview .btn {
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.faq-preview .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes fadeScale {
     0% {
         opacity: 0;
-        transform: translateY(-5px);
+        transform: scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
     }
 
     100% {
@@ -305,295 +497,18 @@
     }
 }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    outline: none;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: rgba(106, 17, 203, 0.5);
-    box-shadow: 0 0 15px rgba(106, 17, 203, 0.2);
-}
-
-.form-group input::placeholder,
-.form-group textarea::placeholder {
-    color: rgba(255, 255, 255, 0.4);
-}
-
-.form-group select {
-    appearance: none;
-    background-color: rgba(255, 255, 255, 0.05);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='%23ffffff'%3E%3Cpath d='M6 9L1 4h10L6 9z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    padding: 0.8rem 1rem;
-    padding-right: 2.5rem;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    font-size: 1rem;
-    color: #ffffff;
-    outline: none;
-}
-
-.form-group select option {
-    background-color: #1a1a2e;
-    color: #ffffff;
-}
-
-.checkbox-group {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 0.8rem;
-}
-
-.checkbox-group input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    border-radius: 4px;
-    cursor: pointer;
-    flex-shrink: 0;
-    margin-top: 2px;
-}
-
-.checkbox-group label {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    line-height: 1.5;
-}
-
-.checkbox-group a {
-    color: var(--primary-light);
-    text-decoration: underline;
-}
-
-.submit-btn {
-    margin-top: 1rem;
-    padding: 1rem;
-    border-radius: 8px;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    color: white;
-    font-weight: 600;
-    font-size: 1.1rem;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
-    letter-spacing: 1px;
-}
-
-.submit-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(106, 17, 203, 0.5);
-}
-
-.submit-btn:active {
-    transform: translateY(-1px);
-}
-
-.submit-btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-/* Form Success Message */
-.form-success {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(14, 14, 24, 0.97);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    border-radius: 10px;
-    padding: 2rem;
-    transform: scale(0.9);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.4s ease;
-    z-index: 10;
-}
-
-.form-success.show {
-    transform: scale(1);
-    opacity: 1;
-    visibility: visible;
-}
-
-.success-icon {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1.5rem;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(106, 17, 203, 0.4);
-    }
-
-    70% {
-        box-shadow: 0 0 0 15px rgba(106, 17, 203, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(106, 17, 203, 0);
-    }
-}
-
-.success-icon i {
-    font-size: 2.5rem;
-    color: white;
-}
-
-.form-success h3 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: var(--text-color);
-}
-
-.form-success p {
-    font-size: 1.1rem;
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
-    max-width: 500px;
-    line-height: 1.6;
-}
-
-/* Harita Bölümü */
-.map-section {
-    padding: 5rem 5%;
-    text-align: center;
-    position: relative;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.8s ease;
-}
-
-.map-section.scrolled {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.map-section h2 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 3rem;
-    color: var(--text-color);
-    position: relative;
-    padding-bottom: 1rem;
-    display: inline-block;
-}
-
-.map-section h2::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 4px;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    border-radius: 2px;
-}
-
-.map-container {
-    width: 100%;
-    height: 450px;
-    border-radius: 10px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* SSS Önizleme Bölümü */
-.faq-preview {
-    padding: 5rem 5%;
-    text-align: center;
-    background-color: rgba(255, 255, 255, 0.02);
-    position: relative;
-    overflow: hidden;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.8s ease;
-}
-
-.faq-preview.scrolled {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.faq-preview::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background:
-        radial-gradient(circle at 20% 50%, rgba(106, 17, 203, 0.1) 0%, transparent 30%),
-        radial-gradient(circle at 80% 50%, rgba(37, 117, 252, 0.1) 0%, transparent 30%);
-    z-index: -1;
-}
-
-.faq-preview h2 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    color: var(--text-color);
-}
-
-.faq-preview p {
-    font-size: 1.2rem;
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.6;
-}
-
-.btn-primary {
-    display: inline-block;
-    padding: 1rem 2rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    color: white;
-    font-weight: 600;
-    border-radius: 40px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
-    letter-spacing: 1px;
-}
-
-.btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(106, 17, 203, 0.5);
-    color: white;
-}
-
-/* Responsive İyileştirmeler */
+/* Responsive Tasarım */
 @media (max-width: 992px) {
     .contact-hero h1 {
         font-size: 3rem;
     }
 
-    .contact-container {
-        flex-direction: column;
+    .contact-hero p {
+        font-size: 1.1rem;
     }
 
-    .contact-info {
-        grid-template-columns: repeat(2, 1fr);
+    .contact-container {
+        padding: 4rem 5%;
     }
 }
 
@@ -606,21 +521,7 @@
         font-size: 1rem;
     }
 
-    .map-container {
-        height: 350px;
-    }
-
     .faq-preview h2 {
-        font-size: 2rem;
-    }
-
-    .faq-preview p {
-        font-size: 1rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .contact-hero h1 {
         font-size: 2rem;
     }
 
@@ -628,11 +529,124 @@
         grid-template-columns: 1fr;
     }
 
-    .map-container {
-        height: 300px;
+    .info-card {
+        padding: 1.5rem;
+    }
+
+    .info-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .contact-container {
+        padding: 3rem 5%;
+        gap: 2rem;
     }
 
     .contact-form-container {
         padding: 1.5rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 16px;
+        /* Prevent iOS zoom on focus */
+        padding: 0.7rem;
+    }
+
+    .checkbox-group {
+        align-items: flex-start;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        margin-top: 0.25rem;
+    }
+
+    .checkbox-group label {
+        font-size: 0.85rem;
+    }
+
+    .submit-btn {
+        padding: 0.8rem;
+    }
+
+    .faq-preview {
+        padding: 3rem 5%;
+    }
+}
+
+@media (max-width: 576px) {
+    .contact-hero {
+        min-height: 30vh;
+        padding: 6rem 5% 3rem;
+    }
+
+    .contact-hero h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .contact-hero p {
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .contact-form-container h2 {
+        font-size: 1.5rem;
+    }
+
+    .form-group label {
+        font-size: 0.9rem;
+    }
+
+    .info-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .info-card p {
+        font-size: 0.9rem;
+    }
+
+    .social-icons a {
+        width: 35px;
+        height: 35px;
+    }
+
+    .faq-preview h2 {
+        font-size: 1.8rem;
+    }
+
+    .faq-preview p {
+        font-size: 0.9rem;
+    }
+
+    .faq-preview .btn {
+        width: 100%;
+        padding: 0.8rem;
+    }
+
+    .success-message h3 {
+        font-size: 1.5rem;
+    }
+
+    .success-message p {
+        font-size: 0.9rem;
+    }
+
+    .success-icon {
+        font-size: 3rem;
+    }
+}
+
+/* Touch cihazlar için hover efektlerini devre dışı bırak */
+@media (hover: none) {
+
+    .info-card:hover,
+    .social-icons a:hover,
+    .submit-btn:hover,
+    .faq-preview .btn:hover {
+        transform: none;
+        box-shadow: none;
     }
 }
