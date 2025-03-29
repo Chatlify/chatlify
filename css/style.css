@@ -888,14 +888,12 @@ main.loaded {
     box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5);
 }
 
-.mobile {
-    width: 90%;
-    height: 90%;
-    bottom: 0;
-    left: 0;
+.desktop {
+    width: 100%;
+    height: 100%;
+    top: 0;
     right: 0;
-    margin: auto;
-    transform: perspective(1000px) rotateX(5deg) rotateY(5deg);
+    transform: perspective(1000px) rotateX(10deg) rotateY(-20deg);
     background-image: url('../images/hero-mockup.svg');
     background-size: cover;
     background-position: center;
@@ -1206,10 +1204,6 @@ footer::before {
 
     .social-links {
         margin-bottom: 1rem;
-    }
-
-    .device.mobile {
-        display: none;
     }
 
     .device.desktop {
