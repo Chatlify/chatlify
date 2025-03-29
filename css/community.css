@@ -69,6 +69,7 @@
 .search-wrapper {
     position: relative;
     margin: 2rem 0;
+    width: 100%;
 }
 
 .search-input {
@@ -113,6 +114,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
 .search-btn:hover {
@@ -131,6 +133,8 @@
     border-radius: 16px;
     box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(106, 17, 203, 0.3);
+    object-fit: cover;
+    aspect-ratio: 16/9;
 }
 
 .floating-tags {
@@ -158,18 +162,18 @@
 }
 
 .tag-1 {
-    top: 15%;
-    left: -5%;
+    top: 20%;
+    left: -20px;
 }
 
 .tag-2 {
     bottom: 20%;
-    left: -10%;
+    left: -30px;
 }
 
 .tag-3 {
-    top: 10%;
-    right: -5%;
+    top: 15%;
+    right: -20px;
 }
 
 /* Kategoriler Bölümü */
@@ -224,8 +228,9 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 1rem;
+    gap: 0.8rem;
     margin-bottom: 3rem;
+    padding: 0 1rem;
 }
 
 .category-tab {
@@ -237,6 +242,7 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
 .category-tab:hover {
@@ -273,6 +279,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    min-height: 420px;
     z-index: 1;
 }
 
@@ -305,8 +312,8 @@
 
 .server-banner {
     width: 100%;
-    height: 160px;
-    object-fit: cover;
+    height: 140px;
+    background-size: cover;
     background-position: center;
     transition: all 0.3s ease;
 }
@@ -346,6 +353,7 @@
 .server-info {
     text-align: center;
     margin-bottom: 1.5rem;
+    flex-grow: 1;
 }
 
 .server-name {
@@ -365,7 +373,7 @@
     background: rgba(255, 255, 255, 0.03);
     border-radius: 12px;
     padding: 1rem;
-    margin-top: auto;
+    margin-top: 0.5rem;
 }
 
 .server-stats {
@@ -738,6 +746,8 @@
     justify-content: center;
     gap: 1.5rem;
     flex-wrap: wrap;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .cta-btn {
@@ -747,6 +757,8 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    display: inline-block;
+    text-align: center;
 }
 
 .cta-btn.primary {
@@ -778,6 +790,7 @@
     .community-header {
         flex-direction: column;
         text-align: center;
+        gap: 3rem;
     }
 
     .community-header-content {
@@ -785,7 +798,23 @@
     }
 
     .community-visual {
-        max-width: 100%;
+        max-width: 80%;
+        margin: 0 auto;
+    }
+
+    .tag-1 {
+        top: 10%;
+        left: 5%;
+    }
+
+    .tag-2 {
+        bottom: 10%;
+        left: 5%;
+    }
+
+    .tag-3 {
+        top: 10%;
+        right: 5%;
     }
 
     .featured-row {
@@ -806,10 +835,50 @@
         width: 100%;
         margin-top: 1rem;
         border-radius: 12px;
+        padding: 1rem;
     }
 
     .search-input {
         padding-right: 1.5rem;
+    }
+
+    .community-visual {
+        max-width: 100%;
+    }
+
+    .floating-tag {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .tag-1,
+    .tag-2,
+    .tag-3 {
+        position: static;
+        margin-top: 1rem;
+        text-align: center;
+    }
+
+    .floating-tags {
+        position: static;
+        display: flex;
+        justify-content: center;
+        margin-top: 1.5rem;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .categories-tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        padding-bottom: 1rem;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .categories-tabs::-webkit-scrollbar {
+        display: none;
     }
 
     .featured-header {
@@ -823,10 +892,10 @@
         justify-content: center;
     }
 
-    .categories-tabs {
-        overflow-x: auto;
-        padding-bottom: 1rem;
-        justify-content: flex-start;
+    .servers-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+        margin: 0 auto;
     }
 }
 
@@ -838,10 +907,58 @@
     .section-title h2,
     .featured-title h2,
     .cta-container h2 {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
 
     .cta-btn {
         width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .featured-column {
+        gap: 1.5rem;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+    }
+}
+
+/* Hover Animasyonları */
+@media (hover: hover) {
+    .server-card:hover {
+        transform: translateY(-8px);
+    }
+
+    .featured-card:hover {
+        transform: translateY(-8px);
+    }
+
+    .cta-btn.primary:hover {
+        transform: translateY(-3px);
+    }
+
+    .cta-btn.secondary:hover {
+        transform: translateY(-3px);
+    }
+
+    .category-tab:hover {
+        transform: translateY(-2px);
+    }
+
+    .featured-btn:hover {
+        transform: translateY(-2px);
+    }
+}
+
+/* Mobil Cihazlarda Hover Efektleri İçin Düzeltme */
+@media (hover: none) {
+
+    .server-card:hover,
+    .featured-card:hover,
+    .cta-btn:hover,
+    .category-tab:hover,
+    .featured-btn:hover {
+        transform: none;
     }
 }
