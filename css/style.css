@@ -888,23 +888,14 @@ main.loaded {
     box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5);
 }
 
-.desktop {
-    width: 90%;
-    height: 85%;
-    top: 0;
-    right: 0;
-    transform: perspective(1000px) rotateX(10deg) rotateY(-20deg);
-    background-image: url('../images/hero-mockup.svg');
-    background-size: cover;
-    background-position: center;
-}
-
 .mobile {
-    width: 40%;
-    height: 70%;
+    width: 90%;
+    height: 90%;
     bottom: 0;
     left: 0;
-    transform: perspective(1000px) rotateX(5deg) rotateY(20deg);
+    right: 0;
+    margin: auto;
+    transform: perspective(1000px) rotateX(5deg) rotateY(5deg);
     background-image: url('../images/hero-mockup.svg');
     background-size: cover;
     background-position: center;
