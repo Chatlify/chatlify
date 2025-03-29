@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,7 @@
     <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/support.css">
     <script src="js/main.js" defer></script>
@@ -16,39 +16,57 @@
 </head>
 
 <body>
-    <header class="header">
-        <div class="container">
-            <a href="home.html" class="logo">
-                <img src="images/logo.svg" alt="Chatlify Logo">
-            </a>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="home.html">Ana Sayfa</a></li>
-                    <li><a href="#">Topluluk</a></li>
-                    <li><a href="support.html" class="active">Destek</a></li>
-                    <li><a href="download.html">İndir</a></li>
-                </ul>
-            </nav>
-            <div class="header-buttons">
-                <a href="#" class="btn btn-secondary">Giriş Yap</a>
-                <a href="#" class="btn btn-primary">Kaydol</a>
+    <header>
+        <nav>
+            <div class="logo">
+                <svg class="logo-svg" width="40" height="40" viewBox="0 0 200 200">
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#6a11cb" />
+                            <stop offset="100%" stop-color="#2575fc" />
+                        </linearGradient>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="5" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                        <clipPath id="circle-clip">
+                            <circle cx="100" cy="100" r="85" />
+                        </clipPath>
+                    </defs>
+                    <!-- Main Logo Circle -->
+                    <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#gradient)" stroke-width="5"
+                        opacity="0.7" />
+                    <!-- Logo Path -->
+                    <path class="logo-path"
+                        d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
+                        stroke="url(#gradient)" stroke-width="10" stroke-linecap="round" filter="url(#glow)" />
+                    <!-- C Letter -->
+                    <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
+                        font-weight="bold" filter="url(#glow)">C</text>
+                </svg>
+                <span>CHATLIFY</span>
             </div>
-            <button class="mobile-menu-btn">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
+            <div class="nav-links">
+                <a href="home.html">Home</a>
+                <a href="#">Community</a>
+                <a href="support.html" class="active">Support</a>
+                <a href="download.html">Download</a>
+            </div>
+            <div class="nav-buttons">
+                <a href="#" class="login-btn">Sign In</a>
+                <a href="download.html" class="download-btn">Download Now</a>
+            </div>
+        </nav>
     </header>
 
     <main>
         <section class="support-hero">
-            <div class="container">
-                <h1>Nasıl Yardımcı Olabiliriz?</h1>
-                <p>Sorularınızı yanıtlamak için buradayız</p>
+            <div class="support-hero-content">
+                <h1>DESTEK <span class="highlight">MERKEZİ</span></h1>
+                <p>Chatlify ile ilgili sık sorulan sorular ve yanıtları burada bulabilirsiniz.</p>
                 <div class="search-container">
-                    <input type="text" id="faq-search" placeholder="Bir soru veya konu ara...">
-                    <button id="search-btn">
+                    <input type="text" id="searchInput" placeholder="Soru veya anahtar kelime ara...">
+                    <button type="button" id="searchButton">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -56,458 +74,101 @@
         </section>
 
         <section class="faq-section">
-            <div class="container">
-                <div class="faq-header">
-                    <h2>Sık Sorulan Sorular</h2>
-                    <div class="category-filter">
-                        <button class="category-btn active" data-category="all">Tümü</button>
-                        <button class="category-btn" data-category="account">Hesap</button>
-                        <button class="category-btn" data-category="features">Özellikler</button>
-                        <button class="category-btn" data-category="technical">Teknik</button>
-                        <button class="category-btn" data-category="billing">Ödeme</button>
-                        <button class="category-btn" data-category="security">Güvenlik</button>
-                    </div>
-                </div>
-
-                <div id="no-results" class="hidden">
-                    <p>Aramanıza uygun sonuç bulunamadı. Lütfen farklı anahtar kelimeler deneyin.</p>
-                </div>
-
-                <div class="faq-container">
-                    <!-- Hesap Soruları (Görünür) -->
-                    <div class="faq-item" data-category="account">
-                        <div class="faq-question">
-                            <h3>Chatlify hesabımı nasıl oluşturabilirim?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Chatlify'a kaydolmak için web sitemizdeki "Kaydol" butonuna tıklayın. E-posta adresinizi,
-                                kullanıcı adınızı ve şifrenizi girmeniz gerekecek. Alternatif olarak, Google veya Apple
-                                hesabınızla da giriş yapabilirsiniz.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item" data-category="account">
-                        <div class="faq-question">
-                            <h3>Şifremi unuttum, ne yapmalıyım?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Giriş sayfasında "Şifremi Unuttum" bağlantısına tıklayın. Kayıtlı e-posta adresinizi
-                                girin, şifre sıfırlama bağlantısı içeren bir e-posta alacaksınız. Bağlantıya tıklayın ve
-                                yeni şifrenizi oluşturun.</p>
-                        </div>
-                    </div>
-
-                    <!-- Özellikler Soruları (Görünür) -->
-                    <div class="faq-item" data-category="features">
-                        <div class="faq-question">
-                            <h3>Chatlify ile grup sohbetleri oluşturabilir miyim?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Evet, Chatlify ile 100.000 katılımcıya kadar grup sohbetleri oluşturabilirsiniz. Artı
-                                simgesine tıklayın, "Yeni Grup" seçeneğini belirleyin ve grup adını, açıklamasını ve
-                                üyelerini ekleyin. Özel veya herkese açık gruplar oluşturma seçeneğiniz vardır.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item" data-category="features">
-                        <div class="faq-question">
-                            <h3>Chatlify görüntülü aramaları destekliyor mu?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Evet, Chatlify hem bire bir hem de grup görüntülü aramaları desteklemektedir. Görüntülü
-                                arama yapmak için herhangi bir sohbette sağ üst köşedeki kamera simgesine tıklayın. Grup
-                                görüşmeleri için, bir kerede 50 kişiye kadar görüntülü görüşme yapabilirsiniz.</p>
-                        </div>
-                    </div>
-
-                    <!-- Teknik Sorular (Görünür) -->
-                    <div class="faq-item" data-category="technical">
-                        <div class="faq-question">
-                            <h3>Chatlify hangi platformlarda kullanılabilir?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Chatlify şu anda iOS, Android, Windows, macOS ve Linux platformlarında kullanılabilir.
-                                Ayrıca herhangi bir web tarayıcısından web.chatlify.com adresini ziyaret ederek de
-                                kullanabilirsiniz.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item" data-category="technical">
-                        <div class="faq-question">
-                            <h3>Chatlify'ı internet olmadan kullanabilir miyim?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Uygulamayı çevrimdışı olarak açabilirsiniz, ancak mesaj göndermek ve almak için internet
-                                bağlantısı gereklidir. Bununla birlikte, çevrimdışıyken mesaj yazabilir ve internet
-                                bağlantınız geri geldiğinde otomatik olarak gönderilecektir.</p>
-                        </div>
-                    </div>
-
-                    <!-- Ödeme Soruları (Görünür) -->
-                    <div class="faq-item" data-category="billing">
-                        <div class="faq-question">
-                            <h3>Chatlify'ın ücretli özellikleri var mı?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Chatlify'ın temel özellikleri ücretsizdir. Ancak, daha fazla depolama alanı, gelişmiş
-                                güvenlik özellikleri ve özel temalar gibi ek özellikler için Chatlify Premium aboneliği
-                                mevcuttur. Premium planlar aylık veya yıllık ödeme seçenekleriyle sunulmaktadır.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item" data-category="billing">
-                        <div class="faq-question">
-                            <h3>Premium aboneliğimi nasıl iptal edebilirim?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Premium aboneliğinizi iptal etmek için Ayarlar > Abonelik > Aboneliği İptal Et yolunu
-                                izleyin. İptal işlemi hemen gerçekleşir, ancak mevcut ödeme döneminin sonuna kadar
-                                premium özelliklere erişiminiz devam eder.</p>
-                        </div>
-                    </div>
-
-                    <!-- Güvenlik Soruları (Görünür) -->
-                    <div class="faq-item" data-category="security">
-                        <div class="faq-question">
-                            <h3>Chatlify mesajlarım uçtan uca şifrelenmiş mi?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Evet, tüm Chatlify mesajları, sesli ve görüntülü aramalar uçtan uca şifrelemeyle
-                                korunmaktadır. Bu, iletişiminizin yalnızca sizin ve alıcının cihazlarında deşifre
-                                edilebileceği anlamına gelir. Chatlify dahil hiç kimse aradaki mesajları okuyamaz.</p>
-                        </div>
-                    </div>
-
-                    <!-- Hesap Soruları (Gizli) -->
-                    <div class="faq-item hidden hidden-by-default" data-category="account">
-                        <div class="faq-question">
-                            <h3>Hesabımı nasıl silebilirim?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Hesabınızı silmek için Ayarlar > Hesap > Hesabı Sil yolunu izleyin. Onay e-postası
-                                alacaksınız, bağlantıya tıklayarak silme işlemini tamamlayın. Bu işlem geri alınamaz ve
-                                tüm verileriniz kalıcı olarak silinir.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item hidden hidden-by-default" data-category="account">
-                        <div class="faq-question">
-                            <h3>Kullanıcı adımı değiştirebilir miyim?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Evet, kullanıcı adınızı 30 günde bir değiştirebilirsiniz. Ayarlar > Profil > Kullanıcı
-                                Adı seçeneğine giderek değiştirebilirsiniz. Değiştirdikten sonra eski kullanıcı adınız
-                                30 gün boyunca başka kullanıcıların kullanımına açılmaz.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item hidden hidden-by-default" data-category="account">
-                        <div class="faq-question">
-                            <h3>İki faktörlü kimlik doğrulamayı nasıl etkinleştirebilirim?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>İki faktörlü kimlik doğrulamayı etkinleştirmek için Ayarlar > Güvenlik > İki Faktörlü
-                                Kimlik Doğrulama yolunu izleyin. SMS, e-posta veya kimlik doğrulama uygulaması
-                                seçeneklerinden birini tercih edebilirsiniz. Etkinleştirildikten sonra, her girişte ek
-                                bir güvenlik kodu girmeniz istenecektir.</p>
-                        </div>
-                    </div>
-
-                    <!-- Özellikler Soruları (Gizli) -->
-                    <div class="faq-item hidden hidden-by-default" data-category="features">
-                        <div class="faq-question">
-                            <h3>Chatlify'da dosya boyutu sınırı nedir?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Ücretsiz kullanıcılar için dosya paylaşım limiti 100MB, Premium kullanıcılar için ise
-                                2GB'dır. Desteklenen dosya formatları arasında görüntüler, videolar, belgeler, ses
-                                dosyaları ve ZIP arşivleri bulunmaktadır.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item hidden hidden-by-default" data-category="features">
-                        <div class="faq-question">
-                            <h3>Mesajlarımı düzenleyebilir veya silebilir miyim?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Evet, gönderdiğiniz mesajları düzenleyebilir veya silebilirsiniz. Bir mesajı düzenlemek
-                                veya silmek için mesaja uzun basın ve açılan menüden "Düzenle" veya "Sil" seçeneğini
-                                seçin. Mesajlar gönderildikten sonra 48 saat içinde düzenlenebilir.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item hidden hidden-by-default" data-category="features">
-                        <div class="faq-question">
-                            <h3>Chatlify'da sohbet yedeği alabiliyor muyum?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Evet, sohbetlerinizin yedeğini alabilirsiniz. Ayarlar > Sohbetler > Sohbet Yedeği
-                                seçeneğine giderek yedekleme sıklığını ve konumunu belirleyebilirsiniz. Yerel cihaz
-                                depolaması veya Google Drive/iCloud gibi bulut depolama seçeneklerini kullanabilirsiniz.
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Teknik Sorular (Gizli) -->
-                    <div class="faq-item hidden hidden-by-default" data-category="technical">
-                        <div class="faq-question">
-                            <h3>Chatlify ne kadar internet kullanır?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Metin mesajları için çok az veri kullanılır (saatte yaklaşık 0.5MB). Sesli aramalar
-                                dakikada yaklaşık 0.5MB, standart görüntülü aramalar ise dakikada 5-10MB veri kullanır.
-                                Veri kullanımını azaltmak için Ayarlar > Veri ve Depolama menüsünden düşük veri modu
-                                seçeneğini etkinleştirebilirsiniz.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item hidden hidden-by-default" data-category="technical">
-                        <div class="faq-question">
-                            <h3>Chatlify uygulaması ne kadar depolama alanı kullanır?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Chatlify uygulaması, kurulum sonrası yaklaşık 100MB yer kaplar. Ancak, sohbet geçmişi ve
-                                medya dosyaları arttıkça bu alan genişleyebilir. Depolama alanını yönetmek için Ayarlar
-                                > Veri ve Depolama > Depolama Alanını Yönet seçeneğini kullanabilirsiniz.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item hidden hidden-by-default" data-category="technical">
-                        <div class="faq-question">
-                            <h3>Chatlify bildirimlerini nasıl özelleştirebilirim?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Bildirim ayarlarını özelleştirmek için Ayarlar > Bildirimler menüsüne gidin. Burada,
-                                bildirim seslerini, titreşim ayarlarını, bildirimlerde içerik gösterme seçeneklerini ve
-                                Rahatsız Etme modunu yapılandırabilirsiniz. Ayrıca, belirli sohbetler veya gruplar için
-                                özel bildirim ayarları da yapabilirsiniz.</p>
-                        </div>
-                    </div>
-
-                    <!-- Ödeme Soruları (Gizli) -->
-                    <div class="faq-item hidden hidden-by-default" data-category="billing">
-                        <div class="faq-question">
-                            <h3>Chatlify Premium ne kadara mal oluyor?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Chatlify Premium aylık 9.99₺ veya yıllık 99.99₺ (iki ay ücretsiz) olarak sunulmaktadır.
-                                Aile planı ise aylık 24.99₺ ile 6 kişiye kadar premium özellikler sağlamaktadır.
-                                Fiyatlar bulunduğunuz bölgeye göre değişiklik gösterebilir.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item hidden hidden-by-default" data-category="billing">
-                        <div class="faq-question">
-                            <h3>Ödeme yöntemi bilgilerimi nasıl güncelleyebilirim?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Ödeme yöntemi bilgilerinizi güncellemek için Ayarlar > Abonelik > Ödeme Yöntemi
-                                seçeneğine gidin. Burada mevcut ödeme yönteminizi görüntüleyebilir, düzenleyebilir veya
-                                yeni bir ödeme yöntemi ekleyebilirsiniz.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item hidden hidden-by-default" data-category="billing">
-                        <div class="faq-question">
-                            <h3>Abonelik faturalarımı nasıl görüntüleyebilirim?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Faturalarınızı görüntülemek için Ayarlar > Abonelik > Fatura Geçmişi yolunu izleyin.
-                                Burada tüm geçmiş ödemelerinizi ve faturalarınızı görebilir, PDF olarak indirebilir veya
-                                e-posta ile gönderebilirsiniz.</p>
-                        </div>
-                    </div>
-
-                    <!-- Güvenlik Soruları (Gizli) -->
-                    <div class="faq-item hidden hidden-by-default" data-category="security">
-                        <div class="faq-question">
-                            <h3>Kendini imha eden mesajları nasıl gönderebilirim?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Kendini imha eden mesajlar göndermek için, sohbette mesaj kutusunun yanındaki zamanlayıcı
-                                simgesine tıklayın. 5 saniye ile 7 gün arasında bir süre seçin. Ayarlanan süre dolduktan
-                                sonra mesaj hem sizin hem de alıcının cihazından otomatik olarak silinecektir.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item hidden hidden-by-default" data-category="security">
-                        <div class="faq-question">
-                            <h3>Ekran görüntüsü bildirimleri nasıl çalışır?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Chatlify, birisi sohbetinizin ekran görüntüsünü aldığında sizi bilgilendirme özelliğine
-                                sahiptir. Bu özellik varsayılan olarak etkindir ve Ayarlar > Gizlilik > Ekran Görüntüsü
-                                Bildirimleri bölümünden devre dışı bırakılabilir. Ayrıca gizli sohbetlerde ekran
-                                görüntüsü alma özelliği tamamen engellenir.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item hidden hidden-by-default" data-category="security">
-                        <div class="faq-question">
-                            <h3>Chatlify'da gizli sohbet nedir ve nasıl başlatabilirim?</h3>
-                            <span class="icon"></span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Gizli sohbet, ekstra güvenlik katmanı ekleyen özel bir sohbet modudur. Bu modda mesajlar
-                                bulut sunucularında saklanmaz, ekran görüntüsü alınamaz ve mesajlar varsayılan olarak
-                                kendini imha eder. Gizli sohbet başlatmak için kişinin profiline gidin, üç nokta
-                                menüsüne tıklayın ve "Gizli Sohbet Başlat" seçeneğini seçin.</p>
-                        </div>
-                    </div>
-                </div>
+            <h2>SIK SORULAN SORULAR</h2>
+            <div class="faq-container" id="faqContainer">
+                <!-- Sık Sorulan Sorular buraya eklenecek -->
+            </div>
+            <div class="no-results">
+                Aramanıza uygun soru bulunamadı.
             </div>
         </section>
 
-        <section class="contact-section">
-            <div class="container">
-                <h2>Sorunuz hâlâ cevaplanmadı mı?</h2>
-                <p>Destek ekibimiz yardımcı olmak için burada</p>
-
-                <div class="contact-options">
-                    <div class="contact-option">
-                        <div class="icon">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <h3>E-posta Desteği</h3>
-                        <p>Genellikle 24 saat içinde yanıt verilir</p>
-                        <a href="mailto:support@chatlify.com" class="btn btn-secondary">E-posta Gönder</a>
-                    </div>
-
-                    <div class="contact-option">
-                        <div class="icon">
-                            <i class="fas fa-comment-dots"></i>
-                        </div>
-                        <h3>Canlı Sohbet</h3>
-                        <p>Hemen destek alın (09:00-18:00)</p>
-                        <a href="#" class="btn btn-secondary">Sohbet Başlat</a>
-                    </div>
-
-                    <div class="contact-option">
-                        <div class="icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h3>Topluluk Forumu</h3>
-                        <p>Diğer kullanıcılardan yardım alın</p>
-                        <a href="#" class="btn btn-secondary">Forumu Ziyaret Et</a>
-                    </div>
+        <section class="cta">
+            <div class="cta-content">
+                <h2>Hâlâ Sorularınız Var Mı?</h2>
+                <p>Sorunuzu bulamadıysanız veya daha fazla yardıma ihtiyacınız varsa, destek ekibimizle iletişime geçin.
+                </p>
+                <a href="#" class="btn btn-primary">İLETİŞİME GEÇ</a>
+            </div>
+            <div class="cta-image">
+                <div class="devices">
+                    <div class="device desktop"></div>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-nav">
-                    <div class="footer-nav-column">
-                        <h3>Özellikler</h3>
-                        <ul>
-                            <li><a href="#">Mesajlaşma</a></li>
-                            <li><a href="#">Sesli/Görüntülü Arama</a></li>
-                            <li><a href="#">Gruplar</a></li>
-                            <li><a href="#">Güvenlik</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-nav-column">
-                        <h3>Şirket</h3>
-                        <ul>
-                            <li><a href="#">Hakkımızda</a></li>
-                            <li><a href="#">Kariyer</a></li>
-                            <li><a href="#">Blog</a></li>
-                            <li><a href="#">İletişim</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-nav-column">
-                        <h3>Kaynaklar</h3>
-                        <ul>
-                            <li><a href="support.html">Destek</a></li>
-                            <li><a href="#">Topluluk</a></li>
-                            <li><a href="download.html">İndir</a></li>
-                            <li><a href="#">Geliştirici</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-nav-column">
-                        <h3>Yasal</h3>
-                        <ul>
-                            <li><a href="#">Gizlilik Politikası</a></li>
-                            <li><a href="#">Kullanım Şartları</a></li>
-                            <li><a href="#">Çerez Politikası</a></li>
-                            <li><a href="#">KVKK</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="footer-social">
-                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-github"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
-                </div>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <svg class="logo-svg" width="40" height="40" viewBox="0 0 200 200">
+                    <defs>
+                        <linearGradient id="footer-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#6a11cb" />
+                            <stop offset="100%" stop-color="#2575fc" />
+                        </linearGradient>
+                        <filter id="footer-glow">
+                            <feGaussianBlur stdDeviation="5" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                        <clipPath id="footer-circle-clip">
+                            <circle cx="100" cy="100" r="85" />
+                        </clipPath>
+                    </defs>
+                    <!-- Main Logo Circle -->
+                    <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#footer-gradient)" stroke-width="5"
+                        opacity="0.7" />
+                    <!-- Logo Path -->
+                    <path class="logo-path"
+                        d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
+                        stroke="url(#footer-gradient)" stroke-width="10" stroke-linecap="round"
+                        filter="url(#footer-glow)" />
+                    <!-- C Letter -->
+                    <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
+                        font-weight="bold" filter="url(#footer-glow)">C</text>
+                </svg>
+                <span>CHATLIFY</span>
             </div>
-            <div class="footer-bottom">
-                <div class="footer-logo">
-                    <svg width="120" height="30" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M12.864 18.4319C12.864 21.7909 10.0167 24.6383 6.6577 24.6383C3.29867 24.6383 0.451332 21.7909 0.451332 18.4319C0.451332 15.0729 3.29867 12.2256 6.6577 12.2256C10.0167 12.2256 12.864 15.0729 12.864 18.4319Z"
-                            fill="#4F94EF" />
-                        <path
-                            d="M29.5488 18.4319C29.5488 21.7909 26.7015 24.6383 23.3425 24.6383C19.9835 24.6383 17.1361 21.7909 17.1361 18.4319C17.1361 15.0729 19.9835 12.2256 23.3425 12.2256C26.7015 12.2256 29.5488 15.0729 29.5488 18.4319Z"
-                            fill="#4F94EF" />
-                        <path
-                            d="M46.2337 18.4319C46.2337 21.7909 43.3864 24.6383 40.0274 24.6383C36.6683 24.6383 33.821 21.7909 33.821 18.4319C33.821 15.0729 36.6683 12.2256 40.0274 12.2256C43.3864 12.2256 46.2337 15.0729 46.2337 18.4319Z"
-                            fill="#4F94EF" />
-                        <path
-                            d="M55.9248 11.8865C56.7712 11.8865 57.4248 11.2315 57.4248 10.3865V7.63745C57.4248 6.79245 56.7712 6.13745 55.9248 6.13745H52.5981C51.7517 6.13745 51.0981 6.79245 51.0981 7.63745V10.3865C51.0981 11.2315 51.7517 11.8865 52.5981 11.8865H55.9248Z"
-                            fill="#4F94EF" />
-                        <path
-                            d="M56 23.5005C56 24.3295 55.3324 25.0005 54.5071 25.0005H53.4929C52.6676 25.0005 52 24.3295 52 23.5005V16.5005C52 15.6715 52.6676 15.0005 53.4929 15.0005H54.5071C55.3324 15.0005 56 15.6715 56 16.5005V23.5005Z"
-                            fill="#4F94EF" />
-                        <path
-                            d="M64.5 23.5005C64.5 24.3295 63.8324 25.0005 63.0071 25.0005H61.9929C61.1676 25.0005 60.5 24.3295 60.5 23.5005V7.50045C60.5 6.67145 61.1676 6.00045 61.9929 6.00045H63.0071C63.8324 6.00045 64.5 6.67145 64.5 7.50045V23.5005Z"
-                            fill="#4F94EF" />
-                        <path
-                            d="M83 18.5005C83 22.0885 80.088 25.0005 76.5 25.0005C72.912 25.0005 70 22.0885 70 18.5005C70 14.9125 72.912 12.0005 76.5 12.0005C80.088 12.0005 83 14.9125 83 18.5005ZM76.5 22.0005C78.43 22.0005 80 20.4305 80 18.5005C80 16.5705 78.43 15.0005 76.5 15.0005C74.57 15.0005 73 16.5705 73 18.5005C73 20.4305 74.57 22.0005 76.5 22.0005Z"
-                            fill="#4F94EF" />
-                        <path
-                            d="M118.5 12.5005C119.328 12.5005 120 11.8285 120 11.0005V7.50045C120 6.67245 119.328 6.00045 118.5 6.00045H88.5C87.672 6.00045 87 6.67245 87 7.50045V11.0005C87 11.8285 87.672 12.5005 88.5 12.5005H97.5V23.5005C97.5 24.3285 98.172 25.0005 99 25.0005H103C103.828 25.0005 104.5 24.3285 104.5 23.5005V12.5005H118.5Z"
-                            fill="#4F94EF" />
-                    </svg>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h3>Features</h3>
+                    <ul>
+                        <li><a href="#">Voice Chat</a></li>
+                        <li><a href="#">Chatlify Premium</a></li>
+                        <li><a href="#">Communities</a></li>
+                        <li><a href="#">Integrations</a></li>
+                    </ul>
                 </div>
-                <p class="copyright">© 2023 Chatlify. Tüm hakları saklıdır.</p>
-                <div class="lang-selector">
-                    <span class="selected-lang">
-                        <i class="fas fa-globe"></i> Türkçe
-                    </span>
+                <div class="footer-column">
+                    <h3>Company</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press Room</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Community Guidelines</a></li>
+                        <li><a href="#">Announcements</a></li>
+                        <li><a href="#">Developer API</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Security</a></li>
+                        <li><a href="#">Data Protection</a></li>
+                    </ul>
                 </div>
             </div>
         </div>
     </footer>
-
-    <script src="js/main.js"></script>
-    <script src="js/support.js"></script>
 </body>
 
 </html>
