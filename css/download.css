@@ -5,6 +5,7 @@
     --icon-size: 4rem;
 }
 
+/* Download Hero Bölümü Düzenlemeleri */
 .download-hero {
     text-align: center;
     padding: 8rem 5% 5rem;
@@ -15,6 +16,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    z-index: 1;
 }
 
 .download-hero::before {
@@ -44,6 +46,8 @@
 .download-hero-content {
     max-width: 800px;
     margin: 0 auto;
+    position: relative;
+    z-index: 2;
 }
 
 .download-hero h1 {
@@ -51,7 +55,7 @@
     line-height: 1.2;
     margin-bottom: 1.5rem;
     font-weight: 800;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .download-hero p {
@@ -61,14 +65,16 @@
     max-width: 600px;
     line-height: 1.8;
     margin: 0 auto;
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
 }
 
-/* Download Seçenekleri Bölümü */
+/* Download Seçenekleri Bölümü Düzenlemeleri */
 .download-options {
     padding: 5rem 5%;
     max-width: 1400px;
     margin: 0 auto 5rem;
     position: relative;
+    z-index: 1;
 }
 
 .download-container {
@@ -76,6 +82,8 @@
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     margin-top: 2rem;
+    position: relative;
+    z-index: 2;
 }
 
 .download-card {
@@ -104,13 +112,13 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(106, 17, 203, 0.05), rgba(37, 117, 252, 0.05));
+    background: linear-gradient(135deg, rgba(106, 17, 203, 0.1), rgba(37, 117, 252, 0.1));
     z-index: -1;
 }
 
 .download-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
     background-color: var(--card-hover-bg);
 }
 
@@ -177,18 +185,19 @@
     opacity: 0.9;
 }
 
-/* Sistem Gereksinimleri Bölümü */
+/* Sistem Gereksinimleri Bölümü Düzenlemeleri */
 .system-requirements {
     padding: 5rem 5%;
     max-width: 1400px;
     margin: 0 auto 5rem;
     background-color: rgba(26, 26, 46, 0.7);
     border-radius: 30px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.05);
     position: relative;
     overflow: hidden;
+    z-index: 1;
 }
 
 .system-requirements::before {
@@ -198,7 +207,7 @@
     height: 200%;
     top: -50%;
     left: -50%;
-    background: radial-gradient(circle at center, rgba(106, 17, 203, 0.05), transparent 60%);
+    background: radial-gradient(circle at center, rgba(106, 17, 203, 0.08), transparent 60%);
     animation: rotate 30s linear infinite;
     z-index: -1;
 }
@@ -216,6 +225,8 @@
 .requirements-container {
     max-width: 1200px;
     margin: 0 auto;
+    position: relative;
+    z-index: 2;
 }
 
 .requirements-container h2 {
@@ -224,6 +235,7 @@
     margin-bottom: 3rem;
     font-weight: 800;
     letter-spacing: 1px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .requirements-grid {
@@ -233,20 +245,22 @@
 }
 
 .requirement-card {
-    background-color: rgba(26, 26, 46, 0.5);
+    background-color: rgba(26, 26, 46, 0.6);
     padding: 2rem;
     border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.05);
     transition: all 0.3s ease;
     opacity: 0;
     transform: translateY(30px);
     transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(8px);
 }
 
 .requirement-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    background-color: rgba(26, 26, 46, 0.8);
 }
 
 .requirement-card h3 {
@@ -393,12 +407,12 @@
 }
 
 @keyframes fadeInUp {
-    from {
+    0% {
         opacity: 0;
         transform: translateY(30px);
     }
 
-    to {
+    100% {
         opacity: 1;
         transform: translateY(0);
     }
