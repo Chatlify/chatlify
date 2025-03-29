@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatlify - Hesap Oluştur</title>
+    <meta name="description"
+        content="Chatlify'e kaydolun ve arkadaşlarınız, topluluklarınız ve dünya ile bağlantı kurun.">
+    <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <script src="js/main.js" defer></script>
+    <script src="js/auth.js" defer></script>
+</head>
+
+<body>
+    <div class="bg-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <header>
+        <nav>
+            <div class="logo">
+                <svg class="logo-svg" width="40" height="40" viewBox="0 0 200 200">
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#6a11cb" />
+                            <stop offset="100%" stop-color="#2575fc" />
+                        </linearGradient>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="5" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                        <clipPath id="circle-clip">
+                            <circle cx="100" cy="100" r="85" />
+                        </clipPath>
+                    </defs>
+                    <!-- Main Logo Circle -->
+                    <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#gradient)" stroke-width="5"
+                        opacity="0.7" />
+                    <!-- Logo Path -->
+                    <path class="logo-path"
+                        d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
+                        stroke="url(#gradient)" stroke-width="10" stroke-linecap="round" filter="url(#glow)" />
+                    <!-- C Letter -->
+                    <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
+                        font-weight="bold" filter="url(#glow)">C</text>
+                </svg>
+                <span>CHATLIFY</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Ana Sayfa</a>
+                <a href="community.html">Topluluk</a>
+                <a href="support.html">Destek</a>
+                <a href="download.html">İndir</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="auth-container">
+            <div class="auth-card register-card">
+                <div class="auth-header">
+                    <div class="auth-logo">
+                        <svg class="logo-svg-large" width="70" height="70" viewBox="0 0 200 200">
+                            <defs>
+                                <linearGradient id="auth-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#6a11cb" />
+                                    <stop offset="100%" stop-color="#2575fc" />
+                                </linearGradient>
+                                <filter id="auth-glow">
+                                    <feGaussianBlur stdDeviation="5" result="blur" />
+                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                </filter>
+                            </defs>
+                            <!-- Main Logo Circle -->
+                            <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#auth-gradient)"
+                                stroke-width="5" opacity="0.7" />
+                            <!-- Logo Path -->
+                            <path class="logo-path"
+                                d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100"
+                                fill="none" stroke="url(#auth-gradient)" stroke-width="10" stroke-linecap="round"
+                                filter="url(#auth-glow)" />
+                            <!-- C Letter -->
+                            <text x="75" y="125" class="logo-text" fill="white" font-size="80"
+                                font-family="Poppins, sans-serif" font-weight="bold" filter="url(#auth-glow)">C</text>
+                        </svg>
+                    </div>
+                    <h1>Hesap <span class="highlight">Oluştur</span></h1>
+                    <p>Chatlify'e katılın ve topluluğumuzun bir parçası olun</p>
+                </div>
+
+                <form id="registerForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="username">Kullanıcı Adı</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="username" name="username" placeholder="Kullanıcı adınızı girin"
+                                required>
+                        </div>
+                        <div class="error-message" id="usernameError">Kullanıcı adı en az 3 karakter olmalıdır</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">E-posta Adresi</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="email" name="email" placeholder="E-posta adresinizi girin" required>
+                        </div>
+                        <div class="error-message" id="emailError">Lütfen geçerli bir e-posta adresi girin</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm-email">E-posta Adresini Doğrula</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="confirm-email" name="confirm-email"
+                                placeholder="E-posta adresinizi tekrar girin" required>
+                        </div>
+                        <div class="error-message" id="confirmEmailError">E-posta adresleri eşleşmiyor</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Şifre</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" name="password" placeholder="Şifrenizi girin" required>
+                            <i class="fas fa-eye toggle-password"></i>
+                        </div>
+                        <div class="error-message" id="passwordError">Şifreniz en az 8 karakter olmalıdır</div>
+                    </div>
+
+                    <div class="password-strength">
+                        <div class="strength-meter">
+                            <div class="strength-segment"></div>
+                            <div class="strength-segment"></div>
+                            <div class="strength-segment"></div>
+                            <div class="strength-segment"></div>
+                        </div>
+                        <span class="strength-text">Şifre gücü: <span id="strengthValue">Zayıf</span></span>
+                    </div>
+
+                    <div class="form-options">
+                        <div class="terms-check">
+                            <input type="checkbox" id="terms" name="terms" required>
+                            <label for="terms">
+                                <a href="legal/terms-of-service.html" target="_blank">Kullanım Şartları</a> ve
+                                <a href="legal/privacy-policy.html" target="_blank">Gizlilik Politikası</a>'nı
+                                kabul ediyorum
+                            </label>
+                        </div>
+                        <div class="error-message" id="termsError">Kullanım şartlarını kabul etmelisiniz</div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <span class="btn-text">Hesap Oluştur</span>
+                        <div class="loading-spinner">
+                            <div class="spinner"></div>
+                        </div>
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    <p>Zaten hesabınız var mı? <a href="login.html">Giriş Yap</a></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-bottom auth-footer-bottom">
+            <div class="copyright">
+                <p>&copy; 2025 Chatlify Inc. Tüm hakları saklıdır.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>
