@@ -1296,3 +1296,28 @@ footer .footer-links .footer-column:nth-child(4) a {
 footer .footer-links .footer-column:nth-child(4) h3 {
     color: var(--primary-light) !important;
 }
+
+/* ÖNEMLİ: FOOTER SOSYAL MEDYA İKONLARI */
+.social-links a {
+    transform: none !important;
+    transition: color 0.3s ease !important;
+    box-shadow: none !important;
+    animation: none !important;
+    font-size: 1.2rem !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(5px) !important;
+}
+
+.social-links a:hover {
+    transform: none !important;
+    color: var(--primary-light) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: none !important;
+}
