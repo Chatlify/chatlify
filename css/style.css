@@ -1156,7 +1156,6 @@ footer::before {
 
 .social-links a {
     font-size: 1.2rem;
-    transition: all 0.3s ease;
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -1166,19 +1165,14 @@ footer::before {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(5px);
-}
-
-.social-links a,
-.social-links a:hover {
-    transform: none !important;
-    transition: color 0.3s ease !important;
-    box-shadow: none !important;
-    animation: none !important;
+    transition: none !important;
 }
 
 .social-links a:hover {
     color: var(--primary-light);
     background: rgba(255, 255, 255, 0.1);
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 .copyright {
@@ -1280,44 +1274,49 @@ footer::before {
     letter-spacing: 1px;
 }
 
-/* Footer link fix - daha kesin kurallar */
-.footer-links .footer-column:last-child a,
-footer .footer-links .footer-column:nth-child(4) a {
+/* Footer link fix */
+.footer-column a.active {
+    color: var(--primary-light);
+    position: relative;
+}
+
+.footer-column a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+}
+
+/* Legal links should be clickable */
+.footer-links .footer-column:nth-child(4) a,
+.footer-column:last-child a,
+footer .footer-links div:last-child a,
+footer a[href*="legal"],
+footer a[href*="terms"],
+footer a[href*="privacy"],
+footer a[href*="security"],
+footer a[href*="data-protection"] {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    user-select: auto !important;
+    text-decoration: none !important;
+    opacity: 1 !important;
+}
+
+/* Fix dla legal links */
+.footer-links div:last-child a {
     pointer-events: auto !important;
     cursor: pointer !important;
     position: relative !important;
-    z-index: 999 !important;
-    opacity: 1 !important;
-    transition: color 0.3s ease !important;
+    z-index: 100 !important;
 }
 
-/* Legal kısmındaki başlık */
-.footer-links .footer-column:last-child h3,
-footer .footer-links .footer-column:nth-child(4) h3 {
-    color: var(--primary-light) !important;
-}
-
-/* ÖNEMLİ: FOOTER SOSYAL MEDYA İKONLARI */
-.social-links a {
-    transform: none !important;
-    transition: color 0.3s ease !important;
-    box-shadow: none !important;
-    animation: none !important;
-    font-size: 1.2rem !important;
-    width: 36px !important;
-    height: 36px !important;
-    border-radius: 50% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
-    backdrop-filter: blur(5px) !important;
-}
-
-.social-links a:hover {
-    transform: none !important;
-    color: var(--primary-light) !important;
-    background: rgba(255, 255, 255, 0.1) !important;
-    box-shadow: none !important;
+/* Düzeltilmiş legal link href'leri */
+.footer-links div:last-child li:nth-child(1) a {
+    display: block !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
 }
