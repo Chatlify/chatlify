@@ -29,36 +29,41 @@
         <div class="server-sidebar">
             <div class="server-sidebar-inner">
                 <div class="server-item home active">
-                    <div class="server-icon">
-                        <!-- Chatlify Logo -->
-                        <svg width="28" height="28" viewBox="0 0 48 48" fill="currentColor"
+                    <div class="server-icon chatlify-logo">
+                        <svg width="36" height="36" viewBox="0 0 512 512" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
-                            <path d="M24 4L7 14V34L24 44L41 34V14L24 4Z" fill="url(#paint0_linear)" />
-                            <path d="M24 24L7 14L24 4L41 14L24 24Z" fill="url(#paint1_linear)" />
-                            <path d="M24 44L24 24L41 14V34L24 44Z" fill="url(#paint2_linear)" />
-                            <path d="M24 44L24 24L7 14V34L24 44Z" fill="url(#paint3_linear)" />
-                            <text x="17" y="25" fill="white" font-family="Arial" font-size="12"
-                                font-weight="bold">C</text>
+                            <path d="M256 0L50 125V375L256 500L462 375V125L256 0Z" fill="url(#paint0_linear)" />
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M256 0L50 125L256 250L462 125L256 0Z"
+                                fill="url(#paint1_linear)" />
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M256 500L256 250L462 125V375L256 500Z"
+                                fill="url(#paint2_linear)" />
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M256 500L256 250L50 125V375L256 500Z"
+                                fill="url(#paint3_linear)" />
+                            <path d="M198.8 175H169V295H198.8V175Z" fill="white" />
+                            <path d="M238.6 175H208.8V295H238.6V175Z" fill="white" />
+                            <path d="M278.4 175H248.6V295H278.4V175Z" fill="white" />
+                            <path d="M318.2 175H288.4V295H318.2V175Z" fill="white" />
+                            <path d="M358 175H328.2V295H358V175Z" fill="white" />
                             <defs>
-                                <linearGradient id="paint0_linear" x1="24" y1="4" x2="24" y2="44"
+                                <linearGradient id="paint0_linear" x1="50" y1="0" x2="445.7" y2="473.66"
                                     gradientUnits="userSpaceOnUse">
-                                    <stop stop-color="#5f75fc" />
-                                    <stop offset="1" stop-color="#6741D9" />
+                                    <stop stop-color="#3D68E7" />
+                                    <stop offset="1" stop-color="#6A11CB" />
                                 </linearGradient>
-                                <linearGradient id="paint1_linear" x1="24" y1="4" x2="24" y2="24"
+                                <linearGradient id="paint1_linear" x1="50" y1="0" x2="462" y2="250"
                                     gradientUnits="userSpaceOnUse">
-                                    <stop stop-color="#7289da" />
-                                    <stop offset="1" stop-color="#5f75fc" />
+                                    <stop stop-color="#3D68E7" />
+                                    <stop offset="1" stop-color="#6A11CB" />
                                 </linearGradient>
-                                <linearGradient id="paint2_linear" x1="32.5" y1="19" x2="32.5" y2="44"
+                                <linearGradient id="paint2_linear" x1="462" y1="125" x2="256" y2="500"
                                     gradientUnits="userSpaceOnUse">
-                                    <stop stop-color="#5865F2" />
-                                    <stop offset="1" stop-color="#5546D3" />
+                                    <stop stop-color="#3D68E7" />
+                                    <stop offset="1" stop-color="#6A11CB" />
                                 </linearGradient>
-                                <linearGradient id="paint3_linear" x1="15.5" y1="19" x2="15.5" y2="44"
+                                <linearGradient id="paint3_linear" x1="50" y1="125" x2="256" y2="500"
                                     gradientUnits="userSpaceOnUse">
-                                    <stop stop-color="#5865F2" />
-                                    <stop offset="1" stop-color="#5546D3" />
+                                    <stop stop-color="#3D68E7" />
+                                    <stop offset="1" stop-color="#6A11CB" />
                                 </linearGradient>
                             </defs>
                         </svg>
@@ -142,7 +147,7 @@
             </div>
 
             <div class="dm-groups">
-                <div class="dm-group">
+                <div class="dm-group" id="friends-group">
                     <div class="dm-group-header">
                         <div class="dm-group-title">Arkadaşlar</div>
                         <div class="dm-group-toggle">
@@ -184,7 +189,7 @@
                     </div>
                 </div>
 
-                <div class="dm-group">
+                <div class="dm-group" id="group-messages">
                     <div class="dm-group-header">
                         <div class="dm-group-title">Grup Mesajları</div>
                         <div class="dm-group-toggle">
@@ -225,7 +230,6 @@
                     </div>
                     <div class="dm-user-info">
                         <div class="dm-user-name">KullaniciAdi</div>
-                        <div class="dm-user-tag">#1234</div>
                     </div>
                 </div>
                 <div class="dm-user-controls">
@@ -307,9 +311,6 @@
                                 <div class="friend-action message">
                                     <i class="fas fa-comment"></i> Mesaj
                                 </div>
-                                <div class="friend-action more">
-                                    <i class="fas fa-ellipsis-h"></i>
-                                </div>
                             </div>
                         </div>
                         <div class="friend-card">
@@ -326,9 +327,6 @@
                             <div class="friend-actions">
                                 <div class="friend-action message">
                                     <i class="fas fa-comment"></i> Mesaj
-                                </div>
-                                <div class="friend-action more">
-                                    <i class="fas fa-ellipsis-h"></i>
                                 </div>
                             </div>
                         </div>
@@ -347,9 +345,6 @@
                                 <div class="friend-action message">
                                     <i class="fas fa-comment"></i> Mesaj
                                 </div>
-                                <div class="friend-action more">
-                                    <i class="fas fa-ellipsis-h"></i>
-                                </div>
                             </div>
                         </div>
                         <div class="friend-card">
@@ -366,9 +361,6 @@
                             <div class="friend-actions">
                                 <div class="friend-action message">
                                     <i class="fas fa-comment"></i> Mesaj
-                                </div>
-                                <div class="friend-action more">
-                                    <i class="fas fa-ellipsis-h"></i>
                                 </div>
                             </div>
                         </div>
@@ -390,11 +382,11 @@
                                 </div>
                             </div>
                             <div class="friend-actions">
-                                <div class="friend-action message">
+                                <div class="friend-action accept">
                                     <i class="fas fa-check"></i> Kabul Et
                                 </div>
-                                <div class="friend-action more">
-                                    <i class="fas fa-times"></i>
+                                <div class="friend-action decline">
+                                    <i class="fas fa-times"></i> Reddet
                                 </div>
                             </div>
                         </div>
@@ -410,11 +402,11 @@
                                 </div>
                             </div>
                             <div class="friend-actions">
-                                <div class="friend-action message">
+                                <div class="friend-action accept">
                                     <i class="fas fa-check"></i> Kabul Et
                                 </div>
-                                <div class="friend-action more">
-                                    <i class="fas fa-times"></i>
+                                <div class="friend-action decline">
+                                    <i class="fas fa-times"></i> Reddet
                                 </div>
                             </div>
                         </div>
@@ -474,6 +466,7 @@
                             </div>
                         </div>
                     </div>
+                    <div class="sponsor-server-badge">SPONSOR</div>
                 </div>
 
                 <div class="sponsor-server">
@@ -493,6 +486,7 @@
                             </div>
                         </div>
                     </div>
+                    <div class="sponsor-server-badge">SPONSOR</div>
                 </div>
 
                 <div class="sponsor-server">
@@ -512,6 +506,7 @@
                             </div>
                         </div>
                     </div>
+                    <div class="sponsor-server-badge">SPONSOR</div>
                 </div>
 
                 <div class="sponsor-server">
@@ -531,6 +526,7 @@
                             </div>
                         </div>
                     </div>
+                    <div class="sponsor-server-badge">SPONSOR</div>
                 </div>
 
                 <div class="sponsor-server">
@@ -550,6 +546,7 @@
                             </div>
                         </div>
                     </div>
+                    <div class="sponsor-server-badge">SPONSOR</div>
                 </div>
 
                 <div class="sponsor-server">
@@ -569,6 +566,7 @@
                             </div>
                         </div>
                     </div>
+                    <div class="sponsor-server-badge">SPONSOR</div>
                 </div>
 
                 <div class="sponsor-server">
@@ -588,6 +586,7 @@
                             </div>
                         </div>
                     </div>
+                    <div class="sponsor-server-badge">SPONSOR</div>
                 </div>
 
                 <div class="sponsor-server">
@@ -607,6 +606,7 @@
                             </div>
                         </div>
                     </div>
+                    <div class="sponsor-server-badge">SPONSOR</div>
                 </div>
 
                 <div class="sponsor-server">
@@ -626,6 +626,7 @@
                             </div>
                         </div>
                     </div>
+                    <div class="sponsor-server-badge">SPONSOR</div>
                 </div>
             </div>
         </div>

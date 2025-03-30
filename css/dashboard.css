@@ -462,6 +462,7 @@
 .chat-type-btn.active {
     background: var(--gradient-primary);
     color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
 .chat-type-btn:first-child {
@@ -470,6 +471,11 @@
 
 .chat-type-btn:last-child {
     border-radius: 0 4px 4px 0;
+}
+
+.chat-type-btn:hover:not(.active) {
+    background-color: rgba(61, 104, 231, 0.15);
+    color: var(--text-color);
 }
 
 .dm-groups {
@@ -991,39 +997,53 @@
 
 .friend-actions {
     display: flex;
-    gap: 8px;
+    justify-content: center;
     margin-top: 12px;
 }
 
 .friend-action {
-    flex: 1;
     height: 36px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 4px;
+    border-radius: 8px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
+    padding: 0 16px;
+    margin: 0 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .friend-action.message {
     background: var(--gradient-primary);
     color: white;
+    flex: 1;
+    max-width: 180px;
 }
 
 .friend-action.message:hover {
-    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.friend-action.more {
-    background-color: rgba(61, 104, 231, 0.15);
-    color: var(--text-color);
+.friend-action.accept {
+    background: var(--success-color);
+    color: white;
+    min-width: 100px;
 }
 
-.friend-action.more:hover {
-    background-color: rgba(61, 104, 231, 0.25);
+.friend-action.decline {
+    background: var(--danger-color);
+    color: white;
+    min-width: 100px;
+}
+
+.friend-action.accept:hover,
+.friend-action.decline:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .friend-action i {
@@ -1212,6 +1232,26 @@
     background: var(--gradient-primary);
     border-radius: 10px;
     letter-spacing: 0.02em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Chatlify Logo için özel stil */
+.chatlify-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--gradient-primary);
+}
+
+/* DM Group için ID selector eklemeleri */
+#friends-group {
+    display: block;
+    /* Varsayılan olarak gösterilecek */
+}
+
+#group-messages {
+    display: none;
+    /* Varsayılan olarak gizlenecek */
 }
 
 /* Duyarlı Tasarım */
