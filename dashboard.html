@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatlify - Dashboard</title>
+    <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <script src="js/main.js" defer></script>
+    <script src="js/dashboard.js" defer></script>
+</head>
+
+<body class="dashboard-page">
+    <div class="dashboard-container">
+        <!-- Sol taraftaki sunucu sidebar -->
+        <div class="server-sidebar">
+            <div class="server-sidebar-inner">
+                <!-- Ana buton -->
+                <div class="server-item home">
+                    <div class="server-icon">
+                        <svg class="logo-svg" width="30" height="30" viewBox="0 0 200 200">
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#6a11cb" />
+                                    <stop offset="100%" stop-color="#2575fc" />
+                                </linearGradient>
+                                <filter id="glow">
+                                    <feGaussianBlur stdDeviation="5" result="blur" />
+                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                </filter>
+                            </defs>
+                            <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#gradient)" stroke-width="5"
+                                opacity="0.7" />
+                            <path class="logo-path"
+                                d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100"
+                                fill="none" stroke="url(#gradient)" stroke-width="10" stroke-linecap="round"
+                                filter="url(#glow)" />
+                            <text x="75" y="125" class="logo-text" fill="white" font-size="80"
+                                font-family="Poppins, sans-serif" font-weight="bold" filter="url(#glow)">C</text>
+                        </svg>
+                    </div>
+                    <div class="server-tooltip">Ana Sayfa</div>
+                </div>
+
+                <div class="server-divider"></div>
+
+                <!-- Sunucu butonları -->
+                <div class="server-item">
+                    <div class="server-icon">
+                        <img src="https://via.placeholder.com/50/6a11cb/ffffff?text=G" alt="Gaming">
+                        <div class="server-notification">3</div>
+                    </div>
+                    <div class="server-tooltip">Gaming Topluluğu</div>
+                </div>
+
+                <div class="server-item">
+                    <div class="server-icon">
+                        <img src="https://via.placeholder.com/50/2575fc/ffffff?text=T" alt="Technology">
+                    </div>
+                    <div class="server-tooltip">Teknoloji Topluluğu</div>
+                </div>
+
+                <div class="server-item">
+                    <div class="server-icon">
+                        <img src="https://via.placeholder.com/50/8c52ff/ffffff?text=M" alt="Music">
+                    </div>
+                    <div class="server-tooltip">Müzik Topluluğu</div>
+                </div>
+
+                <div class="server-item">
+                    <div class="server-icon">
+                        <img src="https://via.placeholder.com/50/5700a3/ffffff?text=A" alt="Art">
+                    </div>
+                    <div class="server-tooltip">Sanat Topluluğu</div>
+                </div>
+
+                <div class="server-item">
+                    <div class="server-icon">
+                        <div class="server-add-icon">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                    </div>
+                    <div class="server-tooltip">Sunucu Ekle</div>
+                </div>
+
+                <div class="server-item">
+                    <div class="server-icon">
+                        <div class="server-discover-icon">
+                            <i class="fas fa-compass"></i>
+                        </div>
+                    </div>
+                    <div class="server-tooltip">Sunucu Keşfet</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Özel mesajlar kısmı -->
+        <div class="direct-messages">
+            <div class="dm-header">
+                <div class="search-bar">
+                    <input type="text" placeholder="Sohbet bul ya da başlat">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+
+            <div class="dm-content">
+                <div class="dm-group">
+                    <div class="dm-group-header">
+                        <span>Arkadaşlar</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+
+                    <div class="dm-item active">
+                        <div class="dm-avatar">
+                            <img src="https://via.placeholder.com/40/6a11cb/ffffff?text=N" alt="Nowa">
+                            <div class="status-indicator online"></div>
+                        </div>
+                        <div class="dm-info">
+                            <div class="dm-name">Nowa</div>
+                            <div class="dm-status">Çevrimiçi</div>
+                        </div>
+                    </div>
+
+                    <div class="dm-item">
+                        <div class="dm-avatar">
+                            <img src="https://via.placeholder.com/40/2575fc/ffffff?text=K" alt="kayzel">
+                            <div class="status-indicator idle"></div>
+                        </div>
+                        <div class="dm-info">
+                            <div class="dm-name">kayzel</div>
+                            <div class="dm-status">Boşta</div>
+                        </div>
+                    </div>
+
+                    <div class="dm-item">
+                        <div class="dm-avatar">
+                            <img src="https://via.placeholder.com/40/8c52ff/ffffff?text=A" alt="Angels">
+                            <div class="status-indicator dnd"></div>
+                        </div>
+                        <div class="dm-info">
+                            <div class="dm-name">! Angels</div>
+                            <div class="dm-status">Rahatsız Etmeyin</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dm-group">
+                    <div class="dm-group-header">
+                        <span>Mesaj İstekleri</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+
+                    <div class="dm-item">
+                        <div class="dm-avatar">
+                            <img src="https://via.placeholder.com/40/5700a3/ffffff?text=M" alt="Mert">
+                            <div class="status-indicator offline"></div>
+                        </div>
+                        <div class="dm-info">
+                            <div class="dm-name">Mert</div>
+                            <div class="dm-status">Çevrimdışı</div>
+                        </div>
+                        <div class="dm-notification">1</div>
+                    </div>
+                </div>
+
+                <div class="dm-group">
+                    <div class="dm-group-header">
+                        <span>Gruplar</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+
+                    <div class="dm-item">
+                        <div class="dm-group-avatar">
+                            <div class="group-avatar-stack">
+                                <img src="https://via.placeholder.com/40/6a11cb/ffffff?text=N" alt="Nowa">
+                                <img src="https://via.placeholder.com/40/2575fc/ffffff?text=K" alt="kayzel">
+                                <img src="https://via.placeholder.com/40/8c52ff/ffffff?text=A" alt="Angels">
+                            </div>
+                        </div>
+                        <div class="dm-info">
+                            <div class="dm-name">Geliştirici Ekibi</div>
+                            <div class="dm-status">3 üye</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dm-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <img src="https://via.placeholder.com/40/6a11cb/ffffff?text=P" alt="Profil">
+                        <div class="status-indicator online"></div>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">Kullanıcı</div>
+                        <div class="user-tag">#1234</div>
+                    </div>
+                </div>
+                <div class="user-actions">
+                    <button class="user-action-btn">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button class="user-action-btn">
+                        <i class="fas fa-headphones"></i>
+                    </button>
+                    <button class="user-action-btn">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ana içerik alanı -->
+        <div class="main-content">
+            <!-- Üst kısım butonları -->
+            <div class="friends-header">
+                <div class="friends-title">
+                    <i class="fas fa-user-friends"></i>
+                    <h2>Arkadaşlar</h2>
+                </div>
+                <div class="friends-tabs">
+                    <button class="friends-tab active">Arkadaşlarım</button>
+                    <button class="friends-tab">Arkadaşlık Bekleyenler <span
+                            class="notification-badge">2</span></button>
+                    <button class="friends-tab">Arkadaşlık Gönder</button>
+                </div>
+                <div class="add-friend-button">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Arkadaş Ekle</span>
+                </div>
+            </div>
+
+            <!-- Ana içerik -->
+            <div class="friends-content">
+                <div class="search-friends">
+                    <input type="text" placeholder="Arkadaş ara">
+                    <i class="fas fa-search"></i>
+                </div>
+
+                <div class="friends-list">
+                    <div class="friend-item">
+                        <div class="friend-avatar">
+                            <img src="https://via.placeholder.com/50/6a11cb/ffffff?text=N" alt="Nowa">
+                            <div class="status-indicator online"></div>
+                        </div>
+                        <div class="friend-info">
+                            <div class="friend-name">Nowa</div>
+                            <div class="friend-status">Çevrimiçi</div>
+                        </div>
+                        <div class="friend-actions">
+                            <button class="friend-action-btn" title="Mesaj">
+                                <i class="fas fa-comment-alt"></i>
+                            </button>
+                            <button class="friend-action-btn" title="Görüntülü Arama">
+                                <i class="fas fa-video"></i>
+                            </button>
+                            <button class="friend-action-btn" title="Sesli Arama">
+                                <i class="fas fa-phone-alt"></i>
+                            </button>
+                            <button class="friend-action-btn" title="Diğer">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="friend-item">
+                        <div class="friend-avatar">
+                            <img src="https://via.placeholder.com/50/2575fc/ffffff?text=K" alt="kayzel">
+                            <div class="status-indicator idle"></div>
+                        </div>
+                        <div class="friend-info">
+                            <div class="friend-name">kayzel</div>
+                            <div class="friend-status">Boşta - Visual Studio Code kullanıyor</div>
+                        </div>
+                        <div class="friend-actions">
+                            <button class="friend-action-btn" title="Mesaj">
+                                <i class="fas fa-comment-alt"></i>
+                            </button>
+                            <button class="friend-action-btn" title="Görüntülü Arama">
+                                <i class="fas fa-video"></i>
+                            </button>
+                            <button class="friend-action-btn" title="Sesli Arama">
+                                <i class="fas fa-phone-alt"></i>
+                            </button>
+                            <button class="friend-action-btn" title="Diğer">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="friend-item">
+                        <div class="friend-avatar">
+                            <img src="https://via.placeholder.com/50/8c52ff/ffffff?text=A" alt="Angels">
+                            <div class="status-indicator dnd"></div>
+                        </div>
+                        <div class="friend-info">
+                            <div class="friend-name">! Angels</div>
+                            <div class="friend-status">Rahatsız Etmeyin</div>
+                        </div>
+                        <div class="friend-actions">
+                            <button class="friend-action-btn" title="Mesaj">
+                                <i class="fas fa-comment-alt"></i>
+                            </button>
+                            <button class="friend-action-btn" title="Görüntülü Arama">
+                                <i class="fas fa-video"></i>
+                            </button>
+                            <button class="friend-action-btn" title="Sesli Arama">
+                                <i class="fas fa-phone-alt"></i>
+                            </button>
+                            <button class="friend-action-btn" title="Diğer">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="friend-item">
+                        <div class="friend-avatar">
+                            <img src="https://via.placeholder.com/50/5700a3/ffffff?text=E" alt="Eren">
+                            <div class="status-indicator offline"></div>
+                        </div>
+                        <div class="friend-info">
+                            <div class="friend-name">Eren</div>
+                            <div class="friend-status">Çevrimdışı</div>
+                        </div>
+                        <div class="friend-actions">
+                            <button class="friend-action-btn" title="Mesaj">
+                                <i class="fas fa-comment-alt"></i>
+                            </button>
+                            <button class="friend-action-btn" title="Diğer">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ taraftaki sponsor sunucular kısmı -->
+        <div class="sponsor-servers">
+            <div class="sponsor-header">
+                <h3>Sponsor Sunucular</h3>
+            </div>
+
+            <div class="sponsor-list">
+                <div class="sponsor-item">
+                    <div class="sponsor-banner"
+                        style="background-image: url('https://via.placeholder.com/300x100/6a11cb/ffffff');">
+                        <div class="sponsor-logo">
+                            <img src="https://via.placeholder.com/50/ffffff/6a11cb?text=G" alt="Gaming Hub">
+                        </div>
+                    </div>
+                    <div class="sponsor-info">
+                        <div class="sponsor-name">Gaming Hub</div>
+                        <div class="sponsor-stats">
+                            <span><i class="fas fa-user"></i> 130K+</span>
+                            <span><i class="fas fa-circle online"></i> 5.2K</span>
+                        </div>
+                        <button class="sponsor-join-btn">Katıl</button>
+                    </div>
+                </div>
+
+                <div class="sponsor-item">
+                    <div class="sponsor-banner"
+                        style="background-image: url('https://via.placeholder.com/300x100/2575fc/ffffff');">
+                        <div class="sponsor-logo">
+                            <img src="https://via.placeholder.com/50/ffffff/2575fc?text=T" alt="Tech Talks">
+                        </div>
+                    </div>
+                    <div class="sponsor-info">
+                        <div class="sponsor-name">Tech Talks</div>
+                        <div class="sponsor-stats">
+                            <span><i class="fas fa-user"></i> 95K+</span>
+                            <span><i class="fas fa-circle online"></i> 3.1K</span>
+                        </div>
+                        <button class="sponsor-join-btn">Katıl</button>
+                    </div>
+                </div>
+
+                <div class="sponsor-item">
+                    <div class="sponsor-banner"
+                        style="background-image: url('https://via.placeholder.com/300x100/8c52ff/ffffff');">
+                        <div class="sponsor-logo">
+                            <img src="https://via.placeholder.com/50/ffffff/8c52ff?text=M" alt="Music Club">
+                        </div>
+                    </div>
+                    <div class="sponsor-info">
+                        <div class="sponsor-name">Music Club</div>
+                        <div class="sponsor-stats">
+                            <span><i class="fas fa-user"></i> 85K+</span>
+                            <span><i class="fas fa-circle online"></i> 2.8K</span>
+                        </div>
+                        <button class="sponsor-join-btn">Katıl</button>
+                    </div>
+                </div>
+
+                <div class="sponsor-item">
+                    <div class="sponsor-banner"
+                        style="background-image: url('https://via.placeholder.com/300x100/5700a3/ffffff');">
+                        <div class="sponsor-logo">
+                            <img src="https://via.placeholder.com/50/ffffff/5700a3?text=A" alt="Art Gallery">
+                        </div>
+                    </div>
+                    <div class="sponsor-info">
+                        <div class="sponsor-name">Art Gallery</div>
+                        <div class="sponsor-stats">
+                            <span><i class="fas fa-user"></i> 65K+</span>
+                            <span><i class="fas fa-circle online"></i> 1.5K</span>
+                        </div>
+                        <button class="sponsor-join-btn">Katıl</button>
+                    </div>
+                </div>
+
+                <div class="sponsor-item">
+                    <div class="sponsor-banner"
+                        style="background-image: url('https://via.placeholder.com/300x100/6a11cb/ffffff');">
+                        <div class="sponsor-logo">
+                            <img src="https://via.placeholder.com/50/ffffff/6a11cb?text=D" alt="Developer Hub">
+                        </div>
+                    </div>
+                    <div class="sponsor-info">
+                        <div class="sponsor-name">Developer Hub</div>
+                        <div class="sponsor-stats">
+                            <span><i class="fas fa-user"></i> 110K+</span>
+                            <span><i class="fas fa-circle online"></i> 4.5K</span>
+                        </div>
+                        <button class="sponsor-join-btn">Katıl</button>
+                    </div>
+                </div>
+
+                <div class="sponsor-item">
+                    <div class="sponsor-banner"
+                        style="background-image: url('https://via.placeholder.com/300x100/2575fc/ffffff');">
+                        <div class="sponsor-logo">
+                            <img src="https://via.placeholder.com/50/ffffff/2575fc?text=E" alt="E-Sports">
+                        </div>
+                    </div>
+                    <div class="sponsor-info">
+                        <div class="sponsor-name">E-Sports</div>
+                        <div class="sponsor-stats">
+                            <span><i class="fas fa-user"></i> 125K+</span>
+                            <span><i class="fas fa-circle online"></i> 7.2K</span>
+                        </div>
+                        <button class="sponsor-join-btn">Katıl</button>
+                    </div>
+                </div>
+
+                <div class="sponsor-item">
+                    <div class="sponsor-banner"
+                        style="background-image: url('https://via.placeholder.com/300x100/8c52ff/ffffff');">
+                        <div class="sponsor-logo">
+                            <img src="https://via.placeholder.com/50/ffffff/8c52ff?text=C" alt="Crypto Talk">
+                        </div>
+                    </div>
+                    <div class="sponsor-info">
+                        <div class="sponsor-name">Crypto Talk</div>
+                        <div class="sponsor-stats">
+                            <span><i class="fas fa-user"></i> 75K+</span>
+                            <span><i class="fas fa-circle online"></i> 3.7K</span>
+                        </div>
+                        <button class="sponsor-join-btn">Katıl</button>
+                    </div>
+                </div>
+
+                <div class="sponsor-item">
+                    <div class="sponsor-banner"
+                        style="background-image: url('https://via.placeholder.com/300x100/5700a3/ffffff');">
+                        <div class="sponsor-logo">
+                            <img src="https://via.placeholder.com/50/ffffff/5700a3?text=B" alt="Book Club">
+                        </div>
+                    </div>
+                    <div class="sponsor-info">
+                        <div class="sponsor-name">Book Club</div>
+                        <div class="sponsor-stats">
+                            <span><i class="fas fa-user"></i> 50K+</span>
+                            <span><i class="fas fa-circle online"></i> 1.2K</span>
+                        </div>
+                        <button class="sponsor-join-btn">Katıl</button>
+                    </div>
+                </div>
+
+                <div class="sponsor-item">
+                    <div class="sponsor-banner"
+                        style="background-image: url('https://via.placeholder.com/300x100/6a11cb/ffffff');">
+                        <div class="sponsor-logo">
+                            <img src="https://via.placeholder.com/50/ffffff/6a11cb?text=F" alt="Film & Series">
+                        </div>
+                    </div>
+                    <div class="sponsor-info">
+                        <div class="sponsor-name">Film & Series</div>
+                        <div class="sponsor-stats">
+                            <span><i class="fas fa-user"></i> 60K+</span>
+                            <span><i class="fas fa-circle online"></i> 2.5K</span>
+                        </div>
+                        <button class="sponsor-join-btn">Katıl</button>
+                    </div>
+                </div>
+
+                <div class="sponsor-item">
+                    <div class="sponsor-banner"
+                        style="background-image: url('https://via.placeholder.com/300x100/2575fc/ffffff');">
+                        <div class="sponsor-logo">
+                            <img src="https://via.placeholder.com/50/ffffff/2575fc?text=S" alt="Science Hub">
+                        </div>
+                    </div>
+                    <div class="sponsor-info">
+                        <div class="sponsor-name">Science Hub</div>
+                        <div class="sponsor-stats">
+                            <span><i class="fas fa-user"></i> 45K+</span>
+                            <span><i class="fas fa-circle online"></i> 1.8K</span>
+                        </div>
+                        <button class="sponsor-join-btn">Katıl</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
