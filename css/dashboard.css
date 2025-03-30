@@ -82,6 +82,17 @@
     }
 }
 
+/* Tüm scrollbar'ları gizle */
+::-webkit-scrollbar {
+    width: 0;
+    display: none;
+}
+
+* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
 /* Dashboard Temel Düzeni */
 .dashboard-page {
     margin: 0;
@@ -171,19 +182,8 @@
     overflow-y: auto;
     overflow-x: hidden;
     flex-shrink: 0;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
     z-index: 10;
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
-}
-
-.server-sidebar::-webkit-scrollbar {
-    width: 4px;
-}
-
-.server-sidebar::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
 }
 
 .server-sidebar-inner {
@@ -325,7 +325,7 @@
 }
 
 .server-add-icon,
-.server-discover-icon {
+.server-settings-icon {
     width: 48px;
     height: 48px;
     border-radius: 24px;
@@ -340,19 +340,19 @@
     color: #3ba55c;
 }
 
-.server-discover-icon {
-    color: #3ba55c;
+.server-settings-icon {
+    color: #b9bbbe;
 }
 
 .server-item:hover .server-add-icon,
-.server-item:hover .server-discover-icon {
+.server-item:hover .server-settings-icon {
     border-radius: 16px;
     background-color: var(--primary-color);
     color: white;
 }
 
 .server-add-icon i,
-.server-discover-icon i {
+.server-settings-icon i {
     font-size: 20px;
     transition: transform var(--animation-speed) ease;
 }
@@ -361,7 +361,7 @@
     transform: rotate(0deg);
 }
 
-.server-item:hover .server-discover-icon i {
+.server-item:hover .server-settings-icon i {
     transform: scale(1);
 }
 
@@ -437,6 +437,39 @@
 
 .dm-search:focus-within {
     background-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Chat Type Selector */
+.chat-type-selector {
+    display: flex;
+    margin: 8px 10px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.chat-type-btn {
+    flex: 1;
+    padding: 8px 0;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chat-type-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.chat-type-btn:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+.chat-type-btn:last-child {
+    border-radius: 0 4px 4px 0;
 }
 
 .dm-groups {
@@ -646,7 +679,6 @@
 
 .dm-user-controls {
     display: flex;
-    gap: 8px;
     margin-left: 8px;
 }
 
@@ -664,6 +696,15 @@
 
 .dm-user-control:hover {
     color: var(--text-color);
+}
+
+.logout-icon {
+    color: var(--danger-color);
+}
+
+.logout-icon:hover {
+    color: var(--danger-color);
+    background-color: rgba(237, 66, 69, 0.1);
 }
 
 /* Ana İçerik Alanı */
@@ -1002,43 +1043,8 @@
     color: var(--text-color);
 }
 
-.sponsor-tabs {
-    display: flex;
-    padding: 8px 16px;
-    gap: 8px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.sponsor-tabs::-webkit-scrollbar {
-    display: none;
-}
-
-.sponsor-tab {
-    padding: 6px 12px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    background-color: transparent;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-}
-
-.sponsor-tab:hover {
-    color: var(--text-color);
-    background-color: var(--item-hover);
-}
-
-.sponsor-tab.active {
-    color: var(--text-color);
-    background-color: var(--primary-color);
-}
-
 .sponsor-search {
-    margin: 0 16px 12px;
+    margin: 12px 16px;
     height: 32px;
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 4px;

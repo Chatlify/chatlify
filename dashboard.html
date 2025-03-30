@@ -30,12 +30,15 @@
             <div class="server-sidebar-inner">
                 <div class="server-item home active">
                     <div class="server-icon">
+                        <!-- Chatlify Logo -->
                         <svg width="28" height="28" viewBox="0 0 48 48" fill="currentColor"
                             xmlns="http://www.w3.org/2000/svg">
                             <path d="M24 4L7 14V34L24 44L41 34V14L24 4Z" fill="url(#paint0_linear)" />
                             <path d="M24 24L7 14L24 4L41 14L24 24Z" fill="url(#paint1_linear)" />
                             <path d="M24 44L24 24L41 14V34L24 44Z" fill="url(#paint2_linear)" />
                             <path d="M24 44L24 24L7 14V34L24 44Z" fill="url(#paint3_linear)" />
+                            <text x="17" y="25" fill="white" font-family="Arial" font-size="12"
+                                font-weight="bold">C</text>
                             <defs>
                                 <linearGradient id="paint0_linear" x1="24" y1="4" x2="24" y2="44"
                                     gradientUnits="userSpaceOnUse">
@@ -61,7 +64,7 @@
                         </svg>
                     </div>
                     <div class="server-pill"></div>
-                    <div class="server-tooltip">Ana Sayfa</div>
+                    <div class="server-tooltip">Chatlify</div>
                 </div>
 
                 <div class="server-divider"></div>
@@ -109,10 +112,10 @@
                 </div>
 
                 <div class="server-item">
-                    <div class="server-discover-icon">
-                        <i class="fas fa-compass"></i>
+                    <div class="server-settings-icon">
+                        <i class="fas fa-cog"></i>
                     </div>
-                    <div class="server-tooltip">Sunucu Keşfet</div>
+                    <div class="server-tooltip">Ayarlar</div>
                 </div>
             </div>
         </div>
@@ -131,6 +134,11 @@
             <div class="dm-search">
                 <i class="fas fa-search"></i>
                 <input type="text" placeholder="Sohbetlerde Ara">
+            </div>
+
+            <div class="chat-type-selector">
+                <div class="chat-type-btn active">Normal Sohbet</div>
+                <div class="chat-type-btn">Grup Sohbeti</div>
             </div>
 
             <div class="dm-groups">
@@ -221,14 +229,8 @@
                     </div>
                 </div>
                 <div class="dm-user-controls">
-                    <div class="dm-user-control">
-                        <i class="fas fa-microphone"></i>
-                    </div>
-                    <div class="dm-user-control">
-                        <i class="fas fa-headphones"></i>
-                    </div>
-                    <div class="dm-user-control">
-                        <i class="fas fa-cog"></i>
+                    <div class="dm-user-control logout-icon">
+                        <i class="fas fa-sign-out-alt"></i>
                     </div>
                 </div>
             </div>
@@ -425,15 +427,8 @@
         <div class="sponsor-sidebar">
             <div class="sponsor-header">
                 <div class="sponsor-header-title">
-                    Keşfet
+                    Sponsor Sunucular
                 </div>
-            </div>
-
-            <div class="sponsor-tabs">
-                <div class="sponsor-tab">Sponsor</div>
-                <div class="sponsor-tab">Popüler</div>
-                <div class="sponsor-tab active">Yeni</div>
-                <div class="sponsor-tab">Oyun</div>
             </div>
 
             <div class="sponsor-search">
