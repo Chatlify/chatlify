@@ -17,414 +17,403 @@
 </head>
 
 <body class="dashboard-page">
-    <!-- Animasyonlu arka plan -->
+    <!-- Animasyonlu Arkaplan -->
     <div class="bg-animation">
         <div class="stars"></div>
         <div class="twinkling"></div>
         <div class="clouds"></div>
     </div>
 
-    <!-- Dashboard üst çubuğu - Mobil için hamburger menü içerecek -->
-    <div class="dashboard-header">
-        <div class="header-left">
-            <div class="hamburger-menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <div class="header-logo">
-                <svg class="logo-svg" width="30" height="30" viewBox="0 0 200 200">
-                    <defs>
-                        <linearGradient id="header-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#6a11cb" />
-                            <stop offset="100%" stop-color="#2575fc" />
-                        </linearGradient>
-                        <filter id="header-glow">
-                            <feGaussianBlur stdDeviation="5" result="blur" />
-                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                        </filter>
-                    </defs>
-                    <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#header-gradient)" stroke-width="5"
-                        opacity="0.7" />
-                    <path class="logo-path"
-                        d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
-                        stroke="url(#header-gradient)" stroke-width="10" stroke-linecap="round"
-                        filter="url(#header-glow)" />
-                    <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
-                        font-weight="bold" filter="url(#header-glow)">C</text>
-                </svg>
-                <span>CHATLIFY</span>
-            </div>
-        </div>
-        <div class="header-center">
-            <div class="global-search">
-                <input type="text" placeholder="Tüm Chatlify'da ara...">
-                <button class="search-button">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-        </div>
-        <div class="header-right">
-            <div class="header-actions">
-                <button class="header-action-btn create-btn">
-                    <i class="fas fa-plus"></i>
-                </button>
-                <button class="header-action-btn notifications-btn">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-indicator">3</span>
-                </button>
-                <div class="header-user">
-                    <div class="user-avatar">
-                        <img src="https://via.placeholder.com/40/6a11cb/ffffff?text=P" alt="Profil">
-                        <div class="status-indicator online"></div>
-                    </div>
-                    <div class="user-info">
-                        <div class="user-name">Kullanıcı</div>
-                        <div class="user-tag">#1234</div>
-                    </div>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="dashboard-container">
-        <!-- Sol taraftaki nav sidebar - iyileştirilmiş tasarım -->
-        <div class="nav-sidebar">
-            <div class="nav-sections">
-                <a href="#" class="nav-item active">
-                    <i class="fas fa-home"></i>
-                    <span>Ana Sayfa</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-user-friends"></i>
-                    <span>Arkadaşlar</span>
-                    <div class="nav-notification">2</div>
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-comment-alt"></i>
-                    <span>Mesajlar</span>
-                    <div class="nav-notification">5</div>
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-video"></i>
-                    <span>Görüntülü Sohbet</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Etkinlikler</span>
-                </a>
-
-                <div class="nav-divider"></div>
-
-                <div class="nav-group">
-                    <div class="nav-group-header">
-                        <span>SUNUCULARIM</span>
-                        <button class="add-server-btn">
-                            <i class="fas fa-plus"></i>
-                        </button>
+        <!-- Sunucu Kenar Çubuğu -->
+        <div class="server-sidebar">
+            <div class="server-sidebar-inner">
+                <div class="server-item home active">
+                    <div class="server-icon">
+                        <svg width="28" height="28" viewBox="0 0 48 48" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M24 4L7 14V34L24 44L41 34V14L24 4Z" fill="url(#paint0_linear)" />
+                            <path d="M24 24L7 14L24 4L41 14L24 24Z" fill="url(#paint1_linear)" />
+                            <path d="M24 44L24 24L41 14V34L24 44Z" fill="url(#paint2_linear)" />
+                            <path d="M24 44L24 24L7 14V34L24 44Z" fill="url(#paint3_linear)" />
+                            <defs>
+                                <linearGradient id="paint0_linear" x1="24" y1="4" x2="24" y2="44"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#5f75fc" />
+                                    <stop offset="1" stop-color="#6741D9" />
+                                </linearGradient>
+                                <linearGradient id="paint1_linear" x1="24" y1="4" x2="24" y2="24"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#7289da" />
+                                    <stop offset="1" stop-color="#5f75fc" />
+                                </linearGradient>
+                                <linearGradient id="paint2_linear" x1="32.5" y1="19" x2="32.5" y2="44"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#5865F2" />
+                                    <stop offset="1" stop-color="#5546D3" />
+                                </linearGradient>
+                                <linearGradient id="paint3_linear" x1="15.5" y1="19" x2="15.5" y2="44"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#5865F2" />
+                                    <stop offset="1" stop-color="#5546D3" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
                     </div>
+                    <div class="server-pill"></div>
+                    <div class="server-tooltip">Ana Sayfa</div>
+                </div>
 
-                    <div class="servers-grid">
-                        <div class="server-card">
-                            <div class="server-card-inner">
-                                <img src="https://via.placeholder.com/100/6a11cb/ffffff?text=G" alt="Gaming">
-                                <div class="server-card-info">
-                                    <div class="server-card-name">Gaming Hub</div>
-                                    <div class="server-card-status">
-                                        <span class="online-dot"></span>
-                                        <span>5.2K çevrimiçi</span>
-                                    </div>
-                                </div>
-                                <div class="server-card-notification">3</div>
-                            </div>
-                        </div>
+                <div class="server-divider"></div>
 
-                        <div class="server-card">
-                            <div class="server-card-inner">
-                                <img src="https://via.placeholder.com/100/2575fc/ffffff?text=T" alt="Technology">
-                                <div class="server-card-info">
-                                    <div class="server-card-name">Tech Talks</div>
-                                    <div class="server-card-status">
-                                        <span class="online-dot"></span>
-                                        <span>3.1K çevrimiçi</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="server-card">
-                            <div class="server-card-inner">
-                                <img src="https://via.placeholder.com/100/8c52ff/ffffff?text=M" alt="Music">
-                                <div class="server-card-info">
-                                    <div class="server-card-name">Müzik Kulübü</div>
-                                    <div class="server-card-status">
-                                        <span class="online-dot"></span>
-                                        <span>2.8K çevrimiçi</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="server-card">
-                            <div class="server-card-inner">
-                                <img src="https://via.placeholder.com/100/5700a3/ffffff?text=A" alt="Art">
-                                <div class="server-card-info">
-                                    <div class="server-card-name">Sanat Galerisi</div>
-                                    <div class="server-card-status">
-                                        <span class="online-dot"></span>
-                                        <span>1.5K çevrimiçi</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="server-item">
+                    <div class="server-icon">
+                        <img src="https://via.placeholder.com/100/0672ac/ffffff?text=GD" alt="Gaming Developers">
                     </div>
+                    <div class="server-pill"></div>
+                    <div class="server-tooltip">Gaming Developers</div>
+                    <div class="server-notification">3</div>
+                </div>
 
-                    <a href="#" class="explore-servers-link">
+                <div class="server-item">
+                    <div class="server-icon">
+                        <img src="https://via.placeholder.com/100/5a2d82/ffffff?text=CS" alt="Code Squad">
+                    </div>
+                    <div class="server-pill"></div>
+                    <div class="server-tooltip">Code Squad</div>
+                </div>
+
+                <div class="server-item">
+                    <div class="server-icon">
+                        <img src="https://via.placeholder.com/100/2d825e/ffffff?text=ML" alt="Machine Learning Türkiye">
+                    </div>
+                    <div class="server-pill"></div>
+                    <div class="server-tooltip">Machine Learning Türkiye</div>
+                </div>
+
+                <div class="server-item">
+                    <div class="server-icon">
+                        <img src="https://via.placeholder.com/100/825e2d/ffffff?text=GA" alt="Game Art">
+                    </div>
+                    <div class="server-pill"></div>
+                    <div class="server-tooltip">Game Art</div>
+                </div>
+
+                <div class="server-divider"></div>
+
+                <div class="server-item">
+                    <div class="server-add-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="server-tooltip">Sunucu Ekle</div>
+                </div>
+
+                <div class="server-item">
+                    <div class="server-discover-icon">
                         <i class="fas fa-compass"></i>
-                        <span>Daha Fazla Sunucu Keşfet</span>
-                    </a>
+                    </div>
+                    <div class="server-tooltip">Sunucu Keşfet</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Özel Mesajlar Kısmı -->
+        <div class="direct-messages">
+            <div class="dm-header">
+                <div class="dm-header-title">
+                    Özel Mesajlar
+                </div>
+                <div class="dm-compose">
+                    <i class="fas fa-pen"></i>
                 </div>
             </div>
 
-            <div class="nav-footer">
-                <div class="audio-controls">
-                    <button class="audio-control-btn">
+            <div class="dm-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Sohbetlerde Ara">
+            </div>
+
+            <div class="dm-groups">
+                <div class="dm-group">
+                    <div class="dm-group-header">
+                        <div class="dm-group-title">Arkadaşlar</div>
+                        <div class="dm-group-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="dm-items">
+                        <div class="dm-item active">
+                            <div class="dm-avatar">
+                                <img src="https://via.placeholder.com/100/3498db/ffffff?text=A" alt="Ahmet">
+                                <div class="dm-status online"></div>
+                            </div>
+                            <div class="dm-info">
+                                <div class="dm-name">Ahmet Yılmaz</div>
+                                <div class="dm-activity">Çevrimiçi</div>
+                            </div>
+                        </div>
+                        <div class="dm-item">
+                            <div class="dm-avatar">
+                                <img src="https://via.placeholder.com/100/9b59b6/ffffff?text=M" alt="Mehmet">
+                                <div class="dm-status idle"></div>
+                            </div>
+                            <div class="dm-info">
+                                <div class="dm-name">Mehmet Kaya</div>
+                                <div class="dm-activity">Minecraft oynuyor</div>
+                            </div>
+                        </div>
+                        <div class="dm-item">
+                            <div class="dm-avatar">
+                                <img src="https://via.placeholder.com/100/e74c3c/ffffff?text=Z" alt="Zeynep">
+                                <div class="dm-status dnd"></div>
+                            </div>
+                            <div class="dm-info">
+                                <div class="dm-name">Zeynep Çelik</div>
+                                <div class="dm-activity">Rahatsız Etmeyin</div>
+                            </div>
+                            <div class="dm-notification">2</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dm-group">
+                    <div class="dm-group-header">
+                        <div class="dm-group-title">Grup Mesajları</div>
+                        <div class="dm-group-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="dm-items">
+                        <div class="dm-item">
+                            <div class="dm-avatar">
+                                <img src="https://via.placeholder.com/100/3cb371/ffffff?text=G" alt="Grup">
+                                <div class="dm-status online"></div>
+                            </div>
+                            <div class="dm-info">
+                                <div class="dm-name">Game Night Squad</div>
+                                <div class="dm-activity">4 çevrimiçi</div>
+                            </div>
+                        </div>
+                        <div class="dm-item">
+                            <div class="dm-avatar">
+                                <img src="https://via.placeholder.com/100/f1c40f/ffffff?text=S" alt="Sınıf">
+                                <div class="dm-status online"></div>
+                            </div>
+                            <div class="dm-info">
+                                <div class="dm-name">Sınıf Grubu</div>
+                                <div class="dm-activity">2 çevrimiçi</div>
+                            </div>
+                            <div class="dm-notification">5</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dm-footer">
+                <div class="dm-user">
+                    <div class="dm-user-avatar">
+                        <img src="https://via.placeholder.com/100/3498db/ffffff?text=U" alt="Kullanıcı">
+                        <div class="dm-status online"></div>
+                    </div>
+                    <div class="dm-user-info">
+                        <div class="dm-user-name">KullaniciAdi</div>
+                        <div class="dm-user-tag">#1234</div>
+                    </div>
+                </div>
+                <div class="dm-user-controls">
+                    <div class="dm-user-control">
                         <i class="fas fa-microphone"></i>
-                    </button>
-                    <button class="audio-control-btn">
+                    </div>
+                    <div class="dm-user-control">
                         <i class="fas fa-headphones"></i>
-                    </button>
-                    <button class="audio-control-btn">
+                    </div>
+                    <div class="dm-user-control">
                         <i class="fas fa-cog"></i>
-                    </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Ana içerik alanı - yenilenmiş tasarım -->
+        <!-- Ana İçerik Alanı -->
         <div class="main-content">
-            <div class="content-header">
-                <h2>Arkadaşlık Merkezi</h2>
-                <div class="content-tabs">
-                    <div class="tab-slider">
-                        <div class="tab-indicator"></div>
-                        <button class="content-tab active" data-tab="friends">Arkadaşlarım</button>
-                        <button class="content-tab" data-tab="pending">Bekleyen <span
-                                class="tab-badge">2</span></button>
-                        <button class="content-tab" data-tab="add">Arkadaş Ekle</button>
-                        <button class="content-tab" data-tab="blocked">Engellenenler</button>
-                    </div>
+            <div class="main-header">
+                <div class="main-title">
+                    <i class="fas fa-user-friends"></i> Arkadaşlar
                 </div>
-                <button class="floating-action-button">
-                    <i class="fas fa-user-plus"></i>
-                </button>
-            </div>
-
-            <div class="tab-content" id="friends-tab" style="display: block;">
-                <div class="friends-filters">
-                    <div class="search-container">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Arkadaş ara">
-                    </div>
-                    <div class="filter-buttons">
-                        <button class="filter-btn active">Tümü</button>
-                        <button class="filter-btn">Çevrimiçi</button>
-                        <button class="filter-btn">Beklemede</button>
-                        <button class="filter-btn">Engellenenler</button>
-                    </div>
-                </div>
-
-                <div class="friends-grid">
-                    <div class="friend-card online">
-                        <div class="friend-card-avatar">
-                            <img src="https://via.placeholder.com/80/6a11cb/ffffff?text=N" alt="Nowa">
-                            <div class="friend-status-indicator online"></div>
-                        </div>
-                        <div class="friend-card-info">
-                            <div class="friend-card-name">Nowa</div>
-                            <div class="friend-card-status">Çevrimiçi</div>
-                            <div class="friend-card-activity">
-                                <div class="activity-icon"><i class="fas fa-gamepad"></i></div>
-                                <div class="activity-text">Valorant oynuyor</div>
-                            </div>
-                        </div>
-                        <div class="friend-card-actions">
-                            <button class="friend-action-button message" title="Mesaj">
-                                <i class="fas fa-comment-alt"></i>
-                            </button>
-                            <button class="friend-action-button call" title="Sesli Arama">
-                                <i class="fas fa-phone-alt"></i>
-                            </button>
-                            <button class="friend-action-button video" title="Görüntülü Arama">
-                                <i class="fas fa-video"></i>
-                            </button>
-                            <button class="friend-action-button more" title="Daha Fazla">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="friend-card idle">
-                        <div class="friend-card-avatar">
-                            <img src="https://via.placeholder.com/80/2575fc/ffffff?text=K" alt="kayzel">
-                            <div class="friend-status-indicator idle"></div>
-                        </div>
-                        <div class="friend-card-info">
-                            <div class="friend-card-name">kayzel</div>
-                            <div class="friend-card-status">Boşta</div>
-                            <div class="friend-card-activity">
-                                <div class="activity-icon"><i class="fas fa-code"></i></div>
-                                <div class="activity-text">Visual Studio Code kullanıyor</div>
-                            </div>
-                        </div>
-                        <div class="friend-card-actions">
-                            <button class="friend-action-button message" title="Mesaj">
-                                <i class="fas fa-comment-alt"></i>
-                            </button>
-                            <button class="friend-action-button call" title="Sesli Arama">
-                                <i class="fas fa-phone-alt"></i>
-                            </button>
-                            <button class="friend-action-button video" title="Görüntülü Arama">
-                                <i class="fas fa-video"></i>
-                            </button>
-                            <button class="friend-action-button more" title="Daha Fazla">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="friend-card dnd">
-                        <div class="friend-card-avatar">
-                            <img src="https://via.placeholder.com/80/8c52ff/ffffff?text=A" alt="Angels">
-                            <div class="friend-status-indicator dnd"></div>
-                        </div>
-                        <div class="friend-card-info">
-                            <div class="friend-card-name">! Angels</div>
-                            <div class="friend-card-status">Rahatsız Etmeyin</div>
-                            <div class="friend-card-activity">
-                                <div class="activity-icon"><i class="fas fa-headphones"></i></div>
-                                <div class="activity-text">Spotify'da müzik dinliyor</div>
-                            </div>
-                        </div>
-                        <div class="friend-card-actions">
-                            <button class="friend-action-button message" title="Mesaj">
-                                <i class="fas fa-comment-alt"></i>
-                            </button>
-                            <button class="friend-action-button call" title="Sesli Arama">
-                                <i class="fas fa-phone-alt"></i>
-                            </button>
-                            <button class="friend-action-button video" title="Görüntülü Arama">
-                                <i class="fas fa-video"></i>
-                            </button>
-                            <button class="friend-action-button more" title="Daha Fazla">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="friend-card offline">
-                        <div class="friend-card-avatar">
-                            <img src="https://via.placeholder.com/80/5700a3/ffffff?text=E" alt="Eren">
-                            <div class="friend-status-indicator offline"></div>
-                        </div>
-                        <div class="friend-card-info">
-                            <div class="friend-card-name">Eren</div>
-                            <div class="friend-card-status">Çevrimdışı</div>
-                            <div class="friend-card-activity">
-                                <div class="activity-text">Son görülme: 3 saat önce</div>
-                            </div>
-                        </div>
-                        <div class="friend-card-actions">
-                            <button class="friend-action-button message" title="Mesaj">
-                                <i class="fas fa-comment-alt"></i>
-                            </button>
-                            <button class="friend-action-button more" title="Daha Fazla">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                        </div>
-                    </div>
+                <div class="main-tabs">
+                    <div class="main-tab active">Çevrimiçi</div>
+                    <div class="main-tab">Tüm Arkadaşlar</div>
+                    <div class="main-tab">Bekleyen</div>
+                    <div class="main-tab">Engellenenler</div>
+                    <div class="main-tab">Arkadaş Ekle</div>
                 </div>
             </div>
 
-            <div class="tab-content" id="pending-tab" style="display: none;">
-                <div class="pending-title">
-                    <h3>Arkadaşlık İstekleri</h3>
-                    <span class="pending-count">2 bekleyen istek</span>
-                </div>
-
-                <div class="pending-list">
-                    <div class="pending-item">
-                        <div class="pending-avatar">
-                            <img src="https://via.placeholder.com/60/5700a3/ffffff?text=M" alt="Mert">
-                        </div>
-                        <div class="pending-info">
-                            <div class="pending-name">Mert</div>
-                            <div class="pending-date">3 gün önce gönderildi</div>
-                        </div>
-                        <div class="pending-actions">
-                            <button class="pending-action-btn accept">
-                                <i class="fas fa-check"></i>
-                                <span>Kabul Et</span>
-                            </button>
-                            <button class="pending-action-btn reject">
-                                <i class="fas fa-times"></i>
-                                <span>Reddet</span>
-                            </button>
-                        </div>
+            <div class="main-container">
+                <!-- Aktivite Özeti Widget'ı -->
+                <div class="activity-widget">
+                    <div class="activity-header">
+                        <div class="activity-title">Aktivite Özeti</div>
                     </div>
-
-                    <div class="pending-item">
-                        <div class="pending-avatar">
-                            <img src="https://via.placeholder.com/60/2575fc/ffffff?text=Z" alt="Zeynep">
-                        </div>
-                        <div class="pending-info">
-                            <div class="pending-name">Zeynep</div>
-                            <div class="pending-date">Bugün gönderildi</div>
-                        </div>
-                        <div class="pending-actions">
-                            <button class="pending-action-btn accept">
-                                <i class="fas fa-check"></i>
-                                <span>Kabul Et</span>
-                            </button>
-                            <button class="pending-action-btn reject">
-                                <i class="fas fa-times"></i>
-                                <span>Reddet</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-content" id="add-tab" style="display: none;">
-                <div class="add-friend-container">
-                    <h3>Yeni Arkadaş Ekle</h3>
-                    <p>Kullanıcı adı ve etiketini girerek Chatlify'da arkadaşlık isteği gönderebilirsin.</p>
-
-                    <div class="add-friend-form">
-                        <div class="add-friend-input-group">
-                            <input type="text" placeholder="Kullanıcı adı#0000" class="add-friend-input">
-                            <button class="add-friend-submit">
-                                <i class="fas fa-user-plus"></i>
-                                <span>İstek Gönder</span>
-                            </button>
-                        </div>
-                        <div class="form-hint">Örnek: Kullanıcı#1234</div>
-                    </div>
-
-                    <div class="separator">
-                        <span>veya</span>
-                    </div>
-
-                    <div class="qr-code-option">
-                        <div class="qr-code-container">
-                            <div class="qr-code-image">
-                                <i class="fas fa-qrcode"></i>
+                    <div class="activity-cards">
+                        <div class="activity-card">
+                            <div class="activity-card-icon">
+                                <i class="fas fa-user-friends"></i>
                             </div>
-                            <div class="qr-code-text">
-                                <h4>QR Kodu Tarayarak Ekle</h4>
-                                <p>Kodu taramak için mobil cihazınızdaki Chatlify uygulamasını kullanın</p>
-                                <button class="qr-code-button">QR Kodumu Göster</button>
+                            <div class="activity-card-data">12</div>
+                            <div class="activity-card-label">Çevrimiçi Arkadaş</div>
+                        </div>
+                        <div class="activity-card">
+                            <div class="activity-card-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="activity-card-data">3</div>
+                            <div class="activity-card-label">Okunmamış Mesaj</div>
+                        </div>
+                        <div class="activity-card">
+                            <div class="activity-card-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="activity-card-data">5</div>
+                            <div class="activity-card-label">Bekleyen Bildirim</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Arkadaşlar Alanı -->
+                <div class="friends-area">
+                    <div class="friends-header">
+                        <div class="friends-title">Çevrimiçi Arkadaşlar - 12</div>
+                        <div class="friends-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Arkadaş Ara">
+                        </div>
+                    </div>
+                    <div class="friends-list">
+                        <div class="friend-card">
+                            <div class="friend-header">
+                                <div class="friend-avatar">
+                                    <img src="https://via.placeholder.com/100/3498db/ffffff?text=A" alt="Ahmet">
+                                    <div class="friend-status online"></div>
+                                </div>
+                                <div class="friend-info">
+                                    <div class="friend-name">Ahmet Yılmaz</div>
+                                    <div class="friend-tag">ahmetyilmaz</div>
+                                </div>
+                            </div>
+                            <div class="friend-actions">
+                                <div class="friend-action message">
+                                    <i class="fas fa-comment"></i> Mesaj
+                                </div>
+                                <div class="friend-action more">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="friend-card">
+                            <div class="friend-header">
+                                <div class="friend-avatar">
+                                    <img src="https://via.placeholder.com/100/9b59b6/ffffff?text=M" alt="Mehmet">
+                                    <div class="friend-status idle"></div>
+                                </div>
+                                <div class="friend-info">
+                                    <div class="friend-name">Mehmet Kaya</div>
+                                    <div class="friend-tag">mehmetkaya</div>
+                                </div>
+                            </div>
+                            <div class="friend-actions">
+                                <div class="friend-action message">
+                                    <i class="fas fa-comment"></i> Mesaj
+                                </div>
+                                <div class="friend-action more">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="friend-card">
+                            <div class="friend-header">
+                                <div class="friend-avatar">
+                                    <img src="https://via.placeholder.com/100/e74c3c/ffffff?text=Z" alt="Zeynep">
+                                    <div class="friend-status dnd"></div>
+                                </div>
+                                <div class="friend-info">
+                                    <div class="friend-name">Zeynep Çelik</div>
+                                    <div class="friend-tag">zeynepcelik</div>
+                                </div>
+                            </div>
+                            <div class="friend-actions">
+                                <div class="friend-action message">
+                                    <i class="fas fa-comment"></i> Mesaj
+                                </div>
+                                <div class="friend-action more">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="friend-card">
+                            <div class="friend-header">
+                                <div class="friend-avatar">
+                                    <img src="https://via.placeholder.com/100/2ecc71/ffffff?text=E" alt="Elif">
+                                    <div class="friend-status online"></div>
+                                </div>
+                                <div class="friend-info">
+                                    <div class="friend-name">Elif Demir</div>
+                                    <div class="friend-tag">elifdemir</div>
+                                </div>
+                            </div>
+                            <div class="friend-actions">
+                                <div class="friend-action message">
+                                    <i class="fas fa-comment"></i> Mesaj
+                                </div>
+                                <div class="friend-action more">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="friend-separator"></div>
+
+                    <div class="pending-requests-title">Bekleyen Arkadaşlık İstekleri - 2</div>
+                    <div class="friends-list">
+                        <div class="friend-card">
+                            <div class="friend-header">
+                                <div class="friend-avatar">
+                                    <img src="https://via.placeholder.com/100/f39c12/ffffff?text=B" alt="Burak">
+                                    <div class="friend-status offline"></div>
+                                </div>
+                                <div class="friend-info">
+                                    <div class="friend-name">Burak Şahin</div>
+                                    <div class="friend-tag">buraksahin</div>
+                                </div>
+                            </div>
+                            <div class="friend-actions">
+                                <div class="friend-action message">
+                                    <i class="fas fa-check"></i> Kabul Et
+                                </div>
+                                <div class="friend-action more">
+                                    <i class="fas fa-times"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="friend-card">
+                            <div class="friend-header">
+                                <div class="friend-avatar">
+                                    <img src="https://via.placeholder.com/100/1abc9c/ffffff?text=G" alt="Gizem">
+                                    <div class="friend-status offline"></div>
+                                </div>
+                                <div class="friend-info">
+                                    <div class="friend-name">Gizem Yıldız</div>
+                                    <div class="friend-tag">gizemyildiz</div>
+                                </div>
+                            </div>
+                            <div class="friend-actions">
+                                <div class="friend-action message">
+                                    <i class="fas fa-check"></i> Kabul Et
+                                </div>
+                                <div class="friend-action more">
+                                    <i class="fas fa-times"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -432,148 +421,217 @@
             </div>
         </div>
 
-        <!-- Sağ taraftaki etkinlik sidebar -->
-        <div class="activity-sidebar">
-            <div class="activity-header">
-                <h3>Gelişmeler</h3>
-                <button class="activity-refresh-btn">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
+        <!-- Sponsor Sunucular Kısmı -->
+        <div class="sponsor-sidebar">
+            <div class="sponsor-header">
+                <div class="sponsor-header-title">
+                    Keşfet
+                </div>
             </div>
 
-            <div class="activity-content">
-                <div class="activity-section">
-                    <div class="activity-section-header">
-                        <h4>Popüler Sunucular</h4>
-                        <a href="#" class="see-all-link">Tümünü Gör</a>
-                    </div>
+            <div class="sponsor-tabs">
+                <div class="sponsor-tab active">Sponsor</div>
+                <div class="sponsor-tab">Popüler</div>
+                <div class="sponsor-tab">Yeni</div>
+                <div class="sponsor-tab">Oyun</div>
+                <div class="sponsor-tab">Teknoloji</div>
+                <div class="sponsor-tab">Eğitim</div>
+            </div>
 
-                    <div class="popular-servers">
-                        <div class="popular-server-card">
-                            <div class="popular-server-banner"
-                                style="background-image: url('https://via.placeholder.com/300x100/6a11cb/ffffff');">
-                                <div class="popular-server-logo">
-                                    <img src="https://via.placeholder.com/50/ffffff/6a11cb?text=G" alt="Gaming Hub">
-                                </div>
+            <div class="sponsor-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Sunucu Ara">
+            </div>
+
+            <div class="sponsor-servers">
+                <div class="sponsor-server">
+                    <div class="sponsor-server-icon">
+                        <img src="https://via.placeholder.com/100/3498db/ffffff?text=G" alt="Gaming Hub">
+                    </div>
+                    <div class="sponsor-server-info">
+                        <div class="sponsor-server-name">Gaming Hub</div>
+                        <div class="sponsor-server-desc">Çeşitli oyun etkinlikleri ve turnuvalar düzenleyen, oyun
+                            severler için topluluk.</div>
+                        <div class="sponsor-server-meta">
+                            <div class="sponsor-server-members">
+                                <i class="fas fa-user"></i> 25,482
                             </div>
-                            <div class="popular-server-info">
-                                <div class="popular-server-name">Gaming Hub</div>
-                                <div class="popular-server-stats">
-                                    <span>130K+ üye</span>
-                                    <span class="dot-separator">•</span>
-                                    <span>5.2K çevrimiçi</span>
-                                </div>
-                                <div class="popular-server-tags">
-                                    <span class="server-tag">Oyun</span>
-                                    <span class="server-tag">E-Spor</span>
-                                </div>
-                                <button class="join-server-btn">Katıl</button>
+                            <div class="sponsor-server-category">
+                                <i class="fas fa-gamepad"></i> Oyun
                             </div>
                         </div>
+                    </div>
+                    <div class="sponsor-server-badge">SPONSOR</div>
+                </div>
 
-                        <div class="popular-server-card">
-                            <div class="popular-server-banner"
-                                style="background-image: url('https://via.placeholder.com/300x100/2575fc/ffffff');">
-                                <div class="popular-server-logo">
-                                    <img src="https://via.placeholder.com/50/ffffff/2575fc?text=T" alt="Tech Talks">
-                                </div>
+                <div class="sponsor-server">
+                    <div class="sponsor-server-icon">
+                        <img src="https://via.placeholder.com/100/2ecc71/ffffff?text=D" alt="Dev Turkey">
+                    </div>
+                    <div class="sponsor-server-info">
+                        <div class="sponsor-server-name">Dev Turkey</div>
+                        <div class="sponsor-server-desc">Yazılım geliştirme, programlama ve teknoloji konularında Türkçe
+                            kaynak ve topluluk.</div>
+                        <div class="sponsor-server-meta">
+                            <div class="sponsor-server-members">
+                                <i class="fas fa-user"></i> 18,129
                             </div>
-                            <div class="popular-server-info">
-                                <div class="popular-server-name">Tech Talks</div>
-                                <div class="popular-server-stats">
-                                    <span>95K+ üye</span>
-                                    <span class="dot-separator">•</span>
-                                    <span>3.1K çevrimiçi</span>
-                                </div>
-                                <div class="popular-server-tags">
-                                    <span class="server-tag">Teknoloji</span>
-                                    <span class="server-tag">Kodlama</span>
-                                </div>
-                                <button class="join-server-btn">Katıl</button>
+                            <div class="sponsor-server-category">
+                                <i class="fas fa-code"></i> Programlama
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="activity-section">
-                    <div class="activity-section-header">
-                        <h4>Aktif Arkadaşlar</h4>
+                <div class="sponsor-server">
+                    <div class="sponsor-server-icon">
+                        <img src="https://via.placeholder.com/100/9b59b6/ffffff?text=A" alt="Anime Türkiye">
                     </div>
-
-                    <div class="active-friends">
-                        <div class="active-friend">
-                            <div class="active-friend-avatar">
-                                <img src="https://via.placeholder.com/50/6a11cb/ffffff?text=N" alt="Nowa">
-                                <div class="active-status online"></div>
+                    <div class="sponsor-server-info">
+                        <div class="sponsor-server-name">Anime Türkiye</div>
+                        <div class="sponsor-server-desc">Anime, Manga ve Japon kültürü hakkında sohbetler ve etkinlikler
+                            düzenleyen topluluk.</div>
+                        <div class="sponsor-server-meta">
+                            <div class="sponsor-server-members">
+                                <i class="fas fa-user"></i> 12,756
                             </div>
-                            <div class="active-friend-info">
-                                <div class="active-friend-name">Nowa</div>
-                                <div class="active-friend-activity">
-                                    <div class="game-icon">
-                                        <img src="https://via.placeholder.com/20/ff4500/ffffff?text=V" alt="Valorant">
-                                    </div>
-                                    <span>Valorant oynuyor</span>
-                                </div>
+                            <div class="sponsor-server-category">
+                                <i class="fas fa-film"></i> Eğlence
                             </div>
-                            <div class="active-friend-time">2 saat</div>
-                        </div>
-
-                        <div class="active-friend">
-                            <div class="active-friend-avatar">
-                                <img src="https://via.placeholder.com/50/2575fc/ffffff?text=K" alt="kayzel">
-                                <div class="active-status idle"></div>
-                            </div>
-                            <div class="active-friend-info">
-                                <div class="active-friend-name">kayzel</div>
-                                <div class="active-friend-activity">
-                                    <div class="app-icon">
-                                        <img src="https://via.placeholder.com/20/007acc/ffffff?text=VS" alt="VSCode">
-                                    </div>
-                                    <span>Visual Studio Code</span>
-                                </div>
-                            </div>
-                            <div class="active-friend-time">5 saat</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="activity-section">
-                    <div class="activity-section-header">
-                        <h4>Yaklaşan Etkinlikler</h4>
-                        <a href="#" class="see-all-link">Tümünü Gör</a>
+                <div class="sponsor-server">
+                    <div class="sponsor-server-icon">
+                        <img src="https://via.placeholder.com/100/e74c3c/ffffff?text=T" alt="Teknoloji Ağı">
                     </div>
-
-                    <div class="upcoming-events">
-                        <div class="event-card">
-                            <div class="event-date">
-                                <div class="event-day">15</div>
-                                <div class="event-month">Haz</div>
+                    <div class="sponsor-server-info">
+                        <div class="sponsor-server-name">Teknoloji Ağı</div>
+                        <div class="sponsor-server-desc">Türkiye'nin en büyük teknoloji ve kripto para topluluğu. Güncel
+                            teknoloji haberleri ve tartışmalar.</div>
+                        <div class="sponsor-server-meta">
+                            <div class="sponsor-server-members">
+                                <i class="fas fa-user"></i> 31,054
                             </div>
-                            <div class="event-info">
-                                <div class="event-title">Gaming Turnuvası</div>
-                                <div class="event-time">20:00 - 23:00</div>
-                                <div class="event-location">Gaming Hub</div>
+                            <div class="sponsor-server-category">
+                                <i class="fas fa-microchip"></i> Teknoloji
                             </div>
-                            <button class="event-interest-btn">
-                                <i class="fas fa-star"></i>
-                                <span>İlgileniyorum</span>
-                            </button>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="event-card">
-                            <div class="event-date">
-                                <div class="event-day">18</div>
-                                <div class="event-month">Haz</div>
+                <div class="sponsor-server">
+                    <div class="sponsor-server-icon">
+                        <img src="https://via.placeholder.com/100/f39c12/ffffff?text=M" alt="Mizah Köşesi">
+                    </div>
+                    <div class="sponsor-server-info">
+                        <div class="sponsor-server-name">Mizah Köşesi</div>
+                        <div class="sponsor-server-desc">Eğlence odaklı mizah içerikleri ve komik paylaşımlar için
+                            topluluk sunucusu.</div>
+                        <div class="sponsor-server-meta">
+                            <div class="sponsor-server-members">
+                                <i class="fas fa-user"></i> 22,845
                             </div>
-                            <div class="event-info">
-                                <div class="event-title">Kod Gecesi</div>
-                                <div class="event-time">21:00 - 00:00</div>
-                                <div class="event-location">Tech Talks</div>
+                            <div class="sponsor-server-category">
+                                <i class="fas fa-smile"></i> Eğlence
                             </div>
-                            <button class="event-interest-btn interested">
-                                <i class="fas fa-star"></i>
-                                <span>İlgileniyorum</span>
-                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sponsor-server">
+                    <div class="sponsor-server-icon">
+                        <img src="https://via.placeholder.com/100/1abc9c/ffffff?text=Y" alt="Yazarlar Kulübü">
+                    </div>
+                    <div class="sponsor-server-info">
+                        <div class="sponsor-server-name">Yazarlar Kulübü</div>
+                        <div class="sponsor-server-desc">Kitap okuma, yazarlık ve edebiyat konularında etkinlikler
+                            düzenleyen topluluk.</div>
+                        <div class="sponsor-server-meta">
+                            <div class="sponsor-server-members">
+                                <i class="fas fa-user"></i> 8,432
+                            </div>
+                            <div class="sponsor-server-category">
+                                <i class="fas fa-book"></i> Sanat
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sponsor-server">
+                    <div class="sponsor-server-icon">
+                        <img src="https://via.placeholder.com/100/34495e/ffffff?text=E" alt="E-Spor Türkiye">
+                    </div>
+                    <div class="sponsor-server-info">
+                        <div class="sponsor-server-name">E-Spor Türkiye</div>
+                        <div class="sponsor-server-desc">Türkiye'nin en büyük e-spor topluluğu. VALORANT, LoL, CS:GO
+                            turnuvaları ve etkinlikleri.</div>
+                        <div class="sponsor-server-meta">
+                            <div class="sponsor-server-members">
+                                <i class="fas fa-user"></i> 42,190
+                            </div>
+                            <div class="sponsor-server-category">
+                                <i class="fas fa-trophy"></i> E-Spor
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sponsor-server-badge">PARTNER</div>
+                </div>
+
+                <div class="sponsor-server">
+                    <div class="sponsor-server-icon">
+                        <img src="https://via.placeholder.com/100/16a085/ffffff?text=K" alt="Kripto Para">
+                    </div>
+                    <div class="sponsor-server-info">
+                        <div class="sponsor-server-name">Kripto Para Türkiye</div>
+                        <div class="sponsor-server-desc">Kripto para, blockchain ve yatırım konularında bilgi paylaşımı
+                            ve tartışmalar.</div>
+                        <div class="sponsor-server-meta">
+                            <div class="sponsor-server-members">
+                                <i class="fas fa-user"></i> 15,768
+                            </div>
+                            <div class="sponsor-server-category">
+                                <i class="fas fa-coins"></i> Finans
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sponsor-server">
+                    <div class="sponsor-server-icon">
+                        <img src="https://via.placeholder.com/100/8e44ad/ffffff?text=S" alt="Sanat Atölyesi">
+                    </div>
+                    <div class="sponsor-server-info">
+                        <div class="sponsor-server-name">Sanat Atölyesi</div>
+                        <div class="sponsor-server-desc">Dijital sanat, çizim, resim ve tasarım konularında etkinlikler
+                            ve paylaşımlar.</div>
+                        <div class="sponsor-server-meta">
+                            <div class="sponsor-server-members">
+                                <i class="fas fa-user"></i> 9,321
+                            </div>
+                            <div class="sponsor-server-category">
+                                <i class="fas fa-palette"></i> Sanat
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sponsor-server">
+                    <div class="sponsor-server-icon">
+                        <img src="https://via.placeholder.com/100/27ae60/ffffff?text=B" alt="Bilim ve Teknoloji">
+                    </div>
+                    <div class="sponsor-server-info">
+                        <div class="sponsor-server-name">Bilim ve Teknoloji</div>
+                        <div class="sponsor-server-desc">Bilimsel gelişmeler, uzay, fizik ve teknoloji konularında
+                            tartışmalar ve bilgi paylaşımı.</div>
+                        <div class="sponsor-server-meta">
+                            <div class="sponsor-server-members">
+                                <i class="fas fa-user"></i> 14,567
+                            </div>
+                            <div class="sponsor-server-category">
+                                <i class="fas fa-atom"></i> Bilim
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -581,160 +639,7 @@
         </div>
     </div>
 
-    <!-- Oluştur menüsü -->
-    <div class="create-menu" style="display: none;">
-        <div class="create-menu-header">
-            <h3>Oluştur</h3>
-            <button class="create-menu-close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="create-menu-options">
-            <div class="create-option">
-                <div class="create-option-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="create-option-info">
-                    <div class="create-option-title">Sunucu</div>
-                    <div class="create-option-description">Arkadaşlar ve topluluklar için kendi alanınızı oluşturun
-                    </div>
-                </div>
-            </div>
-            <div class="create-option">
-                <div class="create-option-icon">
-                    <i class="fas fa-calendar-plus"></i>
-                </div>
-                <div class="create-option-info">
-                    <div class="create-option-title">Etkinlik</div>
-                    <div class="create-option-description">Arkadaşlarınız veya bir sunucu için etkinlik planlayın</div>
-                </div>
-            </div>
-            <div class="create-option">
-                <div class="create-option-icon">
-                    <i class="fas fa-user-friends"></i>
-                </div>
-                <div class="create-option-info">
-                    <div class="create-option-title">Grup DM</div>
-                    <div class="create-option-description">Birden çok arkadaşınızla özel bir sohbet başlatın</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bildirimler paneli -->
-    <div class="notifications-panel" style="display: none;">
-        <div class="notifications-header">
-            <h3>Bildirimler</h3>
-            <div class="notifications-tabs">
-                <button class="notification-tab active">Tümü</button>
-                <button class="notification-tab">Okunmamış</button>
-                <button class="notification-tab">Bahsetmeler</button>
-            </div>
-            <button class="mark-all-read">
-                <i class="fas fa-check-double"></i>
-            </button>
-        </div>
-        <div class="notifications-list">
-            <div class="notification-item unread">
-                <div class="notification-icon friend-request">
-                    <i class="fas fa-user-plus"></i>
-                </div>
-                <div class="notification-content">
-                    <div class="notification-title"><strong>Mert</strong> sana arkadaşlık isteği gönderdi</div>
-                    <div class="notification-time">3 gün önce</div>
-                </div>
-                <div class="notification-actions">
-                    <button class="notification-action-btn accept">
-                        <i class="fas fa-check"></i>
-                    </button>
-                    <button class="notification-action-btn reject">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="notification-item unread">
-                <div class="notification-icon mention">
-                    <i class="fas fa-at"></i>
-                </div>
-                <div class="notification-content">
-                    <div class="notification-title"><strong>Nowa</strong> seni <strong>Gaming Hub</strong>'da etiketledi
-                    </div>
-                    <div class="notification-message">"@Kullanıcı bu akşam oyun gecesine katılacak mısın?"</div>
-                    <div class="notification-time">5 saat önce</div>
-                </div>
-            </div>
-            <div class="notification-item">
-                <div class="notification-icon event">
-                    <i class="fas fa-calendar-alt"></i>
-                </div>
-                <div class="notification-content">
-                    <div class="notification-title"><strong>Kod Gecesi</strong> etkinliği yaklaşıyor</div>
-                    <div class="notification-time">18 Haziran, 21:00</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Kullanıcı menüsü -->
-    <div class="user-menu" style="display: none;">
-        <div class="user-menu-header">
-            <div class="user-menu-avatar">
-                <img src="https://via.placeholder.com/40/6a11cb/ffffff?text=P" alt="Profil">
-                <div class="status-selector">
-                    <div class="current-status online"></div>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-            </div>
-            <div class="user-menu-info">
-                <div class="user-menu-name">Kullanıcı</div>
-                <div class="user-menu-tag">#1234</div>
-            </div>
-        </div>
-        <div class="user-menu-options">
-            <a href="#" class="user-menu-option">
-                <i class="fas fa-user"></i>
-                <span>Profilim</span>
-            </a>
-            <a href="#" class="user-menu-option">
-                <i class="fas fa-cog"></i>
-                <span>Ayarlar</span>
-            </a>
-            <a href="#" class="user-menu-option">
-                <i class="fas fa-question-circle"></i>
-                <span>Yardım</span>
-            </a>
-            <div class="user-menu-separator"></div>
-            <a href="#" class="user-menu-option logout">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Çıkış Yap</span>
-            </a>
-        </div>
-    </div>
-
-    <!-- Context menüsü (sağ tık veya aksiyonlar için) -->
-    <div class="context-menu" style="display: none;">
-        <div class="context-menu-item">
-            <i class="fas fa-user"></i>
-            <span>Profili Görüntüle</span>
-        </div>
-        <div class="context-menu-item">
-            <i class="fas fa-envelope"></i>
-            <span>Mesaj Gönder</span>
-        </div>
-        <div class="context-menu-item">
-            <i class="fas fa-phone-alt"></i>
-            <span>Ara</span>
-        </div>
-        <div class="context-menu-separator"></div>
-        <div class="context-menu-item danger">
-            <i class="fas fa-user-minus"></i>
-            <span>Arkadaşlıktan Çıkar</span>
-        </div>
-        <div class="context-menu-item danger">
-            <i class="fas fa-ban"></i>
-            <span>Engelle</span>
-        </div>
-    </div>
+    <script src="js/dashboard.js"></script>
 </body>
 
 </html>
