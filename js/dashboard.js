@@ -1,8 +1,3 @@
-/**
- * Chatlify Dashboard - JavaScript
- * Etkileşimler ve kullanıcı deneyimini geliştiren fonksiyonlar
- */
-
 document.addEventListener('DOMContentLoaded', function () {
     // Tooltip gösterme/gizleme için gecikme değişkenleri
     let tooltipTimeout;
@@ -238,64 +233,4 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(() => {
         document.body.classList.add('loaded');
     }, 300);
-});
-
-// Arka plan animasyonu için partiküller oluşturma
-function createParticles() {
-    const particlesContainer = document.createElement('div');
-    particlesContainer.className = 'particles';
-
-    for (let i = 0; i < 5; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particlesContainer.appendChild(particle);
-    }
-
-    document.querySelector('.bg-animation').appendChild(particlesContainer);
-}
-
-// Notification Action Fonksiyonları
-function acceptFriendRequest(requestId) {
-    // API isteği burada yapılabilir
-    console.log('Friend request accepted:', requestId);
-
-    // UI'dan ilgili isteği kaldır/güncelle
-    // Örnek animasyon:
-    const requestItem = document.querySelector(`[data-request-id="${requestId}"]`);
-    if (requestItem) {
-        requestItem.classList.add('accepted');
-        setTimeout(() => {
-            requestItem.remove();
-        }, 500);
-    }
-}
-
-function rejectFriendRequest(requestId) {
-    // API isteği burada yapılabilir
-    console.log('Friend request rejected:', requestId);
-
-    // UI'dan ilgili isteği kaldır
-    const requestItem = document.querySelector(`[data-request-id="${requestId}"]`);
-    if (requestItem) {
-        requestItem.classList.add('rejected');
-        setTimeout(() => {
-            requestItem.remove();
-        }, 500);
-    }
-}
-
-// Friend Actions
-function startChat(userId) {
-    console.log('Starting chat with user:', userId);
-    // Mesajlaşma sayfasına yönlendirme veya chat modalını açma
-}
-
-function startCall(userId) {
-    console.log('Starting call with user:', userId);
-    // Sesli arama başlatma
-}
-
-function startVideoCall(userId) {
-    console.log('Starting video call with user:', userId);
-    // Görüntülü arama başlatma
-} 
+}); 
