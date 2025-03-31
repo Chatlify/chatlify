@@ -1259,51 +1259,34 @@ document.addEventListener('DOMContentLoaded', function () {
             // Profil paneli içeriği
             profilePanel.innerHTML = `
                 <div class="profile-panel-content">
-                    <div class="profile-panel-header">
-                        <div class="profile-header-left">
-                            <h3>Kullanıcı Profili</h3>
-                        </div>
-                        <div class="profile-header-right">
-                            <button class="profile-close-btn">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="profile-panel-body">
-                        <div class="profile-banner">
-                            <div class="profile-avatar">
+                    <button class="profile-close-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    
+                    <div class="profile-main">
+                        <div class="profile-sidebar">
+                            <div class="profile-banner"></div>
+                            <div class="profile-avatar-wrapper">
                                 <img src="${userData.avatar || 'images/avatar-default.png'}" alt="${userData.name}">
                                 <div class="profile-status-dot ${userData.status}"></div>
                             </div>
-                        </div>
-                        <div class="profile-info">
-                            <div class="profile-name-container">
-                                <h2 class="profile-name">${userData.name}</h2>
-                                <span class="profile-tag">#${Math.floor(1000 + Math.random() * 9000)}</span>
-                            </div>
-                            <div class="profile-status-message">
-                                <i class="fas fa-circle-notch ${userData.status}"></i>
-                                <span>${getStatusText(userData.status)}</span>
-                            </div>
-                            <div class="profile-divider"></div>
-                            <div class="profile-section">
-                                <h4>Chatlify Üyeliği</h4>
-                                <div class="profile-member-since">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <span>Üyelik Tarihi: ${getRandomDate()}</span>
+                            
+                            <div class="profile-user-info">
+                                <div class="profile-name-container">
+                                    <h2 class="profile-name">${userData.name}</h2>
+                                    <span class="profile-tag">#${Math.floor(1000 + Math.random() * 9000)}</span>
+                                </div>
+                                
+                                <div class="profile-status-message">
+                                    <i class="fas fa-circle-notch ${userData.status}"></i>
+                                    <span>${getStatusText(userData.status)}</span>
                                 </div>
                             </div>
-                            <div class="profile-divider"></div>
-                            <div class="profile-section">
-                                <h4>Not</h4>
-                                <div class="profile-note">
-                                    <textarea placeholder="Bu kullanıcı hakkında not ekle..."></textarea>
-                                </div>
-                            </div>
+                            
                             <div class="profile-actions">
                                 <button class="profile-action-btn message-btn">
                                     <i class="fas fa-comment"></i>
-                                    <span>Mesaj</span>
+                                    <span>Mesaj Gönder</span>
                                 </button>
                                 <button class="profile-action-btn block-btn">
                                     <i class="fas fa-ban"></i>
@@ -1313,6 +1296,70 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <i class="fas fa-user-times"></i>
                                     <span>Arkadaşlıktan Çıkar</span>
                                 </button>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-content">
+                            <div class="profile-section">
+                                <div class="profile-section-title">
+                                    <i class="fas fa-user-circle"></i>
+                                    <h4>Kullanıcı Bilgileri</h4>
+                                </div>
+                                
+                                <div class="profile-info-row">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span class="profile-info-label">Üyelik Tarihi</span>
+                                    <span class="profile-info-value">${getRandomDate()}</span>
+                                </div>
+                                
+                                <div class="profile-info-row">
+                                    <i class="fas fa-clock"></i>
+                                    <span class="profile-info-label">Son Görülme</span>
+                                    <span class="profile-info-value">${userData.status === 'online' ? 'Şu anda çevrimiçi' : getRandomTime()}</span>
+                                </div>
+                                
+                                <div class="profile-info-row">
+                                    <i class="fas fa-globe"></i>
+                                    <span class="profile-info-label">Varsayılan Dil</span>
+                                    <span class="profile-info-value">Türkçe</span>
+                                </div>
+                            </div>
+                            
+                            <div class="profile-divider"></div>
+                            
+                            <div class="profile-section">
+                                <div class="profile-section-title">
+                                    <i class="fas fa-award"></i>
+                                    <h4>Rozetler</h4>
+                                </div>
+                                
+                                <div class="profile-badges">
+                                    <div class="profile-badge">
+                                        <i class="fas fa-crown"></i>
+                                        <span>Erken Destekçi</span>
+                                    </div>
+                                    <div class="profile-badge">
+                                        <i class="fas fa-code"></i>
+                                        <span>Geliştirici</span>
+                                    </div>
+                                    <div class="profile-badge">
+                                        <i class="fas fa-shield-alt"></i>
+                                        <span>Premium Üye</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="profile-divider"></div>
+                            
+                            <div class="profile-section">
+                                <div class="profile-section-title">
+                                    <i class="fas fa-sticky-note"></i>
+                                    <h4>Not</h4>
+                                </div>
+                                
+                                <div class="profile-note">
+                                    <textarea placeholder="Bu kullanıcı hakkında özel not ekle..."></textarea>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1364,6 +1411,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 closeBtn.click();
                 // Burada arkadaşlıktan çıkarma kodlarını ekleyebilirsiniz
             });
+        }
+
+        // Rastgele zaman üret
+        function getRandomTime() {
+            const now = new Date();
+            const hours = Math.floor(Math.random() * 24);
+            const minutes = Math.floor(Math.random() * 60);
+
+            // 24 saatten az ise bugün, değilse dün
+            if (hours < 24) {
+                const timeStr = `${hours}:${minutes < 10 ? '0' + minutes : minutes}`;
+                return `Bugün saat ${timeStr}'de görüldü`;
+            } else {
+                return 'Dün görüldü';
+            }
         }
 
         // Status metni al
