@@ -1280,8 +1280,10 @@
     display: flex;
     gap: 8px;
     margin-left: 8px;
-    opacity: 0;
-    transition: opacity 0.2s ease;
+    opacity: 1;
+    /* Her zaman görünür olması için 1 yapıyorum */
+    transition: none;
+    /* Geçiş efektini kaldırıyorum */
 }
 
 .friend-row:hover .friend-actions {
@@ -2242,8 +2244,10 @@
     display: flex;
     gap: 8px;
     margin-left: 8px;
-    opacity: 0;
-    transition: opacity 0.2s ease;
+    opacity: 1;
+    /* Her zaman görünür olması için 1 yapıyorum */
+    transition: none;
+    /* Geçiş efektini kaldırıyorum */
 }
 
 .friend-row:hover .friend-actions {
@@ -3532,8 +3536,10 @@
     display: flex;
     gap: 8px;
     margin-left: 8px;
-    opacity: 0;
-    transition: opacity 0.2s ease;
+    opacity: 1;
+    /* Her zaman görünür olması için 1 yapıyorum */
+    transition: none;
+    /* Geçiş efektini kaldırıyorum */
 }
 
 .friend-row:hover .friend-actions {
@@ -3604,6 +3610,7 @@
 
     .friend-actions {
         opacity: 1;
+        /* Her zaman görünür */
     }
 
     .friend-action-btn {
@@ -3643,8 +3650,8 @@
 /* Media query'lerdeki opacity düzeltmeleri */
 @media (max-width: 768px) {
     .friend-actions {
-        opacity: 0;
-        /* Mobilde de gizli başlasın */
+        opacity: 1;
+        /* Her zaman görünür */
     }
 
     .friend-row:hover .friend-actions {
