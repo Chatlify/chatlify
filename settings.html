@@ -160,7 +160,7 @@
                     <i class="fas fa-keyboard"></i>
                     <span>Klavye Kısayolları</span>
                 </div>
-                <div class="settings-category">
+                <div class="settings-category" data-target="language-region-settings">
                     <i class="fas fa-language"></i>
                     <span>Dil & Bölge</span>
                 </div>
@@ -418,6 +418,251 @@
                         <button class="cancel-button">İptal</button>
                         <button class="save-button">Değişiklikleri Kaydet</button>
                     </div>
+                </div>
+            </div>
+
+            <div class="settings-section hidden" id="language-region-settings">
+                <div class="settings-section-header">
+                    <h2>Dil & Bölge</h2>
+                    <p>Uygulama dilini ve bölge ayarlarınızı değiştirin</p>
+                </div>
+
+                <div class="language-region-section">
+                    <div class="region-list">
+                        <div class="region-heading">Ülke / Bölge</div>
+
+                        <div class="region-item active">
+                            <img src="https://flagcdn.com/w40/tr.png" alt="Türkiye" class="flag-icon">
+                            <div class="region-name">Türkiye</div>
+                            <div class="current-indicator">Mevcut</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/us.png" alt="Amerika Birleşik Devletleri"
+                                class="flag-icon">
+                            <div class="region-name">Amerika Birleşik Devletleri</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/gb.png" alt="Birleşik Krallık" class="flag-icon">
+                            <div class="region-name">Birleşik Krallık</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/de.png" alt="Almanya" class="flag-icon">
+                            <div class="region-name">Almanya</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/fr.png" alt="Fransa" class="flag-icon">
+                            <div class="region-name">Fransa</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/es.png" alt="İspanya" class="flag-icon">
+                            <div class="region-name">İspanya</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/it.png" alt="İtalya" class="flag-icon">
+                            <div class="region-name">İtalya</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/jp.png" alt="Japonya" class="flag-icon">
+                            <div class="region-name">Japonya</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/kr.png" alt="Güney Kore" class="flag-icon">
+                            <div class="region-name">Güney Kore</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/cn.png" alt="Çin" class="flag-icon">
+                            <div class="region-name">Çin</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/ru.png" alt="Rusya" class="flag-icon">
+                            <div class="region-name">Rusya</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/br.png" alt="Brezilya" class="flag-icon">
+                            <div class="region-name">Brezilya</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/ca.png" alt="Kanada" class="flag-icon">
+                            <div class="region-name">Kanada</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/au.png" alt="Avustralya" class="flag-icon">
+                            <div class="region-name">Avustralya</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/in.png" alt="Hindistan" class="flag-icon">
+                            <div class="region-name">Hindistan</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/nl.png" alt="Hollanda" class="flag-icon">
+                            <div class="region-name">Hollanda</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/se.png" alt="İsveç" class="flag-icon">
+                            <div class="region-name">İsveç</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/ae.png" alt="Birleşik Arap Emirlikleri" class="flag-icon">
+                            <div class="region-name">Birleşik Arap Emirlikleri</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/za.png" alt="Güney Afrika" class="flag-icon">
+                            <div class="region-name">Güney Afrika</div>
+                        </div>
+
+                        <div class="region-item">
+                            <img src="https://flagcdn.com/w40/sg.png" alt="Singapur" class="flag-icon">
+                            <div class="region-name">Singapur</div>
+                        </div>
+                    </div>
+
+                    <div class="language-list">
+                        <div class="language-heading">Dil</div>
+
+                        <div class="language-item active">
+                            <img src="https://flagcdn.com/w40/tr.png" alt="Türkçe" class="flag-icon">
+                            <div class="language-name">Türkçe</div>
+                            <div class="language-native">Türkçe</div>
+                            <div class="current-indicator">Mevcut</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/us.png" alt="İngilizce" class="flag-icon">
+                            <div class="language-name">İngilizce</div>
+                            <div class="language-native">English</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/de.png" alt="Almanca" class="flag-icon">
+                            <div class="language-name">Almanca</div>
+                            <div class="language-native">Deutsch</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/fr.png" alt="Fransızca" class="flag-icon">
+                            <div class="language-name">Fransızca</div>
+                            <div class="language-native">Français</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/es.png" alt="İspanyolca" class="flag-icon">
+                            <div class="language-name">İspanyolca</div>
+                            <div class="language-native">Español</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/it.png" alt="İtalyanca" class="flag-icon">
+                            <div class="language-name">İtalyanca</div>
+                            <div class="language-native">Italiano</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/nl.png" alt="Felemenkçe" class="flag-icon">
+                            <div class="language-name">Felemenkçe</div>
+                            <div class="language-native">Nederlands</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/pt.png" alt="Portekizce" class="flag-icon">
+                            <div class="language-name">Portekizce</div>
+                            <div class="language-native">Português</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/ru.png" alt="Rusça" class="flag-icon">
+                            <div class="language-name">Rusça</div>
+                            <div class="language-native">Русский</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/pl.png" alt="Lehçe" class="flag-icon">
+                            <div class="language-name">Lehçe</div>
+                            <div class="language-native">Polski</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/jp.png" alt="Japonca" class="flag-icon">
+                            <div class="language-name">Japonca</div>
+                            <div class="language-native">日本語</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/cn.png" alt="Çince (Basitleştirilmiş)" class="flag-icon">
+                            <div class="language-name">Çince (Basitleştirilmiş)</div>
+                            <div class="language-native">简体中文</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/tw.png" alt="Çince (Geleneksel)" class="flag-icon">
+                            <div class="language-name">Çince (Geleneksel)</div>
+                            <div class="language-native">繁體中文</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/kr.png" alt="Korece" class="flag-icon">
+                            <div class="language-name">Korece</div>
+                            <div class="language-native">한국어</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/ar.png" alt="Arapça" class="flag-icon">
+                            <div class="language-name">Arapça</div>
+                            <div class="language-native">العربية</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/gr.png" alt="Yunanca" class="flag-icon">
+                            <div class="language-name">Yunanca</div>
+                            <div class="language-native">Ελληνικά</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/hu.png" alt="Macarca" class="flag-icon">
+                            <div class="language-name">Macarca</div>
+                            <div class="language-native">Magyar</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/cz.png" alt="Çekçe" class="flag-icon">
+                            <div class="language-name">Çekçe</div>
+                            <div class="language-native">Čeština</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/se.png" alt="İsveççe" class="flag-icon">
+                            <div class="language-name">İsveççe</div>
+                            <div class="language-native">Svenska</div>
+                        </div>
+
+                        <div class="language-item">
+                            <img src="https://flagcdn.com/w40/fi.png" alt="Fince" class="flag-icon">
+                            <div class="language-name">Fince</div>
+                            <div class="language-native">Suomi</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-form-actions">
+                    <button class="cancel-button">İptal</button>
+                    <button class="save-button">Değişiklikleri Kaydet</button>
                 </div>
             </div>
         </div>

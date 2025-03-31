@@ -250,4 +250,88 @@ document.addEventListener('DOMContentLoaded', function () {
             showNotification(`Yazı tipi ${selectedFont} olarak değiştirildi`, 'success');
         });
     }
+
+    // Dil ve Bölge Bölümü İşlevsellikleri
+    document.addEventListener('DOMContentLoaded', function () {
+        // Dil ve Bölge bölümü için gerekli elementleri seçme
+        const regionItems = document.querySelectorAll('.region-item');
+        const languageItems = document.querySelectorAll('.language-item');
+
+        // Bölge öğelerine tıklama işlevselliği ekleme
+        regionItems.forEach(item => {
+            item.addEventListener('click', function () {
+                // Aktif sınıfını tüm öğelerden kaldır
+                regionItems.forEach(i => i.classList.remove('active'));
+                // Mevcut öğeye aktif sınıfını ekle
+                this.classList.add('active');
+
+                // Mevcut göstergesini kaldır
+                regionItems.forEach(i => {
+                    const indicator = i.querySelector('.current-indicator');
+                    if (indicator) {
+                        i.removeChild(indicator);
+                    }
+                });
+
+                // Seçilen öğeye mevcut göstergesini ekle
+                const indicator = document.createElement('div');
+                indicator.className = 'current-indicator';
+                indicator.textContent = 'Mevcut';
+                this.appendChild(indicator);
+
+                // Dil değiştiğinde bildirim göster
+                showNotification('Bölge değiştirildi: ' + this.querySelector('.region-name').textContent, 'success');
+            });
+        });
+
+        // Dil öğelerine tıklama işlevselliği ekleme
+        languageItems.forEach(item => {
+            item.addEventListener('click', function () {
+                // Aktif sınıfını tüm öğelerden kaldır
+                languageItems.forEach(i => i.classList.remove('active'));
+                // Mevcut öğeye aktif sınıfını ekle
+                this.classList.add('active');
+
+                // Mevcut göstergesini kaldır
+                languageItems.forEach(i => {
+                    const indicator = i.querySelector('.current-indicator');
+                    if (indicator) {
+                        i.removeChild(indicator);
+                    }
+                });
+
+                // Seçilen öğeye mevcut göstergesini ekle
+                const indicator = document.createElement('div');
+                indicator.className = 'current-indicator';
+                indicator.textContent = 'Mevcut';
+                this.appendChild(indicator);
+
+                // Dil değiştiğinde bildirim göster
+                const langName = this.querySelector('.language-name').textContent;
+                const nativeName = this.querySelector('.language-native').textContent;
+                showNotification(`Dil değiştirildi: ${langName} (${nativeName})`, 'success');
+            });
+        });
+
+        // Dil ve Bölge bölümündeki Değişiklikleri Kaydet butonuna tıklama
+        const languageSettings = document.getElementById('language-region-settings');
+        if (languageSettings) {
+            const saveButton = languageSettings.querySelector('.save-button');
+            const cancelButton = languageSettings.querySelector('.cancel-button');
+
+            if (saveButton) {
+                saveButton.addEventListener('click', function () {
+                    // Normalde buraya seçilen dil ve bölgeyi kaydetme işlevi eklenir
+                    // Şimdilik sadece bildirim gösteriyoruz
+                    showNotification('Dil ve bölge değişiklikleri başarıyla kaydedildi!', 'success');
+                });
+            }
+
+            if (cancelButton) {
+                cancelButton.addEventListener('click', function () {
+                    showNotification('Dil ve bölge değişiklikleri iptal edildi.', 'info');
+                });
+            }
+        }
+    });
 }); 
