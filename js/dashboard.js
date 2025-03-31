@@ -725,17 +725,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             });
 
-            // Arama butonları için işlevsellik
-            const callButtons = document.querySelectorAll('.friend-action-btn.call-btn');
-            callButtons.forEach(button => {
-                button.addEventListener('click', function (e) {
-                    e.stopPropagation(); // Ebeveyn tıklamayı engelle
-                    const friendRow = this.closest('.friend-row');
-                    const friendName = friendRow.querySelector('.friend-name').textContent;
-                    console.log(`${friendName} aranıyor...`);
-                });
-            });
-
             // Profil butonları için işlevsellik
             const profileButtons = document.querySelectorAll('.friend-action-btn.profile-btn');
             profileButtons.forEach(button => {
