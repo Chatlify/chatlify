@@ -824,7 +824,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeChatPanel();
 
     function initializeChatPanel() {
-        const messageButtons = document.querySelectorAll('.message-btn');
+        const messageButtons = document.querySelectorAll('.message-btn, .dm-item');
         const chatPanel = document.querySelector('.chat-panel');
         const chatCloseBtn = document.querySelector('.chat-close-btn');
         const chatTextarea = document.querySelector('.chat-textbox textarea');
@@ -836,32 +836,34 @@ document.addEventListener('DOMContentLoaded', function () {
             messageButtons.forEach(btn => {
                 btn.addEventListener('click', function (e) {
                     e.stopPropagation(); // Ebeveyn tıklamayı engelle
-                    const friendRow = this.closest('.friend-row');
 
-                    if (friendRow) {
-                        // Sohbeti açarken arkadaşın bilgilerini al
-                        const friendName = friendRow.querySelector('.friend-name').textContent;
-                        const friendAvatar = friendRow.querySelector('.friend-avatar img').src;
-                        const statusClass = Array.from(friendRow.querySelector('.status-dot').classList)
-                            .find(cls => ['online', 'idle', 'dnd', 'offline'].includes(cls));
-                        const statusText = friendRow.querySelector('.friend-status').textContent;
+                    // Butonun tipini kontrol et
+                    if (this.classList.contains('message-btn')) {
+                        // Arkadaşlar panelindeki mesaj butonu
+                        const friendRow = this.closest('.friend-row');
 
-                        // Sohbet panelini güncelle ve göster
-                        updateChatPanelUser(friendName, friendAvatar, statusClass, statusText);
-                        openChatPanel();
-                    } else {
-                        // Grup sohbeti veya DM'den
-                        const dmItem = this.closest('.dm-item');
-                        if (dmItem) {
-                            const friendName = dmItem.querySelector('.dm-name').textContent;
-                            const friendAvatar = dmItem.querySelector('.dm-avatar img').src;
-                            const statusClass = Array.from(dmItem.querySelector('.dm-status').classList)
+                        if (friendRow) {
+                            // Sohbeti açarken arkadaşın bilgilerini al
+                            const friendName = friendRow.querySelector('.friend-name').textContent;
+                            const friendAvatar = friendRow.querySelector('.friend-avatar img').src;
+                            const statusClass = Array.from(friendRow.querySelector('.status-dot').classList)
                                 .find(cls => ['online', 'idle', 'dnd', 'offline'].includes(cls));
-                            const statusText = dmItem.querySelector('.dm-activity').textContent;
+                            const statusText = friendRow.querySelector('.friend-status').textContent;
 
+                            // Sohbet panelini güncelle ve göster
                             updateChatPanelUser(friendName, friendAvatar, statusClass, statusText);
                             openChatPanel();
                         }
+                    } else if (this.classList.contains('dm-item')) {
+                        // Özel mesajlar kısmındaki arkadaş öğesi
+                        const friendName = this.querySelector('.dm-name').textContent;
+                        const friendAvatar = this.querySelector('.dm-avatar img').src;
+                        const statusClass = Array.from(this.querySelector('.dm-status').classList)
+                            .find(cls => ['online', 'idle', 'dnd', 'offline'].includes(cls)) || 'online';
+                        const statusText = this.querySelector('.dm-activity').textContent;
+
+                        updateChatPanelUser(friendName, friendAvatar, statusClass, statusText);
+                        openChatPanel();
                     }
                 });
             });
