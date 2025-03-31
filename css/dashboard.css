@@ -399,16 +399,6 @@
     background-color: var(--primary-color);
 }
 
-.server-settings-icon i {
-    font-size: 20px;
-    color: var(--text-secondary);
-    transition: color 0.3s ease, transform 0.3s ease;
-}
-
-.server-item:hover .server-settings-icon {
-    background-color: var(--primary-color);
-}
-
 .server-item:hover .server-settings-icon i {
     color: white;
     animation: spin 2s linear infinite;
@@ -2082,5 +2072,219 @@
     .search-container {
         width: 100%;
         height: 42px;
+    }
+}
+
+/* Yeni Arkadaş Paneli Stilleri */
+.friends-panel {
+    width: 100%;
+    height: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    animation: fadeScale 0.3s ease;
+    background-color: var(--main-bg);
+}
+
+.friends-search-container {
+    position: relative;
+    margin-bottom: 16px;
+}
+
+.friends-search {
+    width: 100%;
+    padding: 10px 16px 10px 40px;
+    border-radius: 4px;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--text-color);
+    font-size: 14px;
+    outline: none;
+}
+
+.friends-search::placeholder {
+    color: var(--text-secondary);
+}
+
+.friends-search:focus {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.friends-search-container i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 14px;
+    pointer-events: none;
+}
+
+.friends-section {
+    margin-bottom: 24px;
+}
+
+.friends-section-header {
+    margin-bottom: 8px;
+    padding-left: 8px;
+}
+
+.friends-section-header h3 {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin: 0;
+}
+
+.friends-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.offline-list .friend-row {
+    opacity: 0.7;
+}
+
+.friend-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: background-color 0.15s ease;
+}
+
+.friend-row:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.friend-avatar {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.friend-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.friend-status {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--main-bg);
+}
+
+.friend-row:hover .friend-status {
+    border-color: rgba(40, 43, 54, 1);
+}
+
+.friend-status.online {
+    background-color: var(--status-online);
+}
+
+.friend-status.idle {
+    background-color: var(--status-idle);
+}
+
+.friend-status.dnd {
+    background-color: var(--status-dnd);
+}
+
+.friend-status.offline {
+    background-color: var(--status-offline);
+}
+
+.friend-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.friend-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.friend-activity {
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.friend-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: 8px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.friend-row:hover .friend-actions {
+    opacity: 1;
+}
+
+.friend-action-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.06);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.friend-action-btn:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: var(--text-color);
+}
+
+.message-btn:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.more-btn {
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .friend-actions {
+        opacity: 1;
+    }
+
+    .friend-action-btn {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+@media (max-width: 576px) {
+    .friends-panel {
+        padding: 12px 8px;
+    }
+
+    .friend-row {
+        padding: 8px 12px;
     }
 }

@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Mesaj butonu işlevi
-    const messageButtons = document.querySelectorAll('.friend-action.message');
+    const messageButtons = document.querySelectorAll('.friend-action.message, .message-btn');
     messageButtons.forEach(button => {
         button.addEventListener('click', function () {
             // Mesaj gönderme işlemi burada gerçekleştirilecek
@@ -660,4 +660,59 @@ document.addEventListener('DOMContentLoaded', function () {
             // Bildirim kaldırıldı
         });
     });
+
+    // Diğer (more) butonu işlevi 
+    const moreButtons = document.querySelectorAll('.more-btn');
+    moreButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            // Burada dropdown menü veya ek işlemler uygulanabilir
+            console.log('Diğer işlemler menüsü');
+        });
+    });
+
+    // Arkadaş satırında hover durumunda butonların gösterilmesi
+    const friendRows = document.querySelectorAll('.friend-row');
+    friendRows.forEach(row => {
+        // Mobil cihazlar için dokunma olayına uygun hale getirme
+        row.addEventListener('touchstart', function () {
+            this.classList.add('touch-hover');
+        });
+
+        row.addEventListener('touchend', function () {
+            setTimeout(() => {
+                this.classList.remove('touch-hover');
+            }, 500);
+        });
+    });
+
+    // Arkadaş arama işlevi
+    const friendsSearch = document.querySelector('.friends-search');
+    if (friendsSearch) {
+        friendsSearch.addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase().trim();
+            const friendRows = document.querySelectorAll('.friend-row');
+
+            friendRows.forEach(row => {
+                const friendName = row.querySelector('.friend-name').textContent.toLowerCase();
+                const friendActivity = row.querySelector('.friend-activity').textContent.toLowerCase();
+
+                if (friendName.includes(searchTerm) || friendActivity.includes(searchTerm)) {
+                    row.style.display = 'flex';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Arama teriminin varlığına göre grup başlıklarını göster/gizle
+            const friendsSections = document.querySelectorAll('.friends-section');
+            friendsSections.forEach(section => {
+                const visibleFriends = section.querySelectorAll('.friend-row[style="display: flex;"]');
+                if (visibleFriends.length === 0) {
+                    section.querySelector('.friends-section-header').style.display = 'none';
+                } else {
+                    section.querySelector('.friends-section-header').style.display = 'block';
+                }
+            });
+        });
+    }
 }); 
