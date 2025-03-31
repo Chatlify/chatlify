@@ -334,4 +334,205 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
+
+    // Bildirimler için işlevsellik
+    function initializeNotificationSettings() {
+        const masterToggle = document.querySelector('.master-notification-toggle');
+        const otherToggles = document.querySelectorAll('.notification-option input[type="checkbox"]:not(.master-notification-toggle)');
+
+        if (masterToggle) {
+            masterToggle.addEventListener('change', function () {
+                const isChecked = this.checked;
+                otherToggles.forEach(toggle => {
+                    toggle.checked = isChecked;
+                    toggle.disabled = !isChecked;
+                });
+
+                if (isChecked) {
+                    showNotification('Tüm bildirimler etkinleştirildi', 'success');
+                } else {
+                    showNotification('Tüm bildirimler devre dışı bırakıldı', 'info');
+                }
+            });
+        }
+
+        // Rahatsız Etmeyin modu için zaman seçicileri
+        const dndToggle = document.getElementById('dnd-toggle');
+        const timeInputs = document.querySelectorAll('.dnd-times input[type="time"]');
+
+        if (dndToggle) {
+            dndToggle.addEventListener('change', function () {
+                timeInputs.forEach(input => {
+                    input.disabled = !this.checked;
+                });
+
+                if (this.checked) {
+                    const startTime = document.getElementById('dnd-start-time').value;
+                    const endTime = document.getElementById('dnd-end-time').value;
+                    showNotification(`Rahatsız Etmeyin modu etkinleştirildi: ${startTime} - ${endTime}`, 'success');
+                } else {
+                    showNotification('Rahatsız Etmeyin modu devre dışı bırakıldı', 'info');
+                }
+            });
+        }
+
+        // Bildirim seçenekleri için tekil işlevsellik
+        otherToggles.forEach(toggle => {
+            toggle.addEventListener('change', function () {
+                const optionName = this.closest('.notification-option').querySelector('.option-title').textContent;
+                if (this.checked) {
+                    showNotification(`"${optionName}" etkinleştirildi`, 'success');
+                } else {
+                    showNotification(`"${optionName}" devre dışı bırakıldı`, 'info');
+                }
+
+                // Ana toggle'ı kontrol et
+                updateMasterToggle();
+            });
+        });
+
+        function updateMasterToggle() {
+            if (!masterToggle) return;
+
+            const allChecked = Array.from(otherToggles).every(toggle => toggle.checked);
+            masterToggle.checked = allChecked;
+        }
+    }
+
+    // Ses ve Video ayarları için işlevsellik
+    function initializeAudioVideoSettings() {
+        // Ses ayarları
+        const outputVolume = document.getElementById('output-volume');
+        const inputVolume = document.getElementById('input-volume');
+        const outputVolumeValue = document.querySelector('#output-volume + i + span');
+        const inputVolumeValue = document.querySelector('#input-volume + i + span');
+        const testMicBtn = document.querySelector('.test-mic-btn');
+        const meterFill = document.querySelector('.meter-fill');
+
+        if (outputVolume && outputVolumeValue) {
+            outputVolume.addEventListener('input', function () {
+                outputVolumeValue.textContent = this.value + '%';
+            });
+        }
+
+        if (inputVolume && inputVolumeValue) {
+            inputVolume.addEventListener('input', function () {
+                inputVolumeValue.textContent = this.value + '%';
+            });
+        }
+
+        if (testMicBtn && meterFill) {
+            testMicBtn.addEventListener('click', function () {
+                // Simüle edilmiş mikrofon testi
+                showNotification('Mikrofon testi başlatıldı', 'info');
+
+                let level = 0;
+                const interval = setInterval(function () {
+                    level = Math.min(100, level + Math.random() * 20);
+                    meterFill.style.width = level + '%';
+
+                    if (level >= 90) {
+                        clearInterval(interval);
+                        setTimeout(function () {
+                            meterFill.style.width = '0%';
+                            showNotification('Mikrofon testi tamamlandı', 'success');
+                        }, 1000);
+                    }
+                }, 100);
+            });
+        }
+
+        // Video ayarları
+        const enableVideoBtn = document.querySelector('.enable-video');
+        const testVideoBtn = document.querySelector('.test-video');
+        const videoPlaceholder = document.querySelector('.video-placeholder');
+
+        if (enableVideoBtn && testVideoBtn) {
+            let videoEnabled = false;
+
+            enableVideoBtn.addEventListener('click', function () {
+                videoEnabled = !videoEnabled;
+
+                if (videoEnabled) {
+                    // Kamera açma simülasyonu
+                    videoPlaceholder.innerHTML = `
+                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #1a2036, #212842); display: flex; align-items: center; justify-content: center;">
+                            <div style="width: 150px; height: 150px; border-radius: 50%; background-color: #3d68e7; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user" style="font-size: 80px; color: white;"></i>
+                            </div>
+                        </div>
+                    `;
+
+                    this.innerHTML = '<i class="fas fa-video-slash"></i><span>Kamerayı Kapat</span>';
+                    testVideoBtn.removeAttribute('disabled');
+                    showNotification('Kamera etkinleştirildi', 'success');
+                } else {
+                    // Kamera kapatma simülasyonu
+                    videoPlaceholder.innerHTML = `
+                        <i class="fas fa-video-slash"></i>
+                        <span>Kamera kapalı</span>
+                    `;
+
+                    this.innerHTML = '<i class="fas fa-video"></i><span>Kamerayı Etkinleştir</span>';
+                    testVideoBtn.setAttribute('disabled', 'disabled');
+                    showNotification('Kamera devre dışı bırakıldı', 'info');
+                }
+            });
+
+            testVideoBtn.addEventListener('click', function () {
+                if (!videoEnabled) return;
+
+                showNotification('Video testi başarılı', 'success');
+            });
+        }
+
+        // Gelişmiş video ayarları
+        const videoToggles = document.querySelectorAll('.video-settings .advanced-option input[type="checkbox"]');
+
+        videoToggles.forEach(toggle => {
+            toggle.addEventListener('change', function () {
+                const optionName = this.closest('.advanced-option').querySelector('.option-title').textContent;
+                if (this.checked) {
+                    showNotification(`"${optionName}" etkinleştirildi`, 'success');
+                } else {
+                    showNotification(`"${optionName}" devre dışı bırakıldı`, 'info');
+                }
+            });
+        });
+
+        // Cihaz seçiciler
+        const deviceSelectors = document.querySelectorAll('.device-selector select');
+
+        deviceSelectors.forEach(selector => {
+            selector.addEventListener('change', function () {
+                const deviceType = this.closest('.device-selector').querySelector('label').textContent;
+                const selectedDevice = this.options[this.selectedIndex].text;
+                showNotification(`${deviceType}: ${selectedDevice} seçildi`, 'success');
+            });
+        });
+    }
+
+    // Sayfa yüklendikten sonra tüm işlevleri başlat
+    document.addEventListener('DOMContentLoaded', function () {
+        // Mevcut işlevler buraya...
+
+        // Yeni işlevler
+        initializeNotificationSettings();
+        initializeAudioVideoSettings();
+
+        // Şifre görünürlüğü için
+        const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+        togglePasswordButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const passwordInput = this.previousElementSibling;
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                } else {
+                    passwordInput.type = 'password';
+                    this.innerHTML = '<i class="fas fa-eye"></i>';
+                }
+            });
+        });
+    });
 }); 

@@ -206,47 +206,88 @@
                 </div>
 
                 <div class="settings-form">
-                    <div class="settings-form-group">
-                        <label for="username">Kullanıcı Adı</label>
-                        <input type="text" id="username" value="KullaniciAdi">
+                    <div class="settings-form-heading">
+                        <h3>Kullanıcı Bilgileri</h3>
                     </div>
-                    <div class="settings-form-group">
-                        <label for="email">E-posta</label>
-                        <input type="email" id="email" value="kullanici@email.com">
+                    <div class="settings-grid">
+                        <div class="settings-form-group">
+                            <label for="username">Kullanıcı Adı</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="username" value="KullaniciAdi">
+                            </div>
+                        </div>
+                        <div class="settings-form-group">
+                            <label for="email">E-posta</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="email" value="kullanici@email.com">
+                            </div>
+                        </div>
+                        <div class="settings-form-group">
+                            <label for="phone">Telefon</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-phone"></i>
+                                <input type="tel" id="phone" value="+90 555 123 4567">
+                            </div>
+                        </div>
+                        <div class="settings-form-group">
+                            <label for="birthday">Doğum Tarihi</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-birthday-cake"></i>
+                                <input type="date" id="birthday" value="1990-01-01">
+                            </div>
+                        </div>
                     </div>
-                    <div class="settings-form-group">
-                        <label for="phone">Telefon</label>
-                        <input type="tel" id="phone" value="+90 555 123 4567">
-                    </div>
+
                     <div class="settings-form-group">
                         <label for="bio">Hakkımda</label>
-                        <textarea id="bio" rows="3"
-                            placeholder="Kendiniz hakkında bilgi verin...">Chatlify kullanıcısı! Yazılım ve teknoloji ile ilgileniyorum.</textarea>
+                        <div class="input-with-icon textarea">
+                            <i class="fas fa-info-circle"></i>
+                            <textarea id="bio" rows="3"
+                                placeholder="Kendiniz hakkında bilgi verin...">Chatlify kullanıcısı! Yazılım ve teknoloji ile ilgileniyorum.</textarea>
+                        </div>
                     </div>
 
                     <div class="settings-form-heading">
                         <h3>Şifre ve Doğrulama</h3>
                     </div>
-
-                    <div class="settings-form-group">
-                        <label for="current-password">Mevcut Şifre</label>
-                        <input type="password" id="current-password" placeholder="••••••••">
-                    </div>
-                    <div class="settings-form-group">
-                        <label for="new-password">Yeni Şifre</label>
-                        <input type="password" id="new-password" placeholder="••••••••">
-                    </div>
-                    <div class="settings-form-group">
-                        <label for="confirm-password">Şifreyi Tekrarla</label>
-                        <input type="password" id="confirm-password" placeholder="••••••••">
+                    <div class="settings-grid">
+                        <div class="settings-form-group">
+                            <label for="current-password">Mevcut Şifre</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="current-password" placeholder="••••••••">
+                                <button type="button" class="toggle-password"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+                        <div class="settings-form-group">
+                            <label for="new-password">Yeni Şifre</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-key"></i>
+                                <input type="password" id="new-password" placeholder="••••••••">
+                                <button type="button" class="toggle-password"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+                        <div class="settings-form-group">
+                            <label for="confirm-password">Şifreyi Tekrarla</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-check-circle"></i>
+                                <input type="password" id="confirm-password" placeholder="••••••••">
+                                <button type="button" class="toggle-password"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="settings-form-heading">
                         <h3>İki Faktörlü Doğrulama</h3>
                     </div>
 
-                    <div class="settings-toggle-group">
-                        <div class="toggle-label">
+                    <div class="security-option">
+                        <div class="security-option-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="security-option-info">
                             <div class="toggle-title">İki Faktörlü Doğrulama</div>
                             <div class="toggle-description">Hesabınıza giriş yaparken ekstra güvenlik katmanı ekler
                             </div>
@@ -257,12 +298,43 @@
                         </label>
                     </div>
 
+                    <div class="security-option">
+                        <div class="security-option-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="security-option-info">
+                            <div class="toggle-title">Güvenlik Bildirimleri</div>
+                            <div class="toggle-description">Hesabınızla ilgili şüpheli aktivitelerde bildirim alın</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="security-option">
+                        <div class="security-option-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="security-option-info">
+                            <div class="toggle-title">Cihaz Doğrulama</div>
+                            <div class="toggle-description">Yeni cihazlardan giriş yaparken e-posta onayı iste</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
                     <div class="settings-form-heading">
                         <h3>Hesap Yönetimi</h3>
                     </div>
 
                     <div class="settings-danger-zone">
                         <div class="danger-action">
+                            <div class="danger-icon">
+                                <i class="fas fa-pause-circle"></i>
+                            </div>
                             <div class="danger-info">
                                 <div class="danger-title">Hesabı Devre Dışı Bırak</div>
                                 <div class="danger-description">Hesabınız geçici olarak devre dışı bırakılır ve yeniden
@@ -272,6 +344,9 @@
                         </div>
 
                         <div class="danger-action">
+                            <div class="danger-icon">
+                                <i class="fas fa-trash-alt"></i>
+                            </div>
                             <div class="danger-info">
                                 <div class="danger-title">Hesabı Sil</div>
                                 <div class="danger-description">Hesabınız ve tüm verileriniz kalıcı olarak silinecektir.
@@ -332,33 +407,6 @@
                     </div>
 
                     <div class="appearance-option-group">
-                        <h3>Renk Şeması</h3>
-                        <div class="color-selector">
-                            <div class="color-item active" style="--accent-color: #5f75fc;">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="color-item" style="--accent-color: #ff4d4d;">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="color-item" style="--accent-color: #4dff7f;">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="color-item" style="--accent-color: #ff9f4d;">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="color-item" style="--accent-color: #4dcaff;">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="color-item" style="--accent-color: #d24dff;">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="color-item custom">
-                                <i class="fas fa-plus"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="appearance-option-group">
                         <h3>Yazı Tipi</h3>
                         <select class="settings-select">
                             <option selected>Poppins</option>
@@ -404,6 +452,374 @@
                                 <input type="checkbox" checked>
                                 <span class="toggle-slider"></span>
                             </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-form-actions">
+                        <button class="cancel-button">İptal</button>
+                        <button class="save-button">Değişiklikleri Kaydet</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bildirimler Bölümü -->
+            <div class="settings-section hidden" id="notification-settings">
+                <div class="settings-section-header">
+                    <h2>Bildirimler</h2>
+                    <p>Bildirim tercihlerinizi ve ayarlarınızı özelleştirin</p>
+                </div>
+
+                <div class="notification-settings-container">
+                    <div class="notification-options">
+                        <div class="notification-section">
+                            <div class="section-title">
+                                <i class="fas fa-bell"></i>
+                                <h3>Genel Bildirim Ayarları</h3>
+                            </div>
+
+                            <div class="notification-option">
+                                <div class="notification-option-info">
+                                    <div class="option-title">Tüm Bildirimleri Etkinleştir</div>
+                                    <div class="option-description">Uygulamadaki tüm bildirimleri açar veya kapatır
+                                    </div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked class="master-notification-toggle">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="notification-option">
+                                <div class="notification-option-info">
+                                    <div class="option-title">Masaüstü Bildirimleri</div>
+                                    <div class="option-description">Uygulama arka plandayken masaüstü bildirimleri
+                                        gösterir</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="notification-option">
+                                <div class="notification-option-info">
+                                    <div class="option-title">Bildirim Sesleri</div>
+                                    <div class="option-description">Bildirim geldiğinde ses çalar</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="notification-section">
+                            <div class="section-title">
+                                <i class="fas fa-comment-alt"></i>
+                                <h3>Mesaj Bildirimleri</h3>
+                            </div>
+
+                            <div class="notification-option">
+                                <div class="notification-option-info">
+                                    <div class="option-title">Direkt Mesajlar</div>
+                                    <div class="option-description">Özel mesajlarda bildirim alın</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="notification-option">
+                                <div class="notification-option-info">
+                                    <div class="option-title">Sunucu Mesajları</div>
+                                    <div class="option-description">Sunuculardaki mesajlar için bildirim alın</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="notification-option">
+                                <div class="notification-option-info">
+                                    <div class="option-title">Bahsedilmeler</div>
+                                    <div class="option-description">Sadece bahsedildiğinizde bildirim alın</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="notification-section">
+                            <div class="section-title">
+                                <i class="fas fa-user-friends"></i>
+                                <h3>Arkadaş Bildirimleri</h3>
+                            </div>
+
+                            <div class="notification-option">
+                                <div class="notification-option-info">
+                                    <div class="option-title">Arkadaşlık İstekleri</div>
+                                    <div class="option-description">Yeni arkadaşlık isteklerinde bildirim alın</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="notification-option">
+                                <div class="notification-option-info">
+                                    <div class="option-title">Arkadaş Durumu</div>
+                                    <div class="option-description">Arkadaşlarınız çevrimiçi olduğunda bildirim alın
+                                    </div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="do-not-disturb-section">
+                        <div class="section-title">
+                            <i class="fas fa-moon"></i>
+                            <h3>Rahatsız Etmeyin Zamanlaması</h3>
+                        </div>
+
+                        <div class="notification-option">
+                            <div class="notification-option-info">
+                                <div class="option-title">Rahatsız Etmeyin Modunu Etkinleştir</div>
+                                <div class="option-description">Belirli saatlerde bildirimleri otomatik olarak devre
+                                    dışı bırakır</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="dnd-toggle">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="dnd-times">
+                            <div class="time-picker">
+                                <label for="dnd-start-time">Başlangıç Saati</label>
+                                <input type="time" id="dnd-start-time" value="22:00">
+                            </div>
+                            <div class="time-picker">
+                                <label for="dnd-end-time">Bitiş Saati</label>
+                                <input type="time" id="dnd-end-time" value="08:00">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-form-actions">
+                        <button class="cancel-button">İptal</button>
+                        <button class="save-button">Değişiklikleri Kaydet</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ses ve Video Bölümü -->
+            <div class="settings-section hidden" id="audio-video-settings">
+                <div class="settings-section-header">
+                    <h2>Ses & Video</h2>
+                    <p>Ses ve görüntü ayarlarınızı yapılandırın</p>
+                </div>
+
+                <div class="audio-video-settings-container">
+                    <div class="audio-settings">
+                        <div class="av-section">
+                            <div class="section-title">
+                                <i class="fas fa-volume-up"></i>
+                                <h3>Ses Ayarları</h3>
+                            </div>
+
+                            <div class="device-selector">
+                                <label for="output-device">Ses Çıkış Cihazı</label>
+                                <select id="output-device" class="settings-select">
+                                    <option selected>Varsayılan Hoparlör</option>
+                                    <option>Kulaklık (Realtek Audio)</option>
+                                    <option>Bluetooth Kulaklık</option>
+                                </select>
+                            </div>
+
+                            <div class="device-selector">
+                                <label for="input-device">Mikrofon</label>
+                                <select id="input-device" class="settings-select">
+                                    <option selected>Varsayılan Mikrofon</option>
+                                    <option>Dahili Mikrofon</option>
+                                    <option>Bluetooth Mikrofon</option>
+                                </select>
+                            </div>
+
+                            <div class="volume-slider">
+                                <label for="output-volume">Ses Seviyesi</label>
+                                <div class="volume-control">
+                                    <i class="fas fa-volume-down"></i>
+                                    <input type="range" id="output-volume" min="0" max="100" value="75" class="slider">
+                                    <i class="fas fa-volume-up"></i>
+                                    <span class="volume-value">75%</span>
+                                </div>
+                            </div>
+
+                            <div class="volume-slider">
+                                <label for="input-volume">Mikrofon Seviyesi</label>
+                                <div class="volume-control">
+                                    <i class="fas fa-microphone-alt-slash"></i>
+                                    <input type="range" id="input-volume" min="0" max="100" value="50" class="slider">
+                                    <i class="fas fa-microphone-alt"></i>
+                                    <span class="volume-value">50%</span>
+                                </div>
+                            </div>
+
+                            <div class="audio-meter">
+                                <label>Mikrofon Testi</label>
+                                <div class="meter-container">
+                                    <div class="meter-bar">
+                                        <div class="meter-fill"></div>
+                                    </div>
+                                    <button class="test-mic-btn">Test Et</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="av-section">
+                            <div class="section-title">
+                                <i class="fas fa-sliders-h"></i>
+                                <h3>Gelişmiş Ses Ayarları</h3>
+                            </div>
+
+                            <div class="advanced-option">
+                                <div class="advanced-option-info">
+                                    <div class="option-title">Gürültü Azaltma</div>
+                                    <div class="option-description">Arka plan gürültüsünü filtreler</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="advanced-option">
+                                <div class="advanced-option-info">
+                                    <div class="option-title">Eko Engelleme</div>
+                                    <div class="option-description">Ses yankılarını engeller</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="advanced-option">
+                                <div class="advanced-option-info">
+                                    <div class="option-title">Otomatik Ses Seviyesi</div>
+                                    <div class="option-description">Ses seviyesini otomatik olarak ayarlar</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="advanced-option">
+                                <div class="advanced-option-info">
+                                    <div class="option-title">Ses Efektleri</div>
+                                    <div class="option-description">Bildirim ve mesaj seslerini etkinleştirir</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="video-settings">
+                        <div class="av-section">
+                            <div class="section-title">
+                                <i class="fas fa-video"></i>
+                                <h3>Video Ayarları</h3>
+                            </div>
+
+                            <div class="video-preview">
+                                <div class="preview-container">
+                                    <div class="video-placeholder">
+                                        <i class="fas fa-video-slash"></i>
+                                        <span>Kamera kapalı</span>
+                                    </div>
+                                </div>
+                                <div class="video-controls">
+                                    <button class="video-control-btn enable-video">
+                                        <i class="fas fa-video"></i>
+                                        <span>Kamerayı Etkinleştir</span>
+                                    </button>
+                                    <button class="video-control-btn test-video" disabled>
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>Test Et</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="device-selector">
+                                <label for="camera-device">Kamera</label>
+                                <select id="camera-device" class="settings-select">
+                                    <option selected>Varsayılan Kamera</option>
+                                    <option>Dahili Kamera</option>
+                                    <option>USB Kamera</option>
+                                </select>
+                            </div>
+
+                            <div class="device-selector">
+                                <label for="video-quality">Video Kalitesi</label>
+                                <select id="video-quality" class="settings-select">
+                                    <option>Düşük (360p)</option>
+                                    <option selected>Orta (720p)</option>
+                                    <option>Yüksek (1080p)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="av-section">
+                            <div class="section-title">
+                                <i class="fas fa-magic"></i>
+                                <h3>Video Geliştirmeleri</h3>
+                            </div>
+
+                            <div class="advanced-option">
+                                <div class="advanced-option-info">
+                                    <div class="option-title">Arka Plan Bulanıklaştırma</div>
+                                    <div class="option-description">Arkanızdaki görüntüyü bulanıklaştırır</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="advanced-option">
+                                <div class="advanced-option-info">
+                                    <div class="option-title">Otomatik Işık Düzeltme</div>
+                                    <div class="option-description">Düşük ışık koşullarında görüntüyü iyileştirir</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="advanced-option">
+                                <div class="advanced-option-info">
+                                    <div class="option-title">Video Filtreleri</div>
+                                    <div class="option-description">Görüntünüze çeşitli filtreler uygular</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
                         </div>
                     </div>
 
