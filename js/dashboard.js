@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Header arama işlevi
-    const headerSearchInput = document.querySelector('.header-search input');
+    const headerSearchInput = document.querySelector('.search-box input');
     if (headerSearchInput) {
         headerSearchInput.addEventListener('input', function () {
             const searchTerm = this.value.toLowerCase().trim();
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Arkadaş Ekle butonu işlevi
-    const addFriendBtn = document.querySelector('.add-friend-btn');
+    const addFriendBtn = document.querySelector('.add-friend');
     if (addFriendBtn) {
         addFriendBtn.addEventListener('click', function () {
             // Modal veya popup açılabilir, şu an için bildirim gösterelim
@@ -469,38 +469,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.head.appendChild(notificationStyle);
 
-    // Main Tabs işlevselliği
-    const mainTabs = document.querySelectorAll('.main-tab');
-    const tabIndicator = document.querySelector('.tab-indicator');
+    // Tab işlevselliği
+    const tabs = document.querySelectorAll('.tab');
 
-    // Tab göstergesi pozisyonunu ayarla
-    function updateTabIndicator(activeTab) {
-        // Gösterge genişliğini ve pozisyonunu ayarla
-        if (!tabIndicator) return;
-
-        const tabLeft = activeTab.offsetLeft;
-        const tabWidth = activeTab.offsetWidth;
-
-        tabIndicator.style.width = `${tabWidth - 12}px`; // 12px padding için
-        tabIndicator.style.left = `${tabLeft + 6}px`; // 6px margin için
-    }
-
-    // Sayfa yüklendiğinde aktif tab için gösterge pozisyonunu ayarla
-    const activeTab = document.querySelector('.main-tab.active');
-    if (activeTab && tabIndicator) {
-        setTimeout(() => {
-            updateTabIndicator(activeTab);
-        }, 100); // DOM tamamen yüklendiğinden emin olmak için küçük bir gecikme
-    }
-
-    mainTabs.forEach(tab => {
+    tabs.forEach(tab => {
         tab.addEventListener('click', function () {
             // Aktif tab'ı güncelle
-            document.querySelector('.main-tab.active').classList.remove('active');
+            document.querySelector('.tab.active').classList.remove('active');
             this.classList.add('active');
-
-            // Tab gösterge pozisyonunu güncelle
-            updateTabIndicator(this);
 
             const tabText = this.textContent.trim();
             showNotification(`${tabText} sekmesi seçildi`, 'info');
