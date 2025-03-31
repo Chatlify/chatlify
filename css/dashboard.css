@@ -1484,7 +1484,7 @@
 .offline-friends-title {
     font-size: 16px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.5);
     margin: 20px 0 15px;
     padding-left: 10px;
     position: relative;
@@ -1498,6 +1498,131 @@
     transform: translateY(-50%);
     width: 4px;
     height: 16px;
-    background: linear-gradient(to bottom, #5e72e4, #825ee4);
+    background: linear-gradient(to bottom, #6c7293, #515575);
     border-radius: 2px;
+}
+
+/* Başlık arama kutusu */
+.header-search {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    padding-right: 15px;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    background: rgba(30, 33, 50, 0.7);
+    border-radius: 20px;
+    padding: 6px 15px;
+    border: 1px solid rgba(87, 96, 235, 0.2);
+    transition: all 0.3s ease;
+}
+
+.search-container:focus-within {
+    border-color: rgba(87, 96, 235, 0.5);
+    box-shadow: 0 0 0 2px rgba(87, 96, 235, 0.1);
+}
+
+.search-container i {
+    color: #6c7293;
+    margin-right: 8px;
+    font-size: 14px;
+}
+
+.search-container input {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 14px;
+    width: 180px;
+    outline: none;
+}
+
+.search-container input::placeholder {
+    color: #6c7293;
+}
+
+/* Çevrimdışı arkadaş kartı stili */
+.offline-friends-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 20px 0 15px;
+    padding-left: 10px;
+    position: relative;
+}
+
+.offline-friends-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 16px;
+    background: linear-gradient(to bottom, #6c7293, #515575);
+    border-radius: 2px;
+}
+
+/* Çevrimdışı arkadaş kartları için özel stil */
+.offline-friends-title+.friends-list .friend-card {
+    opacity: 0.7;
+    background: rgba(30, 33, 50, 0.5);
+    border: 1px solid rgba(108, 114, 147, 0.2);
+}
+
+.offline-friends-title+.friends-list .friend-card:hover {
+    opacity: 0.9;
+    background: rgba(30, 33, 50, 0.7);
+    transform: translateY(-2px);
+}
+
+.offline-friends-title+.friends-list .friend-name {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.offline-friends-title+.friends-list .friend-tag {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.offline-friends-title+.friends-list .friend-action.message {
+    background: linear-gradient(135deg, #6c7293, #515575);
+    opacity: 0.8;
+}
+
+.offline-friends-title+.friends-list .friend-action.message:hover {
+    background: linear-gradient(135deg, #515575, #464a66);
+    opacity: 1;
+}
+
+/* Main header responsive tasarım */
+@media (max-width: 768px) {
+    .main-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 15px;
+    }
+
+    .main-tabs {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .header-search {
+        width: 100%;
+        margin-top: 10px;
+        padding-right: 0;
+    }
+
+    .search-container {
+        width: 100%;
+    }
+
+    .search-container input {
+        width: 100%;
+    }
 }
