@@ -3328,3 +3328,302 @@
         font-size: 12px;
     }
 }
+
+/* Yeni Arkadaşlar Paneli Stilleri */
+.friends-panel-container {
+    background: rgba(24, 29, 54, 0.8);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 0;
+    margin-bottom: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.friends-status-filter {
+    display: flex;
+    background-color: rgba(32, 34, 47, 0.7);
+    border-radius: 5px;
+    padding: 5px;
+    margin: 15px;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.status-filter {
+    padding: 10px 20px;
+    color: #8e9297;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.status-filter:hover {
+    color: #dcddde;
+    background-color: rgba(79, 84, 92, 0.2);
+}
+
+.status-filter.active {
+    color: #fff;
+    background-color: rgba(94, 114, 228, 0.3);
+}
+
+.friends-section-title {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    color: #8e9297;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    user-select: none;
+}
+
+.friends-section-title.online-section-title {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.friends-section-title.offline-section-title {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.friends-section-title i {
+    font-size: 10px;
+    margin-right: 5px;
+}
+
+.online-section-title i {
+    color: #3ba55c;
+}
+
+.offline-section-title i {
+    color: #747f8d;
+}
+
+.online-count,
+.offline-count {
+    margin-left: 8px;
+    font-size: 12px;
+    color: #72767d;
+    background-color: rgba(114, 118, 125, 0.1);
+    padding: 0 5px;
+    border-radius: 10px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.friends-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 0 10px;
+}
+
+.friends-list.online-friends {
+    margin-bottom: 10px;
+}
+
+.friends-list.offline-friends {
+    opacity: 0.8;
+}
+
+.friend-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 10px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+    height: 62px;
+}
+
+.friend-row:hover {
+    background-color: rgba(79, 84, 92, 0.2);
+}
+
+.friend-avatar {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.friend-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.status-dot {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    bottom: 0;
+    right: 0;
+    border: 2px solid rgba(32, 34, 47, 0.9);
+}
+
+.status-dot.online {
+    background-color: #3ba55c;
+}
+
+.status-dot.idle {
+    background-color: #faa61a;
+}
+
+.status-dot.dnd {
+    background-color: #ed4245;
+}
+
+.status-dot.offline {
+    background-color: #747f8d;
+}
+
+.friend-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.friend-name {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.friend-status {
+    color: #b9bbbe;
+    font-size: 13px;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+}
+
+.friend-status i {
+    margin-right: 5px;
+    font-size: 12px;
+}
+
+.friend-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.friend-row:hover .friend-actions {
+    opacity: 1;
+}
+
+.friend-action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(32, 34, 47, 0.7);
+    color: #b9bbbe;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.friend-action-btn:hover {
+    color: #fff;
+    background-color: rgba(79, 84, 92, 0.4);
+}
+
+.message-btn:hover {
+    color: #fff;
+    background-color: #5865f2;
+}
+
+.call-btn:hover {
+    color: #fff;
+    background-color: #3ba55c;
+}
+
+.more-btn:hover {
+    color: #fff;
+    background-color: #4f545c;
+}
+
+/* Çevrimdışı arkadaşlar için özel stiller */
+.friend-row.offline .friend-name {
+    color: #96989d;
+}
+
+.friend-row.offline .friend-status {
+    color: #72767d;
+}
+
+/* Mobil uyumluluk */
+@media (max-width: 768px) {
+    .friends-status-filter {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .friend-row {
+        padding: 10px 8px;
+    }
+
+    .friend-name {
+        font-size: 15px;
+    }
+
+    .friend-status {
+        font-size: 12px;
+    }
+
+    .friend-actions {
+        opacity: 1;
+    }
+
+    .friend-action-btn {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+@media (max-width: 576px) {
+    .friends-panel-container {
+        padding: 10px;
+    }
+
+    .friend-avatar {
+        width: 36px;
+        height: 36px;
+    }
+
+    .friend-action-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+
+    .status-filter {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+}

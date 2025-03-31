@@ -264,214 +264,181 @@
             </div>
 
             <div class="main-container">
-                <!-- Modern Arkadaşlar Paneli -->
-                <div class="friends-modern-panel">
-                    <!-- Arama ve filtreleme alanı -->
-                    <div class="friends-toolbar">
-                        <div class="search-area">
-                            <div class="search-container">
-                                <input type="text" class="friends-search" placeholder="Arkadaş Ara">
-                                <button class="search-button">
-                                    <i class="fas fa-search"></i>
+                <!-- Yeni Arkadaşlar Paneli -->
+                <div class="friends-panel-container">
+                    <div class="friends-status-filter">
+                        <div class="status-filter active" data-filter="all">Hepsi</div>
+                        <div class="status-filter" data-filter="online">Çevrimiçi</div>
+                        <div class="status-filter" data-filter="offline">Çevrimdışı</div>
+                    </div>
+
+                    <div class="friends-section-title online-section-title">
+                        <i class="fas fa-circle"></i>
+                        <span>Çevrimiçi</span>
+                        <div class="online-count">4</div>
+                    </div>
+
+                    <div class="friends-list online-friends">
+                        <!-- Ahmet - Çevrimiçi -->
+                        <div class="friend-row online">
+                            <div class="friend-avatar">
+                                <img src="https://via.placeholder.com/100/3498db/ffffff?text=A" alt="Ahmet">
+                                <span class="status-dot online"></span>
+                            </div>
+                            <div class="friend-info">
+                                <div class="friend-name">Ahmet Yılmaz</div>
+                                <div class="friend-status">Çevrimiçi</div>
+                            </div>
+                            <div class="friend-actions">
+                                <button class="friend-action-btn message-btn" title="Mesaj Gönder">
+                                    <i class="fas fa-comment"></i>
+                                </button>
+                                <button class="friend-action-btn call-btn" title="Sesli Ara">
+                                    <i class="fas fa-phone-alt"></i>
+                                </button>
+                                <button class="friend-action-btn more-btn" title="Daha Fazla">
+                                    <i class="fas fa-ellipsis-v"></i>
                                 </button>
                             </div>
                         </div>
-                        <div class="filter-area">
-                            <div class="filter-label">Göster:</div>
-                            <div class="filter-options">
-                                <label class="filter-option">
-                                    <input type="radio" name="friend-filter" value="all" checked>
-                                    <span class="filter-text">Hepsi</span>
-                                </label>
-                                <label class="filter-option">
-                                    <input type="radio" name="friend-filter" value="online">
-                                    <span class="filter-text">Çevrimiçi</span>
-                                </label>
-                                <label class="filter-option">
-                                    <input type="radio" name="friend-filter" value="offline">
-                                    <span class="filter-text">Çevrimdışı</span>
-                                </label>
+
+                        <!-- Mehmet - Minecraft oynuyor -->
+                        <div class="friend-row idle">
+                            <div class="friend-avatar">
+                                <img src="https://via.placeholder.com/100/9b59b6/ffffff?text=M" alt="Mehmet">
+                                <span class="status-dot idle"></span>
+                            </div>
+                            <div class="friend-info">
+                                <div class="friend-name">Mehmet Kaya</div>
+                                <div class="friend-status">
+                                    <i class="fas fa-gamepad"></i>
+                                    <span>Minecraft oynuyor</span>
+                                </div>
+                            </div>
+                            <div class="friend-actions">
+                                <button class="friend-action-btn message-btn" title="Mesaj Gönder">
+                                    <i class="fas fa-comment"></i>
+                                </button>
+                                <button class="friend-action-btn call-btn" title="Sesli Ara">
+                                    <i class="fas fa-phone-alt"></i>
+                                </button>
+                                <button class="friend-action-btn more-btn" title="Daha Fazla">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Zeynep - Rahatsız Etmeyin -->
+                        <div class="friend-row dnd">
+                            <div class="friend-avatar">
+                                <img src="https://via.placeholder.com/100/e74c3c/ffffff?text=Z" alt="Zeynep">
+                                <span class="status-dot dnd"></span>
+                            </div>
+                            <div class="friend-info">
+                                <div class="friend-name">Zeynep Çelik</div>
+                                <div class="friend-status">Rahatsız Etmeyin</div>
+                            </div>
+                            <div class="friend-actions">
+                                <button class="friend-action-btn message-btn" title="Mesaj Gönder">
+                                    <i class="fas fa-comment"></i>
+                                </button>
+                                <button class="friend-action-btn call-btn" title="Sesli Ara">
+                                    <i class="fas fa-phone-alt"></i>
+                                </button>
+                                <button class="friend-action-btn more-btn" title="Daha Fazla">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Elif - Çevrimiçi -->
+                        <div class="friend-row online">
+                            <div class="friend-avatar">
+                                <img src="https://via.placeholder.com/100/2ecc71/ffffff?text=E" alt="Elif">
+                                <span class="status-dot online"></span>
+                            </div>
+                            <div class="friend-info">
+                                <div class="friend-name">Elif Demir</div>
+                                <div class="friend-status">Çevrimiçi</div>
+                            </div>
+                            <div class="friend-actions">
+                                <button class="friend-action-btn message-btn" title="Mesaj Gönder">
+                                    <i class="fas fa-comment"></i>
+                                </button>
+                                <button class="friend-action-btn call-btn" title="Sesli Ara">
+                                    <i class="fas fa-phone-alt"></i>
+                                </button>
+                                <button class="friend-action-btn more-btn" title="Daha Fazla">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Arkadaşlar listesi -->
-                    <div class="friends-modern-list">
-                        <!-- Çevrimiçi arkadaşlar -->
-                        <div class="friend-item online">
-                            <div class="friend-primary">
-                                <div class="friend-avatar">
-                                    <img src="https://via.placeholder.com/100/3498db/ffffff?text=A" alt="Ahmet">
-                                    <span class="status-indicator online"></span>
-                                </div>
-                                <div class="friend-details">
-                                    <div class="friend-name">Ahmet Yılmaz</div>
-                                    <div class="friend-status">Çevrimiçi</div>
-                                </div>
+                    <div class="friends-section-title offline-section-title">
+                        <i class="far fa-circle"></i>
+                        <span>Çevrimdışı</span>
+                        <div class="offline-count">3</div>
+                    </div>
+
+                    <div class="friends-list offline-friends">
+                        <!-- Can - Çevrimdışı -->
+                        <div class="friend-row offline">
+                            <div class="friend-avatar">
+                                <img src="https://via.placeholder.com/100/95a5a6/ffffff?text=C" alt="Can">
+                                <span class="status-dot offline"></span>
+                            </div>
+                            <div class="friend-info">
+                                <div class="friend-name">Can Özdemir</div>
+                                <div class="friend-status">Son görülme: 2 saat önce</div>
                             </div>
                             <div class="friend-actions">
-                                <button class="action-button message" title="Mesaj Gönder">
+                                <button class="friend-action-btn message-btn" title="Mesaj Gönder">
                                     <i class="fas fa-comment"></i>
                                 </button>
-                                <button class="action-button call" title="Sesli Ara">
-                                    <i class="fas fa-phone-alt"></i>
+                                <button class="friend-action-btn more-btn" title="Daha Fazla">
+                                    <i class="fas fa-ellipsis-v"></i>
                                 </button>
-                                <div class="action-dropdown">
-                                    <button class="action-button more" title="Daha Fazla">
-                                        <i class="fas fa-ellipsis-h"></i>
-                                    </button>
-                                </div>
                             </div>
                         </div>
 
-                        <div class="friend-item idle">
-                            <div class="friend-primary">
-                                <div class="friend-avatar">
-                                    <img src="https://via.placeholder.com/100/9b59b6/ffffff?text=M" alt="Mehmet">
-                                    <span class="status-indicator idle"></span>
-                                </div>
-                                <div class="friend-details">
-                                    <div class="friend-name">Mehmet Kaya</div>
-                                    <div class="friend-status">
-                                        <i class="fas fa-gamepad"></i>
-                                        <span>Minecraft oynuyor</span>
-                                    </div>
-                                </div>
+                        <!-- Selin - Çevrimdışı -->
+                        <div class="friend-row offline">
+                            <div class="friend-avatar">
+                                <img src="https://via.placeholder.com/100/7f8c8d/ffffff?text=S" alt="Selin">
+                                <span class="status-dot offline"></span>
+                            </div>
+                            <div class="friend-info">
+                                <div class="friend-name">Selin Yılmaz</div>
+                                <div class="friend-status">Son görülme: dün</div>
                             </div>
                             <div class="friend-actions">
-                                <button class="action-button message" title="Mesaj Gönder">
+                                <button class="friend-action-btn message-btn" title="Mesaj Gönder">
                                     <i class="fas fa-comment"></i>
                                 </button>
-                                <button class="action-button call" title="Sesli Ara">
-                                    <i class="fas fa-phone-alt"></i>
+                                <button class="friend-action-btn more-btn" title="Daha Fazla">
+                                    <i class="fas fa-ellipsis-v"></i>
                                 </button>
-                                <div class="action-dropdown">
-                                    <button class="action-button more" title="Daha Fazla">
-                                        <i class="fas fa-ellipsis-h"></i>
-                                    </button>
-                                </div>
                             </div>
                         </div>
 
-                        <div class="friend-item dnd">
-                            <div class="friend-primary">
-                                <div class="friend-avatar">
-                                    <img src="https://via.placeholder.com/100/e74c3c/ffffff?text=Z" alt="Zeynep">
-                                    <span class="status-indicator dnd"></span>
-                                </div>
-                                <div class="friend-details">
-                                    <div class="friend-name">Zeynep Çelik</div>
-                                    <div class="friend-status">Rahatsız Etmeyin</div>
-                                </div>
+                        <!-- Tolga - Çevrimdışı -->
+                        <div class="friend-row offline">
+                            <div class="friend-avatar">
+                                <img src="https://via.placeholder.com/100/34495e/ffffff?text=T" alt="Tolga">
+                                <span class="status-dot offline"></span>
+                            </div>
+                            <div class="friend-info">
+                                <div class="friend-name">Tolga Aydın</div>
+                                <div class="friend-status">Son görülme: 3 gün önce</div>
                             </div>
                             <div class="friend-actions">
-                                <button class="action-button message" title="Mesaj Gönder">
+                                <button class="friend-action-btn message-btn" title="Mesaj Gönder">
                                     <i class="fas fa-comment"></i>
                                 </button>
-                                <button class="action-button call" title="Sesli Ara">
-                                    <i class="fas fa-phone-alt"></i>
+                                <button class="friend-action-btn more-btn" title="Daha Fazla">
+                                    <i class="fas fa-ellipsis-v"></i>
                                 </button>
-                                <div class="action-dropdown">
-                                    <button class="action-button more" title="Daha Fazla">
-                                        <i class="fas fa-ellipsis-h"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="friend-item online">
-                            <div class="friend-primary">
-                                <div class="friend-avatar">
-                                    <img src="https://via.placeholder.com/100/2ecc71/ffffff?text=E" alt="Elif">
-                                    <span class="status-indicator online"></span>
-                                </div>
-                                <div class="friend-details">
-                                    <div class="friend-name">Elif Demir</div>
-                                    <div class="friend-status">Çevrimiçi</div>
-                                </div>
-                            </div>
-                            <div class="friend-actions">
-                                <button class="action-button message" title="Mesaj Gönder">
-                                    <i class="fas fa-comment"></i>
-                                </button>
-                                <button class="action-button call" title="Sesli Ara">
-                                    <i class="fas fa-phone-alt"></i>
-                                </button>
-                                <div class="action-dropdown">
-                                    <button class="action-button more" title="Daha Fazla">
-                                        <i class="fas fa-ellipsis-h"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Çevrimdışı arkadaşlar -->
-                        <div class="friend-item offline">
-                            <div class="friend-primary">
-                                <div class="friend-avatar">
-                                    <img src="https://via.placeholder.com/100/95a5a6/ffffff?text=C" alt="Can">
-                                    <span class="status-indicator offline"></span>
-                                </div>
-                                <div class="friend-details">
-                                    <div class="friend-name">Can Özdemir</div>
-                                    <div class="friend-status">Son görülme: 2 saat önce</div>
-                                </div>
-                            </div>
-                            <div class="friend-actions">
-                                <button class="action-button message" title="Mesaj Gönder">
-                                    <i class="fas fa-comment"></i>
-                                </button>
-                                <div class="action-dropdown">
-                                    <button class="action-button more" title="Daha Fazla">
-                                        <i class="fas fa-ellipsis-h"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="friend-item offline">
-                            <div class="friend-primary">
-                                <div class="friend-avatar">
-                                    <img src="https://via.placeholder.com/100/7f8c8d/ffffff?text=S" alt="Selin">
-                                    <span class="status-indicator offline"></span>
-                                </div>
-                                <div class="friend-details">
-                                    <div class="friend-name">Selin Yılmaz</div>
-                                    <div class="friend-status">Son görülme: dün</div>
-                                </div>
-                            </div>
-                            <div class="friend-actions">
-                                <button class="action-button message" title="Mesaj Gönder">
-                                    <i class="fas fa-comment"></i>
-                                </button>
-                                <div class="action-dropdown">
-                                    <button class="action-button more" title="Daha Fazla">
-                                        <i class="fas fa-ellipsis-h"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="friend-item offline">
-                            <div class="friend-primary">
-                                <div class="friend-avatar">
-                                    <img src="https://via.placeholder.com/100/34495e/ffffff?text=T" alt="Tolga">
-                                    <span class="status-indicator offline"></span>
-                                </div>
-                                <div class="friend-details">
-                                    <div class="friend-name">Tolga Aydın</div>
-                                    <div class="friend-status">Son görülme: 3 gün önce</div>
-                                </div>
-                            </div>
-                            <div class="friend-actions">
-                                <button class="action-button message" title="Mesaj Gönder">
-                                    <i class="fas fa-comment"></i>
-                                </button>
-                                <div class="action-dropdown">
-                                    <button class="action-button more" title="Daha Fazla">
-                                        <i class="fas fa-ellipsis-h"></i>
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     </div>

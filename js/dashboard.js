@@ -1176,4 +1176,177 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    // Yeni Arkadaşlar Paneli için işlevler
+    initializeFriendsPanel();
+
+    function initializeFriendsPanel() {
+        // Status filtrelerini işlevsel hale getirme
+        const statusFilters = document.querySelectorAll('.status-filter');
+        const onlineList = document.querySelector('.online-friends');
+        const offlineList = document.querySelector('.offline-friends');
+
+        // Sayaçları güncelleme
+        updateFriendCounters();
+
+        statusFilters.forEach(filter => {
+            filter.addEventListener('click', function () {
+                // Aktif sınıfı kaldır ve bu filtreye ekle
+                statusFilters.forEach(f => f.classList.remove('active'));
+                this.classList.add('active');
+
+                const filterType = this.getAttribute('data-filter');
+
+                // Filtrelemeyi uygula
+                filterFriendsByStatus(filterType);
+            });
+        });
+
+        // Çevrimiçi/Çevrimdışı sayılarını güncelleme
+        function updateFriendCounters() {
+            const onlineCount = document.querySelector('.online-count');
+            const offlineCount = document.querySelector('.offline-count');
+
+            if (onlineCount) {
+                const onlineFriends = document.querySelectorAll('.online-friends .friend-row');
+                onlineCount.textContent = onlineFriends.length;
+            }
+
+            if (offlineCount) {
+                const offlineFriends = document.querySelectorAll('.offline-friends .friend-row');
+                offlineCount.textContent = offlineFriends.length;
+            }
+        }
+
+        // Duruma göre filtreleme
+        function filterFriendsByStatus(status) {
+            // Tüm arkadaşlar
+            if (status === 'all') {
+                onlineList.style.display = 'flex';
+                offlineList.style.display = 'flex';
+                document.querySelector('.online-section-title').style.display = 'flex';
+                document.querySelector('.offline-section-title').style.display = 'flex';
+            }
+            // Sadece çevrimiçi arkadaşlar
+            else if (status === 'online') {
+                onlineList.style.display = 'flex';
+                offlineList.style.display = 'none';
+                document.querySelector('.online-section-title').style.display = 'flex';
+                document.querySelector('.offline-section-title').style.display = 'none';
+            }
+            // Sadece çevrimdışı arkadaşlar
+            else if (status === 'offline') {
+                onlineList.style.display = 'none';
+                offlineList.style.display = 'flex';
+                document.querySelector('.online-section-title').style.display = 'none';
+                document.querySelector('.offline-section-title').style.display = 'flex';
+            }
+        }
+
+        // Mesaj butonları için işlevsellik
+        const messageButtons = document.querySelectorAll('.friend-action-btn.message-btn');
+        messageButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.stopPropagation(); // Ebeveyn tıklamayı engelle
+                const friendRow = this.closest('.friend-row');
+                const friendName = friendRow.querySelector('.friend-name').textContent;
+                console.log(`${friendName} ile mesajlaşma başlatılıyor...`);
+            });
+        });
+
+        // Arama butonları için işlevsellik
+        const callButtons = document.querySelectorAll('.friend-action-btn.call-btn');
+        callButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.stopPropagation(); // Ebeveyn tıklamayı engelle
+                const friendRow = this.closest('.friend-row');
+                const friendName = friendRow.querySelector('.friend-name').textContent;
+                console.log(`${friendName} aranıyor...`);
+            });
+        });
+
+        // Daha fazla butonları için işlevsellik
+        const moreButtons = document.querySelectorAll('.friend-action-btn.more-btn');
+        moreButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.stopPropagation(); // Ebeveyn tıklamayı engelle
+                const friendRow = this.closest('.friend-row');
+                const friendName = friendRow.querySelector('.friend-name').textContent;
+                console.log(`${friendName} için daha fazla seçenek gösteriliyor...`);
+            });
+        });
+
+        // Arkadaş satırı tıklama işlevi
+        const friendRows = document.querySelectorAll('.friend-row');
+        friendRows.forEach(row => {
+            row.addEventListener('click', function () {
+                const friendName = this.querySelector('.friend-name').textContent;
+                console.log(`${friendName} ile sohbet açılıyor...`);
+            });
+        });
+    }
+
+    // Arama kutusu işlevi (Üst kısımdaki)
+    const searchBox = document.querySelector('.search-box input');
+    const clearSearch = document.querySelector('.clear-search');
+
+    if (searchBox) {
+        searchBox.addEventListener('input', function () {
+            const searchTerm = this.value.trim().toLowerCase();
+
+            // Temizleme butonunu göster/gizle
+            if (searchTerm.length > 0) {
+                clearSearch.style.display = 'block';
+            } else {
+                clearSearch.style.display = 'none';
+            }
+
+            // Arkadaşları filtrele
+            filterFriendsBySearch(searchTerm);
+        });
+    }
+
+    if (clearSearch) {
+        clearSearch.addEventListener('click', function () {
+            searchBox.value = '';
+            this.style.display = 'none';
+            filterFriendsBySearch('');
+        });
+    }
+
+    // Arama ile filtreleme
+    function filterFriendsBySearch(searchTerm) {
+        const friendRows = document.querySelectorAll('.friend-row');
+
+        friendRows.forEach(row => {
+            const friendName = row.querySelector('.friend-name').textContent.toLowerCase();
+            const friendStatus = row.querySelector('.friend-status').textContent.toLowerCase();
+
+            if (friendName.includes(searchTerm) || friendStatus.includes(searchTerm)) {
+                row.style.display = 'flex';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Başlıkları güncelle, eğer bir bölümde görünür arkadaş yoksa başlığı gizle
+        updateSectionVisibility();
+    }
+
+    // Bölüm görünürlüğünü güncelleme
+    function updateSectionVisibility() {
+        const onlineSection = document.querySelector('.online-section-title');
+        const offlineSection = document.querySelector('.offline-section-title');
+
+        const visibleOnlineFriends = document.querySelectorAll('.online-friends .friend-row[style*="display: flex"]').length;
+        const visibleOfflineFriends = document.querySelectorAll('.offline-friends .friend-row[style*="display: flex"]').length;
+
+        if (onlineSection) {
+            onlineSection.style.display = visibleOnlineFriends > 0 ? 'flex' : 'none';
+        }
+
+        if (offlineSection) {
+            offlineSection.style.display = visibleOfflineFriends > 0 ? 'flex' : 'none';
+        }
+    }
 }); 
