@@ -1002,8 +1002,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Sağ tıklama menüsü başlatılıyor
+    initializeContextMenu();
+
     // Sağ Tıklama Menüsü (Context Menu)
-    document.addEventListener('DOMContentLoaded', function () {
+    function initializeContextMenu() {
         // Sağ tıklama menüsü oluşturma
         const contextMenu = document.createElement('div');
         contextMenu.className = 'context-menu';
@@ -1011,26 +1014,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Sağ tıklanabilir elemanlar
         const rightClickableElements = [
-            { selector: '.dm-item', type: 'friend' },
+            { selector: '.friend-item, .dm-item', type: 'friend' },
             { selector: '.friend-row', type: 'friend' },
-            { selector: '.friend-item', type: 'friend' },
-            { selector: '.server-item:not(.server-item:has(.server-add-icon), .server-item:has(.server-shop-icon), .server-item:has(.server-settings-icon))', type: 'server' }
+            { selector: '.server-item:not(.server-add):not(.server-settings)', type: 'server' }
         ];
 
         // Sağ tıklama menüsü seçenekleri
         const menuOptions = {
             friend: [
                 { icon: 'fas fa-user', text: 'Profili Görüntüle', action: viewProfile },
-                { icon: 'fas fa-comment', text: 'Mesaj Gönder', action: sendMessage },
-                { icon: 'fas fa-phone', text: 'Ara', action: callUser },
-                { icon: 'fas fa-user-plus', text: 'Arkadaşlık İsteği Gönder', action: addFriend, condition: isNotFriend },
-                { icon: 'fas fa-user-times', text: 'Arkadaşlıktan Çıkar', action: removeFriend, condition: isFriend },
-                { icon: 'fas fa-ban', text: 'Engelle', action: blockUser },
-                { icon: 'fas fa-exclamation-triangle', text: 'Raporla', action: reportUser }
+                { icon: 'fas fa-comment', text: 'Mesaj Gönder', action: sendMessageToFriend },
+                { icon: 'fas fa-user-times', text: 'Arkadaşlıktan Çıkar', action: removeFriend },
+                { icon: 'fas fa-ban', text: 'Engelle', action: blockUser }
             ],
             server: [
                 { icon: 'fas fa-server', text: 'Sunucu Bilgisi', action: viewServerInfo },
-                { icon: 'fas fa-bell', text: 'Bildirimleri Kapat', action: muteServer },
+                { icon: 'fas fa-bell-slash', text: 'Bildirimleri Kapat', action: muteServer },
                 { icon: 'fas fa-sign-out-alt', text: 'Sunucudan Ayrıl', action: leaveServer },
                 { icon: 'fas fa-users', text: 'Üyeleri Görüntüle', action: viewMembers }
             ]
@@ -1076,23 +1075,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 data.name = nameEl ? nameEl.textContent.trim() : 'Kullanıcı';
 
                 // Durumu al
-                const statusEl = element.querySelector('.dm-status, .friend-status, .status-dot, .status-indicator');
+                const statusEl = element.querySelector('.status-indicator, .status-dot');
                 data.status = statusEl ? getStatusFromElement(statusEl) : 'offline';
 
                 // Avatar al
                 const avatarEl = element.querySelector('img');
                 data.avatar = avatarEl ? avatarEl.src : '';
-
-                // Arkadaşlık durumunu kontrol et
-                data.isFriend = !element.classList.contains('pending');
             } else if (type === 'server') {
                 // Sunucu adını al
                 const tooltipEl = element.querySelector('.server-tooltip');
                 data.name = tooltipEl ? tooltipEl.textContent.trim() : 'Sunucu';
 
                 // Sunucu avatarını al
-                const avatarEl = element.querySelector('img, svg');
-                data.avatar = avatarEl ? (avatarEl.src || 'svg-element') : '';
+                const avatarEl = element.querySelector('img');
+                data.avatar = avatarEl ? avatarEl.src : '';
             }
 
             return data;
@@ -1107,7 +1103,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         function positionMenu(x, y) {
             const menuWidth = 200;
-            const menuHeight = 250; // Yaklaşık menü yüksekliği
+            const menuHeight = 200; // Yaklaşık menü yüksekliği
 
             // Ekran dışına taşmayı önle
             const windowWidth = window.innerWidth;
@@ -1140,61 +1136,54 @@ document.addEventListener('DOMContentLoaded', function () {
                 const avatar = document.createElement('div');
                 avatar.className = 'context-menu-avatar';
 
-                if (data.avatar === 'svg-element' && data.element.querySelector('svg')) {
-                    // SVG için klonla
-                    const svgClone = data.element.querySelector('svg').cloneNode(true);
-                    svgClone.setAttribute('width', '24');
-                    svgClone.setAttribute('height', '24');
-                    avatar.appendChild(svgClone);
-                } else {
-                    const img = document.createElement('img');
-                    img.src = data.avatar;
-                    img.alt = data.name;
-                    avatar.appendChild(img);
-                }
+                const img = document.createElement('img');
+                img.src = data.avatar;
+                avatar.appendChild(img);
 
                 header.appendChild(avatar);
             }
 
-            const nameEl = document.createElement('div');
-            nameEl.className = 'context-menu-name';
-            nameEl.textContent = data.name;
-            header.appendChild(nameEl);
+            // İsim ekle
+            const name = document.createElement('div');
+            name.className = 'context-menu-name';
+            name.textContent = data.name;
+            header.appendChild(name);
 
             contextMenu.appendChild(header);
 
-            // Ayırıcı ekle
-            const divider = document.createElement('div');
-            divider.className = 'context-menu-divider';
-            contextMenu.appendChild(divider);
+            // Menü seçeneklerini ekle
+            const options = menuOptions[type] || [];
 
-            // Menü öğelerini ekle
-            let options = menuOptions[type] || [];
+            if (options.length > 0) {
+                const divider = document.createElement('div');
+                divider.className = 'context-menu-divider';
+                contextMenu.appendChild(divider);
 
-            options.forEach(option => {
-                // Koşul kontrolü
-                if (option.condition && !option.condition(data)) {
-                    return;
-                }
+                options.forEach(option => {
+                    if (option.condition && !option.condition(data)) {
+                        return;
+                    }
 
-                const menuItem = document.createElement('div');
-                menuItem.className = 'context-menu-item';
+                    const item = document.createElement('div');
+                    item.className = 'context-menu-item';
 
-                const icon = document.createElement('i');
-                icon.className = option.icon;
-                menuItem.appendChild(icon);
+                    const icon = document.createElement('i');
+                    icon.className = option.icon;
+                    item.appendChild(icon);
 
-                const text = document.createElement('span');
-                text.textContent = option.text;
-                menuItem.appendChild(text);
+                    const text = document.createTextNode(option.text);
+                    item.appendChild(text);
 
-                menuItem.addEventListener('click', function () {
-                    option.action(data);
-                    hideMenu();
+                    item.addEventListener('click', function () {
+                        if (option.action) {
+                            option.action(data);
+                        }
+                        hideMenu();
+                    });
+
+                    contextMenu.appendChild(item);
                 });
-
-                contextMenu.appendChild(menuItem);
-            });
+            }
         }
 
         function showMenu() {
@@ -1205,140 +1194,45 @@ document.addEventListener('DOMContentLoaded', function () {
             contextMenu.classList.remove('active');
         }
 
-        // Menü eylemleri
+        // Menü işlemleri
         function viewProfile(data) {
-            console.log(`${data.name} kullanıcısının profili görüntüleniyor...`);
-            // Profil görüntüleme işlevi burada olacak
-            showNotification('info', `${data.name} kullanıcısının profili görüntüleniyor...`);
+            console.log(`${data.name} profilini görüntüle`);
+            // Profil görüntüleme kodu
         }
 
-        function sendMessage(data) {
-            console.log(`${data.name} kullanıcısına mesaj gönderiliyor...`);
-            // Mesaj gönderme işlevi burada olacak
-            showNotification('info', `${data.name} ile sohbet başlatılıyor...`);
-        }
-
-        function callUser(data) {
-            console.log(`${data.name} kullanıcısı aranıyor...`);
-            // Arama işlevi burada olacak
-            showNotification('info', `${data.name} aranıyor...`);
-        }
-
-        function addFriend(data) {
-            console.log(`${data.name} kullanıcısına arkadaşlık isteği gönderiliyor...`);
-            // Arkadaşlık isteği gönderme işlevi burada olacak
-            showNotification('success', `${data.name} kullanıcısına arkadaşlık isteği gönderildi.`);
+        function sendMessageToFriend(data) {
+            console.log(`${data.name} kişisine mesaj gönder`);
+            // Mesaj gönderme kodu
         }
 
         function removeFriend(data) {
-            console.log(`${data.name} kullanıcısı arkadaşlıktan çıkarılıyor...`);
-            // Arkadaşlıktan çıkarma işlevi burada olacak
-            showNotification('warning', `${data.name} arkadaşlıktan çıkarıldı.`);
+            console.log(`${data.name} arkadaşlıktan çıkar`);
+            // Arkadaşlıktan çıkarma kodu
         }
 
         function blockUser(data) {
-            console.log(`${data.name} kullanıcısı engelleniyor...`);
-            // Engelleme işlevi burada olacak
-            showNotification('error', `${data.name} kullanıcısı engellendi.`);
-        }
-
-        function reportUser(data) {
-            console.log(`${data.name} kullanıcısı raporlanıyor...`);
-            // Raporlama işlevi burada olacak
-            showNotification('warning', `${data.name} kullanıcısı raporlandı.`);
+            console.log(`${data.name} engelle`);
+            // Engelleme kodu
         }
 
         function viewServerInfo(data) {
-            console.log(`${data.name} sunucusunun bilgileri görüntüleniyor...`);
-            // Sunucu bilgisi görüntüleme işlevi burada olacak
-            showNotification('info', `${data.name} sunucu bilgileri görüntüleniyor...`);
+            console.log(`${data.name} sunucu bilgisini görüntüle`);
+            // Sunucu bilgisi görüntüleme kodu
         }
 
         function muteServer(data) {
-            console.log(`${data.name} sunucusu için bildirimler kapatılıyor...`);
-            // Bildirim kapatma işlevi burada olacak
-            showNotification('info', `${data.name} sunucusu için bildirimler kapatıldı.`);
+            console.log(`${data.name} bildirimlerini kapat`);
+            // Sunucu bildirimleri kapatma kodu
         }
 
         function leaveServer(data) {
-            console.log(`${data.name} sunucusundan ayrılınıyor...`);
-            // Sunucudan ayrılma işlevi burada olacak
-            showNotification('warning', `${data.name} sunucusundan ayrıldınız.`);
+            console.log(`${data.name} sunucusundan ayrıl`);
+            // Sunucudan ayrılma kodu
         }
 
         function viewMembers(data) {
-            console.log(`${data.name} sunucusunun üyeleri görüntüleniyor...`);
-            // Üye görüntüleme işlevi burada olacak
-            showNotification('info', `${data.name} sunucusunun üyeleri görüntüleniyor...`);
+            console.log(`${data.name} üyelerini görüntüle`);
+            // Üyeleri görüntüleme kodu
         }
-
-        // Koşul fonksiyonları
-        function isFriend(data) {
-            return data.isFriend === true;
-        }
-
-        function isNotFriend(data) {
-            return data.isFriend === false;
-        }
-
-        // Bildirim gösterme fonksiyonu
-        function showNotification(type, message) {
-            // Eğer bildirim konteynerı yoksa oluştur
-            let notificationContainer = document.querySelector('.notification-container');
-            if (!notificationContainer) {
-                notificationContainer = document.createElement('div');
-                notificationContainer.className = 'notification-container';
-                document.body.appendChild(notificationContainer);
-            }
-
-            // Yeni bildirim oluştur
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-
-            // İkon seç
-            let icon;
-            switch (type) {
-                case 'success': icon = 'fas fa-check-circle'; break;
-                case 'error': icon = 'fas fa-times-circle'; break;
-                case 'warning': icon = 'fas fa-exclamation-triangle'; break;
-                default: icon = 'fas fa-info-circle';
-            }
-
-            notification.innerHTML = `
-                <div class="notification-icon">
-                    <i class="${icon}"></i>
-                </div>
-                <div class="notification-content">
-                    <span>${message}</span>
-                </div>
-                <div class="notification-close">
-                    <i class="fas fa-times"></i>
-                </div>
-            `;
-
-            // Kapatma butonuna tıklama
-            notification.querySelector('.notification-close').addEventListener('click', function () {
-                notification.classList.add('hide');
-                setTimeout(() => {
-                    notification.remove();
-                }, 300);
-            });
-
-            // Bildirimi konteyner'a ekle
-            notificationContainer.appendChild(notification);
-
-            // Bildirimi göster
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 10);
-
-            // Otomatik kapat
-            setTimeout(() => {
-                notification.classList.add('hide');
-                setTimeout(() => {
-                    notification.remove();
-                }, 300);
-            }, 5000);
-        }
-    });
+    }
 }); 
