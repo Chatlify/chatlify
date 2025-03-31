@@ -927,11 +927,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             chatPanel.classList.remove('hidden');
 
-            // Sponsor sunucular kısmını gizle
-            const sponsorSidebar = document.querySelector('.sponsor-sidebar');
-            if (sponsorSidebar) {
-                sponsorSidebar.style.display = 'none';
-            }
+            // Sponsor sunucular kısmını kesin olarak gizle
+            document.querySelector('.sponsor-sidebar').style.display = 'none';
 
             // Mesajları en sona kaydır
             if (chatMessages) {
@@ -951,10 +948,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             // Sponsor sunucular kısmını tekrar göster
-            const sponsorSidebar = document.querySelector('.sponsor-sidebar');
-            if (sponsorSidebar) {
-                sponsorSidebar.style.display = '';
-            }
+            document.querySelector('.sponsor-sidebar').style.display = '';
         }
 
         function sendMessage() {
