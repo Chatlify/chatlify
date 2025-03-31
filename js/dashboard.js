@@ -1263,104 +1263,121 @@ document.addEventListener('DOMContentLoaded', function () {
                         <i class="fas fa-times"></i>
                     </button>
                     
-                    <div class="profile-main">
-                        <div class="profile-sidebar">
-                            <div class="profile-banner"></div>
-                            <div class="profile-avatar-wrapper">
+                    <div class="profile-left-section">
+                        <div class="profile-cover"></div>
+                        <div class="profile-overlay"></div>
+                        <div class="profile-left-content">
+                            <div class="profile-avatar-large">
                                 <img src="${userData.avatar || 'images/avatar-default.png'}" alt="${userData.name}">
-                                <div class="profile-status-dot ${userData.status}"></div>
+                                <div class="profile-status-indicator ${userData.status}"></div>
+                            </div>
+                            <h2 class="profile-username">${userData.name}</h2>
+                            <div class="profile-discord-tag">#${Math.floor(1000 + Math.random() * 9000)}</div>
+                            <div class="profile-status-text">
+                                <i class="fas fa-circle-notch ${userData.status}"></i>
+                                <span>${getStatusText(userData.status)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-right-section">
+                        <div class="profile-tabs">
+                            <div class="profile-tab active">Profil</div>
+                            <div class="profile-tab">Ortak Sunucular</div>
+                            <div class="profile-tab">Ortak Arkadaşlar</div>
+                        </div>
+                        
+                        <div class="profile-section">
+                            <div class="profile-section-header">
+                                <i class="fas fa-user-circle"></i>
+                                <h4 class="profile-section-title">Kullanıcı Bilgileri</h4>
                             </div>
                             
-                            <div class="profile-user-info">
-                                <div class="profile-name-container">
-                                    <h2 class="profile-name">${userData.name}</h2>
-                                    <span class="profile-tag">#${Math.floor(1000 + Math.random() * 9000)}</span>
+                            <div class="profile-info-grid">
+                                <div class="profile-info-item">
+                                    <div class="profile-info-label">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        Üyelik Tarihi
+                                    </div>
+                                    <div class="profile-info-value">${getRandomDate()}</div>
                                 </div>
                                 
-                                <div class="profile-status-message">
-                                    <i class="fas fa-circle-notch ${userData.status}"></i>
-                                    <span>${getStatusText(userData.status)}</span>
+                                <div class="profile-info-item">
+                                    <div class="profile-info-label">
+                                        <i class="fas fa-clock"></i>
+                                        Son Görülme
+                                    </div>
+                                    <div class="profile-info-value">${userData.status === 'online' ? 'Şu anda çevrimiçi' : getRandomTime()}</div>
                                 </div>
-                            </div>
-                            
-                            <div class="profile-actions">
-                                <button class="profile-action-btn message-btn">
-                                    <i class="fas fa-comment"></i>
-                                    <span>Mesaj Gönder</span>
-                                </button>
-                                <button class="profile-action-btn block-btn">
-                                    <i class="fas fa-ban"></i>
-                                    <span>Engelle</span>
-                                </button>
-                                <button class="profile-action-btn remove-btn">
-                                    <i class="fas fa-user-times"></i>
-                                    <span>Arkadaşlıktan Çıkar</span>
-                                </button>
+                                
+                                <div class="profile-info-item">
+                                    <div class="profile-info-label">
+                                        <i class="fas fa-globe"></i>
+                                        Varsayılan Dil
+                                    </div>
+                                    <div class="profile-info-value">Türkçe</div>
+                                </div>
+                                
+                                <div class="profile-info-item">
+                                    <div class="profile-info-label">
+                                        <i class="fas fa-mobile-alt"></i>
+                                        Platform
+                                    </div>
+                                    <div class="profile-info-value">Masaüstü Uygulama</div>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="profile-content">
-                            <div class="profile-section">
-                                <div class="profile-section-title">
-                                    <i class="fas fa-user-circle"></i>
-                                    <h4>Kullanıcı Bilgileri</h4>
-                                </div>
-                                
-                                <div class="profile-info-row">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <span class="profile-info-label">Üyelik Tarihi</span>
-                                    <span class="profile-info-value">${getRandomDate()}</span>
-                                </div>
-                                
-                                <div class="profile-info-row">
-                                    <i class="fas fa-clock"></i>
-                                    <span class="profile-info-label">Son Görülme</span>
-                                    <span class="profile-info-value">${userData.status === 'online' ? 'Şu anda çevrimiçi' : getRandomTime()}</span>
-                                </div>
-                                
-                                <div class="profile-info-row">
-                                    <i class="fas fa-globe"></i>
-                                    <span class="profile-info-label">Varsayılan Dil</span>
-                                    <span class="profile-info-value">Türkçe</span>
-                                </div>
+                        <div class="profile-section">
+                            <div class="profile-section-header">
+                                <i class="fas fa-award"></i>
+                                <h4 class="profile-section-title">Rozetler</h4>
                             </div>
                             
-                            <div class="profile-divider"></div>
-                            
-                            <div class="profile-section">
-                                <div class="profile-section-title">
-                                    <i class="fas fa-award"></i>
-                                    <h4>Rozetler</h4>
+                            <div class="profile-badges-container">
+                                <div class="profile-badge">
+                                    <i class="fas fa-crown"></i>
+                                    <span>Erken Destekçi</span>
                                 </div>
-                                
-                                <div class="profile-badges">
-                                    <div class="profile-badge">
-                                        <i class="fas fa-crown"></i>
-                                        <span>Erken Destekçi</span>
-                                    </div>
-                                    <div class="profile-badge">
-                                        <i class="fas fa-code"></i>
-                                        <span>Geliştirici</span>
-                                    </div>
-                                    <div class="profile-badge">
-                                        <i class="fas fa-shield-alt"></i>
-                                        <span>Premium Üye</span>
-                                    </div>
+                                <div class="profile-badge">
+                                    <i class="fas fa-code"></i>
+                                    <span>Geliştirici</span>
+                                </div>
+                                <div class="profile-badge">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Premium Üye</span>
+                                </div>
+                                <div class="profile-badge">
+                                    <i class="fas fa-star"></i>
+                                    <span>Nitro Üye</span>
                                 </div>
                             </div>
-                            
-                            <div class="profile-divider"></div>
-                            
-                            <div class="profile-section">
-                                <div class="profile-section-title">
-                                    <i class="fas fa-sticky-note"></i>
-                                    <h4>Not</h4>
-                                </div>
-                                
-                                <div class="profile-note">
-                                    <textarea placeholder="Bu kullanıcı hakkında özel not ekle..."></textarea>
-                                </div>
+                        </div>
+                        
+                        <div class="profile-section">
+                            <div class="profile-section-header">
+                                <i class="fas fa-sticky-note"></i>
+                                <h4 class="profile-section-title">Not</h4>
                             </div>
+                            
+                            <div class="profile-note-container">
+                                <textarea class="profile-note-textarea" placeholder="Bu kullanıcı hakkında özel not ekle..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-action-buttons">
+                            <button class="profile-action-btn message-btn">
+                                <i class="fas fa-comment"></i>
+                                <span>Mesaj Gönder</span>
+                            </button>
+                            <button class="profile-action-btn block-btn">
+                                <i class="fas fa-ban"></i>
+                                <span>Engelle</span>
+                            </button>
+                            <button class="profile-action-btn remove-btn">
+                                <i class="fas fa-user-times"></i>
+                                <span>Arkadaşlıktan Çıkar</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1388,6 +1405,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (e.target === profilePanel) {
                     closeBtn.click();
                 }
+            });
+
+            // Tab işlevselliği
+            const profileTabs = profilePanel.querySelectorAll('.profile-tab');
+            profileTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    profileTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    console.log(`${tab.textContent} sekmesi açıldı`);
+                });
             });
 
             // Profil butonları işlevleri
