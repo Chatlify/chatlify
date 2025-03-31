@@ -4198,3 +4198,188 @@
     color: #f1c40f;
     /* Altın sarısı renk */
 }
+
+/* Sağ Tıklama Menüsü */
+.context-menu {
+    position: fixed;
+    width: 200px;
+    background-color: var(--dm-bg);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 9999;
+    opacity: 0;
+    transform: scale(0.95);
+    transform-origin: top left;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    max-height: calc(100vh - 20px);
+    overflow-y: auto;
+}
+
+.context-menu.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+.context-menu-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 8px 8px 0 0;
+}
+
+.context-menu-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 10px;
+    background-color: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.context-menu-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.context-menu-name {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
+.context-menu-divider {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.05);
+    margin: 4px 0;
+}
+
+.context-menu-item {
+    padding: 8px 12px;
+    color: var(--text-color);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.15s ease;
+}
+
+.context-menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.context-menu-item i {
+    width: 20px;
+    margin-right: 10px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    text-align: center;
+}
+
+.context-menu-item:hover i {
+    color: var(--primary-color);
+}
+
+/* Bildirim Sistemi */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 350px;
+}
+
+.notification {
+    background-color: var(--dm-bg);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: flex-start;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border-left: 4px solid transparent;
+    opacity: 0;
+    transform: translateX(50px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notification.hide {
+    opacity: 0;
+    transform: translateX(50px);
+}
+
+.notification.success {
+    border-left-color: var(--success-color);
+}
+
+.notification.error {
+    border-left-color: var(--danger-color);
+}
+
+.notification.warning {
+    border-left-color: #f1c40f;
+}
+
+.notification.info {
+    border-left-color: var(--primary-color);
+}
+
+.notification-icon {
+    margin-right: 12px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.notification.success .notification-icon i {
+    color: var(--success-color);
+}
+
+.notification.error .notification-icon i {
+    color: var(--danger-color);
+}
+
+.notification.warning .notification-icon i {
+    color: #f1c40f;
+}
+
+.notification.info .notification-icon i {
+    color: var(--primary-color);
+}
+
+.notification-content {
+    flex: 1;
+    font-size: 14px;
+    color: var(--text-color);
+    padding-right: 8px;
+}
+
+.notification-close {
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px;
+}
+
+.notification-close:hover {
+    color: var(--text-color);
+}

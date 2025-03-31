@@ -1001,4 +1001,344 @@ document.addEventListener('DOMContentLoaded', function () {
                 .replace(/\n/g, '<br>');
         }
     }
+
+    // Sağ Tıklama Menüsü (Context Menu)
+    document.addEventListener('DOMContentLoaded', function () {
+        // Sağ tıklama menüsü oluşturma
+        const contextMenu = document.createElement('div');
+        contextMenu.className = 'context-menu';
+        document.body.appendChild(contextMenu);
+
+        // Sağ tıklanabilir elemanlar
+        const rightClickableElements = [
+            { selector: '.dm-item', type: 'friend' },
+            { selector: '.friend-row', type: 'friend' },
+            { selector: '.friend-item', type: 'friend' },
+            { selector: '.server-item:not(.server-item:has(.server-add-icon), .server-item:has(.server-shop-icon), .server-item:has(.server-settings-icon))', type: 'server' }
+        ];
+
+        // Sağ tıklama menüsü seçenekleri
+        const menuOptions = {
+            friend: [
+                { icon: 'fas fa-user', text: 'Profili Görüntüle', action: viewProfile },
+                { icon: 'fas fa-comment', text: 'Mesaj Gönder', action: sendMessage },
+                { icon: 'fas fa-phone', text: 'Ara', action: callUser },
+                { icon: 'fas fa-user-plus', text: 'Arkadaşlık İsteği Gönder', action: addFriend, condition: isNotFriend },
+                { icon: 'fas fa-user-times', text: 'Arkadaşlıktan Çıkar', action: removeFriend, condition: isFriend },
+                { icon: 'fas fa-ban', text: 'Engelle', action: blockUser },
+                { icon: 'fas fa-exclamation-triangle', text: 'Raporla', action: reportUser }
+            ],
+            server: [
+                { icon: 'fas fa-server', text: 'Sunucu Bilgisi', action: viewServerInfo },
+                { icon: 'fas fa-bell', text: 'Bildirimleri Kapat', action: muteServer },
+                { icon: 'fas fa-sign-out-alt', text: 'Sunucudan Ayrıl', action: leaveServer },
+                { icon: 'fas fa-users', text: 'Üyeleri Görüntüle', action: viewMembers }
+            ]
+        };
+
+        // Sağ tıklama olay dinleyicisi
+        rightClickableElements.forEach(element => {
+            document.querySelectorAll(element.selector).forEach(el => {
+                el.addEventListener('contextmenu', function (e) {
+                    e.preventDefault();
+
+                    // İlgili elemanın bilgilerini al
+                    const elementType = element.type;
+                    const elementData = getElementData(this, elementType);
+
+                    // Menüyü konumlandır
+                    positionMenu(e.clientX, e.clientY);
+
+                    // Menü içeriğini oluştur
+                    populateMenu(elementType, elementData);
+
+                    // Menüyü göster
+                    showMenu();
+                });
+            });
+        });
+
+        // Belge tıklaması ile menüyü kapat
+        document.addEventListener('click', hideMenu);
+        document.addEventListener('contextmenu', function (e) {
+            if (!e.target.closest('.dm-item, .friend-row, .friend-item, .server-item')) {
+                hideMenu();
+            }
+        });
+
+        // Fonksiyonlar
+        function getElementData(element, type) {
+            let data = { element: element };
+
+            if (type === 'friend') {
+                // Elemandan arkadaş adını ve durumunu al
+                const nameEl = element.querySelector('.dm-name, .friend-name');
+                data.name = nameEl ? nameEl.textContent.trim() : 'Kullanıcı';
+
+                // Durumu al
+                const statusEl = element.querySelector('.dm-status, .friend-status, .status-dot, .status-indicator');
+                data.status = statusEl ? getStatusFromElement(statusEl) : 'offline';
+
+                // Avatar al
+                const avatarEl = element.querySelector('img');
+                data.avatar = avatarEl ? avatarEl.src : '';
+
+                // Arkadaşlık durumunu kontrol et
+                data.isFriend = !element.classList.contains('pending');
+            } else if (type === 'server') {
+                // Sunucu adını al
+                const tooltipEl = element.querySelector('.server-tooltip');
+                data.name = tooltipEl ? tooltipEl.textContent.trim() : 'Sunucu';
+
+                // Sunucu avatarını al
+                const avatarEl = element.querySelector('img, svg');
+                data.avatar = avatarEl ? (avatarEl.src || 'svg-element') : '';
+            }
+
+            return data;
+        }
+
+        function getStatusFromElement(element) {
+            if (element.classList.contains('online')) return 'online';
+            if (element.classList.contains('idle')) return 'idle';
+            if (element.classList.contains('dnd')) return 'dnd';
+            return 'offline';
+        }
+
+        function positionMenu(x, y) {
+            const menuWidth = 200;
+            const menuHeight = 250; // Yaklaşık menü yüksekliği
+
+            // Ekran dışına taşmayı önle
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            // X koordinatı ekran dışına taşarsa sola kaydır
+            if (x + menuWidth > windowWidth) {
+                x = windowWidth - menuWidth - 10;
+            }
+
+            // Y koordinatı ekran dışına taşarsa yukarı kaydır
+            if (y + menuHeight > windowHeight) {
+                y = windowHeight - menuHeight - 10;
+            }
+
+            contextMenu.style.left = `${x}px`;
+            contextMenu.style.top = `${y}px`;
+        }
+
+        function populateMenu(type, data) {
+            // Menüyü temizle
+            contextMenu.innerHTML = '';
+
+            // Başlık oluştur
+            const header = document.createElement('div');
+            header.className = 'context-menu-header';
+
+            // Avatar varsa ekle
+            if (data.avatar) {
+                const avatar = document.createElement('div');
+                avatar.className = 'context-menu-avatar';
+
+                if (data.avatar === 'svg-element' && data.element.querySelector('svg')) {
+                    // SVG için klonla
+                    const svgClone = data.element.querySelector('svg').cloneNode(true);
+                    svgClone.setAttribute('width', '24');
+                    svgClone.setAttribute('height', '24');
+                    avatar.appendChild(svgClone);
+                } else {
+                    const img = document.createElement('img');
+                    img.src = data.avatar;
+                    img.alt = data.name;
+                    avatar.appendChild(img);
+                }
+
+                header.appendChild(avatar);
+            }
+
+            const nameEl = document.createElement('div');
+            nameEl.className = 'context-menu-name';
+            nameEl.textContent = data.name;
+            header.appendChild(nameEl);
+
+            contextMenu.appendChild(header);
+
+            // Ayırıcı ekle
+            const divider = document.createElement('div');
+            divider.className = 'context-menu-divider';
+            contextMenu.appendChild(divider);
+
+            // Menü öğelerini ekle
+            let options = menuOptions[type] || [];
+
+            options.forEach(option => {
+                // Koşul kontrolü
+                if (option.condition && !option.condition(data)) {
+                    return;
+                }
+
+                const menuItem = document.createElement('div');
+                menuItem.className = 'context-menu-item';
+
+                const icon = document.createElement('i');
+                icon.className = option.icon;
+                menuItem.appendChild(icon);
+
+                const text = document.createElement('span');
+                text.textContent = option.text;
+                menuItem.appendChild(text);
+
+                menuItem.addEventListener('click', function () {
+                    option.action(data);
+                    hideMenu();
+                });
+
+                contextMenu.appendChild(menuItem);
+            });
+        }
+
+        function showMenu() {
+            contextMenu.classList.add('active');
+        }
+
+        function hideMenu() {
+            contextMenu.classList.remove('active');
+        }
+
+        // Menü eylemleri
+        function viewProfile(data) {
+            console.log(`${data.name} kullanıcısının profili görüntüleniyor...`);
+            // Profil görüntüleme işlevi burada olacak
+            showNotification('info', `${data.name} kullanıcısının profili görüntüleniyor...`);
+        }
+
+        function sendMessage(data) {
+            console.log(`${data.name} kullanıcısına mesaj gönderiliyor...`);
+            // Mesaj gönderme işlevi burada olacak
+            showNotification('info', `${data.name} ile sohbet başlatılıyor...`);
+        }
+
+        function callUser(data) {
+            console.log(`${data.name} kullanıcısı aranıyor...`);
+            // Arama işlevi burada olacak
+            showNotification('info', `${data.name} aranıyor...`);
+        }
+
+        function addFriend(data) {
+            console.log(`${data.name} kullanıcısına arkadaşlık isteği gönderiliyor...`);
+            // Arkadaşlık isteği gönderme işlevi burada olacak
+            showNotification('success', `${data.name} kullanıcısına arkadaşlık isteği gönderildi.`);
+        }
+
+        function removeFriend(data) {
+            console.log(`${data.name} kullanıcısı arkadaşlıktan çıkarılıyor...`);
+            // Arkadaşlıktan çıkarma işlevi burada olacak
+            showNotification('warning', `${data.name} arkadaşlıktan çıkarıldı.`);
+        }
+
+        function blockUser(data) {
+            console.log(`${data.name} kullanıcısı engelleniyor...`);
+            // Engelleme işlevi burada olacak
+            showNotification('error', `${data.name} kullanıcısı engellendi.`);
+        }
+
+        function reportUser(data) {
+            console.log(`${data.name} kullanıcısı raporlanıyor...`);
+            // Raporlama işlevi burada olacak
+            showNotification('warning', `${data.name} kullanıcısı raporlandı.`);
+        }
+
+        function viewServerInfo(data) {
+            console.log(`${data.name} sunucusunun bilgileri görüntüleniyor...`);
+            // Sunucu bilgisi görüntüleme işlevi burada olacak
+            showNotification('info', `${data.name} sunucu bilgileri görüntüleniyor...`);
+        }
+
+        function muteServer(data) {
+            console.log(`${data.name} sunucusu için bildirimler kapatılıyor...`);
+            // Bildirim kapatma işlevi burada olacak
+            showNotification('info', `${data.name} sunucusu için bildirimler kapatıldı.`);
+        }
+
+        function leaveServer(data) {
+            console.log(`${data.name} sunucusundan ayrılınıyor...`);
+            // Sunucudan ayrılma işlevi burada olacak
+            showNotification('warning', `${data.name} sunucusundan ayrıldınız.`);
+        }
+
+        function viewMembers(data) {
+            console.log(`${data.name} sunucusunun üyeleri görüntüleniyor...`);
+            // Üye görüntüleme işlevi burada olacak
+            showNotification('info', `${data.name} sunucusunun üyeleri görüntüleniyor...`);
+        }
+
+        // Koşul fonksiyonları
+        function isFriend(data) {
+            return data.isFriend === true;
+        }
+
+        function isNotFriend(data) {
+            return data.isFriend === false;
+        }
+
+        // Bildirim gösterme fonksiyonu
+        function showNotification(type, message) {
+            // Eğer bildirim konteynerı yoksa oluştur
+            let notificationContainer = document.querySelector('.notification-container');
+            if (!notificationContainer) {
+                notificationContainer = document.createElement('div');
+                notificationContainer.className = 'notification-container';
+                document.body.appendChild(notificationContainer);
+            }
+
+            // Yeni bildirim oluştur
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+
+            // İkon seç
+            let icon;
+            switch (type) {
+                case 'success': icon = 'fas fa-check-circle'; break;
+                case 'error': icon = 'fas fa-times-circle'; break;
+                case 'warning': icon = 'fas fa-exclamation-triangle'; break;
+                default: icon = 'fas fa-info-circle';
+            }
+
+            notification.innerHTML = `
+                <div class="notification-icon">
+                    <i class="${icon}"></i>
+                </div>
+                <div class="notification-content">
+                    <span>${message}</span>
+                </div>
+                <div class="notification-close">
+                    <i class="fas fa-times"></i>
+                </div>
+            `;
+
+            // Kapatma butonuna tıklama
+            notification.querySelector('.notification-close').addEventListener('click', function () {
+                notification.classList.add('hide');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            });
+
+            // Bildirimi konteyner'a ekle
+            notificationContainer.appendChild(notification);
+
+            // Bildirimi göster
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+
+            // Otomatik kapat
+            setTimeout(() => {
+                notification.classList.add('hide');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 5000);
+        }
+    });
 }); 
