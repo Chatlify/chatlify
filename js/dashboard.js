@@ -819,4 +819,178 @@ document.addEventListener('DOMContentLoaded', function () {
             offlineSection.style.display = visibleOfflineFriends > 0 ? 'flex' : 'none';
         }
     }
+
+    // Mesajlaşma Paneli İşlevselliği
+    initializeChatPanel();
+
+    function initializeChatPanel() {
+        const messageButtons = document.querySelectorAll('.message-btn');
+        const chatPanel = document.querySelector('.chat-panel');
+        const chatCloseBtn = document.querySelector('.chat-close-btn');
+        const chatTextarea = document.querySelector('.chat-textbox textarea');
+        const chatSendBtn = document.querySelector('.chat-send-btn');
+        const chatMessages = document.querySelector('.chat-messages');
+        const friendsPanel = document.querySelector('.friends-panel-container');
+
+        if (messageButtons && chatPanel) {
+            messageButtons.forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    e.stopPropagation(); // Ebeveyn tıklamayı engelle
+                    const friendRow = this.closest('.friend-row');
+
+                    if (friendRow) {
+                        // Sohbeti açarken arkadaşın bilgilerini al
+                        const friendName = friendRow.querySelector('.friend-name').textContent;
+                        const friendAvatar = friendRow.querySelector('.friend-avatar img').src;
+                        const statusClass = Array.from(friendRow.querySelector('.status-dot').classList)
+                            .find(cls => ['online', 'idle', 'dnd', 'offline'].includes(cls));
+                        const statusText = friendRow.querySelector('.friend-status').textContent;
+
+                        // Sohbet panelini güncelle ve göster
+                        updateChatPanelUser(friendName, friendAvatar, statusClass, statusText);
+                        openChatPanel();
+                    } else {
+                        // Grup sohbeti veya DM'den
+                        const dmItem = this.closest('.dm-item');
+                        if (dmItem) {
+                            const friendName = dmItem.querySelector('.dm-name').textContent;
+                            const friendAvatar = dmItem.querySelector('.dm-avatar img').src;
+                            const statusClass = Array.from(dmItem.querySelector('.dm-status').classList)
+                                .find(cls => ['online', 'idle', 'dnd', 'offline'].includes(cls));
+                            const statusText = dmItem.querySelector('.dm-activity').textContent;
+
+                            updateChatPanelUser(friendName, friendAvatar, statusClass, statusText);
+                            openChatPanel();
+                        }
+                    }
+                });
+            });
+        }
+
+        if (chatCloseBtn) {
+            chatCloseBtn.addEventListener('click', function () {
+                closeChatPanel();
+            });
+        }
+
+        // Mesaj gönderme
+        if (chatSendBtn && chatTextarea) {
+            chatSendBtn.addEventListener('click', function () {
+                sendMessage();
+            });
+
+            chatTextarea.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // Yazarken textarea'yı otomatik büyüt
+            chatTextarea.addEventListener('input', function () {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+
+                // Max yüksekliği kontrol et
+                if (this.scrollHeight > 120) {
+                    this.style.overflowY = 'scroll';
+                } else {
+                    this.style.overflowY = 'hidden';
+                }
+            });
+        }
+
+        function updateChatPanelUser(name, avatar, statusClass, statusText) {
+            const chatUsername = document.querySelector('.chat-username');
+            const chatStatus = document.querySelector('.chat-status');
+            const chatAvatar = document.querySelector('.chat-avatar img');
+            const chatStatusDot = document.querySelector('.chat-avatar .status-dot');
+
+            if (chatUsername && chatStatus && chatAvatar && chatStatusDot) {
+                chatUsername.textContent = name;
+                chatStatus.textContent = statusText;
+                chatAvatar.src = avatar;
+
+                // Status sınıfını güncelle
+                chatStatusDot.className = 'status-dot';
+                if (statusClass) {
+                    chatStatusDot.classList.add(statusClass);
+                }
+            }
+        }
+
+        function openChatPanel() {
+            if (friendsPanel) {
+                friendsPanel.classList.add('hidden');
+            }
+            chatPanel.classList.remove('hidden');
+
+            // Mesajları en sona kaydır
+            if (chatMessages) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            // Textarea odaklan
+            if (chatTextarea) {
+                chatTextarea.focus();
+            }
+        }
+
+        function closeChatPanel() {
+            chatPanel.classList.add('hidden');
+            if (friendsPanel) {
+                friendsPanel.classList.remove('hidden');
+            }
+        }
+
+        function sendMessage() {
+            const message = chatTextarea.value.trim();
+            if (message) {
+                // Mesaj HTML'i oluştur
+                const now = new Date();
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const timeString = `${hours}:${minutes}`;
+
+                const messageHTML = `
+                    <div class="message-group own-message">
+                        <div class="message-group-content">
+                            <div class="message-group-header">
+                                <span class="message-author">Sen</span>
+                                <span class="message-time">${timeString}</span>
+                            </div>
+                            <div class="message-content">
+                                <p>${formatMessage(message)}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Mesajı ekle
+                chatMessages.insertAdjacentHTML('beforeend', messageHTML);
+
+                // Textarea'yı temizle ve boyutu sıfırla
+                chatTextarea.value = '';
+                chatTextarea.style.height = 'auto';
+
+                // Sohbet alanını sona kaydır
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        function formatMessage(text) {
+            // Basit mesaj formatlaması - URL'leri bağlantıya çevirme
+            return text.replace(/https?:\/\/[^\s]+/g, function (url) {
+                return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+            })
+                // Emoji dönüşümü
+                .replace(/:\)/g, '😊')
+                .replace(/:\(/g, '😢')
+                .replace(/:D/g, '😃')
+                .replace(/;\)/g, '😉')
+                .replace(/:P/g, '😛')
+                // Yeni satırlar
+                .replace(/\n/g, '<br>');
+        }
+    }
 }); 
