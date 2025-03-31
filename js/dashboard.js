@@ -131,6 +131,10 @@ document.addEventListener('DOMContentLoaded', function () {
         headerSearchInput.addEventListener('input', function () {
             const searchTerm = this.value.toLowerCase().trim();
             const friendCards = document.querySelectorAll('.friend-card');
+            const clearSearchBtn = document.querySelector('.clear-search');
+
+            // Arama temizleme butonunu göster/gizle
+            clearSearchBtn.style.display = this.value.length > 0 ? 'block' : 'none';
 
             if (searchTerm.length === 0) {
                 // Arama kutusu boşsa tüm kartları göster
@@ -163,25 +167,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Arama çubuğunu temizlemek için çarpı simgesi ekle
-        const searchContainer = document.querySelector('.search-container');
-        const clearSearchBtn = document.createElement('i');
-        clearSearchBtn.className = 'fas fa-times clear-search';
-        clearSearchBtn.style.display = 'none';
-        clearSearchBtn.style.cursor = 'pointer';
-        clearSearchBtn.style.color = '#6c7293';
-        clearSearchBtn.style.marginLeft = '5px';
-        clearSearchBtn.style.fontSize = '12px';
-        searchContainer.appendChild(clearSearchBtn);
-
-        headerSearchInput.addEventListener('input', function () {
-            clearSearchBtn.style.display = this.value.length > 0 ? 'block' : 'none';
-        });
-
+        // Arama temizleme butonu işlevi
+        const clearSearchBtn = document.querySelector('.clear-search');
         clearSearchBtn.addEventListener('click', function () {
             headerSearchInput.value = '';
             headerSearchInput.focus();
-            clearSearchBtn.style.display = 'none';
+            this.style.display = 'none';
 
             // Tüm arkadaş kartlarını yeniden göster
             document.querySelectorAll('.friend-card').forEach(card => {
@@ -480,11 +471,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Main Tabs işlevselliği
     const mainTabs = document.querySelectorAll('.main-tab');
+    const tabIndicator = document.querySelector('.tab-indicator');
+
+    // Tab göstergesi pozisyonunu ayarla
+    function updateTabIndicator(activeTab) {
+        // Gösterge genişliğini ve pozisyonunu ayarla
+        if (!tabIndicator) return;
+
+        const tabLeft = activeTab.offsetLeft;
+        const tabWidth = activeTab.offsetWidth;
+
+        tabIndicator.style.width = `${tabWidth - 12}px`; // 12px padding için
+        tabIndicator.style.left = `${tabLeft + 6}px`; // 6px margin için
+    }
+
+    // Sayfa yüklendiğinde aktif tab için gösterge pozisyonunu ayarla
+    const activeTab = document.querySelector('.main-tab.active');
+    if (activeTab && tabIndicator) {
+        setTimeout(() => {
+            updateTabIndicator(activeTab);
+        }, 100); // DOM tamamen yüklendiğinden emin olmak için küçük bir gecikme
+    }
+
     mainTabs.forEach(tab => {
         tab.addEventListener('click', function () {
             // Aktif tab'ı güncelle
             document.querySelector('.main-tab.active').classList.remove('active');
             this.classList.add('active');
+
+            // Tab gösterge pozisyonunu güncelle
+            updateTabIndicator(this);
 
             const tabText = this.textContent.trim();
             showNotification(`${tabText} sekmesi seçildi`, 'info');
