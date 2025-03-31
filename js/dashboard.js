@@ -1035,32 +1035,75 @@ document.addEventListener('DOMContentLoaded', function () {
             ]
         };
 
-        // Sağ tıklama olay dinleyicisi
-        rightClickableElements.forEach(element => {
-            document.querySelectorAll(element.selector).forEach(el => {
-                el.addEventListener('contextmenu', function (e) {
-                    e.preventDefault();
+        // Sağ tıklama olay dinleyicileri
+        function setupRightClickEvents() {
+            rightClickableElements.forEach(element => {
+                document.querySelectorAll(element.selector).forEach(el => {
+                    // Önce eski event listener'ları kaldır (eğer varsa)
+                    el.removeEventListener('contextmenu', handleContextMenu);
 
-                    // İlgili elemanın bilgilerini al
-                    const elementType = element.type;
-                    const elementData = getElementData(this, elementType);
-
-                    // Menüyü konumlandır
-                    positionMenu(e.clientX, e.clientY);
-
-                    // Menü içeriğini oluştur
-                    populateMenu(elementType, elementData);
-
-                    // Menüyü göster
-                    showMenu();
+                    // Yeni event listener ekle
+                    el.addEventListener('contextmenu', handleContextMenu);
                 });
             });
-        });
+        }
+
+        // Sayfa yüklendiğinde ve DOM değiştiğinde right click event'lerini ayarla
+        setupRightClickEvents();
+
+        // DOM değişikliklerini izle
+        const observer = new MutationObserver(setupRightClickEvents);
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        // Context menu için event handler
+        function handleContextMenu(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Menüyü gizle
+            hideMenu();
+
+            // Element tipini belirle
+            let elementType = null;
+            let elementSelector = null;
+
+            for (const item of rightClickableElements) {
+                if (this.matches(item.selector)) {
+                    elementType = item.type;
+                    elementSelector = item.selector;
+                    break;
+                }
+            }
+
+            if (!elementType) return;
+
+            // İlgili elemanın bilgilerini al
+            const elementData = getElementData(this, elementType);
+
+            // Menüyü konumlandır
+            positionMenu(e.clientX, e.clientY);
+
+            // Menü içeriğini oluştur
+            populateMenu(elementType, elementData);
+
+            // Menüyü göster
+            showMenu();
+        }
 
         // Belge tıklaması ile menüyü kapat
         document.addEventListener('click', hideMenu);
         document.addEventListener('contextmenu', function (e) {
-            if (!e.target.closest('.dm-item, .friend-row, .friend-item, .server-item')) {
+            // Eğer tıklanan eleman tanımlı selectorlerden birine uymazsa menüyü gizle
+            let shouldHide = true;
+
+            for (const item of rightClickableElements) {
+                if (e.target.closest(item.selector)) {
+                    shouldHide = false;
+                    break;
+                }
+            }
+
+            if (shouldHide) {
                 hideMenu();
             }
         });
