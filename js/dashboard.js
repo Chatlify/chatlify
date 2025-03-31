@@ -64,6 +64,18 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', function () {
             // Mesaj gönderme işlemi burada gerçekleştirilecek
             // Bildirim kaldırıldı
+
+            const friendCard = this.closest('.friend-card');
+            if (friendCard) {
+                const friendName = friendCard.querySelector('.friend-card-name')?.textContent || 'Arkadaş';
+                console.log(`${friendName} kişisine mesaj gönderiliyor...`);
+
+                // Animasyon efekti
+                this.classList.add('clicked');
+                setTimeout(() => {
+                    this.classList.remove('clicked');
+                }, 300);
+            }
         });
     });
 
@@ -661,14 +673,212 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // Sesli arama butonu işlevi 
+    const voiceButtons = document.querySelectorAll('.voice-btn');
+    voiceButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            // Sesli arama işlemi burada gerçekleştirilecek
+            const friendCard = this.closest('.friend-card');
+            if (friendCard) {
+                const friendName = friendCard.querySelector('.friend-card-name')?.textContent || 'Arkadaş';
+                console.log(`${friendName} kişisi aranıyor...`);
+
+                // Animasyon efekti
+                this.classList.add('clicked');
+                setTimeout(() => {
+                    this.classList.remove('clicked');
+                }, 300);
+            }
+        });
+    });
+
     // Diğer (more) butonu işlevi 
     const moreButtons = document.querySelectorAll('.more-btn');
     moreButtons.forEach(button => {
         button.addEventListener('click', function () {
             // Burada dropdown menü veya ek işlemler uygulanabilir
             console.log('Diğer işlemler menüsü');
+
+            // Dropdown menü oluşturmak için örnek
+            const friendCard = this.closest('.friend-card');
+            if (friendCard) {
+                // Eğer zaten bir dropdown varsa kaldır
+                const existingDropdown = document.querySelector('.friend-dropdown');
+                if (existingDropdown) {
+                    existingDropdown.remove();
+                    return;
+                }
+
+                const friendName = friendCard.querySelector('.friend-card-name')?.textContent || 'Arkadaş';
+
+                const dropdown = document.createElement('div');
+                dropdown.className = 'friend-dropdown';
+                dropdown.innerHTML = `
+                    <div class="dropdown-item"><i class="fas fa-user-plus"></i> Favorilere Ekle</div>
+                    <div class="dropdown-item"><i class="fas fa-user-minus"></i> Arkadaşlıktan Çıkar</div>
+                    <div class="dropdown-item"><i class="fas fa-ban"></i> Engelle</div>
+                `;
+
+                // Dropdown'u konumlandır
+                const rect = this.getBoundingClientRect();
+                dropdown.style.position = 'absolute';
+                dropdown.style.top = `${rect.bottom + 5}px`;
+                dropdown.style.right = `${window.innerWidth - rect.right}px`;
+                dropdown.style.zIndex = '9999';
+
+                document.body.appendChild(dropdown);
+
+                // Dropdown dışına tıklandığında kapat
+                document.addEventListener('click', function closeDropdown(e) {
+                    if (!dropdown.contains(e.target) && e.target !== button) {
+                        dropdown.remove();
+                        document.removeEventListener('click', closeDropdown);
+                    }
+                });
+
+                // Dropdown stil ekle
+                const dropdownStyle = document.createElement('style');
+                dropdownStyle.textContent = `
+                    .friend-dropdown {
+                        background: rgba(15, 19, 34, 0.95);
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        border-radius: 8px;
+                        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                        width: 200px;
+                        overflow: hidden;
+                        animation: fadeScale 0.2s ease forwards;
+                    }
+                    
+                    .dropdown-item {
+                        padding: 12px 16px;
+                        color: var(--text-secondary);
+                        font-size: 14px;
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                    }
+                    
+                    .dropdown-item:hover {
+                        background: rgba(255, 255, 255, 0.05);
+                        color: var(--text-color);
+                    }
+                    
+                    .dropdown-item:last-child {
+                        color: var(--danger-color);
+                    }
+                    
+                    .dropdown-item:last-child:hover {
+                        background: rgba(255, 82, 82, 0.1);
+                    }
+                `;
+                document.head.appendChild(dropdownStyle);
+            }
         });
     });
+
+    // Arkadaş bölümlerini genişletme/daraltma
+    const sectionControls = document.querySelectorAll('.section-control');
+    sectionControls.forEach(control => {
+        control.addEventListener('click', function () {
+            const section = this.closest('.friends-section');
+            if (section) {
+                section.classList.toggle('collapsed');
+
+                // İkon animasyonu
+                const icon = this.querySelector('i');
+                if (section.classList.contains('collapsed')) {
+                    icon.style.transform = 'rotate(-90deg)';
+                } else {
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            }
+        });
+    });
+
+    // Filtre işlevselliği
+    const filterItems = document.querySelectorAll('.filter-item');
+    filterItems.forEach(item => {
+        item.addEventListener('click', function () {
+            // Aktif filtreyi güncelle
+            document.querySelector('.filter-item.active').classList.remove('active');
+            this.classList.add('active');
+
+            const filter = this.getAttribute('data-filter');
+            const friendCards = document.querySelectorAll('.friend-card');
+
+            if (filter === 'all') {
+                // Tüm sekmeleri göster
+                document.querySelector('.online-section').style.display = 'block';
+                document.querySelector('.offline-section').style.display = 'block';
+            } else if (filter === 'online') {
+                // Sadece çevrimiçi olanları göster
+                document.querySelector('.online-section').style.display = 'block';
+                document.querySelector('.offline-section').style.display = 'none';
+            } else if (filter === 'offline') {
+                // Sadece çevrimdışı olanları göster
+                document.querySelector('.online-section').style.display = 'none';
+                document.querySelector('.offline-section').style.display = 'block';
+            }
+        });
+    });
+
+    // Arkadaş arama işlevi
+    const friendsSearch = document.querySelector('.friends-search');
+    if (friendsSearch) {
+        friendsSearch.addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase().trim();
+            const friendCards = document.querySelectorAll('.friend-card');
+
+            friendCards.forEach(card => {
+                const friendName = card.querySelector('.friend-card-name').textContent.toLowerCase();
+                const friendActivity = card.querySelector('.friend-card-activity').textContent.toLowerCase();
+
+                if (friendName.includes(searchTerm) || friendActivity.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Boş bölümleri gizle
+            const sections = document.querySelectorAll('.friends-section');
+            sections.forEach(section => {
+                const visibleCards = section.querySelectorAll('.friend-card[style="display: flex;"]');
+                if (visibleCards.length === 0) {
+                    section.style.display = 'none';
+                } else {
+                    section.style.display = 'block';
+                }
+            });
+
+            // Arama sonucuna göre sayaçları güncelle
+            updateFriendCounters();
+        });
+    }
+
+    // Arkadaş sayaçlarını güncelle
+    function updateFriendCounters() {
+        const onlineSection = document.querySelector('.online-section');
+        const offlineSection = document.querySelector('.offline-section');
+
+        if (onlineSection) {
+            const visibleOnlineFriends = onlineSection.querySelectorAll('.friend-card[style="display: flex;"]');
+            const onlineCounter = onlineSection.querySelector('.friend-count');
+            if (onlineCounter) {
+                onlineCounter.textContent = visibleOnlineFriends.length;
+            }
+        }
+
+        if (offlineSection) {
+            const visibleOfflineFriends = offlineSection.querySelectorAll('.friend-card[style="display: flex;"]');
+            const offlineCounter = offlineSection.querySelector('.friend-count');
+            if (offlineCounter) {
+                offlineCounter.textContent = visibleOfflineFriends.length;
+            }
+        }
+    }
 
     // Arkadaş satırında hover durumunda butonların gösterilmesi
     const friendRows = document.querySelectorAll('.friend-row');
@@ -684,35 +894,4 @@ document.addEventListener('DOMContentLoaded', function () {
             }, 500);
         });
     });
-
-    // Arkadaş arama işlevi
-    const friendsSearch = document.querySelector('.friends-search');
-    if (friendsSearch) {
-        friendsSearch.addEventListener('input', function () {
-            const searchTerm = this.value.toLowerCase().trim();
-            const friendRows = document.querySelectorAll('.friend-row');
-
-            friendRows.forEach(row => {
-                const friendName = row.querySelector('.friend-name').textContent.toLowerCase();
-                const friendActivity = row.querySelector('.friend-activity').textContent.toLowerCase();
-
-                if (friendName.includes(searchTerm) || friendActivity.includes(searchTerm)) {
-                    row.style.display = 'flex';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-
-            // Arama teriminin varlığına göre grup başlıklarını göster/gizle
-            const friendsSections = document.querySelectorAll('.friends-section');
-            friendsSections.forEach(section => {
-                const visibleFriends = section.querySelectorAll('.friend-row[style="display: flex;"]');
-                if (visibleFriends.length === 0) {
-                    section.querySelector('.friends-section-header').style.display = 'none';
-                } else {
-                    section.querySelector('.friends-section-header').style.display = 'block';
-                }
-            });
-        });
-    }
 }); 

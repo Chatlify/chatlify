@@ -1250,6 +1250,10 @@
     background-color: var(--status-dnd);
 }
 
+.friend-status.offline {
+    background-color: var(--status-offline);
+}
+
 .friend-info {
     flex: 1;
     min-width: 0;
@@ -2268,23 +2272,621 @@
     font-size: 14px;
 }
 
+.offline-section .friends-list {
+    opacity: 0.8;
+}
+
+.offline-section .friend-card:hover {
+    opacity: 1;
+}
+
+/* Çevrimiçi/Çevrimdışı Bölüm için Renk Farkı */
+.online-section {
+    border-left: 3px solid var(--status-online);
+}
+
+.offline-section {
+    border-left: 3px solid var(--status-offline);
+}
+
+/* Responsive Tasarım */
 @media (max-width: 768px) {
-    .friend-actions {
+    .friend-card-actions {
         opacity: 1;
+        transform: translateX(0);
     }
 
     .friend-action-btn {
         width: 32px;
         height: 32px;
     }
+
+    .friends-section {
+        margin: 0 12px 12px;
+    }
+
+    .friends-search-container {
+        margin: 12px 12px 0;
+    }
 }
 
 @media (max-width: 576px) {
-    .friends-panel {
-        padding: 12px 8px;
+    .friend-card {
+        padding: 10px 12px;
     }
 
-    .friend-row {
-        padding: 8px 12px;
+    .friend-card-avatar {
+        width: 36px;
+        height: 36px;
+        margin-right: 10px;
+    }
+
+    .friends-search {
+        padding: 10px 16px 10px 36px;
+    }
+
+    .search-filters {
+        flex-wrap: wrap;
+    }
+
+    .filter-item {
+        padding: 8px 6px;
+        font-size: 12px;
+    }
+}
+
+/* Geliştirilmiş Arkadaşlar Paneli Stilleri */
+.friends-enhanced-panel {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+    animation: fadeScale 0.3s ease;
+    background-color: var(--main-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Gelişmiş Kaydırma Çubuğu */
+.fancy-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(94, 114, 228, 0.3) transparent;
+}
+
+.fancy-scroll::-webkit-scrollbar {
+    width: 6px;
+    display: block;
+}
+
+.fancy-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.fancy-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(94, 114, 228, 0.3);
+    border-radius: 6px;
+}
+
+.fancy-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(94, 114, 228, 0.5);
+}
+
+/* Arama ve Filtreler */
+.friends-search-container {
+    position: relative;
+    margin: 16px 16px 0;
+    background-color: rgba(15, 19, 34, 0.3);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.friends-search-container:focus-within {
+    border-color: rgba(94, 114, 228, 0.5);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 0 0 0 2px rgba(94, 114, 228, 0.1);
+}
+
+.friends-search {
+    width: 100%;
+    padding: 12px 16px 12px 40px;
+    border-radius: 8px;
+    border: none;
+    background-color: transparent;
+    color: var(--text-color);
+    font-size: 15px;
+    outline: none;
+}
+
+.friends-search::placeholder {
+    color: var(--text-secondary);
+}
+
+.friends-search:focus {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.friends-search-container i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 15px;
+    pointer-events: none;
+}
+
+.friends-search-container:focus-within i {
+    color: var(--primary-color);
+    opacity: 1;
+}
+
+.search-filters {
+    display: flex;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 0;
+    background-color: rgba(15, 19, 34, 0.6);
+}
+
+.filter-item {
+    flex: 1;
+    padding: 10px 8px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.filter-item i {
+    font-size: 12px;
+    position: static;
+    transform: none;
+}
+
+.filter-item:hover {
+    color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.filter-item.active {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.filter-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--primary-color);
+    animation: slideInRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Arkadaş Bölümleri */
+.friends-section {
+    margin: 0 16px 16px;
+    background: rgba(15, 19, 34, 0.3);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.friends-section:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.friends-section-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(15, 19, 34, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.section-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+}
+
+.online-icon {
+    color: var(--status-online);
+}
+
+.offline-icon {
+    color: var(--status-offline);
+}
+
+.friends-section-header h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+    letter-spacing: 0.01em;
+}
+
+.friend-count {
+    background: rgba(61, 104, 231, 0.2);
+    color: var(--primary-light);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.section-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.section-control {
+    background: transparent;
+    color: var(--text-secondary);
+    border: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.section-control:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-color);
+}
+
+/* Arkadaş Listesi */
+.friends-list {
+    display: flex;
+    flex-direction: column;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.friends-section.collapsed .friends-list {
+    display: none;
+}
+
+.friends-section.collapsed .section-control i {
+    transform: rotate(-90deg);
+}
+
+/* Arkadaş Kartları */
+.friend-card {
+    display: flex;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.friend-card:last-child {
+    border-bottom: none;
+}
+
+.friend-card:hover {
+    background-color: rgba(61, 104, 231, 0.05);
+}
+
+.friend-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 3px;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.friend-card:hover::before {
+    background: var(--primary-color);
+}
+
+.friend-card.online::before {
+    background: var(--status-online);
+    opacity: 0;
+}
+
+.friend-card.online:hover::before {
+    opacity: 1;
+}
+
+.friend-card.offline {
+    opacity: 0.7;
+}
+
+.friend-card-avatar {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    margin-right: 14px;
+    flex-shrink: 0;
+}
+
+.friend-card-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.friend-card:hover .friend-card-avatar img {
+    border-color: rgba(61, 104, 231, 0.3);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.friend-status {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--main-bg);
+}
+
+.friend-card:hover .friend-status {
+    border-color: rgba(40, 43, 54, 1);
+}
+
+.friend-status.pulse {
+    animation: pulse 2s infinite;
+}
+
+.friend-status.online {
+    background-color: var(--status-online);
+}
+
+.friend-status.idle {
+    background-color: var(--status-idle);
+}
+
+.friend-status.dnd {
+    background-color: var(--status-dnd);
+}
+
+.friend-status.offline {
+    background-color: var(--status-offline);
+}
+
+.friend-card-content {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-width: 0;
+}
+
+.friend-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.friend-card-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.2s ease;
+}
+
+.friend-card:hover .friend-card-name {
+    color: white;
+}
+
+.friend-card-activity {
+    display: flex;
+    align-items: center;
+    color: var(--text-secondary);
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.activity-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--status-online);
+    margin-right: 6px;
+}
+
+.game-activity,
+.dnd-activity,
+.offline-activity {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.game-activity {
+    color: #b19dd8;
+}
+
+.game-activity i {
+    color: #b19dd8;
+}
+
+.dnd-activity {
+    color: var(--status-dnd);
+}
+
+.dnd-activity i {
+    color: var(--status-dnd);
+}
+
+.offline-activity {
+    opacity: 0.8;
+}
+
+.offline-activity i {
+    font-size: 11px;
+}
+
+.friend-card-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: 8px;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+}
+
+.friend-card:hover .friend-card-actions {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.friend-action-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.06);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.friend-action-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.3s ease;
+}
+
+.friend-action-btn:hover::before {
+    width: 120%;
+    height: 120%;
+}
+
+.friend-action-btn:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: var(--text-color);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.message-btn:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.voice-btn:hover {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.more-btn {
+    font-size: 14px;
+}
+
+.offline-section .friends-list {
+    opacity: 0.8;
+}
+
+.offline-section .friend-card:hover {
+    opacity: 1;
+}
+
+/* Çevrimiçi/Çevrimdışı Bölüm için Renk Farkı */
+.online-section {
+    border-left: 3px solid var(--status-online);
+}
+
+.offline-section {
+    border-left: 3px solid var(--status-offline);
+}
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+    .friend-card-actions {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .friend-action-btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    .friends-section {
+        margin: 0 12px 12px;
+    }
+
+    .friends-search-container {
+        margin: 12px 12px 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .friend-card {
+        padding: 10px 12px;
+    }
+
+    .friend-card-avatar {
+        width: 36px;
+        height: 36px;
+        margin-right: 10px;
+    }
+
+    .friends-search {
+        padding: 10px 16px 10px 36px;
+    }
+
+    .search-filters {
+        flex-wrap: wrap;
+    }
+
+    .filter-item {
+        padding: 8px 6px;
+        font-size: 12px;
     }
 }
