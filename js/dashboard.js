@@ -125,12 +125,9 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Yeni header arama işlevi ve temizleme butonu
+    // Header arama işlevi
     const headerSearchInput = document.querySelector('.header-search input');
-    const searchClearBtn = document.querySelector('.search-clear');
-
-    if (headerSearchInput && searchClearBtn) {
-        // Arama alanı işlevi
+    if (headerSearchInput) {
         headerSearchInput.addEventListener('input', function () {
             const searchTerm = this.value.toLowerCase().trim();
             const friendCards = document.querySelectorAll('.friend-card');
@@ -155,24 +152,227 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
 
-        // Arama temizleme butonu işlevi
-        searchClearBtn.addEventListener('click', function () {
-            headerSearchInput.value = '';
-            headerSearchInput.focus();
-
-            // Tüm arkadaş kartlarını göster
-            document.querySelectorAll('.friend-card').forEach(card => {
-                card.style.display = 'block';
-            });
-        });
-
         // Enter tuşuna basıldığında arama işlemini gerçekleştir
-        headerSearchInput.addEventListener('keydown', function (event) {
-            if (event.key === 'Enter') {
+        headerSearchInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
                 const searchTerm = this.value.trim();
                 if (searchTerm.length > 0) {
                     showNotification(`"${searchTerm}" için arkadaşlar aranıyor...`, 'info');
                 }
+                e.preventDefault();
+            }
+        });
+
+        // Arama çubuğunu temizlemek için çarpı simgesi ekle
+        const searchContainer = document.querySelector('.search-container');
+        const clearSearchBtn = document.createElement('i');
+        clearSearchBtn.className = 'fas fa-times clear-search';
+        clearSearchBtn.style.display = 'none';
+        clearSearchBtn.style.cursor = 'pointer';
+        clearSearchBtn.style.color = '#6c7293';
+        clearSearchBtn.style.marginLeft = '5px';
+        clearSearchBtn.style.fontSize = '12px';
+        searchContainer.appendChild(clearSearchBtn);
+
+        headerSearchInput.addEventListener('input', function () {
+            clearSearchBtn.style.display = this.value.length > 0 ? 'block' : 'none';
+        });
+
+        clearSearchBtn.addEventListener('click', function () {
+            headerSearchInput.value = '';
+            headerSearchInput.focus();
+            clearSearchBtn.style.display = 'none';
+
+            // Tüm arkadaş kartlarını yeniden göster
+            document.querySelectorAll('.friend-card').forEach(card => {
+                card.style.display = 'block';
+            });
+        });
+    }
+
+    // Arkadaş Ekle butonu işlevi
+    const addFriendBtn = document.querySelector('.add-friend-btn');
+    if (addFriendBtn) {
+        addFriendBtn.addEventListener('click', function () {
+            // Modal veya popup açılabilir, şu an için bildirim gösterelim
+            showNotification('Arkadaşlık isteği gönderme paneli açıldı', 'info');
+
+            // Örnek modal gösterimi (gerçek bir uygulamada burada modal açılır)
+            createAddFriendModal();
+        });
+    }
+
+    // Arkadaş ekleme modalı oluştur
+    function createAddFriendModal() {
+        const modal = document.createElement('div');
+        modal.className = 'add-friend-modal';
+        modal.innerHTML = `
+            <div class="add-friend-modal-content">
+                <div class="add-friend-modal-header">
+                    <h3>Arkadaş Ekle</h3>
+                    <i class="fas fa-times close-modal"></i>
+                </div>
+                <div class="add-friend-modal-body">
+                    <p>Chatlify'da birini arkadaş olarak eklemek için kullanıcı adını ve etiketini girin.</p>
+                    <div class="add-friend-input-container">
+                        <input type="text" placeholder="Kullanıcıadı#0000" class="add-friend-input">
+                        <button class="add-friend-submit">Arkadaşlık İsteği Gönder</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Modal stil ekle
+        const modalStyle = document.createElement('style');
+        modalStyle.textContent = `
+            .add-friend-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.7);
+                z-index: 1000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            
+            .add-friend-modal.show {
+                opacity: 1;
+            }
+            
+            .add-friend-modal-content {
+                background: #1a2036;
+                width: 450px;
+                max-width: 90%;
+                border-radius: 8px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                animation: scaleIn 0.3s ease forwards;
+                transform: scale(0.9);
+            }
+            
+            @keyframes scaleIn {
+                to {
+                    transform: scale(1);
+                }
+            }
+            
+            .add-friend-modal-header {
+                padding: 15px 20px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .add-friend-modal-header h3 {
+                margin: 0;
+                color: white;
+                font-size: 18px;
+                font-weight: 600;
+            }
+            
+            .close-modal {
+                cursor: pointer;
+                color: #6c7293;
+                transition: color 0.2s ease;
+                font-size: 16px;
+            }
+            
+            .close-modal:hover {
+                color: white;
+            }
+            
+            .add-friend-modal-body {
+                padding: 20px;
+            }
+            
+            .add-friend-modal-body p {
+                color: #6c7293;
+                margin-top: 0;
+                margin-bottom: 15px;
+            }
+            
+            .add-friend-input-container {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .add-friend-input {
+                background: rgba(24, 27, 41, 1);
+                border: 1px solid rgba(87, 96, 235, 0.3);
+                border-radius: 4px;
+                color: white;
+                padding: 12px 15px;
+                font-size: 14px;
+                outline: none;
+                transition: all 0.3s ease;
+            }
+            
+            .add-friend-input:focus {
+                border-color: rgba(87, 96, 235, 0.8);
+                box-shadow: 0 0 0 2px rgba(87, 96, 235, 0.15);
+            }
+            
+            .add-friend-submit {
+                background: linear-gradient(135deg, #5e72e4, #825ee4);
+                color: white;
+                border: none;
+                padding: 12px;
+                border-radius: 4px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            .add-friend-submit:hover {
+                background: linear-gradient(135deg, #4a5ed0, #7048d0);
+            }
+        `;
+        document.head.appendChild(modalStyle);
+
+        // Modal göster
+        setTimeout(() => {
+            modal.classList.add('show');
+        }, 10);
+
+        // Kapatma olayları
+        const closeModal = () => {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.remove();
+                modalStyle.remove();
+            }, 300);
+        };
+
+        modal.querySelector('.close-modal').addEventListener('click', closeModal);
+        modal.addEventListener('click', e => {
+            if (e.target === modal) closeModal();
+        });
+
+        // İstek gönderme
+        const addFriendSubmit = modal.querySelector('.add-friend-submit');
+        const addFriendInput = modal.querySelector('.add-friend-input');
+
+        addFriendSubmit.addEventListener('click', () => {
+            const username = addFriendInput.value.trim();
+            if (username) {
+                showNotification(`${username} kullanıcısına arkadaşlık isteği gönderildi.`, 'success');
+                closeModal();
+            } else {
+                showNotification('Lütfen geçerli bir kullanıcı adı girin.', 'error');
+            }
+        });
+
+        addFriendInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                addFriendSubmit.click();
             }
         });
     }
@@ -301,203 +501,4 @@ document.addEventListener('DOMContentLoaded', function () {
             showNotification(`${friendName} şu anda çevrimdışı. Mesajınız iletilecek.`, 'info');
         });
     });
-
-    // Arkadaş Ekle butonu işlevi
-    const friendAddBtn = document.querySelector('.friend-add-btn');
-    if (friendAddBtn) {
-        friendAddBtn.addEventListener('click', function () {
-            showNotification('Arkadaş eklemek için yeni pencere açılıyor...', 'info');
-
-            // Açılır modal veya yeni sayfa açıldığını simüle ediyoruz
-            // Gerçek uygulamada burada modal gösterilir veya sayfa değiştirilebilir
-            setTimeout(() => {
-                const modalHtml = `
-                    <div class="friend-modal">
-                        <div class="friend-modal-header">
-                            <h3>Arkadaş Ekle</h3>
-                            <div class="friend-modal-close"><i class="fas fa-times"></i></div>
-                        </div>
-                        <div class="friend-modal-content">
-                            <p>Kullanıcı adı ve etiketini giriniz</p>
-                            <div class="friend-modal-input">
-                                <input type="text" placeholder="Kullanıcı#0000">
-                                <button>Arkadaşlık İsteği Gönder</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                const modalContainer = document.createElement('div');
-                modalContainer.className = 'modal-container';
-                modalContainer.innerHTML = modalHtml;
-                document.body.appendChild(modalContainer);
-
-                // Modal kapanma işlevi
-                const closeBtn = modalContainer.querySelector('.friend-modal-close');
-                closeBtn.addEventListener('click', function () {
-                    modalContainer.classList.add('closing');
-                    setTimeout(() => {
-                        modalContainer.remove();
-                    }, 300);
-                });
-
-                // Dışa tıklayınca kapanma
-                modalContainer.addEventListener('click', function (e) {
-                    if (e.target === this) {
-                        modalContainer.classList.add('closing');
-                        setTimeout(() => {
-                            modalContainer.remove();
-                        }, 300);
-                    }
-                });
-
-                // Modal CSS ekleme
-                const modalStyle = document.createElement('style');
-                modalStyle.textContent = `
-                    .modal-container {
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        background: rgba(0, 0, 0, 0.7);
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        z-index: 1000;
-                        animation: fadeIn 0.3s ease;
-                    }
-                    
-                    .modal-container.closing {
-                        animation: fadeOut 0.3s ease;
-                    }
-                    
-                    @keyframes fadeIn {
-                        from { opacity: 0; }
-                        to { opacity: 1; }
-                    }
-                    
-                    @keyframes fadeOut {
-                        from { opacity: 1; }
-                        to { opacity: 0; }
-                    }
-                    
-                    .friend-modal {
-                        background: #212842;
-                        border-radius: 8px;
-                        width: 450px;
-                        max-width: 90%;
-                        overflow: hidden;
-                        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-                        animation: scaleIn 0.3s ease;
-                    }
-                    
-                    @keyframes scaleIn {
-                        from { transform: scale(0.95); opacity: 0; }
-                        to { transform: scale(1); opacity: 1; }
-                    }
-                    
-                    .friend-modal-header {
-                        padding: 16px 20px;
-                        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                    }
-                    
-                    .friend-modal-header h3 {
-                        margin: 0;
-                        font-size: 18px;
-                        color: #fff;
-                    }
-                    
-                    .friend-modal-close {
-                        width: 30px;
-                        height: 30px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        cursor: pointer;
-                        border-radius: 50%;
-                        transition: background 0.2s;
-                    }
-                    
-                    .friend-modal-close:hover {
-                        background: rgba(255, 255, 255, 0.1);
-                    }
-                    
-                    .friend-modal-content {
-                        padding: 20px;
-                    }
-                    
-                    .friend-modal-content p {
-                        margin: 0 0 16px;
-                        font-size: 14px;
-                        color: rgba(255, 255, 255, 0.7);
-                    }
-                    
-                    .friend-modal-input {
-                        display: flex;
-                        gap: 12px;
-                    }
-                    
-                    .friend-modal-input input {
-                        flex: 1;
-                        background: rgba(30, 33, 50, 0.8);
-                        border: 1px solid rgba(87, 96, 235, 0.3);
-                        border-radius: 4px;
-                        padding: 10px 12px;
-                        color: #fff;
-                        font-size: 14px;
-                        outline: none;
-                    }
-                    
-                    .friend-modal-input input:focus {
-                        border-color: #5865f2;
-                    }
-                    
-                    .friend-modal-input button {
-                        background: #5865f2;
-                        color: #fff;
-                        border: none;
-                        border-radius: 4px;
-                        padding: 0 16px;
-                        font-size: 14px;
-                        font-weight: 500;
-                        cursor: pointer;
-                        transition: background 0.2s;
-                    }
-                    
-                    .friend-modal-input button:hover {
-                        background: #4752c4;
-                    }
-                `;
-                document.head.appendChild(modalStyle);
-
-                // Arkadaşlık isteği gönderme işlevi
-                const sendBtn = modalContainer.querySelector('.friend-modal-input button');
-                const userInput = modalContainer.querySelector('.friend-modal-input input');
-
-                sendBtn.addEventListener('click', function () {
-                    const username = userInput.value.trim();
-                    if (username) {
-                        showNotification(`${username} kullanıcısına arkadaşlık isteği gönderildi.`, 'success');
-                        modalContainer.classList.add('closing');
-                        setTimeout(() => {
-                            modalContainer.remove();
-                        }, 300);
-                    } else {
-                        showNotification('Lütfen geçerli bir kullanıcı adı girin.', 'error');
-                    }
-                });
-
-                // Enter tuşu ile gönderme
-                userInput.addEventListener('keydown', function (e) {
-                    if (e.key === 'Enter') {
-                        sendBtn.click();
-                    }
-                });
-            }, 300);
-        });
-    }
 }); 
