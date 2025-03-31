@@ -186,6 +186,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Ayarlar butonuna tıklandığında settings.html sayfasına yönlendirme
+    const settingsButton = document.querySelector('.server-settings-icon').parentElement;
+    if (settingsButton) {
+        settingsButton.addEventListener('click', function () {
+            showNotification('Ayarlar sayfasına yönlendiriliyorsunuz...', 'info');
+            setTimeout(() => {
+                window.location.href = 'settings.html';
+            }, 1000);
+        });
+    }
+
     // Bildirim gösterme fonksiyonu
     function showNotification(message, type = 'info') {
         const notification = document.createElement('div');

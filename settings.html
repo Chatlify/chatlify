@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatlify - Ayarlar</title>
+    <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="css/bg-animation.css">
+    <script src="js/main.js" defer></script>
+    <script src="js/dashboard.js" defer></script>
+    <script src="js/settings.js" defer></script>
+</head>
+
+<body class="settings-page">
+    <!-- Animasyonlu Arkaplan -->
+    <div class="bg-animation">
+        <div class="stars"></div>
+        <div class="twinkling"></div>
+        <div class="clouds"></div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Sunucu Kenar Çubuğu -->
+        <div class="server-sidebar">
+            <div class="server-sidebar-inner">
+                <div class="server-item">
+                    <div class="server-icon">
+                        <!-- Chatlify Logo -->
+                        <svg width="28" height="28" viewBox="0 0 48 48" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M24 4L7 14V34L24 44L41 34V14L24 4Z" fill="url(#paint0_linear)" />
+                            <path d="M24 24L7 14L24 4L41 14L24 24Z" fill="url(#paint1_linear)" />
+                            <path d="M24 44L24 24L41 14V34L24 44Z" fill="url(#paint2_linear)" />
+                            <path d="M24 44L24 24L7 14V34L24 44Z" fill="url(#paint3_linear)" />
+                            <text x="17" y="25" fill="white" font-family="Arial" font-size="12"
+                                font-weight="bold">C</text>
+                            <defs>
+                                <linearGradient id="paint0_linear" x1="24" y1="4" x2="24" y2="44"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#5f75fc" />
+                                    <stop offset="1" stop-color="#6741D9" />
+                                </linearGradient>
+                                <linearGradient id="paint1_linear" x1="24" y1="4" x2="24" y2="24"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#7289da" />
+                                    <stop offset="1" stop-color="#5f75fc" />
+                                </linearGradient>
+                                <linearGradient id="paint2_linear" x1="32.5" y1="19" x2="32.5" y2="44"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#5865F2" />
+                                    <stop offset="1" stop-color="#5546D3" />
+                                </linearGradient>
+                                <linearGradient id="paint3_linear" x1="15.5" y1="19" x2="15.5" y2="44"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#5865F2" />
+                                    <stop offset="1" stop-color="#5546D3" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="server-tooltip">Chatlify</div>
+                </div>
+
+                <div class="server-divider"></div>
+
+                <div class="server-item">
+                    <div class="server-icon">
+                        <img src="https://via.placeholder.com/100/0672ac/ffffff?text=G" alt="Gamir">
+                    </div>
+                    <div class="server-pill"></div>
+                    <div class="server-tooltip">Gamir</div>
+                </div>
+
+                <div class="server-item">
+                    <div class="server-icon">
+                        <img src="https://via.placeholder.com/100/5a2d82/ffffff?text=C" alt="Code">
+                    </div>
+                    <div class="server-pill"></div>
+                    <div class="server-tooltip">Code</div>
+                </div>
+
+                <div class="server-item">
+                    <div class="server-icon">
+                        <img src="https://via.placeholder.com/100/2d825e/ffffff?text=M" alt="Machi">
+                    </div>
+                    <div class="server-pill"></div>
+                    <div class="server-tooltip">Machi</div>
+                </div>
+
+                <div class="server-divider"></div>
+
+                <div class="server-item">
+                    <div class="server-add-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="server-tooltip">Sunucu Ekle</div>
+                </div>
+
+                <div class="server-item active">
+                    <div class="server-settings-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="server-tooltip">Ayarlar</div>
+                </div>
+
+                <div class="server-item">
+                    <div class="server-back-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="server-tooltip">Ana Sayfa</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ayarlar Menüsü -->
+        <div class="settings-menu">
+            <div class="settings-header">
+                <div class="settings-header-title">
+                    Kullanıcı Ayarları
+                </div>
+                <div class="settings-close-btn">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+
+            <div class="settings-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Ayarlarda Ara">
+            </div>
+
+            <div class="settings-categories">
+                <div class="settings-category active">
+                    <i class="fas fa-user"></i>
+                    <span>Hesabım</span>
+                </div>
+                <div class="settings-category">
+                    <i class="fas fa-palette"></i>
+                    <span>Görünüm</span>
+                </div>
+                <div class="settings-category">
+                    <i class="fas fa-bell"></i>
+                    <span>Bildirimler</span>
+                </div>
+                <div class="settings-category">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Gizlilik & Güvenlik</span>
+                </div>
+                <div class="settings-category">
+                    <i class="fas fa-volume-up"></i>
+                    <span>Ses & Video</span>
+                </div>
+                <div class="settings-category">
+                    <i class="fas fa-keyboard"></i>
+                    <span>Klavye Kısayolları</span>
+                </div>
+                <div class="settings-category">
+                    <i class="fas fa-language"></i>
+                    <span>Dil & Bölge</span>
+                </div>
+                <div class="settings-category">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Cihazlar</span>
+                </div>
+                <div class="settings-category">
+                    <i class="fas fa-code"></i>
+                    <span>Geliştirici</span>
+                </div>
+
+                <div class="settings-divider"></div>
+
+                <div class="settings-category danger">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Çıkış Yap</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ana İçerik Alanı -->
+        <div class="settings-content">
+            <div class="settings-section" id="account-settings">
+                <div class="settings-section-header">
+                    <h2>Hesabım</h2>
+                    <p>Profil bilgilerinizi ve hesap ayarlarınızı yönetin</p>
+                </div>
+
+                <div class="settings-profile-card">
+                    <div class="profile-banner">
+                        <div class="banner-overlay">
+                            <button class="banner-change-btn"><i class="fas fa-camera"></i> Banner Değiştir</button>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-avatar">
+                            <img src="https://via.placeholder.com/200/3498db/ffffff?text=U" alt="Kullanıcı">
+                            <div class="avatar-overlay">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                        </div>
+                        <div class="profile-details">
+                            <h3>KullaniciAdi</h3>
+                            <div class="profile-status online">
+                                <i class="fas fa-circle"></i> Çevrimiçi
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-form">
+                    <div class="settings-form-group">
+                        <label for="username">Kullanıcı Adı</label>
+                        <input type="text" id="username" value="KullaniciAdi">
+                    </div>
+                    <div class="settings-form-group">
+                        <label for="email">E-posta</label>
+                        <input type="email" id="email" value="kullanici@email.com">
+                    </div>
+                    <div class="settings-form-group">
+                        <label for="phone">Telefon</label>
+                        <input type="tel" id="phone" value="+90 555 123 4567">
+                    </div>
+                    <div class="settings-form-group">
+                        <label for="bio">Hakkımda</label>
+                        <textarea id="bio" rows="3"
+                            placeholder="Kendiniz hakkında bilgi verin...">Chatlify kullanıcısı! Yazılım ve teknoloji ile ilgileniyorum.</textarea>
+                    </div>
+
+                    <div class="settings-form-heading">
+                        <h3>Şifre ve Doğrulama</h3>
+                    </div>
+
+                    <div class="settings-form-group">
+                        <label for="current-password">Mevcut Şifre</label>
+                        <input type="password" id="current-password" placeholder="••••••••">
+                    </div>
+                    <div class="settings-form-group">
+                        <label for="new-password">Yeni Şifre</label>
+                        <input type="password" id="new-password" placeholder="••••••••">
+                    </div>
+                    <div class="settings-form-group">
+                        <label for="confirm-password">Şifreyi Tekrarla</label>
+                        <input type="password" id="confirm-password" placeholder="••••••••">
+                    </div>
+
+                    <div class="settings-form-heading">
+                        <h3>İki Faktörlü Doğrulama</h3>
+                    </div>
+
+                    <div class="settings-toggle-group">
+                        <div class="toggle-label">
+                            <div class="toggle-title">İki Faktörlü Doğrulama</div>
+                            <div class="toggle-description">Hesabınıza giriş yaparken ekstra güvenlik katmanı ekler
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="settings-form-heading">
+                        <h3>Hesap Yönetimi</h3>
+                    </div>
+
+                    <div class="settings-danger-zone">
+                        <div class="danger-action">
+                            <div class="danger-info">
+                                <div class="danger-title">Hesabı Devre Dışı Bırak</div>
+                                <div class="danger-description">Hesabınız geçici olarak devre dışı bırakılır ve yeniden
+                                    giriş yapana kadar tüm mesajlarınız gizlenir.</div>
+                            </div>
+                            <button class="danger-button">Devre Dışı Bırak</button>
+                        </div>
+
+                        <div class="danger-action">
+                            <div class="danger-info">
+                                <div class="danger-title">Hesabı Sil</div>
+                                <div class="danger-description">Hesabınız ve tüm verileriniz kalıcı olarak silinecektir.
+                                    Bu işlem geri alınamaz.</div>
+                            </div>
+                            <button class="danger-button">Hesabı Sil</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-form-actions">
+                        <button class="cancel-button">İptal</button>
+                        <button class="save-button">Değişiklikleri Kaydet</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section hidden" id="appearance-settings">
+                <div class="settings-section-header">
+                    <h2>Görünüm</h2>
+                    <p>Tema, renk ve görünüm tercihlerinizi özelleştirin</p>
+                </div>
+
+                <div class="theme-options">
+                    <div class="theme-option-group">
+                        <h3>Tema</h3>
+                        <div class="theme-selector">
+                            <div class="theme-card active">
+                                <div class="theme-preview dark">
+                                    <div class="preview-header"></div>
+                                    <div class="preview-content">
+                                        <div class="preview-sidebar"></div>
+                                        <div class="preview-main"></div>
+                                    </div>
+                                </div>
+                                <div class="theme-name">Koyu</div>
+                            </div>
+                            <div class="theme-card">
+                                <div class="theme-preview light">
+                                    <div class="preview-header"></div>
+                                    <div class="preview-content">
+                                        <div class="preview-sidebar"></div>
+                                        <div class="preview-main"></div>
+                                    </div>
+                                </div>
+                                <div class="theme-name">Açık</div>
+                            </div>
+                            <div class="theme-card">
+                                <div class="theme-preview custom">
+                                    <div class="preview-header"></div>
+                                    <div class="preview-content">
+                                        <div class="preview-sidebar"></div>
+                                        <div class="preview-main"></div>
+                                    </div>
+                                </div>
+                                <div class="theme-name">Özel</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="appearance-option-group">
+                        <h3>Renk Şeması</h3>
+                        <div class="color-selector">
+                            <div class="color-item active" style="--accent-color: #5f75fc;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="color-item" style="--accent-color: #ff4d4d;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="color-item" style="--accent-color: #4dff7f;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="color-item" style="--accent-color: #ff9f4d;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="color-item" style="--accent-color: #4dcaff;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="color-item" style="--accent-color: #d24dff;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="color-item custom">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="appearance-option-group">
+                        <h3>Yazı Tipi</h3>
+                        <select class="settings-select">
+                            <option selected>Poppins</option>
+                            <option>Roboto</option>
+                            <option>Open Sans</option>
+                            <option>Inter</option>
+                            <option>Montserrat</option>
+                        </select>
+                    </div>
+
+                    <div class="appearance-option-group">
+                        <h3>Yazı Boyutu</h3>
+                        <div class="font-size-slider">
+                            <span class="size-label small">A</span>
+                            <input type="range" min="12" max="18" value="14" class="slider" id="fontSizeSlider">
+                            <span class="size-label large">A</span>
+                        </div>
+                    </div>
+
+                    <div class="appearance-option-group">
+                        <h3>Animasyonlar</h3>
+                        <div class="settings-toggle-group">
+                            <div class="toggle-label">
+                                <div class="toggle-title">Animasyonları Etkinleştir</div>
+                                <div class="toggle-description">Sayfa geçişlerinde ve arayüzde animasyonlar gösterilir
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="appearance-option-group">
+                        <h3>Arka Plan Animasyonu</h3>
+                        <div class="settings-toggle-group">
+                            <div class="toggle-label">
+                                <div class="toggle-title">Yıldızlı Arka Plan</div>
+                                <div class="toggle-description">Sayfalarda animasyonlu arka planı gösterir</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-form-actions">
+                        <button class="cancel-button">İptal</button>
+                        <button class="save-button">Değişiklikleri Kaydet</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
