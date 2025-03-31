@@ -1016,7 +1016,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const rightClickableElements = [
             { selector: '.friend-item, .dm-item', type: 'friend' },
             { selector: '.friend-row', type: 'friend' },
-            { selector: '.server-item:not(.server-add):not(.server-settings)', type: 'server' }
+            { selector: '.server-item:not(.server-add):not(.server-settings):not(.server-shop)', type: 'server' }
         ];
 
         // Sağ tıklama menüsü seçenekleri
@@ -1240,7 +1240,160 @@ document.addEventListener('DOMContentLoaded', function () {
         // Menü işlemleri
         function viewProfile(data) {
             console.log(`${data.name} profilini görüntüle`);
-            // Profil görüntüleme kodu
+            // Profil görüntüleme paneli oluştur
+            createProfilePanel(data);
+        }
+
+        // Profil paneli oluşturma fonksiyonu
+        function createProfilePanel(userData) {
+            // Eğer zaten bir profil paneli varsa kaldır
+            const existingPanel = document.querySelector('.profile-panel');
+            if (existingPanel) {
+                existingPanel.remove();
+            }
+
+            // Profil paneli oluştur
+            const profilePanel = document.createElement('div');
+            profilePanel.className = 'profile-panel';
+
+            // Profil paneli içeriği
+            profilePanel.innerHTML = `
+                <div class="profile-panel-content">
+                    <div class="profile-panel-header">
+                        <div class="profile-header-left">
+                            <h3>Kullanıcı Profili</h3>
+                        </div>
+                        <div class="profile-header-right">
+                            <button class="profile-close-btn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="profile-panel-body">
+                        <div class="profile-banner">
+                            <div class="profile-avatar">
+                                <img src="${userData.avatar || 'images/avatar-default.png'}" alt="${userData.name}">
+                                <div class="profile-status-dot ${userData.status}"></div>
+                            </div>
+                        </div>
+                        <div class="profile-info">
+                            <div class="profile-name-container">
+                                <h2 class="profile-name">${userData.name}</h2>
+                                <span class="profile-tag">#${Math.floor(1000 + Math.random() * 9000)}</span>
+                            </div>
+                            <div class="profile-status-message">
+                                <i class="fas fa-circle-notch ${userData.status}"></i>
+                                <span>${getStatusText(userData.status)}</span>
+                            </div>
+                            <div class="profile-divider"></div>
+                            <div class="profile-section">
+                                <h4>Chatlify Üyeliği</h4>
+                                <div class="profile-member-since">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>Üyelik Tarihi: ${getRandomDate()}</span>
+                                </div>
+                            </div>
+                            <div class="profile-divider"></div>
+                            <div class="profile-section">
+                                <h4>Not</h4>
+                                <div class="profile-note">
+                                    <textarea placeholder="Bu kullanıcı hakkında not ekle..."></textarea>
+                                </div>
+                            </div>
+                            <div class="profile-actions">
+                                <button class="profile-action-btn message-btn">
+                                    <i class="fas fa-comment"></i>
+                                    <span>Mesaj</span>
+                                </button>
+                                <button class="profile-action-btn block-btn">
+                                    <i class="fas fa-ban"></i>
+                                    <span>Engelle</span>
+                                </button>
+                                <button class="profile-action-btn remove-btn">
+                                    <i class="fas fa-user-times"></i>
+                                    <span>Arkadaşlıktan Çıkar</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Profil panelini sayfaya ekle
+            document.body.appendChild(profilePanel);
+
+            // Panel görünürlük animasyonu
+            setTimeout(() => {
+                profilePanel.classList.add('show');
+            }, 10);
+
+            // Paneli kapatma işlevi
+            const closeBtn = profilePanel.querySelector('.profile-close-btn');
+            closeBtn.addEventListener('click', () => {
+                profilePanel.classList.remove('show');
+                setTimeout(() => {
+                    profilePanel.remove();
+                }, 300);
+            });
+
+            // Dışarı tıklayınca paneli kapat
+            profilePanel.addEventListener('click', (e) => {
+                if (e.target === profilePanel) {
+                    closeBtn.click();
+                }
+            });
+
+            // Profil butonları işlevleri
+            const messageBtn = profilePanel.querySelector('.message-btn');
+            messageBtn.addEventListener('click', () => {
+                console.log(`${userData.name} ile mesajlaşma başlatılıyor...`);
+                closeBtn.click();
+                // Burada mesajlaşma başlatma kodlarını ekleyebilirsiniz
+            });
+
+            const blockBtn = profilePanel.querySelector('.block-btn');
+            blockBtn.addEventListener('click', () => {
+                console.log(`${userData.name} engellendi`);
+                closeBtn.click();
+                // Burada engelleme kodlarını ekleyebilirsiniz
+            });
+
+            const removeBtn = profilePanel.querySelector('.remove-btn');
+            removeBtn.addEventListener('click', () => {
+                console.log(`${userData.name} arkadaşlıktan çıkarıldı`);
+                closeBtn.click();
+                // Burada arkadaşlıktan çıkarma kodlarını ekleyebilirsiniz
+            });
+        }
+
+        // Status metni al
+        function getStatusText(status) {
+            switch (status) {
+                case 'online':
+                    return 'Çevrimiçi';
+                case 'idle':
+                    return 'Boşta';
+                case 'dnd':
+                    return 'Rahatsız Etmeyin';
+                case 'offline':
+                default:
+                    return 'Çevrimdışı';
+            }
+        }
+
+        // Rastgele tarih üret (1-3 yıl arası)
+        function getRandomDate() {
+            const today = new Date();
+            const yearsAgo = Math.floor(Math.random() * 3) + 1;
+            const randomDate = new Date(today.getFullYear() - yearsAgo,
+                Math.floor(Math.random() * 12),
+                Math.floor(Math.random() * 28) + 1);
+
+            return randomDate.toLocaleDateString('tr-TR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
         }
 
         function sendMessageToFriend(data) {
