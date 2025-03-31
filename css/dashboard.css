@@ -748,24 +748,50 @@
 }
 
 .main-tab {
-    position: relative;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-weight: 500;
-    font-size: 14px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    font-weight: 600;
+    font-size: 15px;
     color: var(--text-secondary);
-    transition: all 0.2s ease;
     border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 8px;
 }
 
 .main-tab:hover {
+    background-color: rgba(255, 255, 255, 0.05);
     color: var(--text-color);
-    background-color: var(--item-hover);
 }
 
 .main-tab.active {
-    color: var(--text-color);
+    background-color: rgba(95, 117, 252, 0.15);
+    color: var(--primary-color);
+}
+
+/* Daha modern ve belirgin Arkadaş Ekle butonu */
+.add-friend-tab {
     background: var(--gradient-primary);
+    color: white !important;
+    font-weight: 600;
+    padding: 0 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(95, 117, 252, 0.3);
+    transition: all 0.3s ease;
+}
+
+.add-friend-tab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(95, 117, 252, 0.4);
+    background: linear-gradient(135deg, #6a5af9, #9d6ff9);
+    color: white !important;
+}
+
+.add-friend-tab i {
+    margin-right: 6px;
 }
 
 .main-container {
