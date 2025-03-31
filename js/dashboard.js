@@ -927,6 +927,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             chatPanel.classList.remove('hidden');
 
+            // Sponsor sunucular kısmını gizle
+            const sponsorSidebar = document.querySelector('.sponsor-sidebar');
+            if (sponsorSidebar) {
+                sponsorSidebar.style.display = 'none';
+            }
+
             // Mesajları en sona kaydır
             if (chatMessages) {
                 chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -942,6 +948,12 @@ document.addEventListener('DOMContentLoaded', function () {
             chatPanel.classList.add('hidden');
             if (friendsPanel) {
                 friendsPanel.classList.remove('hidden');
+            }
+
+            // Sponsor sunucular kısmını tekrar göster
+            const sponsorSidebar = document.querySelector('.sponsor-sidebar');
+            if (sponsorSidebar) {
+                sponsorSidebar.style.display = '';
             }
         }
 
