@@ -1278,8 +1278,14 @@
 
 .friend-actions {
     display: flex;
-    justify-content: center;
-    margin-top: 12px;
+    gap: 8px;
+    margin-left: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.friend-row:hover .friend-actions {
+    opacity: 1;
 }
 
 .friend-action {
@@ -2237,7 +2243,7 @@
     gap: 8px;
     margin-left: 8px;
     opacity: 0;
-    transition: opacity 0.15s ease;
+    transition: opacity 0.2s ease;
 }
 
 .friend-row:hover .friend-actions {
@@ -3626,4 +3632,27 @@
         padding: 8px 12px;
         font-size: 13px;
     }
+}
+
+/* Profil butonu için stil */
+.profile-btn:hover {
+    color: #fff;
+    background-color: #7289da;
+}
+
+/* Media query'lerdeki opacity düzeltmeleri */
+@media (max-width: 768px) {
+    .friend-actions {
+        opacity: 0;
+        /* Mobilde de gizli başlasın */
+    }
+
+    .friend-row:hover .friend-actions {
+        opacity: 1;
+    }
+}
+
+/* Filtre bölümünü kaldırdığımız için ilgili stili siliyoruz */
+.friends-status-filter {
+    display: none;
 }

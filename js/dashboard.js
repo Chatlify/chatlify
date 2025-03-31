@@ -651,554 +651,46 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Tab işlevselliği
-    const tabs = document.querySelectorAll('.tab');
-
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function () {
-            // Aktif tab'ı güncelle
-            document.querySelector('.tab.active').classList.remove('active');
-            this.classList.add('active');
-
-            // Tab içeriğini güncelle (gerçek bir uygulamada)
-            // Örneğin: Çevrimiçi/Tüm Arkadaşlar/Bekleyen vb.
-        });
-    });
-
-    // Çevrimdışı arkadaşlara mesaj gönderme işlevselliği
-    document.querySelectorAll('.offline-friends-title + .friends-list .friend-action.message').forEach(button => {
-        button.addEventListener('click', function () {
-            // Mesaj gönderme işlemi burada gerçekleştirilecek
-            // Bildirim kaldırıldı
-        });
-    });
-
-    // Sesli arama butonu işlevi 
-    const voiceButtons = document.querySelectorAll('.voice-btn');
-    voiceButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            // Sesli arama işlemi burada gerçekleştirilecek
-            const friendCard = this.closest('.friend-card');
-            if (friendCard) {
-                const friendName = friendCard.querySelector('.friend-card-name')?.textContent || 'Arkadaş';
-                console.log(`${friendName} kişisi aranıyor...`);
-
-                // Animasyon efekti
-                this.classList.add('clicked');
-                setTimeout(() => {
-                    this.classList.remove('clicked');
-                }, 300);
-            }
-        });
-    });
-
-    // Diğer (more) butonu işlevi 
-    const moreButtons = document.querySelectorAll('.more-btn');
-    moreButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            // Burada dropdown menü veya ek işlemler uygulanabilir
-            console.log('Diğer işlemler menüsü');
-
-            // Dropdown menü oluşturmak için örnek
-            const friendCard = this.closest('.friend-card');
-            if (friendCard) {
-                // Eğer zaten bir dropdown varsa kaldır
-                const existingDropdown = document.querySelector('.friend-dropdown');
-                if (existingDropdown) {
-                    existingDropdown.remove();
-                    return;
-                }
-
-                const friendName = friendCard.querySelector('.friend-card-name')?.textContent || 'Arkadaş';
-
-                const dropdown = document.createElement('div');
-                dropdown.className = 'friend-dropdown';
-                dropdown.innerHTML = `
-                    <div class="dropdown-item"><i class="fas fa-user-plus"></i> Favorilere Ekle</div>
-                    <div class="dropdown-item"><i class="fas fa-user-minus"></i> Arkadaşlıktan Çıkar</div>
-                    <div class="dropdown-item"><i class="fas fa-ban"></i> Engelle</div>
-                `;
-
-                // Dropdown'u konumlandır
-                const rect = this.getBoundingClientRect();
-                dropdown.style.position = 'absolute';
-                dropdown.style.top = `${rect.bottom + 5}px`;
-                dropdown.style.right = `${window.innerWidth - rect.right}px`;
-                dropdown.style.zIndex = '9999';
-
-                document.body.appendChild(dropdown);
-
-                // Dropdown dışına tıklandığında kapat
-                document.addEventListener('click', function closeDropdown(e) {
-                    if (!dropdown.contains(e.target) && e.target !== button) {
-                        dropdown.remove();
-                        document.removeEventListener('click', closeDropdown);
-                    }
-                });
-
-                // Dropdown stil ekle
-                const dropdownStyle = document.createElement('style');
-                dropdownStyle.textContent = `
-                    .friend-dropdown {
-                        background: rgba(15, 19, 34, 0.95);
-                        border: 1px solid rgba(255, 255, 255, 0.1);
-                        border-radius: 8px;
-                        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-                        width: 200px;
-                        overflow: hidden;
-                        animation: fadeScale 0.2s ease forwards;
-                    }
-                    
-                    .dropdown-item {
-                        padding: 12px 16px;
-                        color: var(--text-secondary);
-                        font-size: 14px;
-                        cursor: pointer;
-                        transition: all 0.2s ease;
-                        display: flex;
-                        align-items: center;
-                        gap: 10px;
-                    }
-                    
-                    .dropdown-item:hover {
-                        background: rgba(255, 255, 255, 0.05);
-                        color: var(--text-color);
-                    }
-                    
-                    .dropdown-item:last-child {
-                        color: var(--danger-color);
-                    }
-                    
-                    .dropdown-item:last-child:hover {
-                        background: rgba(255, 82, 82, 0.1);
-                    }
-                `;
-                document.head.appendChild(dropdownStyle);
-            }
-        });
-    });
-
-    // Arkadaş bölümlerini genişletme/daraltma
-    const sectionControls = document.querySelectorAll('.section-control');
-    sectionControls.forEach(control => {
-        control.addEventListener('click', function () {
-            const section = this.closest('.friends-section');
-            if (section) {
-                section.classList.toggle('collapsed');
-
-                // İkon animasyonu
-                const icon = this.querySelector('i');
-                if (section.classList.contains('collapsed')) {
-                    icon.style.transform = 'rotate(-90deg)';
-                } else {
-                    icon.style.transform = 'rotate(0deg)';
-                }
-            }
-        });
-    });
-
-    // Filtre işlevselliği
-    const filterItems = document.querySelectorAll('.filter-item');
-    filterItems.forEach(item => {
-        item.addEventListener('click', function () {
-            // Aktif filtreyi güncelle
-            document.querySelector('.filter-item.active').classList.remove('active');
-            this.classList.add('active');
-
-            const filter = this.getAttribute('data-filter');
-            const friendCards = document.querySelectorAll('.friend-card');
-
-            if (filter === 'all') {
-                // Tüm sekmeleri göster
-                document.querySelector('.online-section').style.display = 'block';
-                document.querySelector('.offline-section').style.display = 'block';
-            } else if (filter === 'online') {
-                // Sadece çevrimiçi olanları göster
-                document.querySelector('.online-section').style.display = 'block';
-                document.querySelector('.offline-section').style.display = 'none';
-            } else if (filter === 'offline') {
-                // Sadece çevrimdışı olanları göster
-                document.querySelector('.online-section').style.display = 'none';
-                document.querySelector('.offline-section').style.display = 'block';
-            }
-        });
-    });
-
-    // Arkadaş arama işlevi
-    const friendsSearch = document.querySelector('.friends-search');
-    if (friendsSearch) {
-        friendsSearch.addEventListener('input', function () {
-            const searchTerm = this.value.toLowerCase().trim();
-            const friendCards = document.querySelectorAll('.friend-card');
-
-            friendCards.forEach(card => {
-                const friendName = card.querySelector('.friend-card-name').textContent.toLowerCase();
-                const friendActivity = card.querySelector('.friend-card-activity').textContent.toLowerCase();
-
-                if (friendName.includes(searchTerm) || friendActivity.includes(searchTerm)) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            // Boş bölümleri gizle
-            const sections = document.querySelectorAll('.friends-section');
-            sections.forEach(section => {
-                const visibleCards = section.querySelectorAll('.friend-card[style="display: flex;"]');
-                if (visibleCards.length === 0) {
-                    section.style.display = 'none';
-                } else {
-                    section.style.display = 'block';
-                }
-            });
-
-            // Arama sonucuna göre sayaçları güncelle
-            updateFriendCounters();
-        });
-    }
-
-    // Arkadaş sayaçlarını güncelle
-    function updateFriendCounters() {
-        const onlineSection = document.querySelector('.online-section');
-        const offlineSection = document.querySelector('.offline-section');
-
-        if (onlineSection) {
-            const visibleOnlineFriends = onlineSection.querySelectorAll('.friend-card[style="display: flex;"]');
-            const onlineCounter = onlineSection.querySelector('.friend-count');
-            if (onlineCounter) {
-                onlineCounter.textContent = visibleOnlineFriends.length;
-            }
-        }
-
-        if (offlineSection) {
-            const visibleOfflineFriends = offlineSection.querySelectorAll('.friend-card[style="display: flex;"]');
-            const offlineCounter = offlineSection.querySelector('.friend-count');
-            if (offlineCounter) {
-                offlineCounter.textContent = visibleOfflineFriends.length;
-            }
-        }
-    }
-
-    // Arkadaş satırında hover durumunda butonların gösterilmesi
-    const friendRows = document.querySelectorAll('.friend-row');
-    friendRows.forEach(row => {
-        // Mobil cihazlar için dokunma olayına uygun hale getirme
-        row.addEventListener('touchstart', function () {
-            this.classList.add('touch-hover');
-        });
-
-        row.addEventListener('touchend', function () {
-            setTimeout(() => {
-                this.classList.remove('touch-hover');
-            }, 500);
-        });
-    });
-
-    // Modern arkadaşlar paneli için işlevler
-    initializeModernFriendsPanel();
-
-    function initializeModernFriendsPanel() {
-        // Arama işlevi
-        const friendsSearch = document.querySelector('.friends-search');
-        const searchButton = document.querySelector('.search-button');
-
-        if (friendsSearch) {
-            friendsSearch.addEventListener('input', function () {
-                filterFriends(this.value.trim().toLowerCase());
-            });
-
-            friendsSearch.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter') {
-                    filterFriends(this.value.trim().toLowerCase());
-                    e.preventDefault();
-                }
-            });
-        }
-
-        if (searchButton) {
-            searchButton.addEventListener('click', function () {
-                const searchTerm = friendsSearch.value.trim().toLowerCase();
-                filterFriends(searchTerm);
-            });
-        }
-
-        // Filtreleme işlevi
-        const filterOptions = document.querySelectorAll('.filter-option input');
-        filterOptions.forEach(option => {
-            option.addEventListener('change', function () {
-                if (this.checked) {
-                    filterFriendsByStatus(this.value);
-                }
-            });
-        });
-
-        // Mesaj butonu işlevi
-        const messageButtons = document.querySelectorAll('.action-button.message');
-        messageButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const friendItem = this.closest('.friend-item');
-                if (friendItem) {
-                    const friendName = friendItem.querySelector('.friend-name').textContent;
-                    console.log(`${friendName} kişisine mesaj gönderiliyor...`);
-
-                    // Tıklama animasyonu
-                    this.classList.add('clicked');
-                    setTimeout(() => {
-                        this.classList.remove('clicked');
-                    }, 300);
-                }
-            });
-        });
-
-        // Arama butonu işlevi
-        const callButtons = document.querySelectorAll('.action-button.call');
-        callButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const friendItem = this.closest('.friend-item');
-                if (friendItem) {
-                    const friendName = friendItem.querySelector('.friend-name').textContent;
-                    console.log(`${friendName} kişisi aranıyor...`);
-
-                    // Tıklama animasyonu
-                    this.classList.add('clicked');
-                    setTimeout(() => {
-                        this.classList.remove('clicked');
-                    }, 300);
-                }
-            });
-        });
-
-        // Daha fazla butonu işlevi
-        const moreButtons = document.querySelectorAll('.action-button.more');
-        moreButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const friendItem = this.closest('.friend-item');
-                if (friendItem) {
-                    const friendName = friendItem.querySelector('.friend-name').textContent;
-
-                    // Mevcut herhangi bir açık dropdownı kapat
-                    const existingDropdown = document.querySelector('.friend-dropdown');
-                    if (existingDropdown) {
-                        existingDropdown.remove();
-                        // Eğer aynı butonun dropdownıydıysa sadece kapat ve çık
-                        if (existingDropdown.dataset.owner === this.dataset.owner) {
-                            return;
-                        }
-                    }
-
-                    // Bu butona benzersiz bir kimlik atayın (eğer yoksa)
-                    if (!this.dataset.owner) {
-                        this.dataset.owner = `dropdown-${Date.now()}`;
-                    }
-
-                    // Dropdown oluştur
-                    const dropdown = document.createElement('div');
-                    dropdown.className = 'friend-dropdown';
-                    dropdown.dataset.owner = this.dataset.owner;
-
-                    // Dropdown içeriğini duruma göre ayarla
-                    const isOnline = friendItem.classList.contains('online') || friendItem.classList.contains('idle') || friendItem.classList.contains('dnd');
-
-                    dropdown.innerHTML = `
-                        <div class="dropdown-item"><i class="fas fa-user-plus"></i> Favorilere Ekle</div>
-                        <div class="dropdown-item"><i class="fas fa-user-tag"></i> Not Ekle</div>
-                        <div class="dropdown-item"><i class="fas fa-share"></i> Profili Paylaş</div>
-                        <div class="dropdown-divider"></div>
-                        <div class="dropdown-item"><i class="fas fa-user-minus"></i> Arkadaşlıktan Çıkar</div>
-                        <div class="dropdown-item danger"><i class="fas fa-ban"></i> Engelle</div>
-                    `;
-
-                    document.body.appendChild(dropdown);
-
-                    // Dropdown konumlandırma
-                    const buttonRect = this.getBoundingClientRect();
-                    dropdown.style.position = 'fixed';
-                    dropdown.style.top = `${buttonRect.bottom + 5}px`;
-                    dropdown.style.left = `${buttonRect.left - dropdown.offsetWidth + buttonRect.width}px`;
-                    dropdown.style.zIndex = '1000';
-
-                    // Dropdown stilleri
-                    const dropdownStyle = document.createElement('style');
-                    dropdownStyle.textContent = `
-                        .friend-dropdown {
-                            background: rgba(24, 29, 54, 0.95);
-                            backdrop-filter: blur(10px);
-                            border-radius: 10px;
-                            border: 1px solid rgba(255, 255, 255, 0.08);
-                            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-                            width: 200px;
-                            animation: scaleIn 0.2s ease forwards;
-                            transform-origin: top right;
-                            overflow: hidden;
-                        }
-                        
-                        @keyframes scaleIn {
-                            from {
-                                opacity: 0;
-                                transform: scale(0.9);
-                            }
-                            to {
-                                opacity: 1;
-                                transform: scale(1);
-                            }
-                        }
-                        
-                        .dropdown-item {
-                            padding: 12px 16px;
-                            display: flex;
-                            align-items: center;
-                            gap: 10px;
-                            color: var(--text-secondary);
-                            font-size: 14px;
-                            cursor: pointer;
-                            transition: all 0.2s ease;
-                        }
-                        
-                        .dropdown-item:hover {
-                            background: rgba(255, 255, 255, 0.05);
-                            color: var(--text-color);
-                        }
-                        
-                        .dropdown-item.danger {
-                            color: var(--danger-color);
-                        }
-                        
-                        .dropdown-item.danger:hover {
-                            background: rgba(231, 76, 60, 0.1);
-                        }
-                        
-                        .dropdown-item i {
-                            font-size: 14px;
-                            width: 16px;
-                            text-align: center;
-                        }
-                        
-                        .dropdown-divider {
-                            height: 1px;
-                            background: rgba(255, 255, 255, 0.05);
-                            margin: 5px 0;
-                        }
-                    `;
-                    document.head.appendChild(dropdownStyle);
-
-                    // Dropdown dışına tıklama ile kapatma
-                    function closeDropdown(e) {
-                        if (!dropdown.contains(e.target) && e.target !== button) {
-                            dropdown.remove();
-                            dropdownStyle.remove();
-                            document.removeEventListener('click', closeDropdown);
-                        }
-                    }
-
-                    // Kısa bir gecikme sonrası dinleyici ekle
-                    setTimeout(() => {
-                        document.addEventListener('click', closeDropdown);
-                    }, 10);
-
-                    // Dropdown öğelerinin tıklama işlevi
-                    dropdown.querySelectorAll('.dropdown-item').forEach(item => {
-                        item.addEventListener('click', function () {
-                            console.log(`${this.textContent.trim()} işlemi ${friendName} için gerçekleştiriliyor...`);
-                            dropdown.remove();
-                            dropdownStyle.remove();
-                            document.removeEventListener('click', closeDropdown);
-                        });
-                    });
-                }
-            });
-        });
-    }
-
-    // Arkadaşları arama ile filtreleme
-    function filterFriends(searchTerm) {
-        const friendItems = document.querySelectorAll('.friend-item');
-        let hasVisibleFriends = false;
-
-        friendItems.forEach(item => {
-            const friendName = item.querySelector('.friend-name').textContent.toLowerCase();
-            const friendStatus = item.querySelector('.friend-status').textContent.toLowerCase();
-
-            if (friendName.includes(searchTerm) || friendStatus.includes(searchTerm)) {
-                item.style.display = 'flex';
-                hasVisibleFriends = true;
-            } else {
-                item.style.display = 'none';
-            }
-        });
-
-        // Eğer hiç sonuç yoksa bilgi mesajı göster
-        const noResultsMsg = document.querySelector('.no-results-message');
-        if (!hasVisibleFriends) {
-            if (!noResultsMsg) {
-                const message = document.createElement('div');
-                message.className = 'no-results-message';
-                message.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-search"></i>
-                        <p>Aramanızla eşleşen arkadaş bulunamadı.</p>
-                        <button class="clear-search-btn">Aramayı Temizle</button>
-                    </div>
-                `;
-
-                document.querySelector('.friends-modern-list').appendChild(message);
-
-                // Temizleme butonu işlevi
-                message.querySelector('.clear-search-btn').addEventListener('click', function () {
-                    document.querySelector('.friends-search').value = '';
-                    filterFriends('');
-                });
-            }
-        } else if (noResultsMsg) {
-            noResultsMsg.remove();
-        }
-    }
-
-    // Arkadaşları duruma göre filtreleme
-    function filterFriendsByStatus(status) {
-        const friendItems = document.querySelectorAll('.friend-item');
-
-        friendItems.forEach(item => {
-            if (status === 'all') {
-                item.style.display = 'flex';
-            } else if (status === 'online') {
-                if (item.classList.contains('online') || item.classList.contains('idle') || item.classList.contains('dnd')) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            } else if (status === 'offline') {
-                if (item.classList.contains('offline')) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            }
-        });
-    }
-
-    // Yeni Arkadaşlar Paneli için işlevler
+    // Arkadaşlar paneli için işlevler
     initializeFriendsPanel();
 
     function initializeFriendsPanel() {
-        // Status filtrelerini işlevsel hale getirme
-        const statusFilters = document.querySelectorAll('.status-filter');
+        // Header tab'lerini işlevsel hale getirme
+        const tabs = document.querySelectorAll('.tab');
+        const onlineSection = document.querySelector('.online-section-title');
+        const offlineSection = document.querySelector('.offline-section-title');
         const onlineList = document.querySelector('.online-friends');
         const offlineList = document.querySelector('.offline-friends');
 
         // Sayaçları güncelleme
         updateFriendCounters();
 
-        statusFilters.forEach(filter => {
-            filter.addEventListener('click', function () {
-                // Aktif sınıfı kaldır ve bu filtreye ekle
-                statusFilters.forEach(f => f.classList.remove('active'));
+        // Tab'lere tıklama olayı ekle
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function () {
+                // Aktif sınıfı kaldır ve bu tab'e ekle
+                tabs.forEach(t => t.classList.remove('active'));
                 this.classList.add('active');
 
-                const filterType = this.getAttribute('data-filter');
+                // Tab içeriğine göre filtreleme yap
+                const tabText = this.textContent.trim().toLowerCase();
 
-                // Filtrelemeyi uygula
-                filterFriendsByStatus(filterType);
+                if (tabText.includes('tüm')) {
+                    // Tüm arkadaşlar
+                    onlineSection.style.display = 'flex';
+                    offlineSection.style.display = 'flex';
+                    onlineList.style.display = 'flex';
+                    offlineList.style.display = 'flex';
+                } else if (tabText.includes('çevrimiçi')) {
+                    // Sadece çevrimiçi arkadaşlar
+                    onlineSection.style.display = 'flex';
+                    offlineSection.style.display = 'none';
+                    onlineList.style.display = 'flex';
+                    offlineList.style.display = 'none';
+                } else if (tabText.includes('bekleyen')) {
+                    // Bekleyen istekler - şimdilik bir şey yapmıyoruz
+                    // Bu kısım gelecekte eklenecek bekleyen istekler için
+                }
             });
         });
 
@@ -1218,72 +710,63 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Duruma göre filtreleme
-        function filterFriendsByStatus(status) {
-            // Tüm arkadaşlar
-            if (status === 'all') {
-                onlineList.style.display = 'flex';
-                offlineList.style.display = 'flex';
-                document.querySelector('.online-section-title').style.display = 'flex';
-                document.querySelector('.offline-section-title').style.display = 'flex';
-            }
-            // Sadece çevrimiçi arkadaşlar
-            else if (status === 'online') {
-                onlineList.style.display = 'flex';
-                offlineList.style.display = 'none';
-                document.querySelector('.online-section-title').style.display = 'flex';
-                document.querySelector('.offline-section-title').style.display = 'none';
-            }
-            // Sadece çevrimdışı arkadaşlar
-            else if (status === 'offline') {
-                onlineList.style.display = 'none';
-                offlineList.style.display = 'flex';
-                document.querySelector('.online-section-title').style.display = 'none';
-                document.querySelector('.offline-section-title').style.display = 'flex';
-            }
+        // Butonlara işlevsellik ekle
+        addButtonFunctionality();
+
+        function addButtonFunctionality() {
+            // Mesaj butonları için işlevsellik
+            const messageButtons = document.querySelectorAll('.friend-action-btn.message-btn');
+            messageButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.stopPropagation(); // Ebeveyn tıklamayı engelle
+                    const friendRow = this.closest('.friend-row');
+                    const friendName = friendRow.querySelector('.friend-name').textContent;
+                    console.log(`${friendName} ile mesajlaşma başlatılıyor...`);
+                });
+            });
+
+            // Arama butonları için işlevsellik
+            const callButtons = document.querySelectorAll('.friend-action-btn.call-btn');
+            callButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.stopPropagation(); // Ebeveyn tıklamayı engelle
+                    const friendRow = this.closest('.friend-row');
+                    const friendName = friendRow.querySelector('.friend-name').textContent;
+                    console.log(`${friendName} aranıyor...`);
+                });
+            });
+
+            // Profil butonları için işlevsellik
+            const profileButtons = document.querySelectorAll('.friend-action-btn.profile-btn');
+            profileButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.stopPropagation(); // Ebeveyn tıklamayı engelle
+                    const friendRow = this.closest('.friend-row');
+                    const friendName = friendRow.querySelector('.friend-name').textContent;
+                    console.log(`${friendName} profili görüntüleniyor...`);
+                });
+            });
+
+            // Daha fazla butonları için işlevsellik
+            const moreButtons = document.querySelectorAll('.friend-action-btn.more-btn');
+            moreButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.stopPropagation(); // Ebeveyn tıklamayı engelle
+                    const friendRow = this.closest('.friend-row');
+                    const friendName = friendRow.querySelector('.friend-name').textContent;
+                    console.log(`${friendName} için daha fazla seçenek gösteriliyor...`);
+                });
+            });
+
+            // Arkadaş satırı tıklama işlevi
+            const friendRows = document.querySelectorAll('.friend-row');
+            friendRows.forEach(row => {
+                row.addEventListener('click', function () {
+                    const friendName = this.querySelector('.friend-name').textContent;
+                    console.log(`${friendName} ile sohbet açılıyor...`);
+                });
+            });
         }
-
-        // Mesaj butonları için işlevsellik
-        const messageButtons = document.querySelectorAll('.friend-action-btn.message-btn');
-        messageButtons.forEach(button => {
-            button.addEventListener('click', function (e) {
-                e.stopPropagation(); // Ebeveyn tıklamayı engelle
-                const friendRow = this.closest('.friend-row');
-                const friendName = friendRow.querySelector('.friend-name').textContent;
-                console.log(`${friendName} ile mesajlaşma başlatılıyor...`);
-            });
-        });
-
-        // Arama butonları için işlevsellik
-        const callButtons = document.querySelectorAll('.friend-action-btn.call-btn');
-        callButtons.forEach(button => {
-            button.addEventListener('click', function (e) {
-                e.stopPropagation(); // Ebeveyn tıklamayı engelle
-                const friendRow = this.closest('.friend-row');
-                const friendName = friendRow.querySelector('.friend-name').textContent;
-                console.log(`${friendName} aranıyor...`);
-            });
-        });
-
-        // Daha fazla butonları için işlevsellik
-        const moreButtons = document.querySelectorAll('.friend-action-btn.more-btn');
-        moreButtons.forEach(button => {
-            button.addEventListener('click', function (e) {
-                e.stopPropagation(); // Ebeveyn tıklamayı engelle
-                const friendRow = this.closest('.friend-row');
-                const friendName = friendRow.querySelector('.friend-name').textContent;
-                console.log(`${friendName} için daha fazla seçenek gösteriliyor...`);
-            });
-        });
-
-        // Arkadaş satırı tıklama işlevi
-        const friendRows = document.querySelectorAll('.friend-row');
-        friendRows.forEach(row => {
-            row.addEventListener('click', function () {
-                const friendName = this.querySelector('.friend-name').textContent;
-                console.log(`${friendName} ile sohbet açılıyor...`);
-            });
-        });
     }
 
     // Arama kutusu işlevi (Üst kısımdaki)
