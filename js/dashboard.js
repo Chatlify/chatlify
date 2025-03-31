@@ -286,4 +286,72 @@ document.addEventListener('DOMContentLoaded', function () {
     `;
 
     document.head.appendChild(notificationStyle);
+
+    // Arkadaş Ekle butonuna tıklama işlevi
+    const friendAddButton = document.querySelector('.friend-add-button');
+    if (friendAddButton) {
+        friendAddButton.addEventListener('click', function () {
+            showNotification('Arkadaş ekleme paneli açıldı', 'success');
+
+            // Bir modal açılabilir veya bir sayfaya yönlendirilebilir
+            // Şimdilik sadece bildirim gösterelim
+        });
+    }
+
+    // Arkadaş arama işlevi
+    const friendSearchForm = document.querySelector('.friend-search-form');
+    if (friendSearchForm) {
+        friendSearchForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const searchInput = this.querySelector('input');
+            const searchTerm = searchInput.value.trim();
+
+            if (searchTerm.length > 0) {
+                showNotification(`"${searchTerm}" için arama yapılıyor...`, 'info');
+                // Gerçek uygulamada burada bir API isteği yapılabilir
+            } else {
+                showNotification('Lütfen bir arama terimi girin', 'error');
+            }
+        });
+    }
+
+    // Arkadaş Ara butonuna tıklama
+    const friendSearchButton = document.querySelector('.friend-search-button');
+    if (friendSearchButton) {
+        friendSearchButton.addEventListener('click', function () {
+            const searchInput = document.querySelector('.friend-search-form input');
+            const searchTerm = searchInput.value.trim();
+
+            if (searchTerm.length > 0) {
+                showNotification(`"${searchTerm}" için arama yapılıyor...`, 'info');
+                // Gerçek uygulamada burada bir API isteği yapılabilir
+            } else {
+                showNotification('Lütfen bir arama terimi girin', 'error');
+            }
+        });
+    }
+
+    // Main Tabs işlevselliği
+    const mainTabs = document.querySelectorAll('.main-tab');
+    mainTabs.forEach(tab => {
+        tab.addEventListener('click', function () {
+            // Aktif tab'ı güncelle
+            document.querySelector('.main-tab.active').classList.remove('active');
+            this.classList.add('active');
+
+            const tabText = this.textContent.trim();
+            showNotification(`${tabText} sekmesi seçildi`, 'info');
+
+            // Tab içeriğini güncelle (gerçek bir uygulamada)
+            // Örneğin: Çevrimiçi/Tüm Arkadaşlar/Bekleyen vb.
+        });
+    });
+
+    // Çevrimdışı arkadaşlara mesaj gönderme işlevselliği
+    document.querySelectorAll('.offline-friends-title + .friends-list .friend-action.message').forEach(button => {
+        button.addEventListener('click', function () {
+            const friendName = this.closest('.friend-card').querySelector('.friend-name').textContent;
+            showNotification(`${friendName} şu anda çevrimdışı. Mesajınız iletilecek.`, 'info');
+        });
+    });
 }); 

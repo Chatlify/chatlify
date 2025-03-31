@@ -411,13 +411,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (outputVolume && outputVolumeValue) {
             outputVolume.addEventListener('input', function () {
-                outputVolumeValue.textContent = this.value + '%';
+                const value = this.value;
+                outputVolumeValue.textContent = value + '%';
+
+                // Ses seviyesine göre ikon değiştirme
+                const volumeIcon = this.previousElementSibling;
+                if (value == 0) {
+                    volumeIcon.className = 'fas fa-volume-mute';
+                } else if (value < 50) {
+                    volumeIcon.className = 'fas fa-volume-down';
+                } else {
+                    volumeIcon.className = 'fas fa-volume-up';
+                }
             });
         }
 
         if (inputVolume && inputVolumeValue) {
             inputVolume.addEventListener('input', function () {
-                inputVolumeValue.textContent = this.value + '%';
+                const value = this.value;
+                inputVolumeValue.textContent = value + '%';
+
+                // Mikrofon seviyesine göre ikon değiştirme
+                const micIcon = this.previousElementSibling;
+                if (value == 0) {
+                    micIcon.className = 'fas fa-microphone-slash';
+                } else if (value < 50) {
+                    micIcon.className = 'fas fa-microphone-alt-slash';
+                } else {
+                    micIcon.className = 'fas fa-microphone-alt';
+                }
             });
         }
 
