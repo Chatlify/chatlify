@@ -1,16 +1,5 @@
 // Settings page JavaScript
 document.addEventListener('DOMContentLoaded', function () {
-    // Ana sayfa butonunu işlevsel hale getirme
-    const homeButton = document.querySelector('.server-back-icon').parentElement;
-    if (homeButton) {
-        homeButton.addEventListener('click', function () {
-            showNotification('Ana sayfaya yönlendiriliyorsunuz...', 'info');
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1000);
-        });
-    }
-
     // Kapatma butonuna tıklama
     const closeButton = document.querySelector('.settings-close-btn');
     if (closeButton) {
@@ -38,14 +27,23 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelector('.settings-category.active').classList.remove('active');
             category.classList.add('active');
 
-            // İlgili bölümü göster
-            const categoryText = category.querySelector('span').textContent;
-
+            // Tüm bölümleri gizle
             settingsSections.forEach(section => {
                 section.classList.add('hidden');
             });
 
-            // Kategori adına göre bölüm eşleştirme
+            // Data-target özelliğine göre ilgili bölümü göster
+            const targetSection = category.getAttribute('data-target');
+            if (targetSection) {
+                const sectionElement = document.getElementById(targetSection);
+                if (sectionElement) {
+                    sectionElement.classList.remove('hidden');
+                    return;
+                }
+            }
+
+            // Kategori adına göre bölüm eşleştirme (data-target olmayan durumlar için)
+            const categoryText = category.querySelector('span').textContent;
             switch (categoryText) {
                 case 'Hesabım':
                     document.getElementById('account-settings').classList.remove('hidden');
@@ -53,9 +51,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 case 'Görünüm':
                     document.getElementById('appearance-settings').classList.remove('hidden');
                     break;
+                case 'Dil & Bölge':
+                    document.getElementById('language-region-settings').classList.remove('hidden');
+                    break;
                 default:
                     // Henüz oluşturulmamış bölümler için 
-                    // İleri versiyonda ilgili bölümler eklenebilir
                     showNotification(`${categoryText} ayarları yakında eklenecek`, 'warning');
                     document.getElementById('account-settings').classList.remove('hidden');
             }
