@@ -731,6 +731,7 @@
     background-color: var(--main-bg);
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     z-index: 2;
+    position: relative;
 }
 
 .main-title {
@@ -740,11 +741,14 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    min-width: 120px;
 }
 
 .main-tabs {
     display: flex;
-    margin-left: 30px;
+    margin-left: 20px;
+    flex: 1;
+    justify-content: center;
 }
 
 .main-tab {
@@ -1306,223 +1310,34 @@
 
 /* Arkadaş Ara Paneli */
 .friend-search-panel {
-    background: rgba(35, 39, 60, 0.8);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    animation: fadeInUp 0.5s ease;
-    border: 1px solid rgba(87, 96, 235, 0.2);
+    display: none;
 }
 
-.friend-search-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 15px;
-    color: #fff;
-    display: flex;
-    align-items: center;
-}
-
-.friend-search-title i {
-    color: #5e72e4;
-    margin-right: 10px;
-    font-size: 16px;
-}
-
-.friend-search-form {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.friend-search-form input {
-    flex: 1;
-    background: rgba(30, 33, 50, 0.8);
-    border: 1px solid rgba(87, 96, 235, 0.3);
-    border-radius: 8px;
-    padding: 12px 15px;
-    font-size: 14px;
-    color: #fff;
-    transition: all 0.3s ease;
-}
-
-.friend-search-form input:focus {
-    border-color: #5e72e4;
-    box-shadow: 0 0 0 2px rgba(94, 114, 228, 0.3);
-    outline: none;
-}
-
-.friend-search-button {
-    padding: 12px 20px;
-    background: linear-gradient(135deg, #5e72e4, #6741d9);
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.friend-search-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(94, 114, 228, 0.3);
-}
-
-.friend-search-button i {
-    font-size: 14px;
-}
-
-.friend-search-message {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 15px;
-    line-height: 1.5;
-}
-
-.friend-add-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #5e72e4, #825ee4);
-    border-radius: 10px;
-    padding: 14px 20px;
-    color: #fff;
-    font-weight: 600;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(94, 114, 228, 0.25);
-    border: none;
-    margin-top: 8px;
-    gap: 10px;
-    position: relative;
-    overflow: hidden;
-}
-
-.friend-add-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: 0.5s;
-}
-
-.friend-add-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 16px rgba(94, 114, 228, 0.4);
-}
-
-.friend-add-button:hover::before {
-    left: 100%;
-}
-
-.friend-add-button i {
-    font-size: 18px;
-}
-
-/* Yeni Arkadaş Aksiyonları Stilleri */
-.friend-actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.friend-action {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 15px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background-color: rgba(30, 33, 50, 0.6);
-    color: #fff;
-}
-
-.friend-action:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.friend-action.message {
-    background: linear-gradient(135deg, #5e72e4, #4756ca);
-}
-
-.friend-action.message:hover {
-    background: linear-gradient(135deg, #4756ca, #3b48a8);
-}
-
-.friend-action.accept {
-    background: linear-gradient(135deg, #2dce89, #1aae6f);
-}
-
-.friend-action.accept:hover {
-    background: linear-gradient(135deg, #1aae6f, #179b63);
-}
-
-.friend-action.decline {
-    background: linear-gradient(135deg, #f5365c, #d63051);
-}
-
-.friend-action.decline:hover {
-    background: linear-gradient(135deg, #d63051, #b02844);
-}
-
-.offline-friends-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.5);
-    margin: 20px 0 15px;
-    padding-left: 10px;
-    position: relative;
-}
-
-.offline-friends-title::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 16px;
-    background: linear-gradient(to bottom, #6c7293, #515575);
-    border-radius: 2px;
-}
-
-/* Başlık arama kutusu */
+/* Yeni başlık arama tasarımı */
 .header-search {
     display: flex;
     align-items: center;
     margin-left: auto;
-    padding-right: 15px;
+    position: relative;
+    width: 240px;
 }
 
 .search-container {
     display: flex;
     align-items: center;
     background: rgba(30, 33, 50, 0.7);
-    border-radius: 20px;
-    padding: 6px 15px;
+    border-radius: 8px;
+    padding: 6px 10px;
     border: 1px solid rgba(87, 96, 235, 0.2);
     transition: all 0.3s ease;
+    width: 100%;
+    position: relative;
 }
 
 .search-container:focus-within {
     border-color: rgba(87, 96, 235, 0.5);
     box-shadow: 0 0 0 2px rgba(87, 96, 235, 0.1);
+    background: rgba(30, 33, 50, 0.85);
 }
 
 .search-container i {
@@ -1536,34 +1351,36 @@
     border: none;
     color: white;
     font-size: 14px;
-    width: 180px;
+    flex: 1;
     outline: none;
+    padding: 6px 0;
 }
 
 .search-container input::placeholder {
     color: #6c7293;
 }
 
-/* Çevrimdışı arkadaş kartı stili */
-.offline-friends-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.5);
-    margin: 20px 0 15px;
-    padding-left: 10px;
-    position: relative;
+.search-clear {
+    visibility: hidden;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(108, 114, 147, 0.3);
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.offline-friends-title::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 16px;
-    background: linear-gradient(to bottom, #6c7293, #515575);
-    border-radius: 2px;
+.search-clear:hover {
+    background: rgba(108, 114, 147, 0.5);
+}
+
+.search-container:has(input:not(:placeholder-shown)) .search-clear {
+    visibility: visible;
+    opacity: 1;
 }
 
 /* Çevrimdışı arkadaş kartları için özel stil */
@@ -1597,32 +1414,108 @@
     opacity: 1;
 }
 
-/* Main header responsive tasarım */
+/* Responsive tasarım için uyarlamalar */
+@media (max-width: 1024px) {
+    .main-tabs {
+        margin-left: 10px;
+    }
+
+    .header-search {
+        width: 200px;
+    }
+
+    .main-title {
+        min-width: 100px;
+    }
+
+    .friend-add-btn span {
+        display: none;
+    }
+
+    .friend-add-btn {
+        padding: 8px;
+    }
+
+    .friend-add-btn i {
+        margin-right: 0;
+    }
+}
+
 @media (max-width: 768px) {
     .main-header {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-wrap: wrap;
+        height: auto;
         padding: 10px 15px;
+        gap: 10px;
+    }
+
+    .main-title {
+        flex: 0 0 auto;
+    }
+
+    .friend-add-btn {
+        margin-left: auto;
+        order: 3;
     }
 
     .main-tabs {
-        margin-top: 10px;
-        margin-bottom: 10px;
+        order: 4;
         width: 100%;
+        margin-left: 0;
+        margin-top: 8px;
         justify-content: flex-start;
     }
 
     .header-search {
-        width: 100%;
-        margin-top: 10px;
-        padding-right: 0;
+        order: 3;
+        width: auto;
+        flex: 1;
+        margin-left: 10px;
     }
+}
 
-    .search-container {
-        width: 100%;
-    }
+/* Arkadaş Ekle Butonu */
+.friend-add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #5865F2, #7289DA);
+    border-radius: 8px;
+    padding: 8px 15px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    margin-left: 15px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(88, 101, 242, 0.25);
+}
 
-    .search-container input {
-        width: 100%;
-    }
+.friend-add-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: 0.5s;
+}
+
+.friend-add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
+    background: linear-gradient(135deg, #4752C4, #5865F2);
+}
+
+.friend-add-btn:hover::before {
+    left: 100%;
+}
+
+.friend-add-btn i {
+    margin-right: 8px;
+    font-size: 14px;
 }
