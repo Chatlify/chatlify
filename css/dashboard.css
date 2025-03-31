@@ -3671,16 +3671,15 @@
     position: fixed;
     top: 0;
     left: calc(var(--server-sidebar-width) + var(--dm-sidebar-width));
-    right: var(--sponsor-sidebar-width);
+    right: 0;
     bottom: 0;
-    width: calc(100% - var(--server-sidebar-width) - var(--dm-sidebar-width) - var(--sponsor-sidebar-width));
+    width: calc(100% - var(--server-sidebar-width) - var(--dm-sidebar-width));
     height: 100vh;
     z-index: 9999;
     background-color: var(--main-bg);
     animation: fadeIn 0.3s ease;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     border-left: 1px solid var(--divider-color);
-    border-right: 1px solid var(--divider-color);
 }
 
 .chat-panel.hidden {
