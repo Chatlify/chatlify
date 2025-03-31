@@ -200,25 +200,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
                 <div class="add-friend-modal-body">
                     <div class="section-info">
-                        <p>Chatlify'da birini arkadaş olarak eklemek için kullanıcı adını veya etiketini girin. Büyük/küçük harfe duyarlıdır.</p>
+                        <p>Chatlify'da birini arkadaş olarak eklemek için kullanıcı adını girin. Büyük/küçük harfe duyarlıdır.</p>
                     </div>
                     
                     <div class="add-friend-input-container">
                         <div class="input-wrapper">
                             <i class="fas fa-at"></i>
-                            <input type="text" placeholder="Kullanıcıadı veya KullanıcıAdı#0000" class="add-friend-input">
+                            <input type="text" placeholder="Kullanıcıadı" class="add-friend-input">
                         </div>
-                        <div class="button-wrapper">
-                            <button class="add-friend-submit">
-                                <i class="fas fa-paper-plane"></i>
-                                <span>Arkadaşlık İsteği Gönder</span>
-                            </button>
-                        </div>
+                        <button class="add-friend-submit">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Arkadaşlık İsteği Gönder</span>
+                        </button>
                     </div>
                     
                     <div class="friend-request-note">
                         <i class="fas fa-info-circle"></i>
-                        <span>Doğru kullanıcıyı bulduğunuzdan emin olmak için tam etiket kullanmanızı öneririz. <br>Örnek: KullanıcıAdı#4289</span>
+                        <span>Doğru kullanıcıyı bulduğunuzdan emin olmak için doğru kullanıcı adını girin.</span>
                     </div>
                     
                     <div class="qr-code-section">
@@ -267,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             .add-friend-modal-content {
                 background: linear-gradient(145deg, #1a2036, #15192c);
-                width: 550px;
+                width: 480px;
                 max-width: 92%;
                 border-radius: 12px;
                 box-shadow: 0 8px 35px rgba(0, 0, 0, 0.5);
@@ -405,11 +403,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 color: rgba(255, 255, 255, 0.3);
             }
             
-            .button-wrapper {
-                display: flex;
-                justify-content: flex-end;
-            }
-            
             .add-friend-submit {
                 background: linear-gradient(135deg, #5e72e4, #825ee4);
                 color: white;
@@ -422,8 +415,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 transition: all 0.3s ease;
                 display: flex;
                 align-items: center;
+                justify-content: center;
                 gap: 8px;
                 box-shadow: 0 4px 10px rgba(94, 114, 228, 0.3);
+                width: 100%;
             }
             
             .add-friend-submit:hover {
