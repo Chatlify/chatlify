@@ -62,8 +62,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const messageButtons = document.querySelectorAll('.friend-action.message');
     messageButtons.forEach(button => {
         button.addEventListener('click', function () {
-            const friendName = this.closest('.friend-card').querySelector('.friend-name').textContent;
-            showNotification(`${friendName} ile bir sohbet başlatıldı.`, 'success');
+            // Mesaj gönderme işlemi burada gerçekleştirilecek
+            // Bildirim kaldırıldı
         });
     });
 
@@ -74,8 +74,6 @@ document.addEventListener('DOMContentLoaded', function () {
     acceptButtons.forEach(button => {
         button.addEventListener('click', function () {
             const friendCard = this.closest('.friend-card');
-            const friendName = friendCard.querySelector('.friend-name').textContent;
-            showNotification(`${friendName}'in arkadaşlık isteği kabul edildi.`, 'success');
 
             // Animasyon sonrası kaldır
             setTimeout(() => {
@@ -91,8 +89,6 @@ document.addEventListener('DOMContentLoaded', function () {
     declineButtons.forEach(button => {
         button.addEventListener('click', function () {
             const friendCard = this.closest('.friend-card');
-            const friendName = friendCard.querySelector('.friend-name').textContent;
-            showNotification(`${friendName}'in arkadaşlık isteği reddedildi.`, 'error');
 
             // Animasyon sonrası kaldır
             setTimeout(() => {
@@ -109,10 +105,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const logoutButton = document.querySelector('.logout-icon');
     if (logoutButton) {
         logoutButton.addEventListener('click', function () {
-            showNotification('Çıkış yapılıyor...', 'info');
             setTimeout(() => {
                 window.location.href = 'index.html';
-            }, 1500);
+            }, 500);
         });
     }
 
@@ -120,8 +115,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const sponsorServers = document.querySelectorAll('.sponsor-server');
     sponsorServers.forEach(server => {
         server.addEventListener('click', function () {
-            const serverName = this.querySelector('.sponsor-server-name').textContent;
-            showNotification(`${serverName} sunucusuna katılmak için yönlendiriliyorsunuz...`, 'info');
+            // Sunucuya katılma işlemi burada gerçekleştirilecek
+            // Bildirim kaldırıldı
         });
     });
 
@@ -159,10 +154,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // Enter tuşuna basıldığında arama işlemini gerçekleştir
         headerSearchInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
-                const searchTerm = this.value.trim();
-                if (searchTerm.length > 0) {
-                    showNotification(`"${searchTerm}" için arkadaşlar aranıyor...`, 'info');
-                }
+                // Arama işlemi burada gerçekleştirilecek
+                // Bildirim kaldırıldı
                 e.preventDefault();
             }
         });
@@ -185,10 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const addFriendBtn = document.querySelector('.add-friend');
     if (addFriendBtn) {
         addFriendBtn.addEventListener('click', function () {
-            // Modal veya popup açılabilir, şu an için bildirim gösterelim
-            showNotification('Arkadaşlık isteği gönderme paneli açıldı', 'info');
-
-            // Örnek modal gösterimi (gerçek bir uygulamada burada modal açılır)
+            // Modal veya popup açılabilir
             createAddFriendModal();
         });
     }
@@ -354,10 +344,10 @@ document.addEventListener('DOMContentLoaded', function () {
         addFriendSubmit.addEventListener('click', () => {
             const username = addFriendInput.value.trim();
             if (username) {
-                showNotification(`${username} kullanıcısına arkadaşlık isteği gönderildi.`, 'success');
+                // İstek gönderildi
                 closeModal();
             } else {
-                showNotification('Lütfen geçerli bir kullanıcı adı girin.', 'error');
+                // Lütfen kullanıcı adı girin
             }
         });
 
@@ -372,102 +362,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const settingsButton = document.querySelector('.server-settings-icon').parentElement;
     if (settingsButton) {
         settingsButton.addEventListener('click', function () {
-            showNotification('Ayarlar sayfasına yönlendiriliyorsunuz...', 'info');
             setTimeout(() => {
                 window.location.href = 'settings.html';
-            }, 1000);
+            }, 300);
         });
     }
-
-    // Bildirim gösterme fonksiyonu
-    function showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.innerHTML = `
-            <div class="notification-content">
-                <i class="fas ${getIconForType(type)}"></i>
-                <span>${message}</span>
-            </div>
-        `;
-
-        document.body.appendChild(notification);
-
-        // Show animation
-        setTimeout(() => {
-            notification.classList.add('show');
-        }, 10);
-
-        // Remove after delay
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => {
-                notification.remove();
-            }, 300);
-        }, 3000);
-    }
-
-    function getIconForType(type) {
-        switch (type) {
-            case 'success': return 'fa-check-circle';
-            case 'error': return 'fa-times-circle';
-            case 'warning': return 'fa-exclamation-triangle';
-            case 'info':
-            default: return 'fa-info-circle';
-        }
-    }
-
-    // Bildirim stili
-    const notificationStyle = document.createElement('style');
-    notificationStyle.textContent = `
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: rgba(23, 32, 57, 0.9);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            max-width: 350px;
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: all 0.3s ease;
-        }
-        
-        .notification.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .notification-content {
-            display: flex;
-            align-items: center;
-        }
-        
-        .notification i {
-            margin-right: 10px;
-            font-size: 20px;
-        }
-        
-        .notification.success i {
-            color: var(--success-color);
-        }
-        
-        .notification.error i {
-            color: var(--danger-color);
-        }
-        
-        .notification.warning i {
-            color: #ffc107;
-        }
-        
-        .notification.info i {
-            color: var(--primary-color);
-        }
-    `;
-
-    document.head.appendChild(notificationStyle);
 
     // Tab işlevselliği
     const tabs = document.querySelectorAll('.tab');
@@ -478,9 +377,6 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelector('.tab.active').classList.remove('active');
             this.classList.add('active');
 
-            const tabText = this.textContent.trim();
-            showNotification(`${tabText} sekmesi seçildi`, 'info');
-
             // Tab içeriğini güncelle (gerçek bir uygulamada)
             // Örneğin: Çevrimiçi/Tüm Arkadaşlar/Bekleyen vb.
         });
@@ -489,8 +385,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Çevrimdışı arkadaşlara mesaj gönderme işlevselliği
     document.querySelectorAll('.offline-friends-title + .friends-list .friend-action.message').forEach(button => {
         button.addEventListener('click', function () {
-            const friendName = this.closest('.friend-card').querySelector('.friend-name').textContent;
-            showNotification(`${friendName} şu anda çevrimdışı. Mesajınız iletilecek.`, 'info');
+            // Mesaj gönderme işlemi burada gerçekleştirilecek
+            // Bildirim kaldırıldı
         });
     });
 }); 

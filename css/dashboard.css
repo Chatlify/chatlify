@@ -82,6 +82,28 @@
     }
 }
 
+/* Ayarlar butonu dönme animasyonu */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* + butonu dönme animasyonu */
+@keyframes single-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(90deg);
+    }
+}
+
 /* Tüm scrollbar'ları gizle */
 ::-webkit-scrollbar {
     width: 0;
@@ -354,15 +376,18 @@
 .server-add-icon i,
 .server-settings-icon i {
     font-size: 20px;
-    transition: transform var(--animation-speed) ease;
+    color: var(--text-secondary);
+    transition: color 0.3s ease, transform 0.3s ease;
 }
 
 .server-item:hover .server-add-icon i {
-    transform: rotate(0deg);
+    color: var(--text-color);
+    animation: single-spin 0.5s ease forwards;
 }
 
 .server-item:hover .server-settings-icon i {
-    transform: scale(1);
+    color: var(--text-color);
+    animation: spin 2s linear infinite;
 }
 
 /* Özel Mesajlar Kısmı */
