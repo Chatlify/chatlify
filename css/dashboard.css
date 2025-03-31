@@ -3957,7 +3957,9 @@
 .chat-attachments {
     display: flex;
     gap: 8px;
-    margin-right: 8px;
+    margin-right: 0;
+    margin-left: 8px;
+    order: 2;
 }
 
 .chat-attachment-btn {
@@ -3984,7 +3986,8 @@
     background-color: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
     padding: 8px 12px;
-    margin-right: 8px;
+    margin-right: 0;
+    order: 1;
     max-height: 120px;
     overflow-y: auto;
 }
@@ -4006,8 +4009,7 @@
 }
 
 .chat-submit {
-    display: flex;
-    align-items: center;
+    order: 3;
 }
 
 .chat-send-btn {
