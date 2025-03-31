@@ -401,22 +401,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Ses ve Video ayarları için işlevsellik
     function initializeAudioVideoSettings() {
-        // Ses ayarları
+        // Ses ve mikrofon kontrollerini başlat
         const outputVolume = document.getElementById('output-volume');
         const inputVolume = document.getElementById('input-volume');
-        const outputVolumeValue = document.querySelector('#output-volume + i + span');
-        const inputVolumeValue = document.querySelector('#input-volume + i + span');
+        const outputVolumeValue = document.querySelector('.volume-slider:nth-child(4) .volume-value');
+        const inputVolumeValue = document.querySelector('.volume-slider:nth-child(5) .volume-value');
         const testMicBtn = document.querySelector('.test-mic-btn');
         const meterFill = document.querySelector('.meter-fill');
 
+        // Ses ve mikrofon kontrollerini başlat
         if (outputVolume && outputVolumeValue) {
             outputVolume.addEventListener('input', function () {
                 const value = this.value;
                 outputVolumeValue.textContent = value + '%';
 
-                // Ses seviyesine göre ikon değiştirme
+                // İkon değişimi
                 const volumeIcon = this.previousElementSibling;
-                if (value == 0) {
+                if (value < 1) {
                     volumeIcon.className = 'fas fa-volume-mute';
                 } else if (value < 50) {
                     volumeIcon.className = 'fas fa-volume-down';
@@ -433,7 +434,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Mikrofon seviyesine göre ikon değiştirme
                 const micIcon = this.previousElementSibling;
-                if (value == 0) {
+                if (value < 1) {
                     micIcon.className = 'fas fa-microphone-slash';
                 } else if (value < 50) {
                     micIcon.className = 'fas fa-microphone-alt-slash';
@@ -443,6 +444,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
+        // Mikrofon testi işlevselliği
         if (testMicBtn && meterFill) {
             testMicBtn.addEventListener('click', function () {
                 // Simüle edilmiş mikrofon testi
@@ -534,6 +536,24 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // İşlevsellik başlatma
+    initializeSettingsCategories();
+    initializeThemeCards();
+    initializeColorItems();
+    initializeSaveButton();
+    initializeCancelButton();
+    initializeDangerButton();
+    initializeFontSizeSlider();
+    initializeSearchInput();
+    initializeNotificationSettings();
+    initializeAnimationSettings();
+    initializeFontSelector();
+    initializePasswordSettings();
+    initializeSecuritySettings();
+    initializeAudioVideoSettings();
+    initializeKeyboardShortcuts();
+    initializeLanguageSettings();
+
     // Sayfa yüklendikten sonra tüm işlevleri başlat
     document.addEventListener('DOMContentLoaded', function () {
         // Mevcut işlevler buraya...
@@ -557,4 +577,189 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
+
+    // Güvenlik ayarları için işlevsellik
+    function initializeSecuritySettings() {
+        // Parola görünürlük ayarları
+        const togglePasswordBtns = document.querySelectorAll('.toggle-password');
+        togglePasswordBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const passwordInput = this.previousElementSibling;
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    this.classList.remove('fa-eye');
+                    this.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    this.classList.remove('fa-eye-slash');
+                    this.classList.add('fa-eye');
+                }
+            });
+        });
+
+        // Parola gücü göstergesi
+        const newPasswordInput = document.getElementById('new-password');
+        const strengthMeter = document.querySelectorAll('.strength-segment');
+        const strengthText = document.querySelector('.strength-text');
+        const requirements = document.querySelectorAll('.requirement i');
+
+        if (newPasswordInput) {
+            newPasswordInput.addEventListener('input', function () {
+                const password = this.value;
+
+                // Gereksinimleri kontrol et
+                const hasMinLength = password.length >= 8;
+                const hasUpperCase = /[A-Z]/.test(password);
+                const hasNumber = /[0-9]/.test(password);
+                const hasSpecialChar = /[^A-Za-z0-9]/.test(password);
+
+                // Gereksinimleri güncelle
+                requirements[0].className = hasMinLength ? 'fas fa-check-circle' : 'fas fa-times-circle';
+                requirements[1].className = hasUpperCase ? 'fas fa-check-circle' : 'fas fa-times-circle';
+                requirements[2].className = hasNumber ? 'fas fa-check-circle' : 'fas fa-times-circle';
+                requirements[3].className = hasSpecialChar ? 'fas fa-check-circle' : 'fas fa-times-circle';
+
+                // Parola gücü puanı
+                let strength = 0;
+                if (hasMinLength) strength++;
+                if (hasUpperCase) strength++;
+                if (hasNumber) strength++;
+                if (hasSpecialChar) strength++;
+
+                // Güç ölçeği güncelleme
+                for (let i = 0; i < 4; i++) {
+                    if (i < strength) {
+                        strengthMeter[i].classList.add('active');
+                    } else {
+                        strengthMeter[i].classList.remove('active');
+                    }
+                }
+
+                // Güç metni güncelleme
+                let strengthLabel = '';
+                switch (strength) {
+                    case 0:
+                    case 1:
+                        strengthLabel = 'Zayıf';
+                        break;
+                    case 2:
+                        strengthLabel = 'Orta';
+                        break;
+                    case 3:
+                        strengthLabel = 'Güçlü';
+                        break;
+                    case 4:
+                        strengthLabel = 'Çok Güçlü';
+                        break;
+                }
+
+                if (strengthText) {
+                    strengthText.textContent = `Parola Gücü: ${strengthLabel}`;
+                }
+            });
+        }
+
+        // İki faktörlü kimlik doğrulama
+        const enable2fa = document.getElementById('enable-2fa');
+        const twoFactorSetup = document.querySelector('.two-factor-setup');
+        const recoveryCodes = document.querySelector('.recovery-codes');
+
+        if (enable2fa) {
+            enable2fa.addEventListener('change', function () {
+                if (this.checked) {
+                    twoFactorSetup.classList.remove('hidden');
+                    showNotification('İki faktörlü kimlik doğrulama kurulumu başlatıldı.', 'info');
+                } else {
+                    twoFactorSetup.classList.add('hidden');
+                    recoveryCodes.classList.add('hidden');
+                    showNotification('İki faktörlü kimlik doğrulama devre dışı bırakıldı.', 'warning');
+                }
+            });
+        }
+
+        // Doğrulama butonu
+        const verifyButton = document.querySelector('.two-factor-setup .settings-btn.primary');
+        if (verifyButton) {
+            verifyButton.addEventListener('click', function () {
+                const code = document.getElementById('verification-code').value;
+                if (code.length === 6 && /^\d+$/.test(code)) {
+                    recoveryCodes.classList.remove('hidden');
+                    showNotification('İki faktörlü kimlik doğrulama başarıyla etkinleştirildi!', 'success');
+                } else {
+                    showNotification('Geçersiz doğrulama kodu. 6 haneli sayısal kod giriniz.', 'error');
+                }
+            });
+        }
+
+        // Parola değiştirme butonu
+        const changePasswordBtn = document.querySelector('.change-password-btn');
+        if (changePasswordBtn) {
+            changePasswordBtn.addEventListener('click', function () {
+                const currentPassword = document.getElementById('current-password').value;
+                const newPassword = document.getElementById('new-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+
+                if (!currentPassword) {
+                    showNotification('Lütfen mevcut parolanızı girin.', 'error');
+                    return;
+                }
+
+                if (!newPassword) {
+                    showNotification('Lütfen yeni parolanızı girin.', 'error');
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    showNotification('Yeni parolalar eşleşmiyor.', 'error');
+                    return;
+                }
+
+                // Parola gücü kontrolü
+                const hasMinLength = newPassword.length >= 8;
+                const hasUpperCase = /[A-Z]/.test(newPassword);
+                const hasNumber = /[0-9]/.test(newPassword);
+                const hasSpecialChar = /[^A-Za-z0-9]/.test(newPassword);
+
+                if (!(hasMinLength && hasUpperCase && hasNumber && hasSpecialChar)) {
+                    showNotification('Yeni parolanız güvenlik gereksinimlerini karşılamıyor.', 'error');
+                    return;
+                }
+
+                // Başarılı değişiklik simülasyonu
+                document.getElementById('current-password').value = '';
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-password').value = '';
+                showNotification('Parolanız başarıyla değiştirildi!', 'success');
+            });
+        }
+
+        // Oturum kapatma butonları
+        const logoutSessionBtns = document.querySelectorAll('.login-entry .settings-btn.danger.small');
+        logoutSessionBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const loginEntry = this.closest('.login-entry');
+                loginEntry.style.opacity = '0.5';
+                this.disabled = true;
+                this.textContent = 'Kapatıldı';
+                showNotification('Uzak oturum başarıyla kapatıldı.', 'success');
+            });
+        });
+
+        // Tüm oturumları kapatma butonu
+        const logoutAllBtn = document.querySelector('.security-section .settings-btn.danger');
+        if (logoutAllBtn) {
+            logoutAllBtn.addEventListener('click', function () {
+                const loginEntries = document.querySelectorAll('.login-entry:not(:first-child)');
+                loginEntries.forEach(entry => {
+                    entry.style.opacity = '0.5';
+                    const btn = entry.querySelector('.settings-btn.danger.small');
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.textContent = 'Kapatıldı';
+                    }
+                });
+                showNotification('Tüm diğer oturumlar başarıyla kapatıldı.', 'success');
+            });
+        }
+    }
 }); 

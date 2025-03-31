@@ -645,9 +645,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const settingsButton = document.querySelector('.server-settings-icon').parentElement;
     if (settingsButton) {
         settingsButton.addEventListener('click', function () {
-            setTimeout(() => {
-                window.location.href = 'settings.html';
-            }, 300);
+            window.location.href = 'settings.html';
         });
     }
 

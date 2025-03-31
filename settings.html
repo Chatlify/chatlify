@@ -145,6 +145,10 @@
                     <i class="fas fa-shield-alt"></i>
                     <span>Gizlilik & Güvenlik</span>
                 </div>
+                <div class="settings-category" data-target="security-settings">
+                    <i class="fas fa-lock"></i>
+                    <span>Güvenlik</span>
+                </div>
                 <div class="settings-category" data-target="audio-video-settings">
                     <i class="fas fa-volume-up"></i>
                     <span>Ses & Video</span>
@@ -617,6 +621,189 @@
                     <div class="settings-form-actions">
                         <button class="cancel-button">İptal</button>
                         <button class="save-button">Değişiklikleri Kaydet</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Güvenlik Bölümü -->
+            <div class="settings-section hidden" id="security-settings">
+                <div class="settings-section-header">
+                    <h2>Güvenlik</h2>
+                    <p>Hesap güvenliği ayarlarınızı yönetin</p>
+                </div>
+
+                <div class="security-settings-container">
+                    <div class="security-section">
+                        <div class="section-title">
+                            <i class="fas fa-key"></i>
+                            <h3>Parola Değiştirme</h3>
+                        </div>
+
+                        <div class="settings-form-group">
+                            <label for="current-password">Mevcut Parola</label>
+                            <div class="input-with-icon password-input">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="current-password">
+                                <i class="fas fa-eye toggle-password"></i>
+                            </div>
+                        </div>
+
+                        <div class="settings-form-group">
+                            <label for="new-password">Yeni Parola</label>
+                            <div class="input-with-icon password-input">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="new-password">
+                                <i class="fas fa-eye toggle-password"></i>
+                            </div>
+                        </div>
+
+                        <div class="settings-form-group">
+                            <label for="confirm-password">Yeni Parola (Tekrar)</label>
+                            <div class="input-with-icon password-input">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="confirm-password">
+                                <i class="fas fa-eye toggle-password"></i>
+                            </div>
+                        </div>
+
+                        <div class="password-strength">
+                            <div class="strength-meter">
+                                <div class="strength-segment"></div>
+                                <div class="strength-segment"></div>
+                                <div class="strength-segment"></div>
+                                <div class="strength-segment"></div>
+                            </div>
+                            <span class="strength-text">Parola Gücü: Zayıf</span>
+                        </div>
+
+                        <div class="password-requirements">
+                            <h4>Parola gereksinimleri:</h4>
+                            <ul>
+                                <li class="requirement"><i class="fas fa-check-circle"></i> En az 8 karakter</li>
+                                <li class="requirement"><i class="fas fa-check-circle"></i> En az bir büyük harf</li>
+                                <li class="requirement"><i class="fas fa-check-circle"></i> En az bir rakam</li>
+                                <li class="requirement"><i class="fas fa-check-circle"></i> En az bir özel karakter</li>
+                            </ul>
+                        </div>
+
+                        <button class="change-password-btn settings-btn primary">Parolayı Değiştir</button>
+                    </div>
+
+                    <div class="security-section">
+                        <div class="section-title">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>İki Faktörlü Kimlik Doğrulama (2FA)</h3>
+                        </div>
+
+                        <div class="settings-info-card">
+                            <p>İki faktörlü kimlik doğrulama, hesabınıza giriş yaparken parolanıza ek olarak ikinci bir
+                                doğrulama katmanı ekler.</p>
+                        </div>
+
+                        <div class="advanced-option">
+                            <div class="advanced-option-info">
+                                <div class="option-title">İki Faktörlü Kimlik Doğrulama</div>
+                                <div class="option-description">2FA ile hesabınızı koruyun</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="enable-2fa">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="two-factor-setup hidden">
+                            <div class="setup-steps">
+                                <div class="setup-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <h4>Kimlik Doğrulayıcı Uygulamasını İndirin</h4>
+                                        <p>Google Authenticator, Microsoft Authenticator veya benzer bir uygulama
+                                            kullanın.</p>
+                                    </div>
+                                </div>
+                                <div class="setup-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <h4>QR Kodu Tarayın</h4>
+                                        <div class="qr-container">
+                                            <img src="images/qr-placeholder.png" alt="2FA QR Kodu" class="qr-code">
+                                        </div>
+                                        <button class="settings-btn secondary small">QR Kodunu Yenile</button>
+                                    </div>
+                                </div>
+                                <div class="setup-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <h4>Doğrulama Kodunu Girin</h4>
+                                        <div class="input-with-icon">
+                                            <i class="fas fa-key"></i>
+                                            <input type="text" id="verification-code" placeholder="6 haneli kodu girin">
+                                        </div>
+                                        <button class="settings-btn primary">Doğrula ve Etkinleştir</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="recovery-codes hidden">
+                            <h4>Kurtarma Kodları</h4>
+                            <p>Telefonunuza erişiminizi kaybederseniz hesabınıza erişmek için aşağıdaki kodları
+                                kullanabilirsiniz. Bu kodlar yalnızca bir kez kullanılabilir.</p>
+                            <div class="recovery-codes-container">
+                                <div class="recovery-code">ABCD-EFGH-IJKL</div>
+                                <div class="recovery-code">MNOP-QRST-UVWX</div>
+                                <div class="recovery-code">YZAB-CDEF-GHIJ</div>
+                                <div class="recovery-code">KLMN-OPQR-STUV</div>
+                                <div class="recovery-code">WXYZ-ABCD-EFGH</div>
+                            </div>
+                            <button class="settings-btn secondary">Kodları İndir</button>
+                            <button class="settings-btn secondary">Yeni Kodlar Oluştur</button>
+                        </div>
+                    </div>
+
+                    <div class="security-section">
+                        <div class="section-title">
+                            <i class="fas fa-history"></i>
+                            <h3>Güvenlik Geçmişi</h3>
+                        </div>
+
+                        <div class="login-history">
+                            <div class="login-entry">
+                                <div class="entry-info">
+                                    <div class="entry-device"><i class="fas fa-laptop"></i> Windows PC</div>
+                                    <div class="entry-location">İstanbul, Türkiye</div>
+                                    <div class="entry-time">Bugün, 14:32</div>
+                                </div>
+                                <div class="entry-status current">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Şu anki oturum</span>
+                                </div>
+                            </div>
+
+                            <div class="login-entry">
+                                <div class="entry-info">
+                                    <div class="entry-device"><i class="fas fa-mobile-alt"></i> Android</div>
+                                    <div class="entry-location">Ankara, Türkiye</div>
+                                    <div class="entry-time">Dün, 20:15</div>
+                                </div>
+                                <div class="entry-status">
+                                    <button class="settings-btn danger small">Oturumu Kapat</button>
+                                </div>
+                            </div>
+
+                            <div class="login-entry">
+                                <div class="entry-info">
+                                    <div class="entry-device"><i class="fas fa-tablet-alt"></i> iPad</div>
+                                    <div class="entry-location">İzmir, Türkiye</div>
+                                    <div class="entry-time">23.03.2023, 09:47</div>
+                                </div>
+                                <div class="entry-status">
+                                    <button class="settings-btn danger small">Oturumu Kapat</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="settings-btn danger">Tüm Diğer Oturumları Kapat</button>
                     </div>
                 </div>
             </div>
