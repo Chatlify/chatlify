@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatlify - Mağaza</title>
+    <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/shop.css">
+    <link rel="stylesheet" href="css/bg-animation.css">
+    <script src="js/main.js" defer></script>
+    <script src="js/dashboard.js" defer></script>
+    <script src="js/shop.js" defer></script>
+</head>
+
+<body class="shop-page">
+    <!-- Animasyonlu Arkaplan -->
+    <div class="bg-animation">
+        <div class="stars"></div>
+        <div class="twinkling"></div>
+        <div class="clouds"></div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Sunucu Kenar Çubuğu -->
+        <div class="server-sidebar">
+            <div class="server-sidebar-inner">
+                <div class="server-item home">
+                    <div class="server-icon">
+                        <!-- Chatlify Logo -->
+                        <svg width="28" height="28" viewBox="0 0 48 48" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M24 4L7 14V34L24 44L41 34V14L24 4Z" fill="url(#paint0_linear)" />
+                            <path d="M24 24L7 14L24 4L41 14L24 24Z" fill="url(#paint1_linear)" />
+                            <path d="M24 44L24 24L41 14V34L24 44Z" fill="url(#paint2_linear)" />
+                            <path d="M24 44L24 24L7 14V34L24 44Z" fill="url(#paint3_linear)" />
+                            <text x="17" y="25" fill="white" font-family="Arial" font-size="12"
+                                font-weight="bold">C</text>
+                            <defs>
+                                <linearGradient id="paint0_linear" x1="24" y1="4" x2="24" y2="44"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#5f75fc" />
+                                    <stop offset="1" stop-color="#6741D9" />
+                                </linearGradient>
+                                <linearGradient id="paint1_linear" x1="24" y1="4" x2="24" y2="24"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#7289da" />
+                                    <stop offset="1" stop-color="#5f75fc" />
+                                </linearGradient>
+                                <linearGradient id="paint2_linear" x1="32.5" y1="19" x2="32.5" y2="44"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#5865F2" />
+                                    <stop offset="1" stop-color="#5546D3" />
+                                </linearGradient>
+                                <linearGradient id="paint3_linear" x1="15.5" y1="19" x2="15.5" y2="44"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#5865F2" />
+                                    <stop offset="1" stop-color="#5546D3" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="server-tooltip">Chatlify</div>
+                </div>
+
+                <div class="server-divider"></div>
+
+                <div class="server-item">
+                    <div class="server-icon">
+                        <img src="https://via.placeholder.com/100/0672ac/ffffff?text=G" alt="Gamir">
+                    </div>
+                    <div class="server-pill"></div>
+                    <div class="server-tooltip">Gamir</div>
+                </div>
+
+                <div class="server-item">
+                    <div class="server-icon">
+                        <img src="https://via.placeholder.com/100/5a2d82/ffffff?text=C" alt="Code">
+                    </div>
+                    <div class="server-pill"></div>
+                    <div class="server-tooltip">Code</div>
+                </div>
+
+                <div class="server-item">
+                    <div class="server-icon">
+                        <img src="https://via.placeholder.com/100/2d825e/ffffff?text=M" alt="Machi">
+                    </div>
+                    <div class="server-pill"></div>
+                    <div class="server-tooltip">Machi</div>
+                </div>
+
+                <div class="server-item">
+                    <div class="server-icon">
+                        <img src="https://via.placeholder.com/100/825e2d/ffffff?text=G" alt="Game">
+                    </div>
+                    <div class="server-pill"></div>
+                    <div class="server-tooltip">Game</div>
+                </div>
+
+                <div class="server-divider"></div>
+
+                <div class="server-item">
+                    <div class="server-add-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="server-tooltip">Sunucu Ekle</div>
+                </div>
+
+                <div class="server-item active">
+                    <div class="server-shop-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="server-tooltip">Mağaza</div>
+                </div>
+
+                <div class="server-item">
+                    <div class="server-settings-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="server-tooltip">Ayarlar</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ana İçerik Alanı -->
+        <div class="main-content">
+            <div class="shop-header">
+                <div class="header-left">
+                    <div class="main-title">
+                        <i class="fas fa-store"></i>
+                        <span>Mağaza</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="user-balance">
+                        <i class="fas fa-coins"></i>
+                        <span>Bakiye: <strong>5.00$</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="shop-container">
+                <div class="shop-hero">
+                    <div class="hero-content">
+                        <h1>Chatlify Güçlendiricileri</h1>
+                        <p>Sohbet deneyiminizi güçlendirin ve özel avantajlar kazanın!</p>
+                    </div>
+                </div>
+
+                <div class="boosters-container">
+                    <div class="booster-card nova">
+                        <div class="booster-glow"></div>
+                        <div class="booster-badge">Premium</div>
+                        <div class="booster-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="booster-title">Nova</div>
+                        <div class="booster-description">
+                            <p>Sohbet deneyiminizi en üst seviyeye çıkaran premium güçlendirici.</p>
+                            <ul class="booster-features">
+                                <li><i class="fas fa-check"></i> Sınırsız Mesaj Depolama</li>
+                                <li><i class="fas fa-check"></i> 4K Video Görüşmesi</li>
+                                <li><i class="fas fa-check"></i> Özel Emojiler</li>
+                                <li><i class="fas fa-check"></i> Özel Profil Rozeti</li>
+                                <li><i class="fas fa-check"></i> Reklamsız Deneyim</li>
+                                <li><i class="fas fa-check"></i> 100MB Dosya Paylaşımı</li>
+                            </ul>
+                        </div>
+                        <div class="booster-price">
+                            <span class="price-value">$2.00</span>
+                            <span class="price-period">/ aylık</span>
+                        </div>
+                        <button class="booster-button nova-button">Hemen Satın Al</button>
+                    </div>
+
+                    <div class="booster-card blaze">
+                        <div class="booster-badge">Standart</div>
+                        <div class="booster-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="booster-title">Blaze</div>
+                        <div class="booster-description">
+                            <p>Sohbet deneyiminizi geliştiren standart güçlendirici.</p>
+                            <ul class="booster-features">
+                                <li><i class="fas fa-check"></i> 30 Gün Mesaj Depolama</li>
+                                <li><i class="fas fa-check"></i> HD Video Görüşmesi</li>
+                                <li><i class="fas fa-check"></i> 25 Özel Emoji</li>
+                                <li><i class="fas fa-check"></i> Temel Profil Rozeti</li>
+                                <li><i class="fas fa-check"></i> 50MB Dosya Paylaşımı</li>
+                            </ul>
+                        </div>
+                        <div class="booster-price">
+                            <span class="price-value">$1.00</span>
+                            <span class="price-period">/ aylık</span>
+                        </div>
+                        <button class="booster-button blaze-button">Hemen Satın Al</button>
+                    </div>
+                </div>
+
+                <div class="boosters-comparison">
+                    <h2>Karşılaştırma Tablosu</h2>
+                    <div class="comparison-table">
+                        <div class="comparison-row header">
+                            <div class="comparison-cell feature">Özellik</div>
+                            <div class="comparison-cell blaze">Blaze</div>
+                            <div class="comparison-cell nova">Nova</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-cell feature">Mesaj Depolama</div>
+                            <div class="comparison-cell blaze">30 Gün</div>
+                            <div class="comparison-cell nova">Sınırsız</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-cell feature">Video Kalitesi</div>
+                            <div class="comparison-cell blaze">HD (720p)</div>
+                            <div class="comparison-cell nova">4K (2160p)</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-cell feature">Özel Emojiler</div>
+                            <div class="comparison-cell blaze">25</div>
+                            <div class="comparison-cell nova">Sınırsız</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-cell feature">Dosya Paylaşımı</div>
+                            <div class="comparison-cell blaze">50MB</div>
+                            <div class="comparison-cell nova">100MB</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-cell feature">Reklamsız Deneyim</div>
+                            <div class="comparison-cell blaze"><i class="fas fa-times"></i></div>
+                            <div class="comparison-cell nova"><i class="fas fa-check"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

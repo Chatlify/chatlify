@@ -347,27 +347,75 @@
 }
 
 .server-add-icon,
-.server-settings-icon {
+.server-settings-icon,
+.server-shop-icon {
     width: 48px;
     height: 48px;
-    border-radius: 24px;
-    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.06);
     display: flex;
-    justify-content: center;
     align-items: center;
-    transition: all var(--animation-speed) ease;
+    justify-content: center;
+    transition: all 0.2s ease;
 }
 
 .server-add-icon {
     color: var(--success-color);
 }
 
+.server-shop-icon {
+    color: #f1c40f;
+    /* Altın sarısı renk */
+}
+
 .server-settings-icon {
     color: var(--text-secondary);
 }
 
+.server-add-icon i,
+.server-shop-icon i,
+.server-settings-icon i {
+    font-size: 18px;
+    transition: all 0.2s ease;
+}
+
 .server-item:hover .server-add-icon,
+.server-item:hover .server-shop-icon,
 .server-item:hover .server-settings-icon {
+    border-radius: 16px;
+}
+
+.server-item:hover .server-add-icon {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.server-item:hover .server-add-icon i {
+    transform: rotate(90deg);
+}
+
+.server-item:hover .server-shop-icon {
+    background-color: #f1c40f;
+    color: white;
+    box-shadow: 0 0 8px #f1c40f;
+}
+
+.server-item:hover .server-shop-icon i {
+    transform: scale(1.1);
+}
+
+.server-item:hover .server-settings-icon {
+    background-color: var(--text-secondary);
+    color: var(--dm-bg);
+}
+
+.server-item:hover .server-settings-icon i {
+    transform: rotate(90deg);
+}
+
+.server-item:hover .server-add-icon,
+.server-item:hover .server-settings-icon,
+.server-item:hover .server-shop-icon {
     border-radius: 16px;
     background-color: var(--primary-color);
     color: white;
@@ -402,6 +450,11 @@
 .server-item:hover .server-settings-icon i {
     color: white;
     animation: spin 2s linear infinite;
+}
+
+.server-item:hover .server-shop-icon i {
+    font-size: 18px;
+    transition: all 0.2s ease;
 }
 
 /* Özel Mesajlar Kısmı */
@@ -4131,4 +4184,17 @@
         right: 0;
         width: calc(100% - var(--server-sidebar-width));
     }
+}
+
+.server-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+}
+
+.server-shop-icon {
+    color: #f1c40f;
+    /* Altın sarısı renk */
 }
