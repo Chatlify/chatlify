@@ -276,59 +276,6 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const SUPABASE_URL = 'https://omyoobepjyyyvemovyim.supabase.co'
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9teW9vYmVwanl5eXZlbW92eWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUxNjIyNDksImV4cCI6MjA1MDczODI0OX0.-aNn51tjlgKLE9GssA0H4WvuCTYS3SMWIsJ4pz-PxqQ'
-
-        const { createClient } = supabase
-        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-        console.log('Supabase Initialized');
-
-        const registerForm = document.getElementById('registerForm');
-        const submitButton = registerForm.querySelector('button[type="submit"]');
-        const btnText = submitButton.querySelector('.btn-text');
-        const spinner = submitButton.querySelector('.loading-spinner');
-
-        const generalError = document.createElement('div');
-        generalError.style.color = 'red';
-        generalError.style.marginTop = '10px';
-        registerForm.parentNode.insertBefore(generalError, registerForm.nextSibling);
-
-        registerForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            btnText.style.display = 'none';
-            spinner.style.display = 'block';
-            submitButton.disabled = true;
-            generalError.textContent = '';
-
-            const emailInput = document.getElementById('email');
-            const passwordInput = document.getElementById('password');
-
-            const email = emailInput.value;
-            const password = passwordInput.value;
-
-            const { data, error } = await _supabase.auth.signUp({
-                email: email,
-                password: password,
-            });
-
-            if (error) {
-                console.error('Error signing up:', error.message);
-                generalError.textContent = `Kayıt hatası: ${error.message}`;
-            } else {
-                console.log('Sign up successful, user needs to confirm email:', data);
-                registerForm.style.display = 'none';
-                generalError.style.color = 'green';
-                generalError.textContent = 'Kayıt başarılı! Lütfen email adresinize gönderilen doğrulama linkine tıklayın.';
-            }
-
-            btnText.style.display = 'inline';
-            spinner.style.display = 'none';
-            submitButton.disabled = false;
-        });
-    </script>
 </body>
 
 </html>

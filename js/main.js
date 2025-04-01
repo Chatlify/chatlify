@@ -1,9 +1,3 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'; // CDN'den import
-
-const supabaseUrl = 'https://chatlify2.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoYXRsaWZ5MiIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzEzMzk5Njc4LCJleHAiOjIwMjkwNzU2Nzh9.z2g_1H_h_u9C3C3Z-2lX_9E3D-x_yZ8a_9B0aAbCdEf';
-const supabase = createClient(supabaseUrl, supabaseKey);
-
 document.addEventListener('DOMContentLoaded', () => {
     // Partikül arkaplan efekti için canvas oluştur
     const body = document.querySelector('body');
