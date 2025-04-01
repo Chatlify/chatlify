@@ -25,25 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         allowedConnections: ['Username-Password-Authentication'],
         container: 'auth0-lock-container',
-        language: 'en',
+        language: 'tr',
         theme: {
-            logo: 'img/logo.png',
+            logo: '/images/favicon.svg',
             primaryColor: '#6a11cb',
             title: 'Chatlify',
-            bodyText: '',
-            labeledSubmitButton: true,
-            authButtons: {
-                "google-oauth2": {
-                    displayName: "Google ile Giriş",
-                    primaryColor: "#4285F4",
-                    icon: "https://cdn.auth0.com/website/new-homepage/dark-favicon-2.png"
-                },
-                "facebook": {
-                    displayName: "Facebook ile Giriş",
-                    primaryColor: "#3b5998",
-                    icon: "https://cdn.auth0.com/website/new-homepage/dark-favicon-2.png"
-                }
-            }
+            labeledSubmitButton: true
         },
         languageDictionary: {
             title: window.location.pathname.includes('register') ? 'Hesap Oluştur' : 'Giriş Yap',
@@ -52,41 +39,15 @@ document.addEventListener('DOMContentLoaded', () => {
             signUpLabel: 'Kaydol',
             loginLabel: 'Giriş Yap',
             emailInputPlaceholder: 'E-posta adresiniz',
-            passwordInputPlaceholder: 'Şifreniz',
-            usernameOrEmailInputPlaceholder: 'E-posta adresiniz',
-            forgotPasswordTitle: 'Şifrenizi mi unuttunuz?',
-            forgotPasswordAction: 'Şifremi unuttum',
-            signUpTerms: 'Kaydolarak, hizmet koşullarını ve gizlilik politikasını kabul etmiş olursunuz.',
-            databaseEnterpriseAlternativeLoginInstructions: 'veya',
-            databaseAlternativeSignUpInstructions: 'veya',
-            separatorText: 'veya'
+            passwordInputPlaceholder: 'Şifreniz'
         },
-        additionalSignUpFields: [{
-            name: "full_name",
-            placeholder: "Adınız ve Soyadınız"
-        }],
         mustAcceptTerms: true,
         allowShowPassword: true,
-        allowAutocomplete: true,
         closable: false,
-        rememberLastLogin: true,
         usernameStyle: 'email',
         defaultDatabaseConnection: 'Username-Password-Authentication',
-        avatar: {
-            url: false // Gravatar gösterme
-        },
-        initialScreen: window.location.pathname.includes('register') ? 'signUp' : 'login',
-        defaultADUsernameFromEmailPrefix: false,
-        prefill: {
-            email: '',
-        },
-        // Kayıt için database connection adını açıkça belirt
-        signUpFieldsHandler: function (fields) {
-            return {
-                ...fields,
-                connection: "Username-Password-Authentication"
-            };
-        }
+        avatar: null,
+        initialScreen: window.location.pathname.includes('register') ? 'signUp' : 'login'
     };
 
     // Login ve Register için ayrı Lock konfigürasyonları
