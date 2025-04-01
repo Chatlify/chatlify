@@ -1,4 +1,12 @@
+import { createClient } from '@supabase/supabase-js';
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Supabase client initialization
+    const supabaseUrl = 'https://omyoobepjyyyvemovyim.supabase.coL'; // Replace with your Supabase project URL
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9teW9vYmVwanl5eXZlbW92eWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUxNjIyNDksImV4cCI6MjA1MDczODI0OX0.-aNn51tjlgKLE9GssA0H4WvuCTYS3SMWIsJ4pz-PxqQ'; // Replace with your Supabase anon key
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    window.supabase = supabase; // Make it globally accessible for debugging
+
     // Partikül arkaplan efekti için canvas oluştur
     const body = document.querySelector('body');
     const canvas = document.createElement('canvas');
