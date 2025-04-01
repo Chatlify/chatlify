@@ -12,15 +12,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/auth.css">
-    <!-- Auth0 Lock CDN -->
-    <script src="https://cdn.auth0.com/js/lock/12.0/lock.min.js"></script>
     <script src="js/main.js" defer></script>
-    <!-- Use centralized Auth0 script -->
     <script src="js/auth.js" defer></script>
 </head>
 
 <body>
     <div class="bg-particles">
+        <div class="particle"></div>
         <div class="particle"></div>
         <div class="particle"></div>
         <div class="particle"></div>
@@ -113,8 +111,42 @@
                     <p>Log in to your account and join our community</p>
                 </div>
 
-                <!-- Auth0 Lock formunu direkt olarak burada göster -->
-                <div id="auth0-lock-container" class="embedded-auth0"></div>
+                <form id="loginForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                        </div>
+                        <div class="error-message" id="emailError">Please enter a valid email address</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" name="password" placeholder="Enter your password"
+                                required>
+                            <i class="fas fa-eye toggle-password"></i>
+                        </div>
+                        <div class="error-message" id="passwordError">Your password must be at least 8 characters</div>
+                    </div>
+
+                    <div class="form-options">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember" name="remember">
+                            <label for="remember">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-password">Forgot Password</a>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <span class="btn-text">Sign In</span>
+                        <div class="loading-spinner">
+                            <div class="spinner"></div>
+                        </div>
+                    </button>
+                </form>
 
                 <div class="auth-footer">
                     <p>Don't have an account? <a href="register.html">Create Account</a></p>
@@ -209,6 +241,58 @@
             </div>
         </div>
     </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://omyoobepjyyyvemovyim.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9teW9vYmVwanl5eXZlbW92eWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUxNjIyNDksImV4cCI6MjA1MDczODI0OX0.-aNn51tjlgKLE9GssA0H4WvuCTYS3SMWIsJ4pz-PxqQ'
+
+        const { createClient } = supabase
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+        console.log('Supabase Initialized');
+
+        const loginForm = document.getElementById('loginForm');
+        const submitButton = loginForm.querySelector('button[type="submit"]');
+        const btnText = submitButton.querySelector('.btn-text');
+        const spinner = submitButton.querySelector('.loading-spinner');
+
+        const generalError = document.createElement('div');
+        generalError.style.color = 'red';
+        generalError.style.marginTop = '10px';
+        loginForm.parentNode.insertBefore(generalError, loginForm.nextSibling);
+
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            btnText.style.display = 'none';
+            spinner.style.display = 'block';
+            submitButton.disabled = true;
+            generalError.textContent = '';
+
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+
+            const email = emailInput.value;
+            const password = passwordInput.value;
+
+            const { data, error } = await _supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                console.error('Error signing in:', error.message);
+                generalError.textContent = `Giriş hatası: ${error.message}`;
+            } else {
+                console.log('Sign in successful:', data);
+                window.location.href = 'dashboard.html';
+            }
+
+            btnText.style.display = 'inline';
+            spinner.style.display = 'none';
+            submitButton.disabled = false;
+        });
+    </script>
 </body>
 
 </html>
