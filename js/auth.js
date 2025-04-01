@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 scope: 'openid profile email'
             }
         },
+        allowedConnections: ['Username-Password-Authentication'], // Sadece email/şifre bağlantısını kullan
         theme: {
             logo: '/images/favicon.svg', // Use root-relative path
             primaryColor: '#6a11cb'
@@ -39,8 +40,17 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Login ve Register için ayrı Lock konfigürasyonları
-    const loginLockOptions = { ...lockOptions, initialScreen: 'login' };
-    const signupLockOptions = { ...lockOptions, initialScreen: 'signUp' };
+    const loginLockOptions = {
+        ...lockOptions,
+        allowedConnections: ['Username-Password-Authentication'],
+        initialScreen: 'login'
+    };
+
+    const signupLockOptions = {
+        ...lockOptions,
+        allowedConnections: ['Username-Password-Authentication'],
+        initialScreen: 'signUp'
+    };
 
     //---- Lock Instance ----
     let lock;
@@ -225,34 +235,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Social login buttons for login and register
-    // Login page social buttons
+    // Login page social buttons - Sosyal login butonlarını gizle/devre dışı bırak
     const socialLoginButtons = document.querySelectorAll('.social-btn');
     socialLoginButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.preventDefault();
-            const connection = button.classList.contains('google') ? 'google-oauth2' :
-                button.classList.contains('facebook') ? 'facebook' :
-                    button.classList.contains('github') ? 'github' : '';
-
-            if (connection) {
-                console.log(`Social button clicked: ${connection}`);
-                // Mevcut container'ı temizle
-                let container = document.getElementById('auth0-lock-container');
-                if (!container) {
-                    container = document.createElement('div');
-                    container.id = 'auth0-lock-container';
-                    document.body.appendChild(container);
-                }
-
-                // Butonun bulunduğu sayfaya göre farklı ekran göster
-                const isRegisterPage = window.location.pathname.includes('/register.html');
-                lock.show({
-                    initialScreen: isRegisterPage ? 'signUp' : 'login',
-                    allowedConnections: [connection]
-                });
-                console.log(`Lock.show called with connection ${connection}`);
-            }
-        });
+        button.style.display = 'none'; // Sosyal login butonlarını gizle
+        // Alternatif: butonları devre dışı bırak 
+        // button.disabled = true;
     });
 
     // 3. Logout button
