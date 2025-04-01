@@ -113,41 +113,15 @@
                     <p>Log in to your account and join our community</p>
                 </div>
 
-                <!-- Placeholder for Auth0 Lock button/widget -->
-                <div class="auth-form">
-                    <button id="qsLoginBtn" class="submit-btn">
-                        <span class="btn-text">Sign In</span>
-                    </button>
-                </div>
+                <!-- Auth0 Lock formunu direkt olarak burada göster -->
+                <div id="auth0-lock-container" class="embedded-auth0"></div>
 
-                <div class="social-login">
-                    <p>or sign in with</p>
-                    <div class="social-buttons">
-                        <button type="button" class="social-btn google">
-                            <i class="fab fa-google"></i>
-                            <span>Google</span>
-                        </button>
-                        <button type="button" class="social-btn facebook">
-                            <i class="fab fa-facebook-f"></i>
-                            <span>Facebook</span>
-                        </button>
-                        <button type="button" class="social-btn github">
-                            <i class="fab fa-github"></i>
-                            <span>GitHub</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Removed the "Don't have an account?" link as Lock handles both -->
                 <div class="auth-footer">
                     <p>Don't have an account? <a href="register.html">Create Account</a></p>
                 </div>
             </div>
         </div>
     </main>
-
-    <!-- Auth0 Lock Container -->
-    <div id="auth0-lock-container"></div>
 
     <footer>
         <div class="footer-content">
@@ -235,9 +209,6 @@
             </div>
         </div>
     </footer>
-
-    <!-- Removed inline Auth0 Lock initialization script -->
-
 </body>
 
 </html>

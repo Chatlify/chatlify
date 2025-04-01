@@ -114,41 +114,15 @@
                     <p>Join Chatlify and become part of our community</p>
                 </div>
 
-                <!-- Placeholder for Auth0 Lock button/widget -->
-                <div class="auth-form">
-                    <button id="qsSignUpBtn" class="submit-btn">
-                        <span class="btn-text">Create Account</span>
-                    </button>
-                </div>
+                <!-- Auth0 Lock formunu direkt olarak burada göster -->
+                <div id="auth0-lock-container" class="embedded-auth0"></div>
 
-                <div class="social-login">
-                    <p>or sign up with</p>
-                    <div class="social-buttons">
-                        <button type="button" class="social-btn google">
-                            <i class="fab fa-google"></i>
-                            <span>Google</span>
-                        </button>
-                        <button type="button" class="social-btn facebook">
-                            <i class="fab fa-facebook-f"></i>
-                            <span>Facebook</span>
-                        </button>
-                        <button type="button" class="social-btn github">
-                            <i class="fab fa-github"></i>
-                            <span>GitHub</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Added back the link for users who prefer to navigate directly -->
                 <div class="auth-footer">
                     <p>Already have an account? <a href="login.html">Sign In</a></p>
                 </div>
             </div>
         </div>
     </main>
-
-    <!-- Auth0 Lock Container -->
-    <div id="auth0-lock-container"></div>
 
     <footer>
         <div class="footer-content">
@@ -236,9 +210,6 @@
             </div>
         </div>
     </footer>
-
-    <!-- Removed inline Auth0 Lock initialization script -->
-
 </body>
 
 </html>

@@ -937,18 +937,31 @@
 }
 
 /* Auth0 Lock Panel Görünüm İyileştirmeleri */
-#auth0-lock-container {
-    display: block !important;
+.embedded-auth0 {
+    width: 100%;
+    margin: 0 auto;
+    max-width: 100%;
 }
 
+/* Lock Container'a yükseklik ver */
+#auth0-lock-container {
+    min-height: 480px;
+    margin-bottom: 20px;
+}
+
+/* Auth0 Lock Panelinin Tasarımını Değiştirme */
 .auth0-lock.auth0-lock {
     font-family: 'Poppins', sans-serif !important;
+    width: 100% !important;
+    box-shadow: none !important;
+    background: transparent !important;
 }
 
 .auth0-lock.auth0-lock .auth0-lock-header {
     height: auto !important;
     padding: 20px !important;
     background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%) !important;
+    border-radius: 10px 10px 0 0 !important;
 }
 
 .auth0-lock.auth0-lock .auth0-lock-header-logo {
@@ -963,13 +976,27 @@
     color: white !important;
 }
 
+.auth0-lock.auth0-lock .auth0-lock-content {
+    padding: 30px 20px !important;
+    background: rgba(26, 26, 46, 0.5) !important;
+    border-bottom-left-radius: 10px !important;
+    border-bottom-right-radius: 10px !important;
+}
+
 .auth0-lock.auth0-lock .auth0-lock-input-wrap {
     border-radius: 8px !important;
+    margin-bottom: 15px !important;
 }
 
 .auth0-lock.auth0-lock .auth0-lock-input {
     font-size: 16px !important;
     padding: 12px !important;
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.auth0-lock.auth0-lock .auth0-lock-input:focus {
+    border-color: #6a11cb !important;
 }
 
 .auth0-lock.auth0-lock .auth0-lock-submit {
@@ -980,19 +1007,70 @@
     height: 50px !important;
     font-size: 16px !important;
     text-transform: none !important;
+    transition: all 0.3s ease !important;
 }
 
 .auth0-lock.auth0-lock .auth0-lock-submit:hover {
     background: linear-gradient(135deg, #5a0cb0 0%, #1565e6 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
 }
 
 .auth0-lock.auth0-lock .auth0-lock-alternative {
     margin-top: 20px !important;
+    color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .auth0-lock.auth0-lock .auth0-lock-alternative-link {
     color: #6a11cb !important;
     font-weight: 600 !important;
+}
+
+/* Form etiketleri */
+.auth0-lock.auth0-lock .auth0-lock-input-label {
+    color: white !important;
+    font-weight: 500 !important;
+}
+
+/* Buton metinleri */
+.auth0-lock.auth0-lock .auth0-lock-submit span {
+    display: inline-block !important;
+}
+
+/* Hata mesajları */
+.auth0-lock.auth0-lock .auth0-lock-error-message {
+    color: #ff5252 !important;
+    background: rgba(255, 82, 82, 0.1) !important;
+    border-radius: 4px !important;
+    padding: 8px !important;
+}
+
+/* Ayrıcı çizgiler */
+.auth0-lock.auth0-lock .auth0-lock-separator {
+    margin: 20px 0 !important;
+}
+
+.auth0-lock.auth0-lock .auth0-lock-separator span {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Sosyal login butonları */
+.auth0-lock.auth0-lock .auth0-lock-social-button {
+    border-radius: 8px !important;
+    margin-bottom: 10px !important;
+}
+
+/* Input placeholder rengi */
+.auth0-lock.auth0-lock input::-webkit-input-placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.auth0-lock.auth0-lock input:-ms-input-placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.auth0-lock.auth0-lock input::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
 }
 
 /* Mobil görünüm düzeltmeleri */

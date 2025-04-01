@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---- Lock Configuration ----
     const lockOptions = {
         auth: {
-            redirectUrl: 'https://chatlifyapp.com/dashboard.html',
+            redirectUrl: window.location.origin + '/callback.html',
             responseType: 'token id_token',
             params: {
                 scope: 'openid profile email'
@@ -27,34 +27,66 @@ document.addEventListener('DOMContentLoaded', () => {
         container: 'auth0-lock-container',
         language: 'en',
         theme: {
-            logo: '/images/favicon.svg',
+            logo: 'img/logo.png',
             primaryColor: '#6a11cb',
+            title: 'Chatlify',
+            bodyText: '',
             labeledSubmitButton: true,
             authButtons: {
-                connectionName: {
-                    displayName: "Giriş Yap",
-                    primaryColor: "#6a11cb",
-                    foregroundColor: "#ffffff",
+                "google-oauth2": {
+                    displayName: "Google ile Giriş",
+                    primaryColor: "#4285F4",
+                    icon: "https://cdn.auth0.com/website/new-homepage/dark-favicon-2.png"
+                },
+                "facebook": {
+                    displayName: "Facebook ile Giriş",
+                    primaryColor: "#3b5998",
+                    icon: "https://cdn.auth0.com/website/new-homepage/dark-favicon-2.png"
                 }
             }
         },
         languageDictionary: {
-            title: "Chatlify",
-            emailInputPlaceholder: "Email adresiniz",
-            passwordInputPlaceholder: "Şifreniz",
-            loginSubmitLabel: "Giriş Yap",
-            signUpSubmitLabel: "Hesap Oluştur",
-            success: {
-                logIn: "Giriş başarılı!",
-                signUp: "Kayıt başarılı!"
-            }
+            title: window.location.pathname.includes('register') ? 'Hesap Oluştur' : 'Giriş Yap',
+            signUpTitle: 'Kaydol',
+            loginTitle: 'Giriş Yap',
+            signUpLabel: 'Kaydol',
+            loginLabel: 'Giriş Yap',
+            emailInputPlaceholder: 'E-posta adresiniz',
+            passwordInputPlaceholder: 'Şifreniz',
+            usernameOrEmailInputPlaceholder: 'E-posta adresiniz',
+            forgotPasswordTitle: 'Şifrenizi mi unuttunuz?',
+            forgotPasswordAction: 'Şifremi unuttum',
+            signUpTerms: 'Kaydolarak, hizmet koşullarını ve gizlilik politikasını kabul etmiş olursunuz.',
+            databaseEnterpriseAlternativeLoginInstructions: 'veya',
+            databaseAlternativeSignUpInstructions: 'veya',
+            separatorText: 'veya'
         },
-        closable: true,
-        autofocus: true,
+        additionalSignUpFields: [{
+            name: "full_name",
+            placeholder: "Adınız ve Soyadınız"
+        }],
+        mustAcceptTerms: true,
+        allowShowPassword: true,
+        allowAutocomplete: true,
+        closable: false,
+        rememberLastLogin: true,
+        usernameStyle: 'email',
+        defaultDatabaseConnection: 'Username-Password-Authentication',
         avatar: {
             url: false // Gravatar gösterme
         },
-        allowShowPassword: true // Şifre görünürlük butonu göster
+        initialScreen: window.location.pathname.includes('register') ? 'signUp' : 'login',
+        defaultADUsernameFromEmailPrefix: false,
+        prefill: {
+            email: '',
+        },
+        // Kayıt için database connection adını açıkça belirt
+        signUpFieldsHandler: function (fields) {
+            return {
+                ...fields,
+                connection: "Username-Password-Authentication"
+            };
+        }
     };
 
     // Login ve Register için ayrı Lock konfigürasyonları
@@ -74,6 +106,15 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
         lock = new Auth0Lock(AUTH0_CLIENT_ID, AUTH0_DOMAIN, lockOptions);
         console.log("Auth0 Lock instance created:", lock); // Log for debugging
+
+        // Auth0 widget'ını sayfaya göre hazırla
+        if (document.getElementById('auth0-lock-container')) {
+            lock.show();
+
+            // Container sınıfı ekleyerek stil düzenlemelerini aktifleştir
+            var lockContainer = document.getElementById('auth0-lock-container');
+            lockContainer.classList.add('embedded-auth0');
+        }
     } catch (error) {
         console.error("Failed to initialize Auth0 Lock:", error);
         return; // Stop execution if Lock fails to initialize
