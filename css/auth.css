@@ -819,6 +819,7 @@
     }
 }
 
+<<<<<<< HEAD
 /* Auth0 Sosyal Giriş Butonları İçin CSS */
 .social-login {
     margin-top: 30px;
@@ -904,4 +905,53 @@
 
 .social-btn.github:hover {
     background: #24292e;
+=======
+/* Auth0 Lock Visibility Overrides */
+/* Add these at the end of the file to ensure higher specificity */
+
+/* Ensure the main container is visible and on top */
+.auth0-lock-widget-container,
+.auth0-lock-widget {
+    display: block !important;
+    /* Force display */
+    visibility: visible !important;
+    /* Force visibility */
+    opacity: 1 !important;
+    /* Force opacity */
+    z-index: 9999 !important;
+    /* Ensure it's on top of other elements */
+    position: fixed !important;
+    /* Use fixed position to avoid layout shifts hiding it */
+    top: 50% !important;
+    /* Center vertically */
+    left: 50% !important;
+    /* Center horizontally */
+    transform: translate(-50%, -50%) !important;
+    /* Adjust for centering */
+    border: 2px solid red !important;
+    /* Add a temporary red border for easy spotting */
+    min-width: 300px;
+    /* Ensure it has some minimum width */
+    min-height: 400px;
+    /* Ensure it has some minimum height */
+    background: white;
+    /* Give it a background in case it's transparent */
+}
+
+/* Ensure the overlay is visible if used */
+.auth0-lock-overlay {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 0.5 !important;
+    /* Make overlay slightly visible */
+    z-index: 9998 !important;
+    /* Below the widget but above other content */
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    /* Ensure it has a background */
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+>>>>>>> 15befac4b900861b522cd916c84717b78e8157cd
 }
