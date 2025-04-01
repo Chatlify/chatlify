@@ -1,8 +1,7 @@
-// Supabase İstemcisini Başlatma
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'; // CDN'den import
 
-const supabaseUrl = 'https://zdxajiywkjolergewhon.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpkeGFqaXl3a2pvbGVyZ2V3aG9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDgzMDk0NjgsImV4cCI6MjAyMzg4NTQ2OH0.1C626jHqQ8sL4m4s34A6xLQh5B3G0Yd8lG9iEaR9j28';
+const supabaseUrl = 'https://chatlify2.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNoYXRsaWZ5MiIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzEzMzk5Njc4LCJleHAiOjIwMjkwNzU2Nzh9.z2g_1H_h_u9C3C3Z-2lX_9E3D-x_yZ8a_9B0aAbCdEf';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 document.addEventListener('DOMContentLoaded', () => {
