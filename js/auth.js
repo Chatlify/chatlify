@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         language: 'en',
         allowSignUp: true, // Allow users to sign up
         container: 'auth0-lock-container',
-        configurationBaseUrl: 'https://cdn.eu.auth0.com', // Değiştirildi: Avrupa CDN'i
+        configurationBaseUrl: 'https://cdn.auth0.com', // Değiştirildi: Tekrar orijinal CDN
         closable: true,
         autofocus: true,
         rememberLastLogin: true // Local storage'da son girişi hatırla
