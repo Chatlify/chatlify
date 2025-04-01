@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---- Lock Configuration ----
     const lockOptions = {
         auth: {
+            sso: false, // SSO'yu devre dışı bırak
+            redirect: true,
             redirectUrl: 'https://chatlifyapp.com/dashboard.html', // Redirect after successful login/signup
             responseType: 'token id_token',
             audience: 'https://' + AUTH0_DOMAIN + '/userinfo',
@@ -32,24 +34,28 @@ document.addEventListener('DOMContentLoaded', () => {
         languageDictionary: {
             title: "Chatlify"
         },
+        language: 'en',
         allowSignUp: true, // Allow users to sign up
         container: 'auth0-lock-container',
-        configurationBaseUrl: 'https://cdn.auth0.com',
+        configurationBaseUrl: 'https://cdn.eu.auth0.com', // Değiştirildi: Avrupa CDN'i
         closable: true,
-        autofocus: true
+        autofocus: true,
+        rememberLastLogin: true // Local storage'da son girişi hatırla
     };
 
     // Login ve Register için ayrı Lock konfigürasyonları
     const loginLockOptions = {
         ...lockOptions,
         allowedConnections: ['Username-Password-Authentication'],
-        initialScreen: 'login'
+        initialScreen: 'login',
+        language: 'en'
     };
 
     const signupLockOptions = {
         ...lockOptions,
         allowedConnections: ['Username-Password-Authentication'],
-        initialScreen: 'signUp'
+        initialScreen: 'signUp',
+        language: 'en'
     };
 
     //---- Lock Instance ----
