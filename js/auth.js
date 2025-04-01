@@ -15,47 +15,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const getUserProfile = () => JSON.parse(localStorage.getItem('profile'));
 
     // ---- Lock Configuration ----
+    // Daha basit bir Lock konfigürasyonu ile test edelim
     const lockOptions = {
         auth: {
-            sso: false, // SSO'yu devre dışı bırak
-            redirect: true,
-            redirectUrl: 'https://chatlifyapp.com/dashboard.html', // Redirect after successful login/signup
-            responseType: 'token id_token',
-            audience: 'https://' + AUTH0_DOMAIN + '/userinfo',
-            params: {
-                scope: 'openid profile email'
-            }
+            redirectUrl: 'https://chatlifyapp.com/dashboard.html',
+            responseType: 'token id_token'
         },
-        allowedConnections: ['Username-Password-Authentication'], // Sadece email/şifre bağlantısını kullan
-        theme: {
-            logo: '/images/favicon.svg', // Use root-relative path
-            primaryColor: '#6a11cb'
-        },
-        languageDictionary: {
-            title: "Chatlify"
-        },
-        language: 'en',
-        allowSignUp: true, // Allow users to sign up
+        allowedConnections: ['Username-Password-Authentication'],
         container: 'auth0-lock-container',
-        configurationBaseUrl: 'https://cdn.auth0.com', // Değiştirildi: Tekrar orijinal CDN
-        closable: true,
-        autofocus: true,
-        rememberLastLogin: true // Local storage'da son girişi hatırla
+        language: 'en' // Dil ayarını açıkça belirtelim
     };
 
     // Login ve Register için ayrı Lock konfigürasyonları
+    // Ana lockOptions'dan miras alacak şekilde bırakalım
     const loginLockOptions = {
         ...lockOptions,
-        allowedConnections: ['Username-Password-Authentication'],
-        initialScreen: 'login',
-        language: 'en'
+        initialScreen: 'login'
     };
 
     const signupLockOptions = {
         ...lockOptions,
-        allowedConnections: ['Username-Password-Authentication'],
-        initialScreen: 'signUp',
-        language: 'en'
+        initialScreen: 'signUp'
     };
 
     //---- Lock Instance ----
