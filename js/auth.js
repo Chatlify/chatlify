@@ -32,9 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
             title: "Chatlify"
         },
         allowSignUp: true, // Allow users to sign up
-        // Set initial screen based on the current page
-        initialScreen: window.location.pathname.includes('/register.html') ? 'signUp' : 'login'
     };
+
+    // Login ve Register için ayrı Lock konfigürasyonları
+    const loginLockOptions = { ...lockOptions, allowedConnections: ['Username-Password-Authentication', 'google-oauth2', 'facebook', 'github'], initialScreen: 'login' };
+    const signupLockOptions = { ...lockOptions, allowedConnections: ['Username-Password-Authentication', 'google-oauth2', 'facebook', 'github'], initialScreen: 'signUp' };
 
     //---- Lock Instance ----
     let lock;
@@ -180,21 +182,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 2. Form button event handlers
-    // Login form
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
+    // Login form button
+    const loginBtn = document.getElementById('qsLoginBtn');
+    if (loginBtn) {
+        loginBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            lock.show();
+            // Login sayfasında ise sadece giriş ekranını göster
+            lock.show(loginLockOptions);
         });
     }
 
-    // Register form
-    const registerForm = document.getElementById('registerForm');
-    if (registerForm) {
-        registerForm.addEventListener('submit', (e) => {
+    // Register form button
+    const signUpBtn = document.getElementById('qsSignUpBtn');
+    if (signUpBtn) {
+        signUpBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            lock.show({ initialScreen: 'signUp' });
+            // Register sayfasında ise sadece kayıt ekranını göster
+            lock.show(signupLockOptions);
         });
     }
 
@@ -209,8 +213,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     button.classList.contains('github') ? 'github' : '';
 
             if (connection) {
+                // Butonun bulunduğu sayfaya göre farklı ekran göster
+                const isRegisterPage = window.location.pathname.includes('/register.html');
                 lock.show({
-                    initialScreen: button.closest('form')?.id === 'registerForm' ? 'signUp' : 'login',
+                    initialScreen: isRegisterPage ? 'signUp' : 'login',
                     allowedConnections: [connection]
                 });
             }
