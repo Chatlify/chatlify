@@ -15,15 +15,46 @@ document.addEventListener('DOMContentLoaded', () => {
     const getUserProfile = () => JSON.parse(localStorage.getItem('profile'));
 
     // ---- Lock Configuration ----
-    // Daha basit bir Lock konfigürasyonu ile test edelim
     const lockOptions = {
         auth: {
             redirectUrl: 'https://chatlifyapp.com/dashboard.html',
-            responseType: 'token id_token'
+            responseType: 'token id_token',
+            params: {
+                scope: 'openid profile email'
+            }
         },
         allowedConnections: ['Username-Password-Authentication'],
         container: 'auth0-lock-container',
-        language: 'en' // Dil ayarını açıkça belirtelim
+        language: 'en',
+        theme: {
+            logo: '/images/favicon.svg',
+            primaryColor: '#6a11cb',
+            labeledSubmitButton: true,
+            authButtons: {
+                connectionName: {
+                    displayName: "Giriş Yap",
+                    primaryColor: "#6a11cb",
+                    foregroundColor: "#ffffff",
+                }
+            }
+        },
+        languageDictionary: {
+            title: "Chatlify",
+            emailInputPlaceholder: "Email adresiniz",
+            passwordInputPlaceholder: "Şifreniz",
+            loginSubmitLabel: "Giriş Yap",
+            signUpSubmitLabel: "Hesap Oluştur",
+            success: {
+                logIn: "Giriş başarılı!",
+                signUp: "Kayıt başarılı!"
+            }
+        },
+        closable: true,
+        autofocus: true,
+        avatar: {
+            url: false // Gravatar gösterme
+        },
+        allowShowPassword: true // Şifre görünürlük butonu göster
     };
 
     // Login ve Register için ayrı Lock konfigürasyonları
