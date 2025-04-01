@@ -1,3 +1,10 @@
+// Supabase İstemcisini Başlatma
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const supabaseUrl = 'https://zdxajiywkjolergewhon.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpkeGFqaXl3a2pvbGVyZ2V3aG9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDgzMDk0NjgsImV4cCI6MjAyMzg4NTQ2OH0.1C626jHqQ8sL4m4s34A6xLQh5B3G0Yd8lG9iEaR9j28';
+const supabase = createClient(supabaseUrl, supabaseKey);
+
 document.addEventListener('DOMContentLoaded', () => {
     // Partikül arkaplan efekti için canvas oluştur
     const body = document.querySelector('body');
