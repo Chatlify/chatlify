@@ -20,7 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
             redirectUrl: window.location.origin + '/callback.html',
             responseType: 'token id_token',
             params: {
-                scope: 'openid profile email'
+                scope: 'openid profile email',
+                connection: 'Username-Password-Authentication'
             }
         },
         allowedConnections: ['Username-Password-Authentication'],
@@ -41,6 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
             emailInputPlaceholder: 'E-posta adresiniz',
             passwordInputPlaceholder: 'Şifreniz'
         },
+        additionalSignUpFields: [
+            {
+                name: "full_name",
+                placeholder: "Adınız ve Soyadınız",
+            }
+        ],
         mustAcceptTerms: true,
         allowShowPassword: true,
         closable: false,
@@ -50,36 +57,21 @@ document.addEventListener('DOMContentLoaded', () => {
         initialScreen: window.location.pathname.includes('register') ? 'signUp' : 'login'
     };
 
-    // Login ve Register için ayrı Lock konfigürasyonları
-    // Ana lockOptions'dan miras alacak şekilde bırakalım
-    const loginLockOptions = {
-        ...lockOptions,
-        initialScreen: 'login'
-    };
-
-    const signupLockOptions = {
-        ...lockOptions,
-        initialScreen: 'signUp'
-    };
-
     //---- Lock Instance ----
     let lock;
     try {
         lock = new Auth0Lock(AUTH0_CLIENT_ID, AUTH0_DOMAIN, lockOptions);
-        console.log("Auth0 Lock instance created:", lock); // Log for debugging
-
-        // Auth0 widget'ını sayfaya göre hazırla
-        if (document.getElementById('auth0-lock-container')) {
-            lock.show();
-
-            // Container sınıfı ekleyerek stil düzenlemelerini aktifleştir
-            var lockContainer = document.getElementById('auth0-lock-container');
-            lockContainer.classList.add('embedded-auth0');
-        }
+        console.log("Auth0 Lock instance:", lock); // Log 3
     } catch (error) {
         console.error("Failed to initialize Auth0 Lock:", error);
         return; // Stop execution if Lock fails to initialize
     }
+
+    // ---- App state ----
+    // You might want to use a more robust state management approach later
+    // let userProfile = JSON.parse(localStorage.getItem('profile')) || null;
+    // let accessToken = localStorage.getItem('accessToken') || null;
+    // let idToken = localStorage.getItem('idToken') || null;
 
     // ---- Helper Functions ----
     const saveAuthResult = (authResult) => {
@@ -209,57 +201,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 2. Form button event handlers
-    // Login form button
-    const loginBtn = document.getElementById('qsLoginBtn');
-    if (loginBtn) {
-        console.log('Login button found');
-        loginBtn.addEventListener('click', (e) => {
-            console.log('Login button clicked');
+    // Login form
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-
-            // Mevcut container'ı temizle
-            let container = document.getElementById('auth0-lock-container');
-            if (!container) {
-                container = document.createElement('div');
-                container.id = 'auth0-lock-container';
-                document.body.appendChild(container);
-            }
-
-            // Login sayfasında ise sadece giriş ekranını göster
-            lock.show(loginLockOptions);
-            console.log('Lock.show called with login options');
+            lock.show();
         });
     }
 
-    // Register form button
-    const signUpBtn = document.getElementById('qsSignUpBtn');
-    if (signUpBtn) {
-        console.log('SignUp button found');
-        signUpBtn.addEventListener('click', (e) => {
-            console.log('SignUp button clicked');
+    // Register form
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+        registerForm.addEventListener('submit', (e) => {
             e.preventDefault();
-
-            // Mevcut container'ı temizle
-            let container = document.getElementById('auth0-lock-container');
-            if (!container) {
-                container = document.createElement('div');
-                container.id = 'auth0-lock-container';
-                document.body.appendChild(container);
-            }
-
-            // Register sayfasında ise sadece kayıt ekranını göster
-            lock.show(signupLockOptions);
-            console.log('Lock.show called with signup options');
+            lock.show({ initialScreen: 'signUp' });
         });
     }
 
     // Social login buttons for login and register
-    // Login page social buttons - Sosyal login butonlarını gizle/devre dışı bırak
+    // Login page social buttons
     const socialLoginButtons = document.querySelectorAll('.social-btn');
     socialLoginButtons.forEach(button => {
-        button.style.display = 'none'; // Sosyal login butonlarını gizle
-        // Alternatif: butonları devre dışı bırak 
-        // button.disabled = true;
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const connection = button.classList.contains('google') ? 'google-oauth2' :
+                button.classList.contains('facebook') ? 'facebook' :
+                    button.classList.contains('github') ? 'github' : '';
+
+            if (connection) {
+                lock.show({
+                    initialScreen: button.closest('form')?.id === 'registerForm' ? 'signUp' : 'login',
+                    allowedConnections: [connection]
+                });
+            }
+        });
     });
 
     // 3. Logout button
@@ -277,7 +253,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 5. Initial UI update
     updateUserUI();
-
-    // Geliştirici konsolu için global erişim
-    window.auth0Lock = lock;
 });
