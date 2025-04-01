@@ -32,27 +32,25 @@ document.addEventListener('DOMContentLoaded', () => {
             title: "Chatlify"
         },
         allowSignUp: true, // Allow users to sign up
+        container: 'auth0-lock-container',
+        configurationBaseUrl: 'https://cdn.auth0.com',
+        closable: true,
+        autofocus: true
     };
 
     // Login ve Register için ayrı Lock konfigürasyonları
-    const loginLockOptions = { ...lockOptions, allowedConnections: ['Username-Password-Authentication', 'google-oauth2', 'facebook', 'github'], initialScreen: 'login' };
-    const signupLockOptions = { ...lockOptions, allowedConnections: ['Username-Password-Authentication', 'google-oauth2', 'facebook', 'github'], initialScreen: 'signUp' };
+    const loginLockOptions = { ...lockOptions, initialScreen: 'login' };
+    const signupLockOptions = { ...lockOptions, initialScreen: 'signUp' };
 
     //---- Lock Instance ----
     let lock;
     try {
         lock = new Auth0Lock(AUTH0_CLIENT_ID, AUTH0_DOMAIN, lockOptions);
-        console.log("Auth0 Lock instance:", lock); // Log 3
+        console.log("Auth0 Lock instance created:", lock); // Log for debugging
     } catch (error) {
         console.error("Failed to initialize Auth0 Lock:", error);
         return; // Stop execution if Lock fails to initialize
     }
-
-    // ---- App state ----
-    // You might want to use a more robust state management approach later
-    // let userProfile = JSON.parse(localStorage.getItem('profile')) || null;
-    // let accessToken = localStorage.getItem('accessToken') || null;
-    // let idToken = localStorage.getItem('idToken') || null;
 
     // ---- Helper Functions ----
     const saveAuthResult = (authResult) => {
@@ -185,20 +183,44 @@ document.addEventListener('DOMContentLoaded', () => {
     // Login form button
     const loginBtn = document.getElementById('qsLoginBtn');
     if (loginBtn) {
+        console.log('Login button found');
         loginBtn.addEventListener('click', (e) => {
+            console.log('Login button clicked');
             e.preventDefault();
+
+            // Mevcut container'ı temizle
+            let container = document.getElementById('auth0-lock-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'auth0-lock-container';
+                document.body.appendChild(container);
+            }
+
             // Login sayfasında ise sadece giriş ekranını göster
             lock.show(loginLockOptions);
+            console.log('Lock.show called with login options');
         });
     }
 
     // Register form button
     const signUpBtn = document.getElementById('qsSignUpBtn');
     if (signUpBtn) {
+        console.log('SignUp button found');
         signUpBtn.addEventListener('click', (e) => {
+            console.log('SignUp button clicked');
             e.preventDefault();
+
+            // Mevcut container'ı temizle
+            let container = document.getElementById('auth0-lock-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'auth0-lock-container';
+                document.body.appendChild(container);
+            }
+
             // Register sayfasında ise sadece kayıt ekranını göster
             lock.show(signupLockOptions);
+            console.log('Lock.show called with signup options');
         });
     }
 
@@ -213,12 +235,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     button.classList.contains('github') ? 'github' : '';
 
             if (connection) {
+                console.log(`Social button clicked: ${connection}`);
+                // Mevcut container'ı temizle
+                let container = document.getElementById('auth0-lock-container');
+                if (!container) {
+                    container = document.createElement('div');
+                    container.id = 'auth0-lock-container';
+                    document.body.appendChild(container);
+                }
+
                 // Butonun bulunduğu sayfaya göre farklı ekran göster
                 const isRegisterPage = window.location.pathname.includes('/register.html');
                 lock.show({
                     initialScreen: isRegisterPage ? 'signUp' : 'login',
                     allowedConnections: [connection]
                 });
+                console.log(`Lock.show called with connection ${connection}`);
             }
         });
     });
@@ -238,4 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 5. Initial UI update
     updateUserUI();
+
+    // Geliştirici konsolu için global erişim
+    window.auth0Lock = lock;
 });
