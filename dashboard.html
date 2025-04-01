@@ -14,6 +14,9 @@
     <link rel="stylesheet" href="css/bg-animation.css">
     <script src="js/main.js" defer></script>
     <script src="js/dashboard.js" defer></script>
+    <!-- Auth0 SDK Ekleme -->
+    <script src="https://cdn.auth0.com/js/auth0-spa-js/1.22/auth0-spa-js.production.js"></script>
+    <script src="js/auth.js" defer></script>
 </head>
 
 <body class="dashboard-page">
@@ -857,6 +860,47 @@
             </div>
         </div>
     </div>
+
+    <div class="user-profile-section">
+        <div class="user-header">
+            <h2>Profil Bilgileri</h2>
+        </div>
+        <div class="user-info-container" id="user-info">
+            <div class="user-avatar">
+                <img id="user-avatar" src="images/avatars/default-avatar.svg" alt="User Avatar">
+            </div>
+            <div class="user-details">
+                <h3 id="user-name">Yükleniyor...</h3>
+                <p id="user-email">Yükleniyor...</p>
+                <p id="user-account-type">Standart Hesap</p>
+            </div>
+        </div>
+        <div class="user-actions">
+            <button id="logoutBtn" class="action-btn logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Çıkış Yap</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Auth0 kullanıcı bilgilerini gösterme
+        document.addEventListener('DOMContentLoaded', async () => {
+            const userInfo = localStorage.getItem('user');
+            if (userInfo) {
+                const user = JSON.parse(userInfo);
+
+                // Kullanıcı bilgilerini gösterme
+                document.getElementById('user-name').textContent = user.name || user.nickname || 'Misafir Kullanıcı';
+                document.getElementById('user-email').textContent = user.email || 'Email bilgisi yok';
+
+                // Kullanıcı avatarını gösterme
+                if (user.picture) {
+                    document.getElementById('user-avatar').src = user.picture;
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>
