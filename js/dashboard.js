@@ -1,4 +1,72 @@
-document.addEventListener('DOMContentLoaded', function () {
+import { supabase } from './auth_config.js'; // Supabase istemcisini import et
+
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Dashboard JS Loaded');
+
+    const userPanelUsername = document.getElementById('userPanelUsername');
+    const userPanelAvatar = document.getElementById('userPanelAvatar');
+    const defaultAvatar = 'images/default-avatar.png'; // Varsayılan avatar yolu
+
+    // --- Kullanıcı Bilgilerini Al ve Paneli Güncelle ---
+    try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+        if (sessionError) {
+            console.error('Error getting session:', sessionError);
+            // Kullanıcı giriş yapmamışsa login sayfasına yönlendirilebilir
+            // window.location.href = '/login.html'; 
+            return;
+        }
+
+        if (!session) {
+            console.log('No active session found. Redirecting to login.');
+            // Kullanıcı giriş yapmamışsa login sayfasına yönlendirilebilir
+            // window.location.href = '/login.html'; 
+            return;
+        }
+
+        const user = session.user;
+        console.log('Logged in user:', user);
+
+        // Kullanıcının profil bilgilerini public.users tablosundan al
+        const { data: profile, error: profileError } = await supabase
+            .from('users') // 'public.users' tablosunun adı
+            .select('username, avatar') // İhtiyacımız olan sütunlar
+            .eq('id', user.id) // Kullanıcı ID'sine göre filtrele
+            .single(); // Tek bir sonuç bekliyoruz
+
+        if (profileError) {
+            console.error('Error fetching user profile:', profileError);
+            // Profil bulunamazsa veya hata olursa sadece e-postayı gösterilebilir
+            if (userPanelUsername) userPanelUsername.textContent = user.email;
+            if (userPanelAvatar) userPanelAvatar.src = defaultAvatar;
+            return;
+        }
+
+        if (profile) {
+            console.log('User profile:', profile);
+            // Paneli güncelle
+            if (userPanelUsername) {
+                userPanelUsername.textContent = profile.username || user.email; // Kullanıcı adı yoksa e-postayı kullan
+            }
+            if (userPanelAvatar) {
+                userPanelAvatar.src = profile.avatar || defaultAvatar; // Avatar yoksa varsayılanı kullan
+            }
+        } else {
+            console.log('Profile not found for user:', user.id);
+            // Profil bulunamazsa
+            if (userPanelUsername) userPanelUsername.textContent = user.email;
+            if (userPanelAvatar) userPanelAvatar.src = defaultAvatar;
+        }
+
+    } catch (error) {
+        console.error('Error in dashboard setup:', error);
+        // Genel hata durumunda varsayılanları göster
+        if (userPanelUsername) userPanelUsername.textContent = 'Kullanıcı';
+        if (userPanelAvatar) userPanelAvatar.src = defaultAvatar;
+    }
+    // --- End Kullanıcı Bilgileri ---
+
     // DM Group toggle
     const dmGroupHeaders = document.querySelectorAll('.dm-group-header');
     dmGroupHeaders.forEach(header => {
