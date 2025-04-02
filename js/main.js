@@ -1,113 +1,121 @@
-import { createClient } from '@supabase/supabase-js';
-
 document.addEventListener('DOMContentLoaded', () => {
-    // Supabase client initialization
-    const supabaseUrl = 'https://omyoobepjyyyvemovyim.supabase.coL'; // Replace with your Supabase project URL
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9teW9vYmVwanl5eXZlbW92eWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUxNjIyNDksImV4cCI6MjA1MDczODI0OX0.-aNn51tjlgKLE9GssA0H4WvuCTYS3SMWIsJ4pz-PxqQ'; // Replace with your Supabase anon key
-    const supabase = createClient(supabaseUrl, supabaseKey);
-    window.supabase = supabase; // Make it globally accessible for debugging
-
     // Partikül arkaplan efekti için canvas oluştur
     const body = document.querySelector('body');
     const canvas = document.createElement('canvas');
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    canvas.style.position = 'fixed';
-    canvas.style.top = '0';
-    canvas.style.left = '0';
-    canvas.style.zIndex = '-2';
-
-    body.appendChild(canvas);
-
-    const ctx = canvas.getContext('2d');
-
-    // Pencere boyutu değiştiğinde canvas boyutunu güncelle
-    window.addEventListener('resize', () => {
+    // Ensure body exists before appending canvas
+    if (body) {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-    });
-
-    // Partikül sınıfı
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 2 + 0.5;
-            this.speedX = Math.random() * 0.5 - 0.25;
-            this.speedY = Math.random() * 0.5 - 0.25;
-            this.color = `rgba(${Math.floor(Math.random() * 100 + 100)}, ${Math.floor(Math.random() * 50 + 50)}, ${Math.floor(Math.random() * 200 + 55)}, ${Math.random() * 0.2 + 0.1})`;
-        }
-
-        update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-
-            if (this.x > canvas.width || this.x < 0) {
-                this.speedX = -this.speedX;
-            }
-
-            if (this.y > canvas.height || this.y < 0) {
-                this.speedY = -this.speedY;
-            }
-        }
-
-        draw() {
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fillStyle = this.color;
-            ctx.fill();
-        }
+        canvas.style.position = 'fixed';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        // Set z-index lower than main content but potentially higher than absolute background elements if any
+        canvas.style.zIndex = '-1';
+        // Optional: Add a class for easier targeting if needed
+        canvas.classList.add('particle-canvas');
+        body.appendChild(canvas);
     }
 
-    // Partikül dizisi oluştur
-    const particles = [];
-    const particleCount = Math.floor(window.innerWidth / 15); // Ekran genişliğine göre partikül sayısı
+    // Proceed with particle logic only if canvas exists
+    if (canvas && canvas.parentElement) {
+        const ctx = canvas.getContext('2d');
 
-    for (let i = 0; i < particleCount; i++) {
-        particles.push(new Particle());
-    }
-
-    // Animasyon fonksiyonu
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Partikülleri çiz ve güncelle
-        particles.forEach(particle => {
-            particle.update();
-            particle.draw();
+        // Pencere boyutu değiştiğinde canvas boyutunu güncelle
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         });
 
-        // Partiküller arasında bağlantı çiz
-        connectParticles();
+        // Partikül sınıfı
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5 + 0.5; // Slightly smaller particles
+                this.speedX = Math.random() * 0.4 - 0.2; // Slightly slower speed
+                this.speedY = Math.random() * 0.4 - 0.2;
+                // Adjust color for better visibility on dark background
+                this.color = `rgba(180, 180, 220, ${Math.random() * 0.2 + 0.05})`;
+            }
 
-        requestAnimationFrame(animate);
-    }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
 
-    // Partiküller arasında bağlantı çizme fonksiyonu
-    function connectParticles() {
-        const maxDistance = 100;
+                if (this.x < 0 || this.x > canvas.width) {
+                    this.speedX *= -1;
+                }
+                if (this.y < 0 || this.y > canvas.height) {
+                    this.speedY *= -1;
+                }
+            }
 
-        for (let i = 0; i < particles.length; i++) {
-            for (let j = i; j < particles.length; j++) {
-                const dx = particles[i].x - particles[j].x;
-                const dy = particles[i].y - particles[j].y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
 
-                if (distance < maxDistance) {
-                    ctx.beginPath();
-                    ctx.strokeStyle = `rgba(106, 17, 203, ${0.2 - distance / maxDistance})`;
-                    ctx.lineWidth = 0.2;
-                    ctx.moveTo(particles[i].x, particles[i].y);
-                    ctx.lineTo(particles[j].x, particles[j].y);
-                    ctx.stroke();
+        // Partikül dizisi oluştur
+        let particles = [];
+        function initParticles() {
+            particles = [];
+            const particleCount = Math.floor(canvas.width * canvas.height / 15000); // Adjust density based on area
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+        initParticles(); // Initial creation
+        window.addEventListener('resize', initParticles); // Re-init on resize for density
+
+
+        // Animasyon fonksiyonu
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Partikülleri çiz ve güncelle
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+
+            // Partiküller arasında bağlantı çiz
+            connectParticles();
+
+            requestAnimationFrame(animate);
+        }
+
+        // Partiküller arasında bağlantı çizme fonksiyonu
+        function connectParticles() {
+            const maxDistance = 80; // Reduced distance for fewer lines
+            ctx.strokeStyle = 'rgba(180, 180, 220, 0.08)'; // Lighter, less opaque lines
+            ctx.lineWidth = 0.5;
+
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) { // Start j from i + 1 to avoid duplicate checks
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < maxDistance) {
+                        const opacity = 1 - (distance / maxDistance);
+                        ctx.globalAlpha = opacity * 0.5; // Make lines fade based on distance
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                        ctx.globalAlpha = 1.0; // Reset global alpha
+                    }
                 }
             }
         }
-    }
 
-    // Animasyonu başlat
-    animate();
+        // Animasyonu başlat
+        animate();
+    }
 
     // Scroll animasyonları
     const scrollElements = document.querySelectorAll('.feature-item, .stat-item, .testimonial');
@@ -149,18 +157,36 @@ document.addEventListener('DOMContentLoaded', () => {
     // Navigasyon menüsü scroll olayı
     const header = document.querySelector('header');
 
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-    });
+    // Check if header exists before adding scroll event
+    if (header) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+    }
 
     // Mobil menü
     const createMobileMenu = () => {
-        if (window.innerWidth <= 992 && !document.querySelector('.mobile-menu-btn')) {
-            const nav = document.querySelector('nav');
+        const nav = document.querySelector('nav');
+        const body = document.querySelector('body');
+
+        // Check if nav and body exist
+        if (!nav || !body) return;
+
+        // Remove existing mobile menu if window resizes above threshold
+        const existingMobileBtn = document.querySelector('.mobile-menu-btn');
+        const existingMobileMenu = document.querySelector('.mobile-menu');
+        if (window.innerWidth > 992) {
+            if (existingMobileBtn) existingMobileBtn.remove();
+            if (existingMobileMenu) existingMobileMenu.remove();
+            return; // Don't create menu if screen is large
+        }
+
+        // Create mobile menu only if it doesn't exist
+        if (!existingMobileBtn) {
             const mobileBtn = document.createElement('div');
             mobileBtn.classList.add('mobile-menu-btn');
             mobileBtn.innerHTML = `<i class="fas fa-bars"></i>`;
@@ -168,11 +194,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const mobileMenu = document.createElement('div');
             mobileMenu.classList.add('mobile-menu');
 
-            const navLinksClone = document.querySelector('.nav-links').cloneNode(true);
-            const navButtonsClone = document.querySelector('.nav-buttons').cloneNode(true);
+            const navLinks = document.querySelector('.nav-links');
+            const navButtons = document.querySelector('.nav-buttons');
 
-            mobileMenu.appendChild(navLinksClone);
-            mobileMenu.appendChild(navButtonsClone);
+            // Clone only if elements exist
+            if (navLinks) mobileMenu.appendChild(navLinks.cloneNode(true));
+            if (navButtons) mobileMenu.appendChild(navButtons.cloneNode(true));
 
             nav.appendChild(mobileBtn);
             body.appendChild(mobileMenu);
@@ -200,15 +227,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     createMobileMenu();
-
-    window.addEventListener('resize', () => {
-        // Mobil menü oluştur
-        createMobileMenu();
-    });
+    window.addEventListener('resize', createMobileMenu); // Call on resize
 
     // Cihaz animasyonları
     const devices = document.querySelectorAll('.device');
-
     devices.forEach(device => {
         device.addEventListener('mouseover', () => {
             devices.forEach(d => d.classList.add('hover'));
@@ -249,7 +271,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     lazyLoadImages();
 
-    // Sayfa yükleme animasyonu
+    // Sayfa yükleme animasyonu (main element check)
     const content = document.querySelector('main');
-    content.classList.add('loaded');
+    if (content) {
+        content.classList.add('loaded');
+    }
 });
