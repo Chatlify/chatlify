@@ -71,8 +71,18 @@ nav {
 .logo {
     display: flex;
     align-items: center;
-    font-weight: bold;
-    font-size: 1.5rem;
+    gap: 10px;
+    color: var(--text-color);
+    font-weight: 700;
+    font-size: 20px;
+    text-decoration: none;
+}
+
+.header-logo-img {
+    height: 40px;
+    /* Adjust as needed */
+    width: auto;
+    display: block;
 }
 
 .logo span {
@@ -1058,23 +1068,15 @@ footer::before {
 
 .footer-logo {
     display: flex;
-    align-items: center;
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-bottom: 1.2rem;
+    justify-content: center;
+    /* Center logo in footer */
+    margin-bottom: 20px;
 }
 
-.footer-logo .logo-svg {
-    height: 40px;
-    width: 40px;
-    margin-right: 10px;
-    filter: drop-shadow(0 0 8px rgba(106, 17, 203, 0.6));
-    transition: all 0.3s ease;
-}
-
-.footer-logo:hover .logo-svg {
-    filter: drop-shadow(0 0 12px rgba(106, 17, 203, 0.8));
-    transform: scale(1.05);
+.footer-logo-img {
+    height: 50px;
+    /* Adjust as needed */
+    width: auto;
 }
 
 .footer-logo span {
@@ -1352,4 +1354,22 @@ footer a[href*="data-protection"] {
 .nav-links a:hover::after,
 .nav-links a.active::after {
     transition: none !important;
+}
+
+/* Auth Pages Logo */
+.auth-logo {
+    margin-bottom: 20px;
+    display: flex;
+    /* Use flexbox for centering */
+    justify-content: center;
+    /* Center horizontally */
+    align-items: center;
+    /* Center vertically */
+}
+
+.auth-logo-img {
+    height: 70px;
+    /* Adjust as needed */
+    width: auto;
+    display: block;
 }
