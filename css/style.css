@@ -68,6 +68,7 @@ nav {
     margin: 0 auto;
 }
 
+/* Logo Styles */
 .logo {
     display: flex;
     align-items: center;
@@ -85,6 +86,7 @@ nav {
     object-fit: contain;
 }
 
+/* Style for the text next to the logo */
 .logo span {
     background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
     -webkit-background-clip: text;
@@ -93,6 +95,7 @@ nav {
     font-weight: 800;
     letter-spacing: 1px;
     line-height: 1;
+    font-size: 20px;
 }
 
 .logo-svg {
@@ -1066,6 +1069,7 @@ footer::before {
     margin-bottom: 2.5rem;
 }
 
+/* Footer Logo */
 .footer-logo {
     display: flex;
     align-items: center;
@@ -1080,6 +1084,7 @@ footer::before {
     object-fit: contain;
 }
 
+/* Style for the text next to the footer logo */
 .footer-logo span {
     background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
     -webkit-background-clip: text;

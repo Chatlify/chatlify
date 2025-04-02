@@ -67,6 +67,19 @@
                 </div>
 
                 <form id="registerForm" class="auth-form">
+                    <!-- Avatar Upload Section -->
+                    <div class="form-group avatar-upload-section">
+                        <label for="avatarInput">Avatar (Optional)</label>
+                        <div class="avatar-preview" id="avatarPreview">
+                            <img src="" alt="Avatar Preview" class="avatar-preview-img" style="display: none;">
+                            <span class="avatar-preview-text">Click to upload</span>
+                            <i class="fas fa-camera avatar-upload-icon"></i>
+                        </div>
+                        <input type="file" id="avatarInput" name="avatar" accept="image/png, image/jpeg, image/gif">
+                        <div class="error-message" id="avatarError"></div>
+                    </div>
+                    <!-- End Avatar Upload Section -->
+
                     <div class="form-group">
                         <label for="username">Username</label>
                         <div class="input-with-icon">
@@ -129,7 +142,7 @@
                         <div class="error-message" id="termsError">You must accept the Terms of Service</div>
                     </div>
 
-                    <button type="submit" class="submit-btn">
+                    <button type="submit" id="submitBtn" class="submit-btn" disabled>
                         <span class="btn-text">Create Account</span>
                         <div class="loading-spinner">
                             <div class="spinner"></div>
