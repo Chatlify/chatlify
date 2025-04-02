@@ -1,1 +1,79 @@
-import { supabase } from './auth_config.js'; \n\ndocument.addEventListener('DOMContentLoaded', () => { \n    const registerForm = document.getElementById('registerForm'); \n    const submitButton = registerForm.querySelector('button[type=\"submit\"]'); \n    const buttonText = submitButton.querySelector('.btn-text'); \n    const loadingSpinner = submitButton.querySelector('.loading-spinner'); \n\n    // Hata ve başarı mesajları için elementler\n    const formMessage = document.createElement('div');\n    formMessage.className = 'form-message'; // Genel stil için\n    registerForm.prepend(formMessage); // Formun başına ekle\n\n    registerForm.addEventListener('submit', async (event) => {\n        event.preventDefault(); // Formun varsayılan gönderimini engelle\n\n        // Butonu yükleniyor durumuna getir\n        buttonText.style.display = 'none';\n        loadingSpinner.style.display = 'block';\n        submitButton.disabled = true;\n        formMessage.textContent = ''; // Önceki mesajları temizle\n        formMessage.className = 'form-message'; // Stili sıfırla\n\n        // Form verilerini al\n        const emailInput = document.getElementById('email');\n        const passwordInput = document.getElementById('password');\n        const usernameInput = document.getElementById('username');\n        // Confirm password kontrolünü burada ekleyebilirsiniz, şimdilik geçiyorum.\n\n        const email = emailInput.value;\n        const password = passwordInput.value;\n        const username = usernameInput.value;\n\n        // Supabase ile kayıt ol\n        try {\n            const { data, error } = await supabase.auth.signUp({\n                email: email,\n                password: password,\n                options: {\n                    data: {\n                        username: username // Kullanıcı adını meta veri olarak ekle\n                    },\n                    // E-posta doğrulama linkinin yönlendireceği adres\n                    emailRedirectTo: `${window.location.origin}/login.html?verified=true`\n                }\n            });\n\n            if (error) {\n                console.error('Supabase Kayıt Hatası:', error);\n                formMessage.textContent = `Kayıt başarısız: ${error.message}`;\n                formMessage.classList.add('error'); // Hata stili\n            } else if (data.user && data.user.identities && data.user.identities.length === 0) {\n                // Bu durum bazen email zaten kullanımda ise oluşabilir (Supabase'in yeni sürümlerinde değişebilir)\n                formMessage.textContent = 'Bu e-posta adresi zaten kullanımda.';\n                formMessage.classList.add('error');\n            } else if (data.user) {\n                console.log('Kayıt Başarılı:', data.user);\n                formMessage.textContent = 'Kayıt başarılı! Lütfen e-posta adresinizi kontrol ederek hesabınızı doğrulayın.';\n                formMessage.classList.add('success'); // Başarı stili\n                registerForm.reset(); // Formu temizle\n            } else {\n                 // Beklenmedik durum (örneğin e-posta doğrulaması kapalıysa)\n                formMessage.textContent = 'Kayıt işlemi tamamlandı. Giriş yapabilirsiniz.';\n                 formMessage.classList.add('success');\n                 registerForm.reset();\n            }\n\n        } catch (err) {\n            console.error('Beklenmedik Hata:', err);\n            formMessage.textContent = 'Bir hata oluştu. Lütfen tekrar deneyin.';\n            formMessage.classList.add('error');\n        }\n        finally {\n            // Butonu tekrar aktif et\n            buttonText.style.display = 'inline';\n            loadingSpinner.style.display = 'none';\n            submitButton.disabled = false;\n        }\n    });\n}); 
+import { supabase } from './auth_config.js';
+
+document.addEventListener('DOMContentLoaded', () => {
+    const registerForm = document.getElementById('registerForm');
+    const submitButton = registerForm.querySelector('button[type="submit"]');
+    const buttonText = submitButton.querySelector('.btn-text');
+    const loadingSpinner = submitButton.querySelector('.loading-spinner');
+
+    // Hata ve başarı mesajları için elementler
+    const formMessage = document.createElement('div');
+    formMessage.className = 'form-message'; // Genel stil için
+    registerForm.prepend(formMessage); // Formun başına ekle
+
+    registerForm.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Formun varsayılan gönderimini engelle
+
+        // Butonu yükleniyor durumuna getir
+        buttonText.style.display = 'none';
+        loadingSpinner.style.display = 'block';
+        submitButton.disabled = true;
+        formMessage.textContent = ''; // Önceki mesajları temizle
+        formMessage.className = 'form-message'; // Stili sıfırla
+
+        // Form verilerini al
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const usernameInput = document.getElementById('username');
+        // Confirm password kontrolünü burada ekleyebilirsiniz, şimdilik geçiyorum.
+
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        const username = usernameInput.value;
+
+        // Supabase ile kayıt ol
+        try {
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        username: username // Kullanıcı adını meta veri olarak ekle
+                    },
+                    // E-posta doğrulama linkinin yönlendireceği adres
+                    emailRedirectTo: `${window.location.origin}/login.html?verified=true`
+                }
+            });
+
+            if (error) {
+                console.error('Supabase Kayıt Hatası:', error);
+                formMessage.textContent = `Kayıt başarısız: ${error.message}`;
+                formMessage.classList.add('error'); // Hata stili
+            } else if (data.user && data.user.identities && data.user.identities.length === 0) {
+                // Bu durum bazen email zaten kullanımda ise oluşabilir (Supabase'in yeni sürümlerinde değişebilir)
+                formMessage.textContent = 'Bu e-posta adresi zaten kullanımda.';
+                formMessage.classList.add('error');
+            } else if (data.user) {
+                console.log('Kayıt Başarılı:', data.user);
+                formMessage.textContent = 'Kayıt başarılı! Lütfen e-posta adresinizi kontrol ederek hesabınızı doğrulayın.';
+                formMessage.classList.add('success'); // Başarı stili
+                registerForm.reset(); // Formu temizle
+            } else {
+                // Beklenmedik durum (örneğin e-posta doğrulaması kapalıysa)
+                formMessage.textContent = 'Kayıt işlemi tamamlandı. Giriş yapabilirsiniz.';
+                formMessage.classList.add('success');
+                registerForm.reset();
+            }
+
+        } catch (err) {
+            console.error('Beklenmedik Hata:', err);
+            formMessage.textContent = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+            formMessage.classList.add('error');
+        } finally {
+            // Butonu tekrar aktif et
+            buttonText.style.display = 'inline';
+            loadingSpinner.style.display = 'none';
+            submitButton.disabled = false;
+        }
+    });
+}); 
