@@ -1,8 +1,8 @@
 import { supabase } from './auth_config.js';
 
 // *** Cloudinary Ayarları (Kendi Bilgilerinizle Değiştirin) ***
-const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload'; // YOUR_CLOUD_NAME yerine kendi cloud name'inizi yazın
-const CLOUDINARY_UPLOAD_PRESET = 'YOUR_UNSIGNED_UPLOAD_PRESET'; // İmzasız (unsigned) bir upload preset oluşturup adını buraya yazın
+const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dabcbpznc/image/upload'; // Cloud Name güncellendi
+const CLOUDINARY_UPLOAD_PRESET = 'chatlify_unsigned'; // İmzasız (unsigned) bir upload preset oluşturup adını buraya yazın
 
 document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('registerForm');
@@ -18,6 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const avatarPreviewText = avatarPreview.querySelector('.avatar-preview-text');
     const avatarUploadIcon = avatarPreview.querySelector('.avatar-upload-icon');
     let avatarFile = null; // Seçilen dosyayı tutmak için
+
+    // Şifre gücü elementleri
+    const passwordInputForStrength = document.getElementById('password');
+    const strengthValueSpan = document.getElementById('strengthValue');
+    const strengthMeter = document.querySelector('.strength-meter'); // Meter container
 
     // Hata ve başarı mesajları için elementler
     const formMessage = document.createElement('div');
@@ -74,6 +79,76 @@ document.addEventListener('DOMContentLoaded', () => {
         displayAvatarError('');
     }
     // --- End Avatar ---    
+
+    // --- Şifre Gücü Kontrolü ---
+    function checkPasswordStrength(password) {
+        let strength = 0;
+        if (password.length >= 8) strength += 1; // Uzunluk
+        if (password.match(/[a-z]/)) strength += 1; // Küçük harf
+        if (password.match(/[A-Z]/)) strength += 1; // Büyük harf
+        if (password.match(/[0-9]/)) strength += 1; // Rakam
+        if (password.match(/[^a-zA-Z0-9]/)) strength += 1; // Özel karakter
+
+        let strengthText = 'Very Weak';
+        let strengthLevel = 0; // 0-4 arası seviye
+
+        if (strength < 2) {
+            strengthText = 'Weak';
+            strengthLevel = 1;
+        } else if (strength === 2) {
+            strengthText = 'Medium';
+            strengthLevel = 2;
+        } else if (strength === 3 || strength === 4) {
+            strengthText = 'Strong';
+            strengthLevel = 3;
+        } else if (strength >= 5) {
+            strengthText = 'Very Strong';
+            strengthLevel = 4;
+        }
+
+        if (password.length === 0) {
+            strengthText = 'Weak'; // Boşsa default
+            strengthLevel = 0;
+        }
+
+        // Update text
+        if (strengthValueSpan) {
+            strengthValueSpan.textContent = strengthText;
+            // Optionally update class for color coding text
+            strengthValueSpan.className = `strength-${strengthText.toLowerCase().replace(' ', '-')}`;
+        }
+
+        // Update meter segments
+        if (strengthMeter) {
+            const segments = strengthMeter.querySelectorAll('.strength-segment');
+            segments.forEach((segment, index) => {
+                if (index < strengthLevel) {
+                    segment.classList.add('filled', `level-${strengthLevel}`);
+                    segment.classList.remove('level-1', 'level-2', 'level-3'); // Remove other levels if changing
+                    if (strengthLevel === 1) segment.classList.remove('level-2', 'level-3', 'level-4');
+                    if (strengthLevel === 2) segment.classList.remove('level-1', 'level-3', 'level-4');
+                    if (strengthLevel === 3) segment.classList.remove('level-1', 'level-2', 'level-4');
+                    if (strengthLevel === 4) segment.classList.remove('level-1', 'level-2', 'level-3');
+                    segment.classList.add(`level-${strengthLevel}`);
+
+                } else {
+                    segment.classList.remove('filled', 'level-1', 'level-2', 'level-3', 'level-4');
+                }
+            });
+            // Add overall class to meter for potential styling
+            strengthMeter.className = `strength-meter strength-${strengthLevel}`;
+        }
+
+    }
+
+    if (passwordInputForStrength) {
+        passwordInputForStrength.addEventListener('input', (event) => {
+            checkPasswordStrength(event.target.value);
+        });
+        // Initial check in case of prefilled password (less common on register)
+        checkPasswordStrength(passwordInputForStrength.value);
+    }
+    // --- End Şifre Gücü ---
 
     // --- Terms Checkbox Kontrolü ---
     termsCheckbox.addEventListener('change', () => {
