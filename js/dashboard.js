@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const chatEmojiBtn = chatPanel?.querySelector('.emoji-btn'); // Emoji butonu
     const chatTextarea = chatPanel?.querySelector('.chat-textbox textarea'); // Mesaj yazma alanı
     const emojiPicker = document.querySelector('emoji-picker'); // Emoji picker elementi
+    const addFriendButton = document.querySelector('.dashboard-header .add-friend'); // Arkadaş Ekle Butonu
     // --- End Element Tanımlamaları ---
 
     // Elementler bulunamadıysa kontrol et (Kullanıcı Paneli)
@@ -40,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('User panel avatar element (.dm-footer .dm-user-avatar img) not found.');
     }
     // Elementler bulunamadıysa kontrol et (Arkadaş Paneli)
-    if (!pendingList || !pendingCountBadge || !pendingSection || !onlineList || !onlineSection || !offlineList || !offlineSection || !dmList || !chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer || !sponsorSidebar || !settingsButtonContainer || !chatCloseBtn || !chatEmojiBtn || !chatTextarea || !emojiPicker) {
+    if (!pendingList || !pendingCountBadge || !pendingSection || !onlineList || !onlineSection || !offlineList || !offlineSection || !dmList || !chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer || !sponsorSidebar || !settingsButtonContainer || !chatCloseBtn || !chatEmojiBtn || !chatTextarea || !emojiPicker || !addFriendButton) {
         console.error('One or more friend panel elements are missing in HTML.');
     }
 
@@ -274,7 +275,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // --- Tüm (Kabul Edilmiş) Arkadaşları Yükleme Fonksiyonu (Güncellendi - Profil butonu) ---
+    // --- Tüm (Kabul Edilmiş) Arkadaşları Yükleme Fonksiyonu (Profil butonu kontrolü) ---
     async function loadAllFriends() {
         if (!onlineList || !offlineList || !dmList || !document.querySelector('.online-count') || !document.querySelector('.offline-count')) return;
 
@@ -318,22 +319,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             friendships.forEach(friendship => {
                 const friendUser = friendship.user_id_1 === currentUserId ? friendship.user2 : friendship.user1;
-                if (!friendUser) return;
+                if (!friendUser) {
+                    console.warn('Friend user data missing for friendship:', friendship.id);
+                    return;
+                }
 
-                // 1. Arkadaş Paneli Öğesini Oluştur (Mevcut kod)
                 const friendElement = document.createElement('div');
                 friendElement.className = 'friend-row';
                 friendElement.dataset.userId = friendUser.id;
+                friendElement.dataset.username = friendUser.username;
+                friendElement.dataset.avatar = friendUser.avatar || defaultAvatar;
                 friendElement.dataset.friendshipId = friendship.id;
                 friendElement.innerHTML = `
                     <div class="friend-avatar">
                         <img src="${friendUser.avatar || defaultAvatar}" alt="${friendUser.username}">
                         <span class="status-dot offline"></span>
-                            </div>
+                    </div>
                     <div class="friend-info">
                         <div class="friend-name">${friendUser.username}</div>
                         <div class="friend-status">Çevrimdışı</div>
-                            </div>
+                    </div>
                     <div class="friend-actions">
                          <button class="friend-action-btn message-btn" title="Mesaj Gönder">
                              <i class="fas fa-comment"></i>
@@ -344,67 +349,65 @@ document.addEventListener('DOMContentLoaded', async () => {
                          <button class="friend-action-btn more-btn" title="Daha Fazla">
                              <i class="fas fa-ellipsis-v"></i>
                          </button>
-                        </div>
+                    </div>
                 `;
-                offlineList.appendChild(friendElement); // Başlangıçta offline'a ekle
 
-                // 2. DM Listesi Öğesini Oluştur
                 const dmElement = document.createElement('div');
-                dmElement.className = 'dm-item'; // Başlangıçta aktif değil
+                dmElement.className = 'dm-item';
                 dmElement.dataset.userId = friendUser.id;
                 dmElement.dataset.username = friendUser.username;
                 dmElement.dataset.avatar = friendUser.avatar || defaultAvatar;
                 dmElement.innerHTML = `
                     <div class="dm-avatar">
                         <img src="${friendUser.avatar || defaultAvatar}" alt="${friendUser.username}">
-                        <div class="dm-status offline"></div> <!-- Başlangıçta offline -->
+                        <div class="dm-status offline"></div>
                     </div>
                     <div class="dm-info">
                         <div class="dm-name">${friendUser.username}</div>
-                        <div class="dm-activity">Çevrimdışı</div> <!-- Başlangıçta offline -->
+                        <div class="dm-activity">Çevrimdışı</div>
                     </div>
                 `;
+
+                offlineList.appendChild(friendElement);
                 dmList.appendChild(dmElement);
 
-                // DM öğesine tıklama olayı ekle
+                // Listener'ları ekle
                 dmElement.addEventListener('click', () => {
                     openChatPanel(friendUser.id, friendUser.username, friendUser.avatar || defaultAvatar);
-                    // Aktif DM stilini ayarla
                     document.querySelectorAll('.dm-item').forEach(item => item.classList.remove('active'));
                     dmElement.classList.add('active');
                 });
-
-                // Arkadaş panelindeki mesaj butonuna da aynı işlevi ekle
                 const messageBtn = friendElement.querySelector('.message-btn');
                 if (messageBtn) {
                     messageBtn.addEventListener('click', (e) => {
-                        e.stopPropagation(); // friend-row click'ini engelle
+                        e.stopPropagation();
                         openChatPanel(friendUser.id, friendUser.username, friendUser.avatar || defaultAvatar);
-                        // İlgili DM öğesini aktif yap
                         document.querySelectorAll('.dm-item').forEach(item => item.classList.remove('active'));
                         dmList.querySelector(`.dm-item[data-user-id="${friendUser.id}"]`)?.classList.add('active');
                     });
                 }
-
-                // Arkadaş panelindeki profil butonuna olay ekle
                 const profileBtn = friendElement.querySelector('.profile-btn');
                 if (profileBtn) {
                     profileBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        // Kullanıcı verisini dataset'ten al
+                        const userId = friendElement.dataset.userId;
+                        const username = friendElement.dataset.username;
+                        const avatar = friendElement.dataset.avatar;
+
+                        if (!username || !avatar || !userId) {
+                            console.error('Could not retrieve valid user data from dataset for profile panel.', friendElement.dataset);
+                            alert('Profil bilgileri alınamadı.');
+                            return;
+                        }
                         const profileData = {
-                            name: friendElement.dataset.username,
-                            avatar: friendElement.dataset.avatar,
-                            // Şimdilik status'ü onlineFriends set'inden alalım
-                            status: onlineFriends.has(friendUser.id) ? 'online' : 'offline',
-                            id: friendUser.id // Gelecekte lazım olabilir
+                            name: username,
+                            avatar: avatar,
+                            status: onlineFriends.has(userId) ? 'online' : 'offline',
+                            id: userId
                         };
-                        console.log("Opening profile for:", profileData);
-                        // createProfilePanel fonksiyonunu çağır (aşağıda tanımlanacak/düzenlenecek)
                         createProfilePanel(profileData);
                     });
                 }
-
             });
 
             // Arkadaşları ekledikten sonra Presence durumuna göre güncelle
@@ -505,20 +508,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="friend-avatar">
                         <img src="${sender.avatar || defaultAvatar}" alt="${sender.username}">
                         <span class="status-dot offline"></span>
-                            </div>
+                    </div>
                     <div class="friend-info">
                         <div class="friend-name">${sender.username}</div>
                         <div class="friend-status">Arkadaşlık isteği gönderdi</div>
-                            </div>
+                    </div>
                     <div class="friend-actions pending-actions">
                         <button class="friend-action-btn accept-request-btn" title="Kabul Et">
                             <i class="fas fa-check"></i>
-                            </button>
+                        </button>
                         <button class="friend-action-btn decline-request-btn" title="Reddet">
                             <i class="fas fa-times"></i>
-                            </button>
-                </div>
-            `;
+                        </button>
+                    </div>
+                `;
                 pendingList.appendChild(requestElement);
 
                 const acceptBtn = requestElement.querySelector('.accept-request-btn');
@@ -612,36 +615,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     // --- End Ayarlar Butonu ---
 
-    // --- Profil Paneli Oluşturma (Context Menu'den taşındı/uyarlandı) ---
+    // --- Profil Paneli Oluşturma (Doğru HTML ve veri kullanımı) ---
     function createProfilePanel(userData) {
-        // userData = { name: '...', avatar: '...', status: 'online'/'offline', id: '...' }
-        console.log("Creating profile panel for:", userData);
-
-        // Eski paneli kaldır
-        const existingPanel = document.querySelector('.profile-panel');
-        if (existingPanel) {
-            existingPanel.remove();
+        console.log("Attempting to create profile panel for:", userData);
+        if (!userData || typeof userData.name === 'undefined' || typeof userData.avatar === 'undefined') {
+            console.error("Invalid or incomplete user data passed to createProfilePanel:", userData);
+            alert('Profil paneli için geçersiz veri.');
+            return;
         }
+
+        const existingPanel = document.querySelector('.profile-panel');
+        if (existingPanel) existingPanel.remove();
 
         const profilePanel = document.createElement('div');
         profilePanel.className = 'profile-panel';
 
-        // Basitleştirilmiş panel içeriği (daha sonra detaylandırılabilir)
+        // Verileri güvenli kullan
+        const userNameToShow = userData.name || 'Bilinmiyor'; // name null ise fallback
+        const userAvatarToShow = userData.avatar || defaultAvatar; // avatar null ise fallback
+
         profilePanel.innerHTML = `
             <div class="profile-panel-content">
                 <button class="profile-close-btn">
                     <i class="fas fa-times"></i>
                 </button>
                 <div class="profile-left-section">
-                     <div class="profile-cover"></div> 
+                     <div class="profile-cover"></div>
                      <div class="profile-overlay"></div>
                     <div class="profile-left-content">
                         <div class="profile-avatar-large">
-                            <img src="${userData.avatar || defaultAvatar}" alt="${userData.name}">
-                            <div class="profile-status-indicator ${userData.status || 'offline'}"></div>
+                            <img src="${userAvatarToShow}" alt="${userNameToShow}">
+                            <!-- Status indicator kaldırıldı -->
                         </div>
-                        <h2 class="profile-username">${userData.name}</h2>
-                        </div>
+                        <h2 class="profile-username">${userNameToShow}</h2>
+                    </div>
                 </div>
                 <div class="profile-right-section">
                     <div class="profile-tabs">
@@ -649,39 +656,34 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                     <div class="profile-section">
                         <p>Detaylı profil bilgileri yakında eklenecek.</p>
-                         </div>
-                     <div class="profile-action-buttons">
-                         <button class="profile-action-btn message-btn">
-                             <i class="fas fa-comment"></i>
-                             <span>Mesaj Gönder</span>
-                         </button>
-                         <!-- Diğer butonlar eklenebilir -->
-                     </div>
+                    </div>
+                    <div class="profile-action-buttons">
+                        <button class="profile-action-btn message-btn">
+                            <i class="fas fa-comment"></i>
+                            <span>Mesaj Gönder</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
 
         document.body.appendChild(profilePanel);
-
-        setTimeout(() => {
-            profilePanel.classList.add('show');
-        }, 10);
+        setTimeout(() => { profilePanel.classList.add('show'); }, 10);
 
         const closeBtn = profilePanel.querySelector('.profile-close-btn');
-        closeBtn.addEventListener('click', () => {
+        closeBtn?.addEventListener('click', () => {
             profilePanel.classList.remove('show');
             setTimeout(() => profilePanel.remove(), 300);
         });
 
         profilePanel.addEventListener('click', (e) => {
-            if (e.target === profilePanel) closeBtn.click();
+            if (e.target === profilePanel) closeBtn?.click();
         });
 
-        // Profil panelindeki Mesaj Gönder butonu
         const messageBtn = profilePanel.querySelector('.message-btn');
         if (messageBtn && userData.id) {
             messageBtn.addEventListener('click', () => {
-                closeBtn.click(); // Önce profili kapat
+                closeBtn?.click();
                 openChatPanel(userData.id, userData.name, userData.avatar || defaultAvatar);
             });
         }
@@ -774,6 +776,210 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     // --- End Emoji Picker İşlevselliği ---
 
-    // ... (Mevcut diğer dashboard.js kodları: createAddFriendModal vb.) ...
+    // --- Arkadaş Ekle Butonu İşlevi --- 
+    if (addFriendButton) {
+        addFriendButton.addEventListener('click', () => {
+            console.log('Add Friend button clicked - Calling createAddFriendModal');
+            if (typeof createAddFriendModal === 'function') {
+                createAddFriendModal();
+            } else {
+                console.error('createAddFriendModal is not defined or not a function!');
+            }
+        });
+    } else {
+        console.error('Add Friend button element not found.');
+    }
+    // --- End Arkadaş Ekle Butonu ---
+
+    // --- Arkadaş ekleme modalı oluşturma ve yönetme (Linter hataları düzeltildi) --- 
+    function createAddFriendModal() {
+        console.log("createAddFriendModal invoked.");
+        if (document.querySelector('.add-friend-modal')) {
+            console.log('Modal already exists. Skipping creation.');
+            return;
+        }
+
+        const modal = document.createElement('div');
+        modal.className = 'add-friend-modal';
+        // innerHTML içeriği düzeltildi
+        modal.innerHTML = `
+            <div class="add-friend-modal-content">
+                <div class="add-friend-modal-header">
+                    <div class="modal-header-left">
+                        <i class="fas fa-user-plus modal-icon"></i>
+                        <h3>Arkadaş Ekle</h3>
+                    </div>
+                    <div class="modal-header-right">
+                        <i class="fas fa-times close-modal"></i>
+                    </div>
+                </div>
+                <div class="add-friend-modal-body">
+                    <div class="section-info">
+                        <p>Chatlify'da birini arkadaş olarak eklemek için kullanıcı adını girin. Büyük/küçük harfe duyarlıdır.</p>
+                    </div>
+                    <div class="add-friend-input-container">
+                        <div class="input-wrapper">
+                            <i class="fas fa-at"></i>
+                            <input type="text" placeholder="Kullanıcıadı" class="add-friend-input">
+                        </div>
+                        <button class="add-friend-submit">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Arkadaşlık İsteği Gönder</span>
+                        </button>
+                    </div>
+                    <div class="modal-message-area" style="min-height: 20px; margin-top: 10px;">
+                         <!-- Hata/Başarı mesajları buraya gelecek -->
+                    </div>
+                    <div class="friend-request-note">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Doğru kullanıcıyı bulduğunuzdan emin olmak için doğru kullanıcı adını girin.</span>
+                    </div>
+                </div> 
+            </div>
+         `; // innerHTML sonu
+
+        document.body.appendChild(modal);
+        setTimeout(() => { modal.classList.add('show'); }, 10);
+
+        const closeModal = () => {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.remove();
+                const style = document.getElementById('modal-error-style');
+                if (style) style.remove();
+            }, 300);
+        };
+
+        modal.querySelector('.close-modal')?.addEventListener('click', closeModal);
+        modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+        const addFriendSubmit = modal.querySelector('.add-friend-submit');
+        const addFriendInput = modal.querySelector('.add-friend-input');
+        const messageArea = modal.querySelector('.modal-message-area');
+
+        if (!addFriendSubmit || !addFriendInput || !messageArea) {
+            console.error('Crucial modal elements (.add-friend-submit, .add-friend-input, .modal-message-area) not found!');
+            return;
+        }
+
+        // showModalMessage ve resetSubmitButton fonksiyonlarını modal içinde tanımlayalım
+        function showModalMessage(message, type = 'error', area, inputElement) {
+            if (!area) return;
+            area.innerHTML = `<div class="modal-${type}-message" style="font-size: 13px; color: ${type === 'error' ? '#ff6b6b' : '#2ecc71'};">${message}</div>`;
+
+            const shakeStyleId = 'modal-error-style';
+            let shakeStyle = document.getElementById(shakeStyleId);
+
+            if (type === 'error' && inputElement) {
+                if (!shakeStyle) {
+                    shakeStyle = document.createElement('style');
+                    shakeStyle.id = shakeStyleId;
+                    shakeStyle.textContent = `
+                            @keyframes shake {
+                                10%, 90% { transform: translate3d(-1px, 0, 0); }
+                                20%, 80% { transform: translate3d(2px, 0, 0); }
+                                30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+                                40%, 60% { transform: translate3d(3px, 0, 0); }
+                            }
+                       `;
+                    document.head.appendChild(shakeStyle);
+                }
+                inputElement.style.animation = 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both';
+                inputElement.style.borderColor = 'rgba(255, 82, 82, 0.7)';
+                inputElement.focus();
+                setTimeout(() => {
+                    if (inputElement) {
+                        inputElement.style.animation = '';
+                        inputElement.style.borderColor = '';
+                    }
+                }, 500);
+            } else if (shakeStyle && inputElement) { // Hata yoksa animasyonu temizle
+                inputElement.style.animation = '';
+                inputElement.style.borderColor = '';
+            }
+            setTimeout(() => { if (area) area.innerHTML = ''; }, 5000);
+        }
+
+        function resetSubmitButton(button, input) {
+            if (button) button.disabled = false;
+            if (input) input.disabled = false;
+            if (button) button.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Arkadaşlık İsteği Gönder</span>';
+        }
+
+        addFriendSubmit.addEventListener('click', async () => {
+            const targetUsername = addFriendInput.value.trim();
+            addFriendInput.disabled = true;
+            addFriendSubmit.disabled = true;
+            addFriendSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
+            messageArea.innerHTML = '';
+
+            if (!targetUsername) {
+                showModalMessage('Lütfen bir kullanıcı adı girin.', 'error', messageArea, addFriendInput);
+                resetSubmitButton(addFriendSubmit, addFriendInput);
+                return;
+            }
+            try {
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) {
+                    showModalMessage('Oturum bulunamadı. Lütfen tekrar giriş yapın.', 'error', messageArea, addFriendInput);
+                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    return;
+                }
+                const currentUserId = session.user.id;
+                const { data: targetUser, error: findUserError } = await supabase.from('users').select('id').eq('username', targetUsername).single();
+                if (findUserError || !targetUser) {
+                    showModalMessage(\`Kullanıcı bulunamadı: ${targetUsername}\`, 'error', messageArea, addFriendInput);
+                     resetSubmitButton(addFriendSubmit, addFriendInput);
+                     return;
+                 }
+                 const targetUserId = targetUser.id;
+                 if (currentUserId === targetUserId) {
+                     showModalMessage('Kendinize arkadaşlık isteği gönderemezsiniz.', 'error', messageArea, addFriendInput);
+                     resetSubmitButton(addFriendSubmit, addFriendInput);
+                     return;
+                 }
+                 const { data: existingFriendship, error: checkError } = await supabase.from('friendships').select('status').or(\`and(user_id_1.eq.${currentUserId},user_id_2.eq.${targetUserId}),and(user_id_1.eq.${targetUserId},user_id_2.eq.${currentUserId})\`).maybeSingle();
+                 if (checkError) {
+                     console.error('Error checking existing friendship:', checkError);
+                     showModalMessage('İstek gönderilirken bir hata oluştu. (Kod: CHECK)', 'error', messageArea, addFriendInput);
+                     resetSubmitButton(addFriendSubmit, addFriendInput);
+                     return;
+                 }
+                 if (existingFriendship) {
+                     let errorMsg = 'Bu kullanıcıyla ilgili mevcut bir ilişki durumu var.';
+                     if (existingFriendship.status === 'pending') errorMsg = 'Bu kullanıcıya zaten bir istek gönderilmiş veya ondan bir istek var.';
+                     else if (existingFriendship.status === 'accepted') errorMsg = 'Bu kullanıcı zaten arkadaş listenizde.';
+                     else if (existingFriendship.status === 'blocked') errorMsg = 'Bu kullanıcıyla ilgili bir engelleme mevcut.';
+                     showModalMessage(errorMsg, 'error', messageArea, addFriendInput);
+                     resetSubmitButton(addFriendSubmit, addFriendInput);
+                     return;
+                 }
+                 const { error: insertError } = await supabase.from('friendships').insert({ user_id_1: currentUserId, user_id_2: targetUserId, status: 'pending' });
+                 if (insertError) {
+                     console.error('Error sending friend request:', insertError);
+                     if (insertError.code === '23505') { 
+                         showModalMessage('Bu kullanıcıya zaten bir istek gönderilmiş veya ondan bir istek var.', 'error', messageArea, addFriendInput);
+                     } else {
+                         showModalMessage(\`Arkadaşlık isteği gönderilemedi. (Kod: ${insertError.code})\`, 'error', messageArea, addFriendInput);
+                     }
+                     resetSubmitButton(addFriendSubmit, addFriendInput);
+                     return;
+                 }
+                 showModalMessage(\`Arkadaşlık isteği ${targetUsername} kullanıcısına başarıyla gönderildi!\`, 'success', messageArea);
+                 addFriendInput.value = '';
+                 resetSubmitButton(addFriendSubmit, addFriendInput);
+             } catch (error) {
+                 console.error('Friend request error:', error);
+                 showModalMessage('Beklenmedik bir hata oluştu.', 'error', messageArea, addFriendInput);
+                 resetSubmitButton(addFriendSubmit, addFriendInput);
+             }
+         });
+
+         addFriendInput.addEventListener('keydown', e => {
+             if (e.key === 'Enter') addFriendSubmit?.click();
+             messageArea.innerHTML = ''; // Yazmaya başlayınca mesajı temizle
+         });
+    }
+    // --- End Arkadaş Ekleme Modalı ---
 
 }); 

@@ -4905,3 +4905,36 @@
 .friend-row.pending .decline-request-btn:disabled i {
     color: #6c7293 !important;
 }
+
+/* Emoji Picker Koyu Tema */
+emoji-picker {
+    --background: #1a2036;
+    /* Ana arkaplan */
+    --border-color: rgba(94, 114, 228, 0.2);
+    /* Kenarlık */
+    --input-background-color: rgba(15, 19, 34, 0.7);
+    /* Arama kutusu arkaplanı */
+    --input-text-color: #dde1f0;
+    /* Arama kutusu metin rengi */
+    --category-icon-color: #9ba3c2;
+    /* Kategori ikon rengi */
+    --category-icon-active-color: #5e72e4;
+    /* Aktif kategori ikon rengi */
+    --indicator-color: #5e72e4;
+    /* Alt çizgi rengi */
+    --emoji-hover-background-color: rgba(94, 114, 228, 0.1);
+    /* Emoji üzerine gelince arkaplan */
+    --emoji-focus-background-color: rgba(94, 114, 228, 0.2);
+    /* Seçili emoji arkaplanı */
+    --scrollbar-thumb-color: rgba(94, 114, 228, 0.4);
+    /* Kaydırma çubuğu */
+    --secondary-text-color: #9ba3c2;
+    /* İkincil metinler (örn. kategori adı) */
+    --text-color: #dde1f0;
+    /* Ana metin rengi */
+
+    /* Gölge ve diğer iyileştirmeler */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
