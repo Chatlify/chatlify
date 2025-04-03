@@ -670,24 +670,176 @@ document.addEventListener('DOMContentLoaded', async () => {
         const addFriendSubmit = modal.querySelector('.add-friend-submit');
         const addFriendInput = modal.querySelector('.add-friend-input');
 
-        addFriendSubmit.addEventListener('click', () => {
-            const username = addFriendInput.value.trim();
-            if (username) {
-                closeModal();
-                // İstek gönderildi
-            } else {
-                // Input'u sallar
-                addFriendInput.style.animation = 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both';
-                addFriendInput.style.borderColor = 'rgba(255, 82, 82, 0.7)';
-                addFriendInput.focus();
+        addFriendSubmit.addEventListener('click', async () => {
+            const targetUsername = addFriendInput.value.trim();
+            addFriendInput.disabled = true;
+            addFriendSubmit.disabled = true;
+            addFriendSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
 
-                // Animasyonu temizle
-                setTimeout(() => {
-                    addFriendInput.style.animation = '';
-                    addFriendInput.style.borderColor = '';
-                }, 500);
+            if (!targetUsername) {
+                showModalError('Lütfen bir kullanıcı adı girin.', addFriendInput);
+                resetSubmitButton(addFriendSubmit, addFriendInput);
+                return;
+            }
+
+            try {
+                // 1. Mevcut kullanıcı ID'sini al
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) {
+                    showModalError('Oturum bulunamadı. Lütfen tekrar giriş yapın.', addFriendInput);
+                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    return;
+                }
+                const currentUserId = session.user.id;
+
+                // 2. Hedef kullanıcıyı kullanıcı adına göre bul
+                const { data: targetUser, error: findUserError } = await supabase
+                    .from('users')
+                    .select('id')
+                    .eq('username', targetUsername)
+                    .single();
+
+                if (findUserError || !targetUser) {
+                    showModalError(`Kullanıcı bulunamadı: ${targetUsername}`, addFriendInput);
+                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    return;
+                }
+                const targetUserId = targetUser.id;
+
+                // 3. Kendine istek göndermeyi engelle
+                if (currentUserId === targetUserId) {
+                    showModalError('Kendinize arkadaşlık isteği gönderemezsiniz.', addFriendInput);
+                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    return;
+                }
+
+                // 4. Mevcut ilişkiyi kontrol et (her iki yönde)
+                const { data: existingFriendship, error: checkError } = await supabase
+                    .from('friendships')
+                    .select('status')
+                    .or(`and(user_id_1.eq.${currentUserId},user_id_2.eq.${targetUserId}),and(user_id_1.eq.${targetUserId},user_id_2.eq.${currentUserId})`)
+                    .maybeSingle(); // Belki kayıt yoktur
+
+                if (checkError) {
+                    console.error('Error checking existing friendship:', checkError);
+                    showModalError('İstek gönderilirken bir hata oluştu. (Kod: CHECK)', addFriendInput);
+                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    return;
+                }
+
+                if (existingFriendship) {
+                    if (existingFriendship.status === 'pending') {
+                        showModalError('Bu kullanıcıya zaten bir istek gönderilmiş veya ondan bir istek var.', addFriendInput);
+                    } else if (existingFriendship.status === 'accepted') {
+                        showModalError('Bu kullanıcı zaten arkadaş listenizde.', addFriendInput);
+                    } else if (existingFriendship.status === 'blocked') {
+                        showModalError('Bu kullanıcıyla ilgili bir engelleme mevcut.', addFriendInput);
+                    } else {
+                        showModalError('Bu kullanıcıyla ilgili mevcut bir ilişki durumu var.', addFriendInput);
+                    }
+                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    return;
+                }
+
+                // 5. Arkadaşlık isteğini gönder (yeni kayıt ekle)
+                const { error: insertError } = await supabase
+                    .from('friendships')
+                    .insert({
+                        user_id_1: currentUserId,
+                        user_id_2: targetUserId,
+                        status: 'pending'
+                    });
+
+                if (insertError) {
+                    console.error('Error sending friend request:', insertError);
+                    // UNIQUE constraint hatası olabilir (yarış durumu)
+                    if (insertError.code === '23505') { // unique_violation
+                        showModalError('Bu kullanıcıya zaten bir istek gönderilmiş veya ondan bir istek var.', addFriendInput);
+                    } else {
+                        showModalError('Arkadaşlık isteği gönderilemedi. (Kod: INSERT)', addFriendInput);
+                    }
+                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    return;
+                }
+
+                // Başarılı!
+                showModalSuccess(`Arkadaşlık isteği ${targetUsername} kullanıcısına başarıyla gönderildi!`);
+                addFriendInput.value = '';
+                resetSubmitButton(addFriendSubmit, addFriendInput);
+                // İsteğe bağlı: Modalı otomatik kapat
+                // setTimeout(closeModal, 2000); 
+
+            } catch (error) {
+                console.error('Friend request error:', error);
+                showModalError('Beklenmedik bir hata oluştu.', addFriendInput);
+                resetSubmitButton(addFriendSubmit, addFriendInput);
             }
         });
+
+        // Yardımcı fonksiyon: Hata mesajı gösterme
+        function showModalError(message, inputElement) {
+            let errorDiv = modal.querySelector('.modal-error-message');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.className = 'modal-error-message';
+                // Mesajı inputun altına ekleyelim
+                const inputContainer = inputElement.closest('.add-friend-input-container');
+                if (inputContainer) {
+                    inputContainer.insertAdjacentElement('afterend', errorDiv);
+                } else {
+                    modal.querySelector('.add-friend-modal-body').appendChild(errorDiv);
+                }
+            }
+            errorDiv.textContent = message;
+            errorDiv.style.color = '#ff6b6b';
+            errorDiv.style.fontSize = '13px';
+            errorDiv.style.marginTop = '10px';
+
+            // Input'u salla
+            inputElement.style.animation = 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both';
+            inputElement.style.borderColor = 'rgba(255, 82, 82, 0.7)';
+            inputElement.focus();
+            setTimeout(() => {
+                inputElement.style.animation = '';
+                inputElement.style.borderColor = '';
+            }, 500);
+
+            // Mesajı bir süre sonra kaldır (isteğe bağlı)
+            setTimeout(() => { errorDiv.textContent = ''; }, 5000);
+        }
+
+        // Yardımcı fonksiyon: Başarı mesajı gösterme
+        function showModalSuccess(message) {
+            let successDiv = modal.querySelector('.modal-success-message');
+            if (!successDiv) {
+                successDiv = document.createElement('div');
+                successDiv.className = 'modal-success-message';
+                const inputContainer = modal.querySelector('.add-friend-input-container');
+                if (inputContainer) {
+                    inputContainer.insertAdjacentElement('afterend', successDiv);
+                } else {
+                    modal.querySelector('.add-friend-modal-body').appendChild(successDiv);
+                }
+            }
+            successDiv.textContent = message;
+            successDiv.style.color = '#2ecc71'; // Yeşil renk
+            successDiv.style.fontSize = '13px';
+            successDiv.style.marginTop = '10px';
+
+            // Hata mesajını temizle (varsa)
+            const errorDiv = modal.querySelector('.modal-error-message');
+            if (errorDiv) errorDiv.textContent = '';
+
+            // Mesajı bir süre sonra kaldır (isteğe bağlı)
+            setTimeout(() => { successDiv.textContent = ''; }, 5000);
+        }
+
+        // Yardımcı fonksiyon: Buton ve inputu sıfırlama
+        function resetSubmitButton(button, input) {
+            button.disabled = false;
+            input.disabled = false;
+            button.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Arkadaşlık İsteği Gönder</span>';
+        }
 
         addFriendInput.addEventListener('keydown', e => {
             if (e.key === 'Enter') {
