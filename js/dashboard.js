@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const pendingSection = document.querySelector('.pending-section-title');
     const pendingList = document.querySelector('.pending-requests');
     const pendingCountBadge = document.querySelector('.pending-count'); // Sayı için
+    let presenceChannel = null; // Supabase presence kanalı için değişken
+    let onlineFriends = new Set(); // Çevrimiçi arkadaşların ID\'lerini tutacak set
+    let currentUserId = null; // Mevcut kullanıcı ID\'si
     // --- End Element Tanımlamaları ---
 
     // Elementler bulunamadıysa kontrol et (Kullanıcı Paneli)
@@ -46,6 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const user = session.user;
         console.log('Logged in user:', user);
+        currentUserId = session.user.id; // Kullanıcı ID\'sini değişkene ata
 
         const { data: profile, error: profileError } = await supabase
             .from('users')
@@ -66,12 +70,136 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (userPanelUsernameElement) userPanelUsernameElement.textContent = user.email;
             if (userPanelAvatarElement) userPanelAvatarElement.src = defaultAvatar;
         }
+
+        // --- Supabase Presence Bağlantısını Başlat ---
+        initializePresence();
+
     } catch (error) {
         console.error('Error in dashboard setup (User Panel):', error);
         if (userPanelUsernameElement) userPanelUsernameElement.textContent = 'Kullanıcı';
         if (userPanelAvatarElement) userPanelAvatarElement.src = defaultAvatar;
     }
-    // --- End Kullanıcı Bilgileri ---
+    // --- End Kullanıcı Bilgileri & Presence Başlatma ---
+
+    // --- Supabase Presence Fonksiyonları ---
+    function initializePresence() {
+        if (!currentUserId) return;
+
+        presenceChannel = supabase.channel('online-users', {
+            config: {
+                presence: { key: currentUserId } // Her kullanıcıyı kendi ID'si ile takip et
+            }
+        });
+
+        presenceChannel
+            .on('presence', { event: 'sync' }, () => {
+                console.log('Presence sync event received');
+                const presenceState = presenceChannel.presenceState();
+                onlineFriends = new Set(Object.keys(presenceState)); // Tüm online kullanıcı ID'lerini al
+                console.log('Currently online users:', onlineFriends);
+                // Başlangıçta tüm arkadaş listesini durumlarına göre güncelle
+                updateAllFriendStatuses();
+            })
+            .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+                console.log('Presence join:', key, newPresences);
+                onlineFriends.add(key); // Yeni katılanı online setine ekle
+                updateFriendStatusUI(key, true); // Arayüzü güncelle (çevrimiçi)
+            })
+            .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+                console.log('Presence leave:', key, leftPresences);
+                onlineFriends.delete(key); // Ayrılanı online setinden çıkar
+                updateFriendStatusUI(key, false); // Arayüzü güncelle (çevrimdışı)
+            })
+            .subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    console.log('Successfully subscribed to presence channel!');
+                    // Kullanıcı kendi durumunu kanala gönderir
+                    const status = await presenceChannel.track({
+                        user_id: currentUserId,
+                        online_at: new Date().toISOString()
+                    });
+                    console.log('Track status:', status);
+                } else {
+                    console.error('Failed to subscribe to presence channel:', status);
+                }
+            });
+    }
+
+    // Tüm arkadaşların durumunu tek seferde güncelleyen yardımcı fonksiyon
+    function updateAllFriendStatuses() {
+        const allFriendRows = document.querySelectorAll('.friends-list .friend-row[data-user-id]');
+        allFriendRows.forEach(row => {
+            const userId = row.dataset.userId;
+            const isOnline = onlineFriends.has(userId);
+            updateFriendStatusUI(userId, isOnline, row); // Belirli bir satırı güncelle
+        });
+        // Online/Offline sayılarını da güncelle
+        updateFriendCounters();
+    }
+
+    // Belirli bir arkadaşın UI durumunu güncelleyen fonksiyon
+    function updateFriendStatusUI(userId, isOnline, specificRow = null) {
+        const friendRow = specificRow || document.querySelector(`.friend-row[data-user-id="${userId}"]`);
+        if (!friendRow) return; // Eğer arkadaş listede yoksa (veya henüz yüklenmediyse) çık
+
+        const statusDot = friendRow.querySelector('.status-dot');
+        const statusTextElement = friendRow.querySelector('.friend-status');
+
+        if (isOnline) {
+            friendRow.classList.remove('offline');
+            friendRow.classList.add('online');
+            if (statusDot) statusDot.className = 'status-dot online';
+            if (statusTextElement) statusTextElement.textContent = 'Çevrimiçi';
+            // Online listesine taşı (veya görünür yap)
+            moveFriendRow(friendRow, onlineList);
+        } else {
+            friendRow.classList.remove('online');
+            friendRow.classList.add('offline');
+            if (statusDot) statusDot.className = 'status-dot offline';
+            if (statusTextElement) statusTextElement.textContent = 'Çevrimdışı';
+            // Offline listesine taşı (veya görünür yap)
+            moveFriendRow(friendRow, offlineList);
+        }
+        // Her güncellemeden sonra sayaçları tekrar hesapla
+        updateFriendCounters();
+    }
+
+    // Arkadaş satırını doğru listeye taşıyan yardımcı fonksiyon
+    function moveFriendRow(friendRow, targetList) {
+        if (targetList && friendRow.parentNode !== targetList) {
+            targetList.appendChild(friendRow);
+            // Eğer listede "boş" mesajı varsa kaldır
+            const emptyPlaceholder = targetList.querySelector('.empty-placeholder');
+            if (emptyPlaceholder) emptyPlaceholder.remove();
+        }
+        // Hedef liste görünür değilse (örneğin sadece çevrimiçiler görünüyorsa ve offline olduysa) satır gizlenebilir.
+        // Bu, showSection mantığına bağlı.
+    }
+
+    // Online/Offline sayaçlarını güncelleyen fonksiyon
+    function updateFriendCounters() {
+        const onlineCountBadge = document.querySelector('.online-count');
+        const offlineCountBadge = document.querySelector('.offline-count');
+
+        if (onlineCountBadge && onlineList) {
+            const onlineFriendsCount = onlineList.querySelectorAll('.friend-row').length;
+            onlineCountBadge.textContent = onlineFriendsCount;
+            if (onlineSection) onlineSection.style.display = onlineFriendsCount > 0 ? 'flex' : 'none';
+        }
+        if (offlineCountBadge && offlineList) {
+            const offlineFriendsCount = offlineList.querySelectorAll('.friend-row').length;
+            offlineCountBadge.textContent = offlineFriendsCount;
+            if (offlineSection) offlineSection.style.display = offlineFriendsCount > 0 ? 'flex' : 'none';
+        }
+    }
+
+    // Tarayıcıdan ayrılırken kanaldan çıkış yap (isteğe bağlı ama önerilir)
+    window.addEventListener('beforeunload', () => {
+        if (presenceChannel) {
+            supabase.removeChannel(presenceChannel);
+        }
+    });
+    // --- End Supabase Presence Fonksiyonları ---
 
     // --- Sekme Yönetimi ve İçerik Yükleme ---
     tabs.forEach(tab => {
@@ -121,9 +249,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!onlineList || !offlineList || !document.querySelector('.online-count') || !document.querySelector('.offline-count')) return;
 
         onlineList.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin"></i> Arkadaşlar yükleniyor...</div>';
-        offlineList.innerHTML = ''; // Çevrimdışı listesini de başlangıçta temizle
+        offlineList.innerHTML = '';
         document.querySelector('.online-count').textContent = '0';
         document.querySelector('.offline-count').textContent = '0';
+        if (onlineSection) onlineSection.style.display = 'none';
+        if (offlineSection) offlineSection.style.display = 'none';
 
         try {
             const { data: { session }, error: sessionError } = await supabase.auth.getSession();
@@ -131,9 +261,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 onlineList.innerHTML = '<div class="error-placeholder">Oturum bulunamadı.</div>';
                 return;
             }
-            const currentUserId = session.user.id;
 
-            // Mevcut kullanıcıyı içeren ve durumu 'accepted' olan tüm arkadaşlıkları çek
             const { data: friendships, error: friendsError } = await supabase
                 .from('friendships')
                 .select(`
@@ -152,31 +280,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
 
-            onlineList.innerHTML = ''; // Çevrimiçi listesini temizle (şimdilik hepsi çevrimdışı)
-            offlineList.innerHTML = ''; // Çevrimdışı listesini temizle
+            onlineList.innerHTML = '';
+            offlineList.innerHTML = '';
 
             if (friendships.length === 0) {
                 offlineList.innerHTML = '<div class="empty-placeholder">Henüz hiç arkadaşınız yok.</div>';
-                // Çevrimiçi listesini de boşaltalım
-                onlineList.innerHTML = '';
-                document.querySelector('.online-count').textContent = '0';
-                document.querySelector('.offline-count').textContent = '0';
-                // Bölüm başlıklarını da gizle
-                if (onlineSection) onlineSection.style.display = 'none';
-                if (offlineSection) offlineSection.style.display = 'none';
+                updateFriendCounters();
                 return;
             }
 
-            let offlineCount = 0;
-            // Şimdilik tüm arkadaşlar çevrimdışı listesine eklenecek
             friendships.forEach(friendship => {
-                // Diğer kullanıcıyı bul (kendimiz olmayan)
                 const friendUser = friendship.user_id_1 === currentUserId ? friendship.user2 : friendship.user1;
-                if (!friendUser) return; // Kullanıcı bilgisi gelmediyse atla
+                if (!friendUser) return;
 
                 const friendElement = document.createElement('div');
-                // TODO: Gerçek zamanlı durum eklendiğinde burası değişecek
-                friendElement.className = 'friend-row offline';
+                friendElement.className = 'friend-row';
                 friendElement.dataset.userId = friendUser.id;
                 friendElement.dataset.friendshipId = friendship.id;
 
@@ -187,7 +305,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                     <div class="friend-info">
                         <div class="friend-name">${friendUser.username}</div>
-                        <div class="friend-status">Çevrimdışı</div> <!-- Şimdilik statik -->
+                        <div class="friend-status">Çevrimdışı</div>
                     </div>
                     <div class="friend-actions">
                         <button class="friend-action-btn message-btn" title="Mesaj Gönder">
@@ -202,16 +320,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                 `;
                 offlineList.appendChild(friendElement);
-                offlineCount++;
             });
 
-            // Sayıları güncelle
-            document.querySelector('.online-count').textContent = '0'; // Şimdilik çevrimiçi 0
-            document.querySelector('.offline-count').textContent = offlineCount;
-
-            // Bölüm başlıklarını göster/gizle
-            if (onlineSection) onlineSection.style.display = 'none'; // Şimdilik çevrimiçi bölümü gizli
-            if (offlineSection) offlineSection.style.display = offlineCount > 0 ? 'flex' : 'none';
+            updateAllFriendStatuses();
 
         } catch (error) {
             console.error('Error in loadAllFriends:', error);
