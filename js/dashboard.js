@@ -25,6 +25,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const chatMessagesContainer = chatPanel?.querySelector('.chat-messages'); // Sohbet mesajları alanı
     const friendsPanelContainer = document.querySelector('.friends-panel-container'); // Arkadaşlar paneli (gizlemek için)
     const sponsorSidebar = document.querySelector('.sponsor-sidebar'); // Sponsor alanı (gizlemek için)
+    const settingsButtonContainer = document.querySelector('.server-settings-icon')?.closest('.server-item'); // Ayarlar butonu kapsayıcısı
+    const chatCloseBtn = chatPanel?.querySelector('.chat-close-btn'); // Sohbet kapatma butonu
+    const chatEmojiBtn = chatPanel?.querySelector('.emoji-btn'); // Emoji butonu
+    const chatTextarea = chatPanel?.querySelector('.chat-textbox textarea'); // Mesaj yazma alanı
+    const emojiPicker = document.querySelector('emoji-picker'); // Emoji picker elementi
     // --- End Element Tanımlamaları ---
 
     // Elementler bulunamadıysa kontrol et (Kullanıcı Paneli)
@@ -35,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('User panel avatar element (.dm-footer .dm-user-avatar img) not found.');
     }
     // Elementler bulunamadıysa kontrol et (Arkadaş Paneli)
-    if (!pendingList || !pendingCountBadge || !pendingSection || !onlineList || !onlineSection || !offlineList || !offlineSection || !dmList || !chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer || !sponsorSidebar) {
+    if (!pendingList || !pendingCountBadge || !pendingSection || !onlineList || !onlineSection || !offlineList || !offlineSection || !dmList || !chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer || !sponsorSidebar || !settingsButtonContainer || !chatCloseBtn || !chatEmojiBtn || !chatTextarea || !emojiPicker) {
         console.error('One or more friend panel elements are missing in HTML.');
     }
 
@@ -177,22 +182,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Açık olan sohbet panelinin başlığını da güncelle (eğer o kişiye aitse)
-        if (chatPanel && !chatPanel.classList.contains('hidden')) {
-            const activeChatUserId = chatHeaderUser?.parentElement.dataset.activeChatUserId; // ID'yi saklamak için bir yol bulmalı
-            // Şimdilik basitçe, eğer açık paneldeki kullanıcı ID'si ile eşleşiyorsa güncelle
-            // Daha sağlam yöntem: openChatPanel'de bir data attribute ayarlamak
-            const chatAvatarElement = chatHeaderUser?.querySelector('.dm-avatar img');
-            const chatUsernameElement = chatHeaderUser?.querySelector('.chat-username');
-            if (chatUsernameElement && chatAvatarElement && dmRow) { // Basit kontrol
-                if (chatUsernameElement.textContent === dmRow.dataset.username) { // Eğer isim eşleşiyorsa
-                    const statusText = isOnline ? 'Çevrimiçi' : 'Çevrimdışı';
-                    const statusClass = isOnline ? 'online' : 'offline';
-                    const chatStatusDot = chatHeaderUser.querySelector('.dm-status');
-                    const chatStatusTextElement = chatHeaderUser.querySelector('.dm-activity');
-                    if (chatStatusDot) chatStatusDot.className = `dm-status ${statusClass}`;
-                    if (chatStatusTextElement) chatStatusTextElement.textContent = statusText;
-                }
-            }
+        if (chatPanel && !chatPanel.classList.contains('hidden') && chatPanel.dataset.activeChatUserId === userId) {
+            const chatStatusDot = chatHeaderUser?.querySelector('.chat-avatar .status-dot');
+            const chatStatusTextElement = chatHeaderUser?.querySelector('.chat-user-info .chat-status');
+            const statusText = isOnline ? 'Çevrimiçi' : 'Çevrimdışı';
+            const statusClass = isOnline ? 'online' : 'offline';
+            if (chatStatusDot) chatStatusDot.className = `status-dot ${statusClass}`;
+            if (chatStatusTextElement) chatStatusTextElement.textContent = statusText;
         }
 
         updateFriendCounters();
@@ -278,7 +274,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // --- Tüm (Kabul Edilmiş) Arkadaşları Yükleme Fonksiyonu (Güncellendi) ---
+    // --- Tüm (Kabul Edilmiş) Arkadaşları Yükleme Fonksiyonu (Güncellendi - Profil butonu) ---
     async function loadAllFriends() {
         if (!onlineList || !offlineList || !dmList || !document.querySelector('.online-count') || !document.querySelector('.offline-count')) return;
 
@@ -333,11 +329,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="friend-avatar">
                         <img src="${friendUser.avatar || defaultAvatar}" alt="${friendUser.username}">
                         <span class="status-dot offline"></span>
-                    </div>
+                            </div>
                     <div class="friend-info">
                         <div class="friend-name">${friendUser.username}</div>
                         <div class="friend-status">Çevrimdışı</div>
-                    </div>
+                            </div>
                     <div class="friend-actions">
                          <button class="friend-action-btn message-btn" title="Mesaj Gönder">
                              <i class="fas fa-comment"></i>
@@ -348,7 +344,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                          <button class="friend-action-btn more-btn" title="Daha Fazla">
                              <i class="fas fa-ellipsis-v"></i>
                          </button>
-                    </div>
+                        </div>
                 `;
                 offlineList.appendChild(friendElement); // Başlangıçta offline'a ekle
 
@@ -390,6 +386,25 @@ document.addEventListener('DOMContentLoaded', async () => {
                     });
                 }
 
+                // Arkadaş panelindeki profil butonuna olay ekle
+                const profileBtn = friendElement.querySelector('.profile-btn');
+                if (profileBtn) {
+                    profileBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        // Kullanıcı verisini dataset'ten al
+                        const profileData = {
+                            name: friendElement.dataset.username,
+                            avatar: friendElement.dataset.avatar,
+                            // Şimdilik status'ü onlineFriends set'inden alalım
+                            status: onlineFriends.has(friendUser.id) ? 'online' : 'offline',
+                            id: friendUser.id // Gelecekte lazım olabilir
+                        };
+                        console.log("Opening profile for:", profileData);
+                        // createProfilePanel fonksiyonunu çağır (aşağıda tanımlanacak/düzenlenecek)
+                        createProfilePanel(profileData);
+                    });
+                }
+
             });
 
             // Arkadaşları ekledikten sonra Presence durumuna göre güncelle
@@ -402,7 +417,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     // --- End Tüm Arkadaşları Yükleme ---
 
-    // --- Sohbet Panelini Açma Fonksiyonu ---
+    // --- Sohbet Panelini Açma Fonksiyonu (Güncellendi - Seçiciler düzeltildi) ---
     function openChatPanel(userId, username, avatar) {
         if (!chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer || !sponsorSidebar) {
             console.error('Chat panel elements not found, cannot open chat.');
@@ -410,20 +425,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         console.log(`Opening chat panel for user: ${username} (ID: ${userId})`);
 
-        // Sohbet başlığını güncelle
+        // Sohbet başlığını güncelle - DOĞRU SEÇİCİLER
         const chatUsernameElement = chatHeaderUser.querySelector('.chat-username');
-        const chatAvatarElement = chatHeaderUser.querySelector('.dm-avatar img'); // dm-avatar içindeki img
-        const chatStatusDot = chatHeaderUser.querySelector('.dm-status'); // dm-avatar içindeki status
+        const chatAvatarElement = chatHeaderUser.querySelector('.chat-avatar img'); // .chat-avatar içindeki img
+        const chatStatusDot = chatHeaderUser.querySelector('.chat-avatar .status-dot'); // .chat-avatar içindeki status-dot
+        const chatStatusTextElement = chatHeaderUser.querySelector('.chat-user-info .chat-status'); // .chat-user-info içindeki chat-status
 
         if (chatUsernameElement) chatUsernameElement.textContent = username;
         if (chatAvatarElement) chatAvatarElement.src = avatar;
 
-        // Arkadaşın anlık durumunu kontrol et ve güncelle
         const isFriendOnline = onlineFriends.has(userId);
         const statusText = isFriendOnline ? 'Çevrimiçi' : 'Çevrimdışı';
         const statusClass = isFriendOnline ? 'online' : 'offline';
-        if (chatStatusDot) chatStatusDot.className = `dm-status ${statusClass}`;
-        const chatStatusTextElement = chatHeaderUser.querySelector('.dm-activity'); // dm-activity alanı varsayalım
+        if (chatStatusDot) chatStatusDot.className = `status-dot ${statusClass}`;
         if (chatStatusTextElement) chatStatusTextElement.textContent = statusText;
 
         // Mesajlar alanını temizle
@@ -434,9 +448,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (sponsorSidebar) sponsorSidebar.style.display = 'none'; // Sponsoru gizle
         chatPanel.classList.remove('hidden');
 
-        // Odaklanma (isteğe bağlı)
-        // const chatTextarea = chatPanel.querySelector('.chat-textbox textarea');
-        // if (chatTextarea) chatTextarea.focus();
+        // Aktif sohbetin user ID'sini panele ekle (durum güncellemesi için)
+        chatPanel.dataset.activeChatUserId = userId;
     }
     // --- End Sohbet Panelini Açma ---
 
@@ -492,20 +505,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="friend-avatar">
                         <img src="${sender.avatar || defaultAvatar}" alt="${sender.username}">
                         <span class="status-dot offline"></span>
-                    </div>
+                            </div>
                     <div class="friend-info">
                         <div class="friend-name">${sender.username}</div>
                         <div class="friend-status">Arkadaşlık isteği gönderdi</div>
-                    </div>
+                            </div>
                     <div class="friend-actions pending-actions">
                         <button class="friend-action-btn accept-request-btn" title="Kabul Et">
                             <i class="fas fa-check"></i>
-                        </button>
+                            </button>
                         <button class="friend-action-btn decline-request-btn" title="Reddet">
                             <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                `;
+                            </button>
+                </div>
+            `;
                 pendingList.appendChild(requestElement);
 
                 const acceptBtn = requestElement.querySelector('.accept-request-btn');
@@ -574,6 +587,192 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
     // --- End Arkadaşlık İsteği Kabul/Red ---
+
+    // --- Sohbet Paneli Kapatma İşlevi --- 
+    if (chatCloseBtn) {
+        chatCloseBtn.addEventListener('click', () => {
+            console.log("Close chat button clicked");
+            if (chatPanel) chatPanel.classList.add('hidden');
+            if (friendsPanelContainer) friendsPanelContainer.classList.remove('hidden');
+            if (sponsorSidebar) sponsorSidebar.style.display = ''; // veya 'flex'
+            // Aktif DM stilini kaldır
+            document.querySelectorAll('.dm-item.active').forEach(item => item.classList.remove('active'));
+            // Aktif sohbet ID'sini temizle
+            if (chatPanel) delete chatPanel.dataset.activeChatUserId;
+        });
+    }
+    // --- End Sohbet Kapatma --- 
+
+    // --- Ayarlar Butonu İşlevi ---
+    if (settingsButtonContainer) {
+        settingsButtonContainer.addEventListener('click', () => {
+            console.log('Settings button clicked');
+            window.location.href = 'settings.html';
+        });
+    }
+    // --- End Ayarlar Butonu ---
+
+    // --- Profil Paneli Oluşturma (Context Menu'den taşındı/uyarlandı) ---
+    function createProfilePanel(userData) {
+        // userData = { name: '...', avatar: '...', status: 'online'/'offline', id: '...' }
+        console.log("Creating profile panel for:", userData);
+
+        // Eski paneli kaldır
+        const existingPanel = document.querySelector('.profile-panel');
+        if (existingPanel) {
+            existingPanel.remove();
+        }
+
+        const profilePanel = document.createElement('div');
+        profilePanel.className = 'profile-panel';
+
+        // Basitleştirilmiş panel içeriği (daha sonra detaylandırılabilir)
+        profilePanel.innerHTML = `
+            <div class="profile-panel-content">
+                <button class="profile-close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="profile-left-section">
+                     <div class="profile-cover"></div> 
+                     <div class="profile-overlay"></div>
+                    <div class="profile-left-content">
+                        <div class="profile-avatar-large">
+                            <img src="${userData.avatar || defaultAvatar}" alt="${userData.name}">
+                            <div class="profile-status-indicator ${userData.status || 'offline'}"></div>
+                        </div>
+                        <h2 class="profile-username">${userData.name}</h2>
+                        </div>
+                </div>
+                <div class="profile-right-section">
+                    <div class="profile-tabs">
+                         <div class="profile-tab active">Profil</div>
+                    </div>
+                    <div class="profile-section">
+                        <p>Detaylı profil bilgileri yakında eklenecek.</p>
+                         </div>
+                     <div class="profile-action-buttons">
+                         <button class="profile-action-btn message-btn">
+                             <i class="fas fa-comment"></i>
+                             <span>Mesaj Gönder</span>
+                         </button>
+                         <!-- Diğer butonlar eklenebilir -->
+                     </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(profilePanel);
+
+        setTimeout(() => {
+            profilePanel.classList.add('show');
+        }, 10);
+
+        const closeBtn = profilePanel.querySelector('.profile-close-btn');
+        closeBtn.addEventListener('click', () => {
+            profilePanel.classList.remove('show');
+            setTimeout(() => profilePanel.remove(), 300);
+        });
+
+        profilePanel.addEventListener('click', (e) => {
+            if (e.target === profilePanel) closeBtn.click();
+        });
+
+        // Profil panelindeki Mesaj Gönder butonu
+        const messageBtn = profilePanel.querySelector('.message-btn');
+        if (messageBtn && userData.id) {
+            messageBtn.addEventListener('click', () => {
+                closeBtn.click(); // Önce profili kapat
+                openChatPanel(userData.id, userData.name, userData.avatar || defaultAvatar);
+            });
+        }
+    }
+    // --- End Profil Paneli --- 
+
+    // --- Emoji Picker İşlevselliği ---
+    if (chatEmojiBtn && emojiPicker && chatTextarea) {
+        // Emoji butonuna tıklanınca picker'ı göster/gizle
+        chatEmojiBtn.addEventListener('click', (event) => {
+            event.stopPropagation(); // Başka tıklama olaylarını engelle
+            const isPickerVisible = emojiPicker.style.display === 'block';
+            if (isPickerVisible) {
+                emojiPicker.style.display = 'none';
+            } else {
+                positionEmojiPicker();
+                emojiPicker.style.display = 'block';
+                emojiPicker.focus(); // Fokuslanınca arama kutusu aktif olur
+            }
+        });
+
+        // Emoji seçildiğinde textarea'ya ekle
+        emojiPicker.addEventListener('emoji-click', event => {
+            const emoji = event.detail.unicode;
+            insertEmoji(emoji);
+            // İsteğe bağlı: Seçimden sonra picker'ı gizle
+            // emojiPicker.style.display = 'none'; 
+        });
+
+        // Picker dışına tıklanınca gizle
+        document.addEventListener('click', (event) => {
+            if (emojiPicker.style.display === 'block' &&
+                !emojiPicker.contains(event.target) &&
+                event.target !== chatEmojiBtn &&
+                !chatEmojiBtn.contains(event.target)) {
+                emojiPicker.style.display = 'none';
+            }
+        });
+
+        // Emoji picker'ı konumlandırma fonksiyonu
+        function positionEmojiPicker() {
+            const buttonRect = chatEmojiBtn.getBoundingClientRect();
+            const pickerHeight = 450; // Tahmini picker yüksekliği
+            const pickerWidth = 350; // Tahmini picker genişliği
+            const spaceAbove = buttonRect.top;
+            const spaceBelow = window.innerHeight - buttonRect.bottom;
+
+            let top, left;
+
+            // Genellikle butonun üstüne yerleştir
+            if (spaceAbove > pickerHeight || spaceAbove > spaceBelow) {
+                // Üstte yeterli yer var veya üstteki boşluk alttakinden fazla
+                top = buttonRect.top - pickerHeight - 5; // 5px boşluk
+            } else {
+                // Altta daha fazla yer var
+                top = buttonRect.bottom + 5;
+            }
+
+            // Yatayda butonun sağına hizala (veya sola taşır)
+            left = buttonRect.left;
+            // Ekranın sağ kenarını kontrol et
+            if (left + pickerWidth > window.innerWidth) {
+                left = window.innerWidth - pickerWidth - 10; // Sağdan boşluk bırak
+            }
+            // Ekranın sol kenarını kontrol et (nadiren gerekir)
+            if (left < 0) {
+                left = 10;
+            }
+
+
+            emojiPicker.style.top = `${top}px`;
+            emojiPicker.style.left = `${left}px`;
+        }
+
+        // Textarea'ya emoji ekleme (imleç konumunu koruyarak)
+        function insertEmoji(emoji) {
+            const start = chatTextarea.selectionStart;
+            const end = chatTextarea.selectionEnd;
+            const text = chatTextarea.value;
+            const before = text.substring(0, start);
+            const after = text.substring(end, text.length);
+            chatTextarea.value = before + emoji + after;
+            // İmleci emojiden sonraya taşı
+            chatTextarea.selectionStart = chatTextarea.selectionEnd = start + emoji.length;
+            chatTextarea.focus();
+            // Textarea yüksekliğini güncelle (varsa)
+            const event = new Event('input', { bubbles: true });
+            chatTextarea.dispatchEvent(event);
+        }
+    }
+    // --- End Emoji Picker İşlevselliği ---
 
     // ... (Mevcut diğer dashboard.js kodları: createAddFriendModal vb.) ...
 
