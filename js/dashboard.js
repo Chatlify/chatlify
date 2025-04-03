@@ -3,9 +3,19 @@ import { supabase } from './auth_config.js'; // Supabase istemcisini import et
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Dashboard JS Loaded');
 
-    const userPanelUsername = document.getElementById('userPanelUsername');
-    const userPanelAvatar = document.getElementById('userPanelAvatar');
+    const userPanelUsernameElement = document.querySelector('.dm-footer .dm-user-name');
+    const userPanelAvatarElement = document.querySelector('.dm-footer .dm-user-avatar img');
     const defaultAvatar = 'images/default-avatar.png'; // Varsayılan avatar yolu
+
+    if (!userPanelUsernameElement) {
+        console.error('User panel username element (.dm-footer .dm-user-name) not found.');
+    }
+    if (!userPanelAvatarElement) {
+        console.error('User panel avatar element (.dm-footer .dm-user-avatar img) not found.');
+    }
+    if (!userPanelUsernameElement || !userPanelAvatarElement) {
+        return;
+    }
 
     // --- Kullanıcı Bilgilerini Al ve Paneli Güncelle ---
     try {
@@ -38,32 +48,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (profileError) {
             console.error('Error fetching user profile:', profileError);
             // Profil bulunamazsa veya hata olursa sadece e-postayı gösterilebilir
-            if (userPanelUsername) userPanelUsername.textContent = user.email;
-            if (userPanelAvatar) userPanelAvatar.src = defaultAvatar;
+            userPanelUsernameElement.textContent = user.email;
+            userPanelAvatarElement.src = defaultAvatar;
             return;
         }
 
         if (profile) {
             console.log('User profile:', profile);
             // Paneli güncelle
-            if (userPanelUsername) {
-                userPanelUsername.textContent = profile.username || user.email; // Kullanıcı adı yoksa e-postayı kullan
-            }
-            if (userPanelAvatar) {
-                userPanelAvatar.src = profile.avatar || defaultAvatar; // Avatar yoksa varsayılanı kullan
-            }
+            userPanelUsernameElement.textContent = profile.username || user.email; // Kullanıcı adı yoksa e-postayı kullan
+            userPanelAvatarElement.src = profile.avatar || defaultAvatar; // Avatar yoksa varsayılanı kullan
         } else {
             console.log('Profile not found for user:', user.id);
             // Profil bulunamazsa
-            if (userPanelUsername) userPanelUsername.textContent = user.email;
-            if (userPanelAvatar) userPanelAvatar.src = defaultAvatar;
+            userPanelUsernameElement.textContent = user.email;
+            userPanelAvatarElement.src = defaultAvatar;
         }
 
     } catch (error) {
         console.error('Error in dashboard setup:', error);
         // Genel hata durumunda varsayılanları göster
-        if (userPanelUsername) userPanelUsername.textContent = 'Kullanıcı';
-        if (userPanelAvatar) userPanelAvatar.src = defaultAvatar;
+        userPanelUsernameElement.textContent = 'Kullanıcı';
+        userPanelAvatarElement.src = defaultAvatar;
     }
     // --- End Kullanıcı Bilgileri ---
 
