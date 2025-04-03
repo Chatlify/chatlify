@@ -83,11 +83,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    // Başlangıçta 'Tüm Arkadaşlar' sekmesini göster
+    // Başlangıçta 'Tüm Arkadaşlar' sekmesini göster ve yükle
     showSection('Tüm Arkadaşlar');
 
     function showSection(tabName) {
-        if (!onlineSection || !onlineList || !offlineSection || !offlineList || !pendingSection || !pendingList) return; // Elementler yoksa çık
+        if (!onlineSection || !onlineList || !offlineSection || !offlineList || !pendingSection || !pendingList) return;
 
         onlineSection.style.display = 'none';
         onlineList.style.display = 'none';
@@ -97,15 +97,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         pendingList.style.display = 'none';
 
         if (tabName === 'Tüm Arkadaşlar') {
-            onlineSection.style.display = 'flex';
-            onlineList.style.display = 'block';
-            offlineSection.style.display = 'flex';
-            offlineList.style.display = 'block';
-            // TODO: loadAllFriends();
+            onlineSection.style.display = 'flex'; // Çevrimiçi başlığını göster
+            onlineList.style.display = 'block'; // Çevrimiçi listesini göster (şimdilik boş olacak)
+            offlineSection.style.display = 'flex'; // Çevrimdışı başlığını göster
+            offlineList.style.display = 'block'; // Çevrimdışı listesini göster
+            loadAllFriends(); // Tüm (kabul edilmiş) arkadaşları yükle
         } else if (tabName === 'Çevrimiçi') {
             onlineSection.style.display = 'flex';
             onlineList.style.display = 'block';
-            // TODO: loadOnlineFriends();
+            // loadOnlineFriends(); // Şimdilik sadece çevrimiçi arkadaşları yükleme fonksiyonu çağrılmıyor
+            // Geçici olarak boş liste göster
+            onlineList.innerHTML = '<div class="empty-placeholder">Çevrimiçi arkadaşları gösterme özelliği yakında eklenecektir.</div>';
+            document.querySelector('.online-count').textContent = '0';
         } else if (tabName === 'Bekleyen') {
             pendingSection.style.display = 'flex';
             pendingList.style.display = 'block';
@@ -113,7 +116,111 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // --- Bekleyen İstekleri Yükleme Fonksiyonu ---
+    // --- Tüm (Kabul Edilmiş) Arkadaşları Yükleme Fonksiyonu ---
+    async function loadAllFriends() {
+        if (!onlineList || !offlineList || !document.querySelector('.online-count') || !document.querySelector('.offline-count')) return;
+
+        onlineList.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin"></i> Arkadaşlar yükleniyor...</div>';
+        offlineList.innerHTML = ''; // Çevrimdışı listesini de başlangıçta temizle
+        document.querySelector('.online-count').textContent = '0';
+        document.querySelector('.offline-count').textContent = '0';
+
+        try {
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError || !session) {
+                onlineList.innerHTML = '<div class="error-placeholder">Oturum bulunamadı.</div>';
+                return;
+            }
+            const currentUserId = session.user.id;
+
+            // Mevcut kullanıcıyı içeren ve durumu 'accepted' olan tüm arkadaşlıkları çek
+            const { data: friendships, error: friendsError } = await supabase
+                .from('friendships')
+                .select(`
+                    id,
+                    user_id_1,
+                    user_id_2,
+                    user1:user_id_1 ( id, username, avatar ),
+                    user2:user_id_2 ( id, username, avatar )
+                `)
+                .eq('status', 'accepted')
+                .or(`user_id_1.eq.${currentUserId},user_id_2.eq.${currentUserId}`);
+
+            if (friendsError) {
+                console.error('Error fetching accepted friends:', friendsError);
+                onlineList.innerHTML = '<div class="error-placeholder">Arkadaşlar yüklenirken hata oluştu.</div>';
+                return;
+            }
+
+            onlineList.innerHTML = ''; // Çevrimiçi listesini temizle (şimdilik hepsi çevrimdışı)
+            offlineList.innerHTML = ''; // Çevrimdışı listesini temizle
+
+            if (friendships.length === 0) {
+                offlineList.innerHTML = '<div class="empty-placeholder">Henüz hiç arkadaşınız yok.</div>';
+                // Çevrimiçi listesini de boşaltalım
+                onlineList.innerHTML = '';
+                document.querySelector('.online-count').textContent = '0';
+                document.querySelector('.offline-count').textContent = '0';
+                // Bölüm başlıklarını da gizle
+                if (onlineSection) onlineSection.style.display = 'none';
+                if (offlineSection) offlineSection.style.display = 'none';
+                return;
+            }
+
+            let offlineCount = 0;
+            // Şimdilik tüm arkadaşlar çevrimdışı listesine eklenecek
+            friendships.forEach(friendship => {
+                // Diğer kullanıcıyı bul (kendimiz olmayan)
+                const friendUser = friendship.user_id_1 === currentUserId ? friendship.user2 : friendship.user1;
+                if (!friendUser) return; // Kullanıcı bilgisi gelmediyse atla
+
+                const friendElement = document.createElement('div');
+                // TODO: Gerçek zamanlı durum eklendiğinde burası değişecek
+                friendElement.className = 'friend-row offline';
+                friendElement.dataset.userId = friendUser.id;
+                friendElement.dataset.friendshipId = friendship.id;
+
+                friendElement.innerHTML = `
+                    <div class="friend-avatar">
+                        <img src="${friendUser.avatar || defaultAvatar}" alt="${friendUser.username}">
+                        <span class="status-dot offline"></span>
+                    </div>
+                    <div class="friend-info">
+                        <div class="friend-name">${friendUser.username}</div>
+                        <div class="friend-status">Çevrimdışı</div> <!-- Şimdilik statik -->
+                    </div>
+                    <div class="friend-actions">
+                        <button class="friend-action-btn message-btn" title="Mesaj Gönder">
+                            <i class="fas fa-comment"></i>
+                        </button>
+                        <button class="friend-action-btn profile-btn" title="Profil">
+                            <i class="fas fa-user"></i>
+                        </button>
+                        <button class="friend-action-btn more-btn" title="Daha Fazla">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                `;
+                offlineList.appendChild(friendElement);
+                offlineCount++;
+            });
+
+            // Sayıları güncelle
+            document.querySelector('.online-count').textContent = '0'; // Şimdilik çevrimiçi 0
+            document.querySelector('.offline-count').textContent = offlineCount;
+
+            // Bölüm başlıklarını göster/gizle
+            if (onlineSection) onlineSection.style.display = 'none'; // Şimdilik çevrimiçi bölümü gizli
+            if (offlineSection) offlineSection.style.display = offlineCount > 0 ? 'flex' : 'none';
+
+        } catch (error) {
+            console.error('Error in loadAllFriends:', error);
+            onlineList.innerHTML = '<div class="error-placeholder">Arkadaşlar yüklenirken beklenmedik bir hata oluştu.</div>';
+        }
+    }
+    // --- End Tüm Arkadaşları Yükleme ---
+
+    // --- Bekleyen İstekleri Yükleme Fonksiyonu (Değişiklik Yok) ---
     async function loadPendingRequests() {
         if (!pendingList || !pendingCountBadge) return;
 
@@ -193,7 +300,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     // --- End Bekleyen İstekleri Yükleme ---
 
-    // --- Arkadaşlık İsteği Kabul/Red Fonksiyonu ---
+    // --- Arkadaşlık İsteği Kabul/Red Fonksiyonu (Güncellendi) ---
     async function handleFriendRequest(friendshipId, newStatus) {
         console.log(`Handling request ${friendshipId} with status ${newStatus}`);
         const requestRow = pendingList.querySelector(`.friend-row[data-friendship-id="${friendshipId}"]`);
@@ -231,6 +338,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (pendingList.children.length === 0 && pendingCountBadge.textContent === '0') {
                         pendingList.innerHTML = '<div class="empty-placeholder">Bekleyen arkadaşlık isteğiniz yok.</div>';
                     }
+
+                    // Eğer istek KABUL edildiyse, arkadaş listesini yenile
+                    if (newStatus === 'accepted') {
+                        loadAllFriends();
+                    }
+
                 }, 500);
             }
         } catch (error) {

@@ -2218,7 +2218,7 @@
     align-items: center;
     padding: 8px 16px;
     border-radius: 4px;
-    transition: background-color 0.15s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .friend-row:hover {
@@ -4866,4 +4866,42 @@
         padding: 10px 15px;
         white-space: nowrap;
     }
+}
+
+/* Bekleyen İstek Butonları Renklendirme */
+.friend-row.pending .accept-request-btn {
+    color: #2ecc71;
+    /* Yeşil */
+    background-color: rgba(46, 204, 113, 0.1);
+    border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.friend-row.pending .accept-request-btn:hover {
+    background-color: rgba(46, 204, 113, 0.2);
+    color: #3ff38a;
+}
+
+.friend-row.pending .decline-request-btn {
+    color: #e74c3c;
+    /* Kırmızı */
+    background-color: rgba(231, 76, 60, 0.1);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.friend-row.pending .decline-request-btn:hover {
+    background-color: rgba(231, 76, 60, 0.2);
+    color: #ff6b6b;
+}
+
+.friend-row.pending .accept-request-btn:disabled,
+.friend-row.pending .decline-request-btn:disabled {
+    color: #6c7293 !important;
+    background-color: rgba(108, 114, 147, 0.1) !important;
+    cursor: default;
+    transform: none;
+}
+
+.friend-row.pending .accept-request-btn:disabled i,
+.friend-row.pending .decline-request-btn:disabled i {
+    color: #6c7293 !important;
 }
