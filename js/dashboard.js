@@ -33,6 +33,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const addFriendButton = document.querySelector('.dashboard-header .add-friend'); // Arkadaş Ekle Butonu
     // --- End Element Tanımlamaları ---
 
+    // --- Modal Elementlerini Tanımla ---
+    const addFriendModal = document.getElementById('add-friend-modal');
+    const closeModalButton = addFriendModal?.querySelector('.close-modal-btn');
+    const addFriendUsernameInput = addFriendModal?.querySelector('#add-friend-username-input');
+    const addFriendSubmitButton = addFriendModal?.querySelector('#add-friend-submit-button');
+    const addFriendMessageArea = addFriendModal?.querySelector('#add-friend-message-area');
+    // --- End Modal Element Tanımlamaları ---
+
     // Elementler bulunamadıysa kontrol et (Kullanıcı Paneli)
     if (!userPanelUsernameElement) {
         console.error('User panel username element (.dm-footer .dm-user-name) not found.');
@@ -41,8 +49,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('User panel avatar element (.dm-footer .dm-user-avatar img) not found.');
     }
     // Elementler bulunamadıysa kontrol et (Arkadaş Paneli)
-    if (!pendingList || !pendingCountBadge || !pendingSection || !onlineList || !onlineSection || !offlineList || !offlineSection || !dmList || !chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer || !sponsorSidebar || !settingsButtonContainer || !chatCloseBtn || !chatEmojiBtn || !chatTextarea || !emojiPicker || !addFriendButton) {
-        console.error('One or more friend panel elements are missing in HTML.');
+    if (!pendingList || !pendingCountBadge || !pendingSection || !onlineList || !onlineSection || !offlineList || !offlineSection || !dmList || !chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer || !sponsorSidebar || !settingsButtonContainer || !chatCloseBtn || !chatEmojiBtn || !chatTextarea || !emojiPicker || !addFriendButton ||
+        // Modal elementlerini de kontrol et
+        !addFriendModal || !closeModalButton || !addFriendUsernameInput || !addFriendSubmitButton || !addFriendMessageArea) {
+        console.error('One or more friend panel or modal elements are missing in HTML.');
     }
 
     // --- Kullanıcı Bilgilerini Al ve Paneli Güncelle ---
@@ -776,210 +786,156 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     // --- End Emoji Picker İşlevselliği ---
 
-    // --- Arkadaş Ekle Butonu İşlevi --- 
+    // --- Arkadaş Ekle Modalını Yönetme --- 
+    function openAddFriendModal() {
+        if (!addFriendModal || !addFriendUsernameInput || !addFriendMessageArea || !addFriendSubmitButton) return;
+        // Modal açılmadan önce input ve mesaj alanını temizle, butonu sıfırla
+        addFriendUsernameInput.value = '';
+        addFriendMessageArea.innerHTML = '';
+        addFriendMessageArea.className = 'modal-message-area'; // Mesaj stillerini temizle
+        addFriendUsernameInput.disabled = false;
+        addFriendSubmitButton.disabled = false;
+        addFriendSubmitButton.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Arkadaşlık İsteği Gönder</span>';
+
+        addFriendModal.style.display = 'flex'; // Veya 'block', css'e göre
+        setTimeout(() => { // Küçük bir gecikme ile opacity/transform animasyonu başlar
+            addFriendModal.classList.add('open');
+            addFriendUsernameInput.focus(); // Açıldığında inputa odaklan
+        }, 10);
+    }
+
+    function closeAddFriendModal() {
+        if (!addFriendModal) return;
+        addFriendModal.classList.remove('open');
+        // CSS transition bittikten sonra display none yap
+        setTimeout(() => {
+            addFriendModal.style.display = 'none';
+        }, 300); // CSS transition süresi ile aynı olmalı
+    }
+
+    // "Arkadaş Ekle" butonuna tıklanınca modalı aç
     if (addFriendButton) {
-        addFriendButton.addEventListener('click', () => {
-            console.log('Add Friend button clicked - Calling createAddFriendModal');
-            if (typeof createAddFriendModal === 'function') {
-                createAddFriendModal();
-            } else {
-                console.error('createAddFriendModal is not defined or not a function!');
+        addFriendButton.addEventListener('click', openAddFriendModal);
+    }
+
+    // Kapatma butonuna tıklanınca modalı kapat
+    if (closeModalButton) {
+        closeModalButton.addEventListener('click', closeAddFriendModal);
+    }
+
+    // Overlay'e (modal dışına) tıklanınca modalı kapat
+    if (addFriendModal) {
+        addFriendModal.addEventListener('click', (event) => {
+            if (event.target === addFriendModal) { // Sadece overlay'e tıklandıysa kapat
+                closeAddFriendModal();
             }
         });
-    } else {
-        console.error('Add Friend button element not found.');
     }
-    // --- End Arkadaş Ekle Butonu ---
 
-    // --- Arkadaş ekleme modalı oluşturma ve yönetme (Linter hataları düzeltildi) --- 
-    function createAddFriendModal() {
-        console.log("createAddFriendModal invoked.");
-        if (document.querySelector('.add-friend-modal')) {
-            console.log('Modal already exists. Skipping creation.');
-            return;
+    // Modal içindeki "Arkadaşlık İsteği Gönder" butonu için olay dinleyicisi
+    if (addFriendSubmitButton && addFriendUsernameInput && addFriendMessageArea) {
+
+        // Yardımcı mesaj gösterme fonksiyonu (modal için özelleştirilmiş)
+        function showModalMessage(message, type = 'info') {
+            addFriendMessageArea.textContent = message;
+            addFriendMessageArea.className = `modal-message-area ${type}`; // success veya error class'ı ekle
+            addFriendMessageArea.style.display = 'block';
+            // Belirli bir süre sonra mesajı gizleme (isteğe bağlı)
+            // setTimeout(() => { addFriendMessageArea.style.display = 'none'; }, 5000);
         }
 
-        const modal = document.createElement('div');
-        modal.className = 'add-friend-modal';
-        // innerHTML içeriği düzeltildi
-        modal.innerHTML = `
-            <div class="add-friend-modal-content">
-                <div class="add-friend-modal-header">
-                    <div class="modal-header-left">
-                        <i class="fas fa-user-plus modal-icon"></i>
-                        <h3>Arkadaş Ekle</h3>
-                    </div>
-                    <div class="modal-header-right">
-                        <i class="fas fa-times close-modal"></i>
-                    </div>
-                </div>
-                <div class="add-friend-modal-body">
-                    <div class="section-info">
-                        <p>Chatlify'da birini arkadaş olarak eklemek için kullanıcı adını girin. Büyük/küçük harfe duyarlıdır.</p>
-                    </div>
-                    <div class="add-friend-input-container">
-                        <div class="input-wrapper">
-                            <i class="fas fa-at"></i>
-                            <input type="text" placeholder="Kullanıcıadı" class="add-friend-input">
-                        </div>
-                        <button class="add-friend-submit">
-                            <i class="fas fa-paper-plane"></i>
-                            <span>Arkadaşlık İsteği Gönder</span>
-                        </button>
-                    </div>
-                    <div class="modal-message-area" style="min-height: 20px; margin-top: 10px;">
-                         <!-- Hata/Başarı mesajları buraya gelecek -->
-                    </div>
-                    <div class="friend-request-note">
-                        <i class="fas fa-info-circle"></i>
-                        <span>Doğru kullanıcıyı bulduğunuzdan emin olmak için doğru kullanıcı adını girin.</span>
-                    </div>
-                </div> 
-            </div>
-         `; // innerHTML sonu
-
-        document.body.appendChild(modal);
-        setTimeout(() => { modal.classList.add('show'); }, 10);
-
-        const closeModal = () => {
-            modal.classList.remove('show');
-            setTimeout(() => {
-                modal.remove();
-                const style = document.getElementById('modal-error-style');
-                if (style) style.remove();
-            }, 300);
-        };
-
-        modal.querySelector('.close-modal')?.addEventListener('click', closeModal);
-        modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-
-        const addFriendSubmit = modal.querySelector('.add-friend-submit');
-        const addFriendInput = modal.querySelector('.add-friend-input');
-        const messageArea = modal.querySelector('.modal-message-area');
-
-        if (!addFriendSubmit || !addFriendInput || !messageArea) {
-            console.error('Crucial modal elements (.add-friend-submit, .add-friend-input, .modal-message-area) not found!');
-            return;
+        // Butonu ve inputu sıfırlama fonksiyonu (modal için)
+        function resetModalSubmitButton() {
+            addFriendSubmitButton.disabled = false;
+            addFriendUsernameInput.disabled = false;
+            addFriendSubmitButton.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Arkadaşlık İsteği Gönder</span>';
         }
 
-        // showModalMessage ve resetSubmitButton fonksiyonlarını modal içinde tanımlayalım
-        function showModalMessage(message, type = 'error', area, inputElement) {
-            if (!area) return;
-            area.innerHTML = `<div class="modal-${type}-message" style="font-size: 13px; color: ${type === 'error' ? '#ff6b6b' : '#2ecc71'};">${message}</div>`;
-
-            const shakeStyleId = 'modal-error-style';
-            let shakeStyle = document.getElementById(shakeStyleId);
-
-            if (type === 'error' && inputElement) {
-                if (!shakeStyle) {
-                    shakeStyle = document.createElement('style');
-                    shakeStyle.id = shakeStyleId;
-                    shakeStyle.textContent = `
-                            @keyframes shake {
-                                10%, 90% { transform: translate3d(-1px, 0, 0); }
-                                20%, 80% { transform: translate3d(2px, 0, 0); }
-                                30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
-                                40%, 60% { transform: translate3d(3px, 0, 0); }
-                            }
-                       `;
-                    document.head.appendChild(shakeStyle);
-                }
-                inputElement.style.animation = 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both';
-                inputElement.style.borderColor = 'rgba(255, 82, 82, 0.7)';
-                inputElement.focus();
-                setTimeout(() => {
-                    if (inputElement) {
-                        inputElement.style.animation = '';
-                        inputElement.style.borderColor = '';
-                    }
-                }, 500);
-            } else if (shakeStyle && inputElement) { // Hata yoksa animasyonu temizle
-                inputElement.style.animation = '';
-                inputElement.style.borderColor = '';
-            }
-            setTimeout(() => { if (area) area.innerHTML = ''; }, 5000);
-        }
-
-        function resetSubmitButton(button, input) {
-            if (button) button.disabled = false;
-            if (input) input.disabled = false;
-            if (button) button.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Arkadaşlık İsteği Gönder</span>';
-        }
-
-        addFriendSubmit.addEventListener('click', async () => {
-            const targetUsername = addFriendInput.value.trim();
-            addFriendInput.disabled = true;
-            addFriendSubmit.disabled = true;
-            addFriendSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
-            messageArea.innerHTML = '';
+        addFriendSubmitButton.addEventListener('click', async () => {
+            const targetUsername = addFriendUsernameInput.value.trim();
+            addFriendUsernameInput.disabled = true;
+            addFriendSubmitButton.disabled = true;
+            addFriendSubmitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
+            addFriendMessageArea.style.display = 'none'; // Önceki mesajı gizle
 
             if (!targetUsername) {
-                showModalMessage('Lütfen bir kullanıcı adı girin.', 'error', messageArea, addFriendInput);
-                resetSubmitButton(addFriendSubmit, addFriendInput);
+                showModalMessage('Lütfen bir kullanıcı adı girin.', 'error');
+                resetModalSubmitButton();
                 return;
             }
+
             try {
+                // Bu kısım daha önceki kodunuzdan alındı ve modal elementleri kullanacak şekilde güncellendi
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
                 if (sessionError || !session) {
-                    showModalMessage('Oturum bulunamadı. Lütfen tekrar giriş yapın.', 'error', messageArea, addFriendInput);
-                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    showModalMessage('Oturum bulunamadı. Lütfen tekrar giriş yapın.', 'error');
+                    resetModalSubmitButton();
+                    closeAddFriendModal(); // Oturum yoksa modalı kapat
                     return;
                 }
                 const currentUserId = session.user.id;
+
                 const { data: targetUser, error: findUserError } = await supabase.from('users').select('id').eq('username', targetUsername).single();
                 if (findUserError || !targetUser) {
-                    showModalMessage(`Kullanıcı bulunamadı: ${targetUsername}`, 'error', messageArea, addFriendInput);
-                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    showModalMessage(`Kullanıcı bulunamadı: ${targetUsername}`, 'error');
+                    resetModalSubmitButton();
                     return;
                 }
                 const targetUserId = targetUser.id;
+
                 if (currentUserId === targetUserId) {
-                    showModalMessage('Kendinize arkadaşlık isteği gönderemezsiniz.', 'error', messageArea, addFriendInput);
-                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    showModalMessage('Kendinize arkadaşlık isteği gönderemezsiniz.', 'error');
+                    resetModalSubmitButton();
                     return;
                 }
+
                 const { data: existingFriendship, error: checkError } = await supabase.from('friendships').select('status').or(`and(user_id_1.eq.${currentUserId},user_id_2.eq.${targetUserId}),and(user_id_1.eq.${targetUserId},user_id_2.eq.${currentUserId})`).maybeSingle();
                 if (checkError) {
                     console.error('Error checking existing friendship:', checkError);
-                    showModalMessage('İstek gönderilirken bir hata oluştu. (Kod: CHECK)', 'error', messageArea, addFriendInput);
-                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    showModalMessage('İstek gönderilirken bir hata oluştu. (Kod: CHECK)', 'error');
+                    resetModalSubmitButton();
                     return;
                 }
+
                 if (existingFriendship) {
                     let errorMsg = 'Bu kullanıcıyla ilgili mevcut bir ilişki durumu var.';
                     if (existingFriendship.status === 'pending') errorMsg = 'Bu kullanıcıya zaten bir istek gönderilmiş veya ondan bir istek var.';
                     else if (existingFriendship.status === 'accepted') errorMsg = 'Bu kullanıcı zaten arkadaş listenizde.';
                     else if (existingFriendship.status === 'blocked') errorMsg = 'Bu kullanıcıyla ilgili bir engelleme mevcut.';
-                    showModalMessage(errorMsg, 'error', messageArea, addFriendInput);
-                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    showModalMessage(errorMsg, 'error');
+                    resetModalSubmitButton();
                     return;
                 }
+
                 const { error: insertError } = await supabase.from('friendships').insert({ user_id_1: currentUserId, user_id_2: targetUserId, status: 'pending' });
                 if (insertError) {
                     console.error('Error sending friend request:', insertError);
                     if (insertError.code === '23505') {
-                        showModalMessage('Bu kullanıcıya zaten bir istek gönderilmiş veya ondan bir istek var.', 'error', messageArea, addFriendInput);
+                        showModalMessage('Bu kullanıcıya zaten bir istek gönderilmiş veya ondan bir istek var.', 'error');
                     } else {
-                        showModalMessage(`Arkadaşlık isteği gönderilemedi. (Kod: ${insertError.code})`, 'error', messageArea, addFriendInput);
+                        showModalMessage(`Arkadaşlık isteği gönderilemedi. (Kod: ${insertError.code})`, 'error');
                     }
-                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    resetModalSubmitButton();
                     return;
                 }
-                showModalMessage(`Arkadaşlık isteği ${targetUsername} kullanıcısına başarıyla gönderildi!`, 'success', messageArea);
-                addFriendInput.value = '';
-                resetSubmitButton(addFriendSubmit, addFriendInput);
+                showModalMessage(`Arkadaşlık isteği ${targetUsername} kullanıcısına başarıyla gönderildi!`, 'success');
+                addFriendUsernameInput.value = ''; // Başarılıysa inputu temizle
+                // Başarıdan sonra butonu sıfırla ama modalı açık bırak
+                setTimeout(() => { resetModalSubmitButton(); }, 1500); // Kullanıcının mesajı görmesi için kısa bir bekleme
+
             } catch (error) {
                 console.error('Friend request error:', error);
-                showModalMessage('Beklenmedik bir hata oluştu.', 'error', messageArea, addFriendInput);
-                resetSubmitButton(addFriendSubmit, addFriendInput);
+                showModalMessage('Beklenmedik bir hata oluştu.', 'error');
+                resetModalSubmitButton();
             }
         });
 
-        addFriendInput.addEventListener('keydown', e => {
-            if (e.key === 'Enter') addFriendSubmit?.click();
-            messageArea.innerHTML = ''; // Yazmaya başlayınca mesajı temizle
+        // Input alanında Enter'a basılınca gönderme butonunu tetikle
+        addFriendUsernameInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') addFriendSubmitButton?.click();
+            addFriendMessageArea.style.display = 'none'; // Yazmaya başlayınca mesajı temizle
         });
     }
-    // --- End Arkadaş Ekleme Modalı ---
+    // --- End Arkadaş Ekle Modalını Yönetme ---
 
 }); 
