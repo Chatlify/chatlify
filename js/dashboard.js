@@ -928,57 +928,57 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const currentUserId = session.user.id;
                 const { data: targetUser, error: findUserError } = await supabase.from('users').select('id').eq('username', targetUsername).single();
                 if (findUserError || !targetUser) {
-                    showModalMessage(\`Kullanıcı bulunamadı: ${targetUsername}\`, 'error', messageArea, addFriendInput);
-                     resetSubmitButton(addFriendSubmit, addFriendInput);
-                     return;
-                 }
-                 const targetUserId = targetUser.id;
-                 if (currentUserId === targetUserId) {
-                     showModalMessage('Kendinize arkadaşlık isteği gönderemezsiniz.', 'error', messageArea, addFriendInput);
-                     resetSubmitButton(addFriendSubmit, addFriendInput);
-                     return;
-                 }
-                 const { data: existingFriendship, error: checkError } = await supabase.from('friendships').select('status').or(\`and(user_id_1.eq.${currentUserId},user_id_2.eq.${targetUserId}),and(user_id_1.eq.${targetUserId},user_id_2.eq.${currentUserId})\`).maybeSingle();
-                 if (checkError) {
-                     console.error('Error checking existing friendship:', checkError);
-                     showModalMessage('İstek gönderilirken bir hata oluştu. (Kod: CHECK)', 'error', messageArea, addFriendInput);
-                     resetSubmitButton(addFriendSubmit, addFriendInput);
-                     return;
-                 }
-                 if (existingFriendship) {
-                     let errorMsg = 'Bu kullanıcıyla ilgili mevcut bir ilişki durumu var.';
-                     if (existingFriendship.status === 'pending') errorMsg = 'Bu kullanıcıya zaten bir istek gönderilmiş veya ondan bir istek var.';
-                     else if (existingFriendship.status === 'accepted') errorMsg = 'Bu kullanıcı zaten arkadaş listenizde.';
-                     else if (existingFriendship.status === 'blocked') errorMsg = 'Bu kullanıcıyla ilgili bir engelleme mevcut.';
-                     showModalMessage(errorMsg, 'error', messageArea, addFriendInput);
-                     resetSubmitButton(addFriendSubmit, addFriendInput);
-                     return;
-                 }
-                 const { error: insertError } = await supabase.from('friendships').insert({ user_id_1: currentUserId, user_id_2: targetUserId, status: 'pending' });
-                 if (insertError) {
-                     console.error('Error sending friend request:', insertError);
-                     if (insertError.code === '23505') { 
-                         showModalMessage('Bu kullanıcıya zaten bir istek gönderilmiş veya ondan bir istek var.', 'error', messageArea, addFriendInput);
-                     } else {
-                         showModalMessage(\`Arkadaşlık isteği gönderilemedi. (Kod: ${insertError.code})\`, 'error', messageArea, addFriendInput);
-                     }
-                     resetSubmitButton(addFriendSubmit, addFriendInput);
-                     return;
-                 }
-                 showModalMessage(\`Arkadaşlık isteği ${targetUsername} kullanıcısına başarıyla gönderildi!\`, 'success', messageArea);
-                 addFriendInput.value = '';
-                 resetSubmitButton(addFriendSubmit, addFriendInput);
-             } catch (error) {
-                 console.error('Friend request error:', error);
-                 showModalMessage('Beklenmedik bir hata oluştu.', 'error', messageArea, addFriendInput);
-                 resetSubmitButton(addFriendSubmit, addFriendInput);
-             }
-         });
+                    showModalMessage(`Kullanıcı bulunamadı: ${targetUsername}`, 'error', messageArea, addFriendInput);
+                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    return;
+                }
+                const targetUserId = targetUser.id;
+                if (currentUserId === targetUserId) {
+                    showModalMessage('Kendinize arkadaşlık isteği gönderemezsiniz.', 'error', messageArea, addFriendInput);
+                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    return;
+                }
+                const { data: existingFriendship, error: checkError } = await supabase.from('friendships').select('status').or(`and(user_id_1.eq.${currentUserId},user_id_2.eq.${targetUserId}),and(user_id_1.eq.${targetUserId},user_id_2.eq.${currentUserId})`).maybeSingle();
+                if (checkError) {
+                    console.error('Error checking existing friendship:', checkError);
+                    showModalMessage('İstek gönderilirken bir hata oluştu. (Kod: CHECK)', 'error', messageArea, addFriendInput);
+                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    return;
+                }
+                if (existingFriendship) {
+                    let errorMsg = 'Bu kullanıcıyla ilgili mevcut bir ilişki durumu var.';
+                    if (existingFriendship.status === 'pending') errorMsg = 'Bu kullanıcıya zaten bir istek gönderilmiş veya ondan bir istek var.';
+                    else if (existingFriendship.status === 'accepted') errorMsg = 'Bu kullanıcı zaten arkadaş listenizde.';
+                    else if (existingFriendship.status === 'blocked') errorMsg = 'Bu kullanıcıyla ilgili bir engelleme mevcut.';
+                    showModalMessage(errorMsg, 'error', messageArea, addFriendInput);
+                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    return;
+                }
+                const { error: insertError } = await supabase.from('friendships').insert({ user_id_1: currentUserId, user_id_2: targetUserId, status: 'pending' });
+                if (insertError) {
+                    console.error('Error sending friend request:', insertError);
+                    if (insertError.code === '23505') {
+                        showModalMessage('Bu kullanıcıya zaten bir istek gönderilmiş veya ondan bir istek var.', 'error', messageArea, addFriendInput);
+                    } else {
+                        showModalMessage(`Arkadaşlık isteği gönderilemedi. (Kod: ${insertError.code})`, 'error', messageArea, addFriendInput);
+                    }
+                    resetSubmitButton(addFriendSubmit, addFriendInput);
+                    return;
+                }
+                showModalMessage(`Arkadaşlık isteği ${targetUsername} kullanıcısına başarıyla gönderildi!`, 'success', messageArea);
+                addFriendInput.value = '';
+                resetSubmitButton(addFriendSubmit, addFriendInput);
+            } catch (error) {
+                console.error('Friend request error:', error);
+                showModalMessage('Beklenmedik bir hata oluştu.', 'error', messageArea, addFriendInput);
+                resetSubmitButton(addFriendSubmit, addFriendInput);
+            }
+        });
 
-         addFriendInput.addEventListener('keydown', e => {
-             if (e.key === 'Enter') addFriendSubmit?.click();
-             messageArea.innerHTML = ''; // Yazmaya başlayınca mesajı temizle
-         });
+        addFriendInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') addFriendSubmit?.click();
+            messageArea.innerHTML = ''; // Yazmaya başlayınca mesajı temizle
+        });
     }
     // --- End Arkadaş Ekleme Modalı ---
 
