@@ -789,16 +789,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- Arkadaş Ekle Modalını Yönetme --- 
     function openAddFriendModal() {
         if (!addFriendModal || !addFriendUsernameInput || !addFriendMessageArea || !addFriendSubmitButton) return;
+
         // Modal açılmadan önce input ve mesaj alanını temizle, butonu sıfırla
         addFriendUsernameInput.value = '';
         addFriendMessageArea.innerHTML = '';
         addFriendMessageArea.className = 'modal-message-area'; // Mesaj stillerini temizle
+        addFriendMessageArea.style.display = 'none';
         addFriendUsernameInput.disabled = false;
         addFriendSubmitButton.disabled = false;
         addFriendSubmitButton.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Arkadaşlık İsteği Gönder</span>';
 
-        addFriendModal.style.display = 'flex'; // Veya 'block', css'e göre
-        setTimeout(() => { // Küçük bir gecikme ile opacity/transform animasyonu başlar
+        // Önce görünür hale getir, sonra animasyon için open sınıfını ekle
+        addFriendModal.style.display = 'flex';
+
+        // Body'nin kaydırmasını devre dışı bırak
+        document.body.style.overflow = 'hidden';
+
+        // Küçük bir gecikme ile opacity/transform animasyonu başlat
+        setTimeout(() => {
             addFriendModal.classList.add('open');
             addFriendUsernameInput.focus(); // Açıldığında inputa odaklan
         }, 10);
@@ -806,10 +814,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function closeAddFriendModal() {
         if (!addFriendModal) return;
+
+        // Önce open sınıfını kaldır (animasyon başlar)
         addFriendModal.classList.remove('open');
+
+        // Body'nin kaydırmasını tekrar etkinleştir
+        document.body.style.overflow = '';
+
         // CSS transition bittikten sonra display none yap
         setTimeout(() => {
             addFriendModal.style.display = 'none';
+
+            // Modalı kapatırken içeriği temizle (opsiyonel)
+            if (addFriendUsernameInput) addFriendUsernameInput.value = '';
+            if (addFriendMessageArea) {
+                addFriendMessageArea.innerHTML = '';
+                addFriendMessageArea.className = 'modal-message-area';
+                addFriendMessageArea.style.display = 'none';
+            }
         }, 300); // CSS transition süresi ile aynı olmalı
     }
 
@@ -830,6 +852,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 closeAddFriendModal();
             }
         });
+
+        // ESC tuşuna basınca modalı kapat
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && addFriendModal.style.display !== 'none') {
+                closeAddFriendModal();
+            }
+        });
     }
 
     // Modal içindeki "Arkadaşlık İsteği Gönder" butonu için olay dinleyicisi
@@ -837,15 +866,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Yardımcı mesaj gösterme fonksiyonu (modal için özelleştirilmiş)
         function showModalMessage(message, type = 'info') {
-            addFriendMessageArea.textContent = message;
+            if (!addFriendMessageArea) return;
+
+            // Mesaj alanını temizle
+            addFriendMessageArea.innerHTML = message;
             addFriendMessageArea.className = `modal-message-area ${type}`; // success veya error class'ı ekle
-            addFriendMessageArea.style.display = 'block';
-            // Belirli bir süre sonra mesajı gizleme (isteğe bağlı)
-            // setTimeout(() => { addFriendMessageArea.style.display = 'none'; }, 5000);
+
+            // Animasyon efektini yeniden tetiklemek için kısa bir süre gizle ve sonra göster
+            addFriendMessageArea.style.display = 'none';
+            setTimeout(() => {
+                addFriendMessageArea.style.display = 'flex';
+            }, 10);
         }
 
         // Butonu ve inputu sıfırlama fonksiyonu (modal için)
         function resetModalSubmitButton() {
+            if (!addFriendSubmitButton || !addFriendUsernameInput) return;
+
             addFriendSubmitButton.disabled = false;
             addFriendUsernameInput.disabled = false;
             addFriendSubmitButton.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Arkadaşlık İsteği Gönder</span>';
@@ -853,16 +890,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         addFriendSubmitButton.addEventListener('click', async () => {
             const targetUsername = addFriendUsernameInput.value.trim();
-            addFriendUsernameInput.disabled = true;
-            addFriendSubmitButton.disabled = true;
-            addFriendSubmitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
-            addFriendMessageArea.style.display = 'none'; // Önceki mesajı gizle
 
+            // Giriş yoksa, input'a odaklan ve hafif bir sarsma animasyonu ekle
             if (!targetUsername) {
+                addFriendUsernameInput.focus();
+                addFriendUsernameInput.classList.add('shake-input');
+                setTimeout(() => {
+                    addFriendUsernameInput.classList.remove('shake-input');
+                }, 500);
                 showModalMessage('Lütfen bir kullanıcı adı girin.', 'error');
-                resetModalSubmitButton();
                 return;
             }
+
+            // Loading durumunu başlat
+            addFriendUsernameInput.disabled = true;
+            addFriendSubmitButton.disabled = true;
+            addFriendSubmitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Gönderiliyor...</span>';
+            addFriendMessageArea.style.display = 'none'; // Önceki mesajı gizle
 
             try {
                 // Bu kısım daha önceki kodunuzdan alındı ve modal elementleri kullanacak şekilde güncellendi
@@ -918,10 +962,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                     resetModalSubmitButton();
                     return;
                 }
+
+                // Başarılı olduğunda 
                 showModalMessage(`Arkadaşlık isteği ${targetUsername} kullanıcısına başarıyla gönderildi!`, 'success');
                 addFriendUsernameInput.value = ''; // Başarılıysa inputu temizle
-                // Başarıdan sonra butonu sıfırla ama modalı açık bırak
-                setTimeout(() => { resetModalSubmitButton(); }, 1500); // Kullanıcının mesajı görmesi için kısa bir bekleme
+
+                // Başarıdan sonra belirli bir süre bekleyip modalı kapat
+                setTimeout(() => {
+                    closeAddFriendModal();
+                }, 2500);
+
+                // Bekleyen arkadaşlık isteklerini yenile (eğer ilgili bölüm aktif ise)
+                setTimeout(() => {
+                    loadPendingRequests(); // Bu fonksiyon mevcutsa çalıştır
+                }, 1000);
 
             } catch (error) {
                 console.error('Friend request error:', error);
@@ -932,8 +986,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Input alanında Enter'a basılınca gönderme butonunu tetikle
         addFriendUsernameInput.addEventListener('keydown', e => {
-            if (e.key === 'Enter') addFriendSubmitButton?.click();
-            addFriendMessageArea.style.display = 'none'; // Yazmaya başlayınca mesajı temizle
+            if (e.key === 'Enter' && !addFriendSubmitButton.disabled) {
+                e.preventDefault(); // Form varsa gönderilmesini engelle
+                addFriendSubmitButton.click();
+            }
+
+            // Yazmaya başlayınca hata mesajını temizle
+            if (addFriendMessageArea.classList.contains('error')) {
+                addFriendMessageArea.style.display = 'none';
+            }
+        });
+
+        // Input içeriği değiştiğinde de hata mesajını gizle (daha iyi UX)
+        addFriendUsernameInput.addEventListener('input', () => {
+            if (addFriendMessageArea.classList.contains('error')) {
+                addFriendMessageArea.style.display = 'none';
+            }
         });
     }
     // --- End Arkadaş Ekle Modalını Yönetme ---
