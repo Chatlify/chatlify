@@ -41,6 +41,265 @@ document.addEventListener('DOMContentLoaded', async () => {
     const addFriendMessageArea = addFriendModal?.querySelector('#add-friend-message-area');
     // --- End Modal Element Tanımlamaları ---
 
+    // --- Kontekst Menü (Sağ Tık) Sistemi ---
+    let activeContextMenu = null;
+
+    // Sayfa üzerinde kontekst menü göster
+    function showContextMenu(event, userData) {
+        event.preventDefault(); // Varsayılan sağ tık menüsünü engelle
+
+        // Varsa önceki menüyü temizle
+        if (activeContextMenu) {
+            document.body.removeChild(activeContextMenu);
+        }
+
+        // Yeni kontekst menüsü oluştur
+        const contextMenu = document.createElement('div');
+        contextMenu.className = 'context-menu';
+
+        // Menü içeriği - başlık ve avatar ile
+        let menuContent = '';
+
+        // Eğer kullanıcı bilgisi varsa header ekle
+        if (userData && userData.name) {
+            menuContent += `
+                <div class="context-menu-header">
+                    <div class="context-menu-avatar">
+                        <img src="${userData.avatar || defaultAvatar}" alt="${userData.name}">
+                    </div>
+                    <div class="context-menu-name">${userData.name}</div>
+                </div>
+            `;
+        }
+
+        // Sunucu/DM/Arkadaş türüne göre menü öğeleri ekle
+        switch (userData.type) {
+            case 'friend':
+                menuContent += `
+                    <div class="context-menu-item" data-action="message" data-id="${userData.id}">
+                        <i class="fas fa-comment"></i> Mesaj Gönder
+                    </div>
+                    <div class="context-menu-item" data-action="profile" data-id="${userData.id}">
+                        <i class="fas fa-user"></i> Profili Görüntüle
+                    </div>
+                    <div class="context-menu-divider"></div>
+                    <div class="context-menu-item" data-action="remove-friend" data-id="${userData.id}">
+                        <i class="fas fa-user-times"></i> Arkadaşlıktan Çıkar
+                    </div>
+                `;
+                break;
+
+            case 'server':
+                menuContent += `
+                    <div class="context-menu-item" data-action="visit-server" data-id="${userData.id}">
+                        <i class="fas fa-sign-in-alt"></i> Sunucuya Git
+                    </div>
+                    <div class="context-menu-divider"></div>
+                    <div class="context-menu-item" data-action="leave-server" data-id="${userData.id}">
+                        <i class="fas fa-sign-out-alt"></i> Sunucudan Ayrıl
+                    </div>
+                `;
+                break;
+
+            case 'dm':
+                menuContent += `
+                    <div class="context-menu-item" data-action="message" data-id="${userData.id}">
+                        <i class="fas fa-comment"></i> Mesaj Gönder
+                    </div>
+                    <div class="context-menu-item" data-action="profile" data-id="${userData.id}">
+                        <i class="fas fa-user"></i> Profili Görüntüle
+                    </div>
+                    <div class="context-menu-divider"></div>
+                    <div class="context-menu-item" data-action="remove-dm" data-id="${userData.id}">
+                        <i class="fas fa-times"></i> Sohbeti Kapat
+                    </div>
+                `;
+                break;
+        }
+
+        contextMenu.innerHTML = menuContent;
+        document.body.appendChild(contextMenu);
+
+        // Menüyü doğru konuma yerleştir 
+        positionContextMenu(contextMenu, event);
+
+        // Menü öğelerine olay dinleyicileri ekle
+        contextMenu.querySelectorAll('.context-menu-item').forEach(item => {
+            item.addEventListener('click', handleContextMenuAction);
+        });
+
+        // Animasyonu aktifleştir
+        setTimeout(() => {
+            contextMenu.classList.add('active');
+        }, 10);
+
+        // Aktif menüyü kaydet
+        activeContextMenu = contextMenu;
+    }
+
+    // Kontekst menüsünü konumlandırma fonksiyonu
+    function positionContextMenu(menu, event) {
+        const x = event.clientX;
+        const y = event.clientY;
+        const menuWidth = 220; // context-menu için CSS'de tanımlanan genişlik
+        const menuHeight = menu.offsetHeight || 200; // Henüz DOM'a eklenmemiş olabilir, tahmini kullan
+
+        // Ekranın sağ ve alt sınırlarını kontrol et
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        // Sağ kenar kontrolü - eğer taşacaksa solda göster
+        let menuX = x;
+        if (x + menuWidth > windowWidth) {
+            menuX = x - menuWidth;
+        }
+
+        // Alt kenar kontrolü - eğer taşacaksa yukarı kaydır
+        let menuY = y;
+        if (y + menuHeight > windowHeight) {
+            menuY = windowHeight - menuHeight - 10; // 10px bottom margin
+            if (menuY < 10) menuY = 10; // En azından 10px yukarıdan olsun
+        }
+
+        // Menüyü konumlandır
+        menu.style.left = menuX + 'px';
+        menu.style.top = menuY + 'px';
+    }
+
+    // Kontekst menü öğelerine tıklanınca yapılacak işlemler
+    function handleContextMenuAction(e) {
+        const action = e.currentTarget.dataset.action;
+        const id = e.currentTarget.dataset.id;
+
+        console.log(`Kontekst menü aksiyonu: ${action} için ID: ${id}`);
+
+        switch (action) {
+            case 'message':
+                // DM aç
+                const targetElement = document.querySelector(`.friend-row[data-user-id="${id}"]`) ||
+                    document.querySelector(`.dm-item[data-user-id="${id}"]`);
+
+                if (targetElement) {
+                    const username = targetElement.dataset.username;
+                    const avatar = targetElement.dataset.avatar;
+
+                    if (username && id) {
+                        openChatPanel(id, username, avatar || defaultAvatar);
+                        // DM listesinde ilgili öğeyi aktif et
+                        document.querySelectorAll('.dm-item').forEach(item => item.classList.remove('active'));
+                        document.querySelector(`.dm-item[data-user-id="${id}"]`)?.classList.add('active');
+                    }
+                }
+                break;
+
+            case 'profile':
+                // Profili göster
+                const userElement = document.querySelector(`.friend-row[data-user-id="${id}"]`) ||
+                    document.querySelector(`.dm-item[data-user-id="${id}"]`);
+
+                if (userElement) {
+                    const userData = {
+                        id: id,
+                        name: userElement.dataset.username,
+                        avatar: userElement.dataset.avatar,
+                        status: onlineFriends.has(id) ? 'online' : 'offline'
+                    };
+                    createProfilePanel(userData);
+                }
+                break;
+
+            // Diğer aksiyonlar kullanıcı taleplerine göre eklenebilir
+            case 'remove-friend':
+                alert('Bu özellik henüz aktif değil: Arkadaşlıktan çıkarma');
+                break;
+
+            case 'visit-server':
+                alert('Bu özellik henüz aktif değil: Sunucuya gitme');
+                break;
+
+            case 'leave-server':
+                alert('Bu özellik henüz aktif değil: Sunucudan ayrılma');
+                break;
+
+            case 'remove-dm':
+                alert('Bu özellik henüz aktif değil: Sohbeti kaldırma');
+                break;
+        }
+
+        // Menüyü kapat
+        if (activeContextMenu) {
+            activeContextMenu.classList.remove('active');
+            setTimeout(() => {
+                if (activeContextMenu && activeContextMenu.parentNode) {
+                    activeContextMenu.parentNode.removeChild(activeContextMenu);
+                }
+                activeContextMenu = null;
+            }, 150);
+        }
+    }
+
+    // Döküman üzerinde başka bir yere tıklanınca menüyü kapat
+    document.addEventListener('click', () => {
+        if (activeContextMenu) {
+            activeContextMenu.classList.remove('active');
+            setTimeout(() => {
+                if (activeContextMenu && activeContextMenu.parentNode) {
+                    activeContextMenu.parentNode.removeChild(activeContextMenu);
+                }
+                activeContextMenu = null;
+            }, 150);
+        }
+    });
+
+    // Elemanlara sağ tık menüsü ekle
+    function addContextMenuListeners() {
+        // Arkadaş Satırları
+        document.querySelectorAll('.friend-row').forEach(item => {
+            item.addEventListener('contextmenu', (e) => {
+                const userData = {
+                    id: item.dataset.userId,
+                    name: item.dataset.username,
+                    avatar: item.dataset.avatar,
+                    type: 'friend'
+                };
+                showContextMenu(e, userData);
+            });
+        });
+
+        // Özel Mesaj Satırları
+        document.querySelectorAll('.dm-item').forEach(item => {
+            item.addEventListener('contextmenu', (e) => {
+                const userData = {
+                    id: item.dataset.userId,
+                    name: item.dataset.username,
+                    avatar: item.dataset.avatar,
+                    type: 'dm'
+                };
+                showContextMenu(e, userData);
+            });
+        });
+
+        // Sunucu Satırları
+        document.querySelectorAll('.server-item:not(.home):not(:last-child)').forEach(item => {
+            item.addEventListener('contextmenu', (e) => {
+                // Sunucu ID, ad ve avatar data attributelerden alınabilir
+                const serverName = item.querySelector('.server-tooltip')?.textContent || 'Sunucu';
+                const serverAvatar = item.querySelector('.server-icon img')?.src || defaultAvatar;
+                const serverId = item.dataset.serverId || 'unknown'; // Eğer data-server-id eklenmişse
+
+                const userData = {
+                    id: serverId,
+                    name: serverName,
+                    avatar: serverAvatar,
+                    type: 'server'
+                };
+                showContextMenu(e, userData);
+            });
+        });
+    }
+
+    // --- End Kontekst Menü Sistemi ---
+
     // Elementler bulunamadıysa kontrol et (Kullanıcı Paneli)
     if (!userPanelUsernameElement) {
         console.error('User panel username element (.dm-footer .dm-user-name) not found.');
@@ -320,10 +579,30 @@ document.addEventListener('DOMContentLoaded', async () => {
             offlineList.innerHTML = '';
             dmList.innerHTML = ''; // DM listesini de temizle
 
+            // Arkadaş Ekle butonu - her zaman en üstte olacak
+            const addFriendElement = document.createElement('div');
+            addFriendElement.className = 'friend-row add-friend-row';
+            addFriendElement.innerHTML = `
+                <div class="friend-avatar" style="background: linear-gradient(135deg, #3d68e7, #6a11cb);">
+                    <i class="fas fa-user-plus" style="color: white; font-size: 1.2rem;"></i>
+                </div>
+                <div class="friend-info">
+                    <div class="friend-name">Arkadaş Ekle</div>
+                    <div class="friend-status">Yeni arkadaş eklemek için tıkla</div>
+                </div>
+            `;
+            onlineList.appendChild(addFriendElement);
+
+            // Arkadaş Ekle butonuna tıklama olayı
+            addFriendElement.addEventListener('click', openAddFriendModal);
+
             if (friendships.length === 0) {
                 offlineList.innerHTML = '<div class="empty-placeholder">Henüz hiç arkadaşınız yok.</div>';
                 dmList.innerHTML = '<div class="empty-placeholder dm-empty">Henüz hiç özel mesajınız yok.</div>';
                 updateFriendCounters();
+
+                // Kontekst menüsü ekle
+                addContextMenuListeners();
                 return;
             }
 
@@ -423,6 +702,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Arkadaşları ekledikten sonra Presence durumuna göre güncelle
             updateAllFriendStatuses();
 
+            // Kontekst menüsü ekle
+            addContextMenuListeners();
+
         } catch (error) {
             console.error('Error in loadAllFriends:', error);
             onlineList.innerHTML = '<div class="error-placeholder">Arkadaşlar yüklenirken beklenmedik bir hata oluştu.</div>';
@@ -518,11 +800,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="friend-avatar">
                         <img src="${sender.avatar || defaultAvatar}" alt="${sender.username}">
                         <span class="status-dot offline"></span>
-                    </div>
+                            </div>
                     <div class="friend-info">
                         <div class="friend-name">${sender.username}</div>
                         <div class="friend-status">Arkadaşlık isteği gönderdi</div>
-                    </div>
+                            </div>
                     <div class="friend-actions pending-actions">
                         <button class="friend-action-btn accept-request-btn" title="Kabul Et">
                             <i class="fas fa-check"></i>
@@ -645,37 +927,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         const userAvatarToShow = userData.avatar || defaultAvatar; // avatar null ise fallback
 
         profilePanel.innerHTML = `
-            <div class="profile-panel-content">
-                <button class="profile-close-btn">
-                    <i class="fas fa-times"></i>
-                </button>
-                <div class="profile-left-section">
-                     <div class="profile-cover"></div>
-                     <div class="profile-overlay"></div>
-                    <div class="profile-left-content">
-                        <div class="profile-avatar-large">
+                <div class="profile-panel-content">
+                    <button class="profile-close-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="profile-left-section">
+                        <div class="profile-cover"></div>
+                        <div class="profile-overlay"></div>
+                        <div class="profile-left-content">
+                            <div class="profile-avatar-large">
                             <img src="${userAvatarToShow}" alt="${userNameToShow}">
                             <!-- Status indicator kaldırıldı -->
-                        </div>
+                            </div>
                         <h2 class="profile-username">${userNameToShow}</h2>
+                            </div>
+                        </div>
+                    <div class="profile-right-section">
+                        <div class="profile-tabs">
+                            <div class="profile-tab active">Profil</div>
+                        </div>
+                        <div class="profile-section">
+                         <p>Detaylı profil bilgileri yakında eklenecek.</p>
+                            </div>
+                        <div class="profile-action-buttons">
+                            <button class="profile-action-btn message-btn">
+                                <i class="fas fa-comment"></i>
+                                <span>Mesaj Gönder</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div class="profile-right-section">
-                    <div class="profile-tabs">
-                         <div class="profile-tab active">Profil</div>
-                    </div>
-                    <div class="profile-section">
-                        <p>Detaylı profil bilgileri yakında eklenecek.</p>
-                    </div>
-                    <div class="profile-action-buttons">
-                        <button class="profile-action-btn message-btn">
-                            <i class="fas fa-comment"></i>
-                            <span>Mesaj Gönder</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
+            `;
 
         document.body.appendChild(profilePanel);
         setTimeout(() => { profilePanel.classList.add('show'); }, 10);
@@ -835,7 +1117,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, 300); // CSS transition süresi ile aynı olmalı
     }
 
-    // "Arkadaş Ekle" butonuna tıklanınca modalı aç
+    // "Arkadaş Ekle" butonundan kaldırıp friend-row içine taşıdığımız için
+    // bu kısmı artık kullanmıyoruz. Fakat arkadaşlar sayfası açıldığında
+    // oradaki addFriendButton'a hala olay dinleyicisi eklemek gerekiyor.
     if (addFriendButton) {
         addFriendButton.addEventListener('click', openAddFriendModal);
     }
