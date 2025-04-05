@@ -611,14 +611,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <div class="friend-name">${friendUser.username}</div>
                         <div class="friend-status">Çevrimdışı</div>
                     </div>
-                    <div class="friend-actions">
-                         <button class="friend-action-btn message-btn" title="Mesaj Gönder">
-                             <i class="fas fa-comment"></i>
-                         </button>
-                         <button class="friend-action-btn profile-btn" title="Profil">
-                             <i class="fas fa-user"></i>
-                         </button>
-                    </div>
                 `;
 
                 const dmElement = document.createElement('div');
@@ -646,37 +638,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.querySelectorAll('.dm-item').forEach(item => item.classList.remove('active'));
                     dmElement.classList.add('active');
                 });
-                const messageBtn = friendElement.querySelector('.message-btn');
-                if (messageBtn) {
-                    messageBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        openChatPanel(friendUser.id, friendUser.username, friendUser.avatar || defaultAvatar);
-                        document.querySelectorAll('.dm-item').forEach(item => item.classList.remove('active'));
-                        dmList.querySelector(`.dm-item[data-user-id="${friendUser.id}"]`)?.classList.add('active');
-                    });
-                }
-                const profileBtn = friendElement.querySelector('.profile-btn');
-                if (profileBtn) {
-                    profileBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const userId = friendElement.dataset.userId;
-                        const username = friendElement.dataset.username;
-                        const avatar = friendElement.dataset.avatar;
-
-                        if (!username || !avatar || !userId) {
-                            console.error('Could not retrieve valid user data from dataset for profile panel.', friendElement.dataset);
-                            alert('Profil bilgileri alınamadı.');
-                            return;
-                        }
-                        const profileData = {
-                            name: username,
-                            avatar: avatar,
-                            status: onlineFriends.has(userId) ? 'online' : 'offline',
-                            id: userId
-                        };
-                        createProfilePanel(profileData);
-                    });
-                }
             });
 
             // Arkadaşları ekledikten sonra Presence durumuna göre güncelle
@@ -780,11 +741,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="friend-avatar">
                         <img src="${sender.avatar || defaultAvatar}" alt="${sender.username}">
                         <span class="status-dot offline"></span>
-                            </div>
+                    </div>
                     <div class="friend-info">
                         <div class="friend-name">${sender.username}</div>
                         <div class="friend-status">Arkadaşlık isteği gönderdi</div>
-                            </div>
+                    </div>
                     <div class="friend-actions pending-actions">
                         <button class="friend-action-btn accept-request-btn" title="Kabul Et">
                             <i class="fas fa-check"></i>
