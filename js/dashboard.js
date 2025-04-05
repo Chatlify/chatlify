@@ -1330,6 +1330,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log(`[startVoiceCall] ${username} (${userId}) aranıyor...`); // Daha belirgin log
         currentCallTarget = { userId, username, avatar };
 
+        // Panellerin varlığını ve mevcut display stilini kontrol et
+        console.log('[startVoiceCall] Checking panel elements...');
+        if (!callOverlay) {
+            console.error('[startVoiceCall] FATAL: callOverlay element is null!');
+            return; // Panel yoksa devam etmenin anlamı yok
+        } else {
+            console.log(`[startVoiceCall] callOverlay found. Current display: ${window.getComputedStyle(callOverlay).display}`);
+        }
+        if (!outgoingCallPanel) {
+            console.error('[startVoiceCall] FATAL: outgoingCallPanel element is null!');
+            return; // Panel yoksa devam etmenin anlamı yok
+        } else {
+            console.log(`[startVoiceCall] outgoingCallPanel found. Current display: ${window.getComputedStyle(outgoingCallPanel).display}`);
+        }
+
         // Giden arama panelini doldur
         const outAvatar = outgoingCallPanel?.querySelector('.call-avatar'); // Null check eklendi
         const outUsername = outgoingCallPanel?.querySelector('.call-username'); // Null check eklendi
@@ -1337,10 +1352,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (outUsername) outUsername.textContent = `${username} aranıyor...`;
 
         // Panelleri göster/gizle
-        if (outgoingCallPanel) outgoingCallPanel.style.display = 'block';
+        console.log('[startVoiceCall] Attempting to show panels...');
+        if (outgoingCallPanel) {
+            console.log('[startVoiceCall] Setting outgoingCallPanel display to block');
+            outgoingCallPanel.style.display = 'block';
+        }
         if (incomingCallPanel) incomingCallPanel.style.display = 'none';
         if (activeCallPanel) activeCallPanel.style.display = 'none';
-        if (callOverlay) callOverlay.style.display = 'flex';
+        if (callOverlay) {
+            console.log('[startVoiceCall] Setting callOverlay display to flex');
+            callOverlay.style.display = 'flex';
+            // Stilin gerçekten değişip değişmediğini kontrol et (tarayıcı işlemi hemen yapmayabilir)
+            setTimeout(() => {
+                console.log(`[startVoiceCall] callOverlay computed display after setting: ${window.getComputedStyle(callOverlay).display}`);
+                console.log(`[startVoiceCall] outgoingCallPanel computed display after setting: ${window.getComputedStyle(outgoingCallPanel).display}`);
+            }, 0);
+        }
 
         // TODO: Backend'e arama isteği gönder
     }
