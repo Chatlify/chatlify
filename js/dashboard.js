@@ -602,7 +602,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 friendElement.dataset.userId = friendUser.id;
                 friendElement.dataset.username = friendUser.username;
                 friendElement.dataset.avatar = friendUser.avatar || defaultAvatar;
-                friendElement.dataset.friendshipId = friendship.id;
                 friendElement.innerHTML = `
                     <div class="friend-avatar">
                         <img src="${friendUser.avatar || defaultAvatar}" alt="${friendUser.username}">
@@ -618,9 +617,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                          </button>
                          <button class="friend-action-btn profile-btn" title="Profil">
                              <i class="fas fa-user"></i>
-                         </button>
-                         <button class="friend-action-btn more-btn" title="Daha Fazla">
-                             <i class="fas fa-ellipsis-v"></i>
                          </button>
                     </div>
                 `;
