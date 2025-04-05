@@ -5497,3 +5497,28 @@ emoji-picker {
         z-index: 2;
     }
 }
+
+.modal-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 24px;
+    background-color: #212642;
+    border-top: 1px solid rgba(94, 114, 228, 0.15);
+}
+
+.modal-tip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: #9ba3c2;
+    max-width: 100%;
+    text-align: center;
+}
+
+.modal-tip i {
+    color: #f1c40f;
+    font-size: 1rem;
+    text-shadow: 0 0 5px rgba(241, 196, 15, 0.5);
+}
