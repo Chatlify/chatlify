@@ -579,23 +579,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             offlineList.innerHTML = '';
             dmList.innerHTML = ''; // DM listesini de temizle
 
-            // Arkadaş Ekle butonu - her zaman en üstte olacak
-            const addFriendElement = document.createElement('div');
-            addFriendElement.className = 'friend-row add-friend-row';
-            addFriendElement.innerHTML = `
-                <div class="friend-avatar" style="background: linear-gradient(135deg, #3d68e7, #6a11cb);">
-                    <i class="fas fa-user-plus" style="color: white; font-size: 1.2rem;"></i>
-                </div>
-                <div class="friend-info">
-                    <div class="friend-name">Arkadaş Ekle</div>
-                    <div class="friend-status">Yeni arkadaş eklemek için tıkla</div>
-                </div>
-            `;
-            onlineList.appendChild(addFriendElement);
-
-            // Arkadaş Ekle butonuna tıklama olayı
-            addFriendElement.addEventListener('click', openAddFriendModal);
-
             if (friendships.length === 0) {
                 offlineList.innerHTML = '<div class="empty-placeholder">Henüz hiç arkadaşınız yok.</div>';
                 dmList.innerHTML = '<div class="empty-placeholder dm-empty">Henüz hiç özel mesajınız yok.</div>';
