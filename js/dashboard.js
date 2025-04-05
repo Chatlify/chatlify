@@ -658,7 +658,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     // --- End Tüm Arkadaşları Yükleme ---
 
-    // --- Sohbet Panelini Açma Fonksiyonu (Güncellendi - Seçiciler düzeltildi) ---
+    // --- Sohbet Paneli Açma Fonksiyonu (Güncellendi - Seçiciler düzeltildi) ---
     function openChatPanel(userId, username, avatar) {
         if (!chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer || !sponsorSidebar) {
             console.error('Chat panel elements not found, cannot open chat.');
@@ -839,17 +839,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- End Arkadaşlık İsteği Kabul/Red ---
 
     // --- Sohbet Paneli Kapatma İşlevi --- 
-    if (chatCloseBtn) {
-        chatCloseBtn.addEventListener('click', () => {
-            console.log("Close chat button clicked");
-            if (chatPanel) chatPanel.classList.add('hidden');
-            if (friendsPanelContainer) friendsPanelContainer.classList.remove('hidden');
-            if (sponsorSidebar) sponsorSidebar.style.display = ''; // veya 'flex'
-            // Aktif DM stilini kaldır
-            document.querySelectorAll('.dm-item.active').forEach(item => item.classList.remove('active'));
-            // Aktif sohbet ID'sini temizle
-            if (chatPanel) delete chatPanel.dataset.activeChatUserId;
-        });
+    function closeChatPanel() {
+        console.log("Close chat button clicked");
+        if (chatPanel) chatPanel.classList.add('hidden');
+        if (friendsPanelContainer) friendsPanelContainer.classList.remove('hidden');
+        if (sponsorSidebar) sponsorSidebar.style.display = ''; // veya 'flex'
+        // Aktif DM stilini kaldır
+        document.querySelectorAll('.dm-item.active').forEach(item => item.classList.remove('active'));
+        // Aktif sohbet ID'sini temizle
+        if (chatPanel) delete chatPanel.dataset.activeChatUserId;
     }
     // --- End Sohbet Kapatma --- 
 
@@ -1268,7 +1266,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Diğer butonlar için listener'lar (varsa)
         if (closeChatBtn) {
-            closeChatBtn.addEventListener('click', closeChatPanel);
+            // Önceki listener'ı kaldır (varsa)
+            closeChatBtn.replaceWith(closeChatBtn.cloneNode(true));
+            const newCloseChatBtn = chatHeader.querySelector('.chat-close-btn');
+            if (newCloseChatBtn) {
+                newCloseChatBtn.addEventListener('click', closeChatPanel); // Artık hata vermemeli
+            }
         }
     }
 
@@ -1330,9 +1333,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Sohbet paneli açıldığında header butonlarını ayarlamak için
         // Örnek: DM listesindeki birine tıklayınca
-        const dmList = document.querySelector('#friends-group .dm-items');
-        if (dmList) {
-            dmList.addEventListener('click', (e) => {
+        const dmListElement = document.querySelector('#friends-group .dm-items'); // dmList değişkeni zaten tanımlı olabilir, emin olalım.
+        if (dmListElement) {
+            dmListElement.addEventListener('click', (e) => {
                 const dmItem = e.target.closest('.dm-item');
                 if (dmItem) {
                     const userId = dmItem.dataset.userId;
@@ -1351,12 +1354,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const friendRow = e.target.closest('.friend-row');
                 if (friendRow) {
                     const messageBtn = e.target.closest('.message-btn');
-                    if (messageBtn) { // Sadece mesaj butonuna tıklanırsa paneli aç
-                        const userId = friendRow.dataset.userId;
-                        const username = friendRow.dataset.username;
-                        const avatar = friendRow.dataset.avatar;
-                        if (userId && username) {
+                    const profileBtn = e.target.closest('.profile-btn'); // Arkadaş satırındaki profil butonu
+
+                    const userId = friendRow.dataset.userId;
+                    const username = friendRow.dataset.username;
+                    const avatar = friendRow.dataset.avatar;
+
+                    if (userId && username) {
+                        if (messageBtn) { // Mesaj butonuna tıklandıysa
                             openChatPanel(userId, username, avatar);
+                        } else if (profileBtn) { // Profil butonuna tıklandıysa
+                            const profileData = {
+                                id: userId,
+                                name: username,
+                                avatar: avatar,
+                                status: onlineFriends.has(userId) ? 'online' : 'offline'
+                            };
+                            createProfilePanel(profileData);
                         }
                     }
                 }
