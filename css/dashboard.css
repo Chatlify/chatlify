@@ -3533,13 +3533,17 @@
 
 .status-dot {
     position: absolute;
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    /* Boyutu biraz büyütüldü */
+    height: 14px;
+    /* Boyutu biraz büyütüldü */
     border-radius: 50%;
-    bottom: 2px;
-    right: 2px;
-    border: 2px solid #1a2036;
-    /* Yuvarlak beyaz sınırı kaldırdım ve arka plan rengine uygun bir renk seçtim */
+    bottom: -2px;
+    /* Biraz aşağı kaydırıldı */
+    right: -2px;
+    /* Biraz sağa kaydırıldı */
+    border: 3px solid var(--dm-bg);
+    /* Kenarlık kalınlığı artırıldı ve arkaplan rengi kullanıldı */
 }
 
 .status-dot.online {
@@ -5522,4 +5526,11 @@ emoji-picker {
     color: #f1c40f;
     font-size: 1rem;
     text-shadow: 0 0 5px rgba(241, 196, 15, 0.5);
+}
+
+/* Beyaz noktayı kaldırmak için more-btn pseudo elementlerini gizleyelim */
+.more-btn::before,
+.more-btn::after {
+    content: none !important;
+    display: none !important;
 }
