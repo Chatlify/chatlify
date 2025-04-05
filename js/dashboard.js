@@ -30,7 +30,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const chatEmojiBtn = chatPanel?.querySelector('.emoji-btn'); // Emoji butonu
     const chatTextarea = chatPanel?.querySelector('.chat-textbox textarea'); // Mesaj yazma alanı
     const emojiPicker = document.querySelector('emoji-picker'); // Emoji picker elementi
-    const addFriendButton = document.querySelector('.dashboard-header .add-friend'); // Arkadaş Ekle Butonu
+    const addFriendButton = document.querySelector('.dashboard-header .add-friend'); // Eski Arkadaş Ekle Butonu
+    const newAddFriendButton = document.getElementById('add-friend-button'); // Yeni Arkadaş Ekle Butonu
     // --- End Element Tanımlamaları ---
 
     // --- Modal Elementlerini Tanımla ---
@@ -1100,9 +1101,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, 300); // CSS transition süresi ile aynı olmalı
     }
 
-    // "Arkadaş Ekle" butonundan kaldırıp friend-row içine taşıdığımız için
-    // bu kısmı artık kullanmıyoruz. Fakat arkadaşlar sayfası açıldığında
-    // oradaki addFriendButton'a hala olay dinleyicisi eklemek gerekiyor.
+    // Yeni eklediğimiz "Arkadaş Ekle" butonuna olay dinleyicisi ekle
+    if (newAddFriendButton) {
+        newAddFriendButton.addEventListener('click', openAddFriendModal);
+    }
+
+    // Eski "Arkadaş Ekle" butonuna olay dinleyicisi ekle (eğer varsa)
     if (addFriendButton) {
         addFriendButton.addEventListener('click', openAddFriendModal);
     }
