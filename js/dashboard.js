@@ -32,6 +32,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const emojiPicker = document.querySelector('emoji-picker'); // Emoji picker elementi
     const addFriendButton = document.querySelector('.dashboard-header .add-friend'); // Eski Arkadaş Ekle Butonu
     const newAddFriendButton = document.getElementById('add-friend-button'); // Yeni Arkadaş Ekle Butonu
+    const callOverlay = document.querySelector('.call-panel-overlay');
+    const outgoingCallPanel = callOverlay.querySelector('.outgoing-call');
+    const incomingCallPanel = callOverlay.querySelector('.incoming-call');
+    const activeCallPanel = callOverlay.querySelector('.active-call');
+    let currentCallTarget = null; // Aranan veya görüşülen kişiyi tutacak
     // --- End Element Tanımlamaları ---
 
     // --- Modal Elementlerini Tanımla ---
@@ -686,6 +691,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Aktif sohbetin user ID'sini panele ekle (durum güncellemesi için)
         chatPanel.dataset.activeChatUserId = userId;
+
+        // Header butonlarına listener ekle
+        setupChatHeaderActions(userId, username, avatar);
+
+        // Scrollu en alta indir (yeni mesajlar için)
+        const messagesContainer = chatPanel.querySelector('.chat-messages');
+        if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
     }
     // --- End Sohbet Panelini Açma ---
 
@@ -1233,5 +1247,122 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
     // --- End Arkadaş Ekle Modalını Yönetme ---
+
+    // Sohbet panelini açan fonksiyonu güncelleyelim veya event listener ekleyelim
+    function setupChatHeaderActions(userId, username, avatar) {
+        const chatHeader = document.querySelector('.chat-header');
+        if (!chatHeader) return;
+
+        const voiceCallBtn = chatHeader.querySelector('.chat-action-btn i.fa-phone')?.parentElement;
+        const videoCallBtn = chatHeader.querySelector('.chat-action-btn i.fa-video')?.parentElement;
+        const closeChatBtn = chatHeader.querySelector('.chat-close-btn');
+
+        if (voiceCallBtn) {
+            // Önceki listener'ı kaldır (varsa)
+            voiceCallBtn.replaceWith(voiceCallBtn.cloneNode(true));
+            const newVoiceCallBtn = chatHeader.querySelector('.chat-action-btn i.fa-phone')?.parentElement;
+            if (newVoiceCallBtn) {
+                newVoiceCallBtn.addEventListener('click', () => startVoiceCall(userId, username, avatar));
+            }
+        }
+
+        // Diğer butonlar için listener'lar (varsa)
+        if (closeChatBtn) {
+            closeChatBtn.addEventListener('click', closeChatPanel);
+        }
+    }
+
+    // Sesli Arama Fonksiyonları
+    function startVoiceCall(userId, username, avatar) {
+        console.log(`${username} (${userId}) aranıyor...`);
+        currentCallTarget = { userId, username, avatar };
+
+        // Giden arama panelini doldur
+        const outAvatar = outgoingCallPanel.querySelector('.call-avatar');
+        const outUsername = outgoingCallPanel.querySelector('.call-username');
+        if (outAvatar) outAvatar.src = avatar || defaultAvatar;
+        if (outUsername) outUsername.textContent = `${username} aranıyor...`;
+
+        // Panelleri göster/gizle
+        outgoingCallPanel.style.display = 'block';
+        incomingCallPanel.style.display = 'none';
+        activeCallPanel.style.display = 'none';
+        callOverlay.style.display = 'flex';
+
+        // TODO: Backend'e arama isteği gönder
+    }
+
+    function endCall() {
+        console.log('Arama sonlandırıldı.');
+        callOverlay.style.display = 'none';
+        outgoingCallPanel.style.display = 'none';
+        incomingCallPanel.style.display = 'none';
+        activeCallPanel.style.display = 'none';
+        currentCallTarget = null;
+        // TODO: Backend'e arama sonlandırma bilgisi gönder
+    }
+
+    // Olay Dinleyicileri
+    document.addEventListener('DOMContentLoaded', () => {
+        // ... (Mevcut DOMContentLoaded kodları) ...
+
+        // Arama paneli butonları için listener'lar
+        if (callOverlay) {
+            // Kapatma butonları (tüm panellerde aynı sınıf var)
+            callOverlay.querySelectorAll('.hangup-btn').forEach(btn => {
+                btn.addEventListener('click', endCall);
+            });
+            callOverlay.querySelectorAll('.decline-btn').forEach(btn => {
+                btn.addEventListener('click', endCall); // Şimdilik reddetmek de aramayı kapatıyor
+            });
+
+            // TODO: Kabul etme (.accept-btn) ve Sesi Kapatma (.mute-btn) butonları için listener ekle
+            // const acceptBtn = incomingCallPanel.querySelector('.accept-btn');
+            // const muteBtn = activeCallPanel.querySelector('.mute-btn');
+
+            // Overlay'a tıklayınca kapatma (opsiyonel)
+            // callOverlay.addEventListener('click', (e) => {
+            //     if (e.target === callOverlay) {
+            //         endCall();
+            //     }
+            // });
+        }
+
+        // Sohbet paneli açıldığında header butonlarını ayarlamak için
+        // Örnek: DM listesindeki birine tıklayınca
+        const dmList = document.querySelector('#friends-group .dm-items');
+        if (dmList) {
+            dmList.addEventListener('click', (e) => {
+                const dmItem = e.target.closest('.dm-item');
+                if (dmItem) {
+                    const userId = dmItem.dataset.userId;
+                    const username = dmItem.dataset.username;
+                    const avatar = dmItem.dataset.avatar;
+                    if (userId && username) {
+                        openChatPanel(userId, username, avatar);
+                    }
+                }
+            });
+        }
+        // Benzer şekilde arkadaş listesi için de eklenebilir
+        const friendsListContainer = document.querySelector('.friends-list'); // Veya ilgili arkadaş listesi konteyneri
+        if (friendsListContainer) {
+            friendsListContainer.addEventListener('click', (e) => {
+                const friendRow = e.target.closest('.friend-row');
+                if (friendRow) {
+                    const messageBtn = e.target.closest('.message-btn');
+                    if (messageBtn) { // Sadece mesaj butonuna tıklanırsa paneli aç
+                        const userId = friendRow.dataset.userId;
+                        const username = friendRow.dataset.username;
+                        const avatar = friendRow.dataset.avatar;
+                        if (userId && username) {
+                            openChatPanel(userId, username, avatar);
+                        }
+                    }
+                }
+            });
+        }
+
+    });
 
 }); 
