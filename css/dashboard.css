@@ -911,10 +911,9 @@
 .header-right {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-left: auto;
-    min-width: 300px;
     justify-content: flex-end;
+    gap: 15px;
+    margin-left: auto;
 }
 
 .add-friend {
@@ -5111,6 +5110,9 @@ emoji-picker {
     width: 100%;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    /* Butonun alt satıra geçmesine izin ver */
+    gap: 10px;
 }
 
 .input-icon {
@@ -5130,11 +5132,12 @@ emoji-picker {
     padding: 16px 16px 16px 42px;
     background-color: rgba(15, 19, 34, 0.4);
     border: 2px solid rgba(94, 114, 228, 0.2);
-    border-radius: 10px 0 0 10px;
+    border-radius: 10px;
     color: #ffffff;
     font-size: 1rem;
     box-sizing: border-box;
     transition: all 0.2s ease;
+    min-width: 200px;
 }
 
 #add-friend-username-input:focus {
@@ -5158,7 +5161,7 @@ emoji-picker {
     background: linear-gradient(135deg, #3d68e7, #6a11cb);
     color: white;
     border: none;
-    border-radius: 0 10px 10px 0;
+    border-radius: 10px;
     padding: 14px 20px;
     height: 54px;
     font-size: 0.95rem;
@@ -5168,7 +5171,8 @@ emoji-picker {
     transition: all 0.25s ease;
     box-shadow: 0 4px 8px rgba(61, 104, 231, 0.3);
     flex-shrink: 0;
-    max-width: 220px;
+    max-width: 100%;
+    width: auto;
     overflow: hidden;
     text-overflow: ellipsis;
     display: flex;
@@ -5255,6 +5259,7 @@ emoji-picker {
     text-align: center;
     display: none;
     animation: fadeInUp 0.3s ease;
+    width: 100%;
 }
 
 @keyframes fadeInUp {
@@ -5417,7 +5422,7 @@ emoji-picker {
 .add-friend-button-container {
     display: flex;
     align-items: center;
-    margin: 0 15px;
+    margin: 0;
 }
 
 .add-friend-btn {
@@ -5466,5 +5471,49 @@ emoji-picker {
 
     .add-friend-button-container {
         margin: 0 8px;
+    }
+}
+
+/* Mobil görünüm için düzenleme */
+@media (max-width: 768px) {
+    .add-friend-btn span {
+        display: none;
+    }
+
+    .add-friend-btn {
+        width: 38px;
+        padding: 0;
+    }
+
+    .add-friend-button-container {
+        margin: 0;
+    }
+
+    .header-right {
+        gap: 8px;
+    }
+
+    .input-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #add-friend-username-input {
+        border-radius: 10px;
+        width: 100%;
+    }
+
+    .input-wrapper .modal-submit-button {
+        border-radius: 10px;
+        width: 100%;
+        padding: 12px 20px;
+        max-width: 100%;
+        height: auto;
+        margin-top: 5px;
+        font-size: 0.9rem;
+    }
+
+    .input-wrapper .modal-submit-button span {
+        font-size: 0.85rem;
     }
 }
