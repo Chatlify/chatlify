@@ -1,12 +1,12 @@
 import { supabase } from './auth_config.js'; // Supabase istemcisini import et
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Dashboard JS Loaded');
+    console.log('Dashboard JS Loaded - DOMContentLoaded Start'); // Başlangıç logu
 
     // --- Önce Gerekli Elementleri ve Sabitleri Tanımla ---
     const userPanelUsernameElement = document.querySelector('.dm-footer .dm-user-name');
     const userPanelAvatarElement = document.querySelector('.dm-footer .dm-user-avatar img');
-    const defaultAvatar = 'images/default-avatar.png'; // Varsayılan avatar yolu (TEK TANIMLAMA)
+    const defaultAvatar = 'images/DefaultAvatar.png'; // Varsayılan avatar yolu
 
     const tabs = document.querySelectorAll('.dashboard-header .tab');
     const onlineSection = document.querySelector('.online-section-title');
@@ -19,13 +19,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     let presenceChannel = null; // Supabase presence kanalı için değişken
     let onlineFriends = new Set(); // Çevrimiçi arkadaşların ID\'lerini tutacak set
     let currentUserId = null; // Mevcut kullanıcı ID\'si
-    const dmList = document.querySelector('.direct-messages .dm-items'); // DM listesi
+    const dmList = document.querySelector('#friends-group .dm-items'); // DM listesi
     const chatPanel = document.querySelector('.chat-panel'); // Sağdaki sohbet paneli
     const chatHeaderUser = chatPanel?.querySelector('.chat-header-user'); // Sohbet başlığı kullanıcı alanı
     const chatMessagesContainer = chatPanel?.querySelector('.chat-messages'); // Sohbet mesajları alanı
     const friendsPanelContainer = document.querySelector('.friends-panel-container'); // Arkadaşlar paneli (gizlemek için)
     const sponsorSidebar = document.querySelector('.sponsor-sidebar'); // Sponsor alanı (gizlemek için)
-    const settingsButtonContainer = document.querySelector('.server-settings-icon')?.closest('.server-item'); // Ayarlar butonu kapsayıcısı
+    const settingsButtonContainer = document.querySelector('.server-sidebar .server-item:has(.server-settings-icon)'); // Ayarlar butonu kapsayıcısı
     const chatCloseBtn = chatPanel?.querySelector('.chat-close-btn'); // Sohbet kapatma butonu
     const chatEmojiBtn = chatPanel?.querySelector('.emoji-btn'); // Emoji butonu
     const chatTextarea = chatPanel?.querySelector('.chat-textbox textarea'); // Mesaj yazma alanı
@@ -755,11 +755,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="friend-avatar">
                         <img src="${sender.avatar || defaultAvatar}" alt="${sender.username}">
                         <span class="status-dot offline"></span>
-                    </div>
+                            </div>
                     <div class="friend-info">
                         <div class="friend-name">${sender.username}</div>
                         <div class="friend-status">Arkadaşlık isteği gönderdi</div>
-                    </div>
+                            </div>
                     <div class="friend-actions pending-actions">
                         <button class="friend-action-btn accept-request-btn" title="Kabul Et">
                             <i class="fas fa-check"></i>
