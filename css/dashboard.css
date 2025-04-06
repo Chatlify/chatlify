@@ -5681,3 +5681,348 @@ emoji-picker {
     /* Sessizdeyken Sarı */
     color: #333;
 }
+
+/* ----- Sunucu Ekle Panel Tasarımı ----- */
+.server-options-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+    width: 100%;
+}
+
+.server-options-title {
+    font-size: 18px;
+    color: var(--text-primary);
+    margin-bottom: 30px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.server-option-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 480px;
+    gap: 16px;
+}
+
+.server-option {
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-primary-light);
+    border-radius: 8px;
+    padding: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--bg-primary-light);
+}
+
+.server-option:hover {
+    background-color: var(--bg-primary);
+    transform: translateY(-2px);
+    border-color: var(--accent-primary);
+}
+
+.server-option-icon {
+    width: 50px;
+    height: 50px;
+    background-color: var(--accent-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.server-option-icon i {
+    font-size: 24px;
+    color: white;
+}
+
+.server-option-text {
+    flex-grow: 1;
+}
+
+.server-option-text h4 {
+    font-size: 16px;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+}
+
+.server-option-text p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Sunucu Formları */
+.server-form {
+    width: 100%;
+    max-width: 540px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.back-button-container {
+    margin-bottom: 20px;
+}
+
+.back-to-options-btn {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 8px 0;
+    font-size: 14px;
+    transition: color 0.2s ease;
+}
+
+.back-to-options-btn:hover {
+    color: var(--accent-primary);
+}
+
+.back-to-options-btn i {
+    margin-right: 8px;
+}
+
+.server-form-title {
+    font-size: 20px;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.server-form-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* Sunucu İkon Yükleme */
+.server-icon-upload {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.server-icon-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    background-color: var(--bg-primary);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.15);
+}
+
+.server-icon-preview:hover {
+    transform: scale(1.05);
+}
+
+.server-icon-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.server-icon-upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.server-icon-preview:hover .server-icon-upload-overlay {
+    opacity: 1;
+}
+
+.server-icon-upload-overlay i {
+    color: white;
+    font-size: 24px;
+}
+
+/* Sunucu İsim Girişi */
+.server-name-input-container {
+    margin-bottom: 30px;
+}
+
+.server-name-input-container label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.server-name-input-container input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 16px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.server-name-input-container input:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.3);
+    outline: none;
+}
+
+/* Sunucu Davet Giriş Alanı */
+.server-invite-input-container {
+    margin-bottom: 30px;
+}
+
+.server-invite-input-container label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.invite-input-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--bg-primary);
+    overflow: hidden;
+}
+
+.invite-input-prefix {
+    padding: 12px 0 12px 15px;
+    color: var(--text-secondary);
+    font-size: 16px;
+    white-space: nowrap;
+}
+
+.invite-input-wrapper input {
+    flex-grow: 1;
+    padding: 12px 15px 12px 0;
+    border: none;
+    background-color: transparent;
+    color: var(--text-primary);
+    font-size: 16px;
+}
+
+.invite-input-wrapper input:focus {
+    outline: none;
+}
+
+.invite-input-wrapper:focus-within {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.3);
+}
+
+.invite-example {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    margin-left: 2px;
+}
+
+/* Butonlar */
+.server-create-btn,
+.server-join-btn {
+    width: 100%;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.server-create-btn {
+    background-color: var(--accent-primary);
+    color: white;
+}
+
+.server-create-btn:hover {
+    background-color: var(--accent-primary-dark);
+    transform: translateY(-2px);
+}
+
+.server-join-btn {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.server-join-btn:hover {
+    background-color: var(--success-color-dark);
+    transform: translateY(-2px);
+}
+
+.server-create-btn i,
+.server-join-btn i {
+    margin-right: 8px;
+}
+
+.server-create-btn:disabled,
+.server-join-btn:disabled {
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .server-option-group {
+        max-width: 100%;
+    }
+
+    .server-form {
+        padding: 10px;
+    }
+
+    .server-option {
+        padding: 15px;
+    }
+
+    .server-option-icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 15px;
+    }
+
+    .server-option-icon i {
+        font-size: 20px;
+    }
+
+    .server-option-text h4 {
+        font-size: 15px;
+    }
+
+    .server-option-text p {
+        font-size: 13px;
+    }
+}
