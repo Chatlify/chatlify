@@ -322,49 +322,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Kullanıcı Bilgilerini Al ve Paneli Güncelle ---
     try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError) throw userError;
 
-        if (sessionError) {
-            console.error('Error getting session:', sessionError);
-            return;
-        }
-        if (!session) {
-            console.log('No active session found. Redirecting to login.');
-            // window.location.href = '/login.html';
-            return;
-        }
+        if (user) {
+            currentUserId = user.id;
+            console.log('Kullanıcı ID:', currentUserId);
 
-        const user = session.user;
-        console.log('Logged in user:', user);
-        currentUserId = session.user.id; // Kullanıcı ID\'sini değişkene ata
+            // Profili yükle
+            loadProfile();
 
-        const { data: profile, error: profileError } = await supabase
-            .from('users')
-            .select('username, avatar')
-            .eq('id', user.id)
-            .single();
+            // Arkadaşları yükle
+            loadAllFriends();
 
-        if (profileError) {
-            console.error('Error fetching user profile:', profileError);
-            if (userPanelUsernameElement) userPanelUsernameElement.textContent = user.email;
-            if (userPanelAvatarElement) userPanelAvatarElement.src = defaultAvatar;
-        } else if (profile) {
-            console.log('User profile:', profile);
-            if (userPanelUsernameElement) userPanelUsernameElement.textContent = profile.username || user.email;
-            if (userPanelAvatarElement) userPanelAvatarElement.src = profile.avatar || defaultAvatar;
+            // Mesaj gönderme sistemini kur
+            setupMessageSending();
         } else {
-            console.log('Profile not found for user:', user.id);
-            if (userPanelUsernameElement) userPanelUsernameElement.textContent = user.email;
-            if (userPanelAvatarElement) userPanelAvatarElement.src = defaultAvatar;
+            console.error('Oturum açık değil, giriş sayfasına yönlendiriliyor.');
+            window.location.href = 'login.html';
         }
-
-        // --- Supabase Presence Bağlantısını Başlat ---
-        initializePresence();
-
     } catch (error) {
-        console.error('Error in dashboard setup (User Panel):', error);
-        if (userPanelUsernameElement) userPanelUsernameElement.textContent = 'Kullanıcı';
-        if (userPanelAvatarElement) userPanelAvatarElement.src = defaultAvatar;
+        console.error('Kullanıcı bilgileri alınırken hata:', error);
     }
     // --- End Kullanıcı Bilgileri & Presence Başlatma ---
 
@@ -660,34 +638,85 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Sohbet Paneli Açma Fonksiyonu (Güncellendi - Seçiciler düzeltildi) ---
     function openChatPanel(userId, username, avatar) {
-        console.log('openChatPanel çağrıldı:', userId, username); // Hata ayıklama için
-        currentConversationId = userId; // Veya conversationId hesaplama mantığı
-        subscribeToMessages(currentConversationId);
+        if (!chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer || !sponsorSidebar) {
+            console.error('Chat panel elements not found, cannot open chat.');
+            return;
+        }
+        console.log(`Opening chat panel for user: ${username} (ID: ${userId})`);
 
-        // Sohbet panelini göster
-        if (chatPanel) {
-            chatPanel.classList.add('active');
-            // Kullanıcı bilgilerini güncelle
-            if (chatHeaderUser) {
-                chatHeaderUser.innerHTML = `
-                    <div class="chat-avatar">
-                        <img src="${avatar}" alt="${username}">
-                    </div>
-                    <div class="chat-name">${username}</div>
-                `;
-            }
-            // Mesaj alanını temizle
-            if (chatMessagesContainer) {
-                chatMessagesContainer.innerHTML = '';
-            }
-            // Diğer panelleri gizle
-            if (friendsPanelContainer) friendsPanelContainer.classList.add('hidden');
-            if (sponsorSidebar) sponsorSidebar.classList.add('hidden');
-        } else {
-            console.error('chatPanel bulunamadı!');
+        // Aktif sohbet ID'sini ayarla (mesaj göndermek için)
+        currentConversationId = userId;
+
+        // Sohbet başlığını güncelle - DOĞRU SEÇİCİLER
+        const chatUsernameElement = chatHeaderUser.querySelector('.chat-username');
+        const chatAvatarElement = chatHeaderUser.querySelector('.chat-avatar img'); // .chat-avatar içindeki img
+        const chatStatusDot = chatHeaderUser.querySelector('.chat-avatar .status-dot'); // .chat-avatar içindeki status-dot
+        const chatStatusTextElement = chatHeaderUser.querySelector('.chat-user-info .chat-status'); // .chat-user-info içindeki chat-status
+
+        if (chatUsernameElement) chatUsernameElement.textContent = username;
+        if (chatAvatarElement) chatAvatarElement.src = avatar;
+
+        const isFriendOnline = onlineFriends.has(userId);
+        const statusText = isFriendOnline ? 'Çevrimiçi' : 'Çevrimdışı';
+        const statusClass = isFriendOnline ? 'online' : 'offline';
+        if (chatStatusDot) chatStatusDot.className = `status-dot ${statusClass}`;
+        if (chatStatusTextElement) chatStatusTextElement.textContent = statusText;
+
+        // Mesajlar alanını temizle
+        chatMessagesContainer.innerHTML = '<div class="empty-placeholder chat-empty">Bu sohbetin başlangıcı.</div>';
+
+        // Panelleri göster/gizle
+        friendsPanelContainer.classList.add('hidden');
+        if (sponsorSidebar) sponsorSidebar.style.display = 'none'; // Sponsoru gizle
+        chatPanel.classList.remove('hidden');
+
+        // Aktif sohbetin user ID'sini panele ekle (durum güncellemesi için)
+        chatPanel.dataset.activeChatUserId = userId;
+
+        // Header butonlarına listener ekle
+        setupChatHeaderActions(userId, username, avatar);
+
+        // Önceki mesajları yükle ve realtime takip başlat
+        loadMessages(userId);
+        subscribeToMessages(userId);
+
+        // Scrollu en alta indir (yeni mesajlar için)
+        const messagesContainer = chatPanel.querySelector('.chat-messages');
+        if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
     }
     // --- End Sohbet Panelini Açma ---
+
+    // Mesajları veritabanından yükleme fonksiyonu
+    async function loadMessages(conversationId) {
+        try {
+            chatMessagesContainer.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin"></i> Mesajlar yükleniyor...</div>';
+
+            const { data: messages, error } = await supabase
+                .from('messages')
+                .select('*')
+                .eq('conversation_id', conversationId)
+                .order('created_at', { ascending: true });
+
+            if (error) throw error;
+
+            chatMessagesContainer.innerHTML = '';
+
+            if (messages.length === 0) {
+                chatMessagesContainer.innerHTML = '<div class="empty-placeholder chat-empty">Bu sohbetin başlangıcı.</div>';
+                return;
+            }
+
+            messages.forEach(message => {
+                displayMessage(message);
+            });
+
+        } catch (error) {
+            console.error('Mesajlar yüklenirken hata oluştu:', error);
+            chatMessagesContainer.innerHTML = '<div class="error-placeholder">Mesajlar yüklenirken bir hata oluştu.</div>';
+        }
+    }
 
     // --- Bekleyen İstekleri Yükleme Fonksiyonu (Değişiklik Yok) ---
     async function loadPendingRequests() {
@@ -1700,6 +1729,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Sunucu panel kurulumu başlat
     setupServerPanel();
     // --- End Sunucu Ekle Panel İşlevselliği ---
+
+    // Kullanıcı profilini yükleme fonksiyonu
+    async function loadProfile() {
+        try {
+            const { data: profile, error } = await supabase
+                .from('users')
+                .select('username, avatar')
+                .eq('id', currentUserId)
+                .single();
+
+            if (error) throw error;
+
+            if (profile) {
+                console.log('Kullanıcı profili yüklendi:', profile);
+                if (userPanelUsernameElement) userPanelUsernameElement.textContent = profile.username || 'Kullanıcı';
+                if (userPanelAvatarElement) userPanelAvatarElement.src = profile.avatar || defaultAvatar;
+            } else {
+                console.warn('Kullanıcı profili bulunamadı');
+                if (userPanelUsernameElement) userPanelUsernameElement.textContent = 'Kullanıcı';
+                if (userPanelAvatarElement) userPanelAvatarElement.src = defaultAvatar;
+            }
+        } catch (error) {
+            console.error('Profil yüklenirken hata:', error);
+            if (userPanelUsernameElement) userPanelUsernameElement.textContent = 'Kullanıcı';
+            if (userPanelAvatarElement) userPanelAvatarElement.src = defaultAvatar;
+        }
+    }
 
     console.log('Dashboard JS - DOMContentLoaded End'); // Bitiş logu
 }); 
