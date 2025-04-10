@@ -1716,4 +1716,96 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- End Sunucu Ekle Panel İşlevselliği ---
 
     console.log('Dashboard JS - DOMContentLoaded End'); // Bitiş logu
+
+    // Yeni değişkenler
+    let currentConversationId = null;
+    let messageSubscription = null;
+
+    // Mesaj gönderme fonksiyonu
+    async function sendMessage(conversationId, messageContent) {
+        try {
+            const { data, error } = await supabase
+                .from('messages')
+                .insert([{
+                    conversation_id: conversationId,
+                    sender_id: currentUserId,
+                    content: messageContent
+                }])
+                .select();
+
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Mesaj gönderilemedi:', error);
+            return null;
+        }
+    }
+
+    // Mesaj görüntüleme fonksiyonu
+    function displayMessage(message) {
+        const messageElement = document.createElement('div');
+        messageElement.className = `message ${message.sender_id === currentUserId ? 'sent' : 'received'}`;
+        messageElement.innerHTML = `
+            <div class="message-content">${message.content}</div>
+            <div class="message-time">${new Date(message.created_at).toLocaleTimeString()}</div>
+        `;
+        chatMessagesContainer.appendChild(messageElement);
+        chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+    }
+
+    // Mesaj gönderme event listener'ı
+    function setupMessageSending() {
+        chatTextarea.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const messageContent = chatTextarea.value.trim();
+                if (messageContent && currentConversationId) {
+                    chatTextarea.value = '';
+                    const sentMessage = await sendMessage(currentConversationId, messageContent);
+                    if (sentMessage) displayMessage(sentMessage[0]);
+                }
+            }
+        });
+    }
+
+    // Realtime mesaj aboneliği
+    function subscribeToMessages(conversationId) {
+        // Önceki aboneliği iptal et
+        if (messageSubscription) supabase.removeChannel(messageSubscription);
+
+        messageSubscription = supabase
+            .channel('messages')
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'messages',
+                filter: `conversation_id=eq.${conversationId}`
+            }, (payload) => {
+                if (payload.new.sender_id !== currentUserId) {
+                    displayMessage(payload.new);
+                }
+            })
+            .subscribe();
+    }
+
+    // openChatPanel fonksiyonunu güncelle
+    function openChatPanel(userId, username, avatar) {
+        currentConversationId = userId; // Veya conversationId hesaplama mantığı
+        subscribeToMessages(currentConversationId);
+        // ... diğer mevcut kodlar ...
+    }
+
+    // DOMContentLoaded içinde kurulum
+    document.addEventListener('DOMContentLoaded', async () => {
+        // ... mevcut kodlar ...
+
+        // Kullanıcı ID'sini al
+        const { data: { user } } = await supabase.auth.getUser();
+        currentUserId = user?.id;
+
+        // Mesaj sistemini kur
+        setupMessageSending();
+
+        // ... diğer kurulumlar ...
+    });
 }); 
