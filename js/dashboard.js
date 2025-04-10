@@ -1808,4 +1808,34 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // ... diğer kurulumlar ...
     });
+
+    // DM butonlarına event listener ekleme
+    function setupDmButtons() {
+        document.querySelectorAll('.dm-item, .friend-row').forEach(item => {
+            item.addEventListener('click', (e) => {
+                // Eğer tıklanan elementin içinde buton varsa (emoji/ayar butonu gibi) engelle
+                if (e.target.closest('button')) return;
+
+                const userId = item.dataset.userId;
+                const username = item.dataset.username;
+                const avatar = item.dataset.avatar || defaultAvatar;
+
+                if (userId && username) {
+                    console.log('DM açılıyor:', userId, username); // Hata ayıklama
+                    openChatPanel(userId, username, avatar);
+                    // Aktif görünümü güncelle
+                    document.querySelectorAll('.dm-item, .friend-row').forEach(i =>
+                        i.classList.remove('active'));
+                    item.classList.add('active');
+                }
+            });
+        });
+    }
+
+    // DOMContentLoaded içine ekle
+    document.addEventListener('DOMContentLoaded', async () => {
+        // ... mevcut kodlar ...
+        setupDmButtons();
+        // ... mevcut kodlar ...
+    });
 }); 
