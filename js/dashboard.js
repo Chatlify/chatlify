@@ -660,45 +660,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Sohbet Paneli Açma Fonksiyonu (Güncellendi - Seçiciler düzeltildi) ---
     function openChatPanel(userId, username, avatar) {
-        if (!chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer || !sponsorSidebar) {
-            console.error('Chat panel elements not found, cannot open chat.');
-            return;
-        }
-        console.log(`Opening chat panel for user: ${username} (ID: ${userId})`);
+        console.log('openChatPanel çağrıldı:', userId, username); // Hata ayıklama için
+        currentConversationId = userId; // Veya conversationId hesaplama mantığı
+        subscribeToMessages(currentConversationId);
 
-        // Sohbet başlığını güncelle - DOĞRU SEÇİCİLER
-        const chatUsernameElement = chatHeaderUser.querySelector('.chat-username');
-        const chatAvatarElement = chatHeaderUser.querySelector('.chat-avatar img'); // .chat-avatar içindeki img
-        const chatStatusDot = chatHeaderUser.querySelector('.chat-avatar .status-dot'); // .chat-avatar içindeki status-dot
-        const chatStatusTextElement = chatHeaderUser.querySelector('.chat-user-info .chat-status'); // .chat-user-info içindeki chat-status
-
-        if (chatUsernameElement) chatUsernameElement.textContent = username;
-        if (chatAvatarElement) chatAvatarElement.src = avatar;
-
-        const isFriendOnline = onlineFriends.has(userId);
-        const statusText = isFriendOnline ? 'Çevrimiçi' : 'Çevrimdışı';
-        const statusClass = isFriendOnline ? 'online' : 'offline';
-        if (chatStatusDot) chatStatusDot.className = `status-dot ${statusClass}`;
-        if (chatStatusTextElement) chatStatusTextElement.textContent = statusText;
-
-        // Mesajlar alanını temizle
-        chatMessagesContainer.innerHTML = '<div class="empty-placeholder chat-empty">Bu sohbetin başlangıcı.</div>';
-
-        // Panelleri göster/gizle
-        friendsPanelContainer.classList.add('hidden');
-        if (sponsorSidebar) sponsorSidebar.style.display = 'none'; // Sponsoru gizle
-        chatPanel.classList.remove('hidden');
-
-        // Aktif sohbetin user ID'sini panele ekle (durum güncellemesi için)
-        chatPanel.dataset.activeChatUserId = userId;
-
-        // Header butonlarına listener ekle
-        setupChatHeaderActions(userId, username, avatar);
-
-        // Scrollu en alta indir (yeni mesajlar için)
-        const messagesContainer = chatPanel.querySelector('.chat-messages');
-        if (messagesContainer) {
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        // Sohbet panelini göster
+        if (chatPanel) {
+            chatPanel.classList.add('active');
+            // Kullanıcı bilgilerini güncelle
+            if (chatHeaderUser) {
+                chatHeaderUser.innerHTML = `
+                    <div class="chat-avatar">
+                        <img src="${avatar}" alt="${username}">
+                    </div>
+                    <div class="chat-name">${username}</div>
+                `;
+            }
+            // Mesaj alanını temizle
+            if (chatMessagesContainer) {
+                chatMessagesContainer.innerHTML = '';
+            }
+            // Diğer panelleri gizle
+            if (friendsPanelContainer) friendsPanelContainer.classList.add('hidden');
+            if (sponsorSidebar) sponsorSidebar.classList.add('hidden');
+        } else {
+            console.error('chatPanel bulunamadı!');
         }
     }
     // --- End Sohbet Panelini Açma ---
@@ -1716,126 +1702,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- End Sunucu Ekle Panel İşlevselliği ---
 
     console.log('Dashboard JS - DOMContentLoaded End'); // Bitiş logu
-
-    // Yeni değişkenler
-    let currentConversationId = null;
-    let messageSubscription = null;
-
-    // Mesaj gönderme fonksiyonu
-    async function sendMessage(conversationId, messageContent) {
-        try {
-            const { data, error } = await supabase
-                .from('messages')
-                .insert([{
-                    conversation_id: conversationId,
-                    sender_id: currentUserId,
-                    content: messageContent
-                }])
-                .select();
-
-            if (error) throw error;
-            return data;
-        } catch (error) {
-            console.error('Mesaj gönderilemedi:', error);
-            return null;
-        }
-    }
-
-    // Mesaj görüntüleme fonksiyonu
-    function displayMessage(message) {
-        const messageElement = document.createElement('div');
-        messageElement.className = `message ${message.sender_id === currentUserId ? 'sent' : 'received'}`;
-        messageElement.innerHTML = `
-            <div class="message-content">${message.content}</div>
-            <div class="message-time">${new Date(message.created_at).toLocaleTimeString()}</div>
-        `;
-        chatMessagesContainer.appendChild(messageElement);
-        chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
-    }
-
-    // Mesaj gönderme event listener'ı
-    function setupMessageSending() {
-        chatTextarea.addEventListener('keydown', async (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                const messageContent = chatTextarea.value.trim();
-                if (messageContent && currentConversationId) {
-                    chatTextarea.value = '';
-                    const sentMessage = await sendMessage(currentConversationId, messageContent);
-                    if (sentMessage) displayMessage(sentMessage[0]);
-                }
-            }
-        });
-    }
-
-    // Realtime mesaj aboneliği
-    function subscribeToMessages(conversationId) {
-        // Önceki aboneliği iptal et
-        if (messageSubscription) supabase.removeChannel(messageSubscription);
-
-        messageSubscription = supabase
-            .channel('messages')
-            .on('postgres_changes', {
-                event: 'INSERT',
-                schema: 'public',
-                table: 'messages',
-                filter: `conversation_id=eq.${conversationId}`
-            }, (payload) => {
-                if (payload.new.sender_id !== currentUserId) {
-                    displayMessage(payload.new);
-                }
-            })
-            .subscribe();
-    }
-
-    // openChatPanel fonksiyonunu güncelle
-    function openChatPanel(userId, username, avatar) {
-        currentConversationId = userId; // Veya conversationId hesaplama mantığı
-        subscribeToMessages(currentConversationId);
-        // ... diğer mevcut kodlar ...
-    }
-
-    // DOMContentLoaded içinde kurulum
-    document.addEventListener('DOMContentLoaded', async () => {
-        // ... mevcut kodlar ...
-
-        // Kullanıcı ID'sini al
-        const { data: { user } } = await supabase.auth.getUser();
-        currentUserId = user?.id;
-
-        // Mesaj sistemini kur
-        setupMessageSending();
-
-        // ... diğer kurulumlar ...
-    });
-
-    // DM butonlarına event listener ekleme
-    function setupDmButtons() {
-        document.querySelectorAll('.dm-item, .friend-row').forEach(item => {
-            item.addEventListener('click', (e) => {
-                // Eğer tıklanan elementin içinde buton varsa (emoji/ayar butonu gibi) engelle
-                if (e.target.closest('button')) return;
-
-                const userId = item.dataset.userId;
-                const username = item.dataset.username;
-                const avatar = item.dataset.avatar || defaultAvatar;
-
-                if (userId && username) {
-                    console.log('DM açılıyor:', userId, username); // Hata ayıklama
-                    openChatPanel(userId, username, avatar);
-                    // Aktif görünümü güncelle
-                    document.querySelectorAll('.dm-item, .friend-row').forEach(i =>
-                        i.classList.remove('active'));
-                    item.classList.add('active');
-                }
-            });
-        });
-    }
-
-    // DOMContentLoaded içine ekle
-    document.addEventListener('DOMContentLoaded', async () => {
-        // ... mevcut kodlar ...
-        setupDmButtons();
-        // ... mevcut kodlar ...
-    });
 }); 
