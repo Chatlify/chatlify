@@ -609,12 +609,6 @@ function initializePresence() {
     // console.log("Presence sistemi başlatılıyor...");
 }
 
-// setupServerPanel fonksiyon tanımı
-function setupServerPanel() {
-    // Bu fonksiyonun içeriği varsa korunmalı, yoksa boş kalabilir.
-    // console.log("Sunucu paneli kuruluyor...");
-}
-
 // showSection fonksiyon tanımı
 function showSection(sectionName) {
     // Bu fonksiyonun içeriği varsa korunmalı, yoksa boş kalabilir.
@@ -874,17 +868,17 @@ async function loadConversationMessages(conversationId) {
             messageElement.innerHTML = `
                 <div class="message-group-avatar">
                     <img src="${avatarUrl}" alt="${username}" onerror="this.src='${defaultAvatar}'">
-                </div>
+                 </div>
                 <div class="message-group-content">
                     <div class="message-group-header">
                         <span class="message-author">${username}</span>
                         <span class="message-time">${new Date(message.createdAt).toLocaleTimeString()}</span>
-                    </div>
+                     </div>
                     <div class="message-content">
                         <p>${message.content}</p>
-                    </div>
-                </div>
-            `;
+                 </div>
+             </div>
+         `;
 
             fragment.appendChild(messageElement);
         });
