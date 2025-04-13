@@ -447,17 +447,210 @@ function setupServerPanel() {
 
 // Kontekst menüleri için dinleyicileri ekleme
 function addContextMenuListeners() {
-    // Kontekst menüleri için dinleyicileri ekleme işlemleri burada yapılabilir
+    const contextMenu = createContextMenuElement(); // Menü elementini oluştur veya bul
+    document.body.appendChild(contextMenu); // Body'ye ekle (eğer yoksa)
+
+    // Dinlenecek ana konteynerlar
+    const listenAreas = [
+        document.querySelector('.direct-messages'), // DM listesi
+        document.querySelector('.friends-panel-container') // Arkadaş paneli
+        // '.server-sidebar' // Gerekirse sunucu listesi de eklenebilir
+    ];
+
+    listenAreas.forEach(area => {
+        if (!area) return;
+
+        area.addEventListener('contextmenu', (e) => {
+            // Hedef elementi bul
+            const targetItem = e.target.closest('.dm-item, .friend-row'); // '.server-item' de eklenebilir
+
+            if (targetItem) {
+                e.preventDefault(); // Tarayıcının kendi menüsünü engelle
+
+                // Hedef elementten verileri al
+                const userId = targetItem.dataset.userId;
+                const username = targetItem.dataset.username;
+                const avatar = targetItem.dataset.avatar || defaultAvatar; // Avatar yoksa varsayılan
+
+                if (!userId || !username) {
+                    console.warn('Context menu target missing data:', targetItem.dataset);
+                    hideContextMenu(contextMenu);
+                    return;
+                }
+
+                // Menü içeriğini oluştur
+                buildContextMenuContent(contextMenu, userId, username, avatar);
+
+                // Menüyü göster
+                showContextMenu(contextMenu, e.clientX, e.clientY);
+            } else {
+                // Geçerli bir hedef değilse menüyü gizle
+                hideContextMenu(contextMenu);
+            }
+        });
+    });
+
+    // Sayfanın herhangi bir yerine tıklanınca menüyü gizle
+    document.addEventListener('click', () => {
+        hideContextMenu(contextMenu);
+    });
+
+    // Scroll olayında menüyü gizle (isteğe bağlı ama iyi bir UX)
+    window.addEventListener('scroll', () => {
+        hideContextMenu(contextMenu);
+    }, true); // Capture phase'de dinle
 }
 
-// Presence takip sistemini başlatma
+// Bağlam menüsü elementini oluşturur veya mevcut olanı döndürür
+function createContextMenuElement() {
+    let menu = document.getElementById('custom-context-menu');
+    if (!menu) {
+        menu = document.createElement('div');
+        menu.id = 'custom-context-menu';
+        menu.className = 'context-menu'; // CSS sınıfını ekle
+        menu.style.display = 'none'; // Başlangıçta gizli
+    }
+    return menu;
+}
+
+// Menü içeriğini dinamik olarak oluşturur
+function buildContextMenuContent(menu, userId, username, avatar) {
+    // Önceki içeriği temizle
+    menu.innerHTML = '';
+
+    // Başlık kısmı (Avatar ve İsim)
+    const header = document.createElement('div');
+    header.className = 'context-menu-header';
+    header.innerHTML = `
+        <div class="context-menu-avatar">
+            <img src="${avatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
+        </div>
+        <span class="context-menu-name">${username}</span>
+    `;
+    menu.appendChild(header);
+
+    // Ayırıcı
+    const divider = document.createElement('div');
+    divider.className = 'context-menu-divider';
+    menu.appendChild(divider);
+
+    // Menü Öğeleri
+    const items = [
+        { label: 'Profil', icon: 'fa-user', action: () => console.log(`Profil görüntüle: ${username} (${userId})`) },
+        {
+            label: 'Mesaj Gönder', icon: 'fa-comment', action: () => {
+                // DM listesindeki avatarı bulup openChatPanel'e göndermek daha doğru olabilir
+                // Şimdilik dataset'ten gelen avatarı kullanıyoruz
+                openChatPanel(userId, username, avatar);
+            }
+        },
+        // { label: 'Arkadaşlıktan Çıkar', icon: 'fa-user-times', action: () => console.log(`Arkadaşlıktan çıkar: ${username}`), danger: true } // Örnek
+    ];
+
+    items.forEach(itemData => {
+        const menuItem = document.createElement('div');
+        menuItem.className = 'context-menu-item';
+        if (itemData.danger) {
+            menuItem.classList.add('danger'); // CSS'te .danger stili tanımlanmalı
+        }
+        menuItem.innerHTML = `
+            <i class="fas ${itemData.icon}"></i>
+            <span>${itemData.label}</span>
+        `;
+        menuItem.addEventListener('click', () => {
+            itemData.action();
+            hideContextMenu(menu); // İşlem sonrası menüyü gizle
+        });
+        menu.appendChild(menuItem);
+    });
+}
+
+// Bağlam menüsünü gösterir
+function showContextMenu(menu, x, y) {
+    menu.style.display = 'block'; // Görünür yap
+
+    // Menünün pencere dışına taşmasını engelle
+    const menuWidth = menu.offsetWidth;
+    const menuHeight = menu.offsetHeight;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    let finalX = x;
+    let finalY = y;
+
+    if (x + menuWidth > windowWidth) {
+        finalX = windowWidth - menuWidth - 5; // Sağ kenardan taşmayı engelle
+    }
+    if (y + menuHeight > windowHeight) {
+        finalY = windowHeight - menuHeight - 5; // Alt kenardan taşmayı engelle
+    }
+
+    menu.style.left = `${finalX}px`;
+    menu.style.top = `${finalY}px`;
+
+    // Aktif sınıfını ekleyerek animasyonu tetikle (CSS'te tanımlıysa)
+    setTimeout(() => menu.classList.add('active'), 0);
+}
+
+// Bağlam menüsünü gizler
+function hideContextMenu(menu) {
+    if (menu && menu.style.display === 'block') {
+        menu.classList.remove('active'); // Animasyon sınıfını kaldır
+        // Animasyonun bitmesini bekleyip gizle (transition süresi kadar)
+        // setTimeout(() => {
+        menu.style.display = 'none';
+        // }, 150); // CSS'teki transition süresiyle eşleşmeli
+    }
+}
+
+// initializePresence fonksiyon tanımı (içi boş kalsa da fonksiyonun var olması önemli)
 function initializePresence() {
-    // Presence takip sistemini başlatma işlemleri burada yapılabilir
+    // Bu fonksiyonun içeriği varsa korunmalı, yoksa boş kalabilir.
+    // console.log("Presence sistemi başlatılıyor...");
 }
 
-// Diğer yardımcı fonksiyonlar burada tanımlanabilir
-function showSection(section) {
-    // showSection işlemi burada yapılabilir
+// setupServerPanel fonksiyon tanımı
+function setupServerPanel() {
+    // Bu fonksiyonun içeriği varsa korunmalı, yoksa boş kalabilir.
+    // console.log("Sunucu paneli kuruluyor...");
+}
+
+// showSection fonksiyon tanımı
+function showSection(sectionName) {
+    // Bu fonksiyonun içeriği varsa korunmalı, yoksa boş kalabilir.
+    console.log(`Bölüm gösteriliyor: ${sectionName}`);
+    // Gerçek içerik: İlgili panelleri göster/gizle
+    const friendsPanel = document.querySelector('.friends-panel-container');
+    const chatPanel = document.querySelector('.chat-panel');
+    // Diğer bölümler için de elementler alınabilir
+
+    if (!friendsPanel || !chatPanel) return;
+
+    // Önce sohbeti kapat (açıksa)
+    closeChatPanel(); // Bu fonksiyon sohbeti kapatıp arkadaş panelini gösterir
+
+    // Aktif tab'ı ayarla (görsel olarak)
+    document.querySelectorAll('.dashboard-header .tab').forEach(tab => {
+        if (tab.textContent.trim() === sectionName) {
+            tab.classList.add('active');
+        } else {
+            tab.classList.remove('active');
+        }
+    });
+
+    // Hangi bölümün gösterileceğine karar ver (Bu kısım daha detaylı olmalı)
+    // Örneğin:
+    // if (sectionName === 'Tüm Arkadaşlar') {
+    //     // Tüm arkadaşları gösteren listeyi filtrele/göster
+    // } else if (sectionName === 'Çevrimiçi') {
+    //     // Sadece çevrimiçi arkadaşları göster
+    // } else if (sectionName === 'Bekleyen') {
+    //     // Bekleyen istekler bölümünü göster
+    // }
+
+    // Şimdilik sadece arkadaş panelinin görünür kaldığından emin olalım
+    friendsPanel.classList.remove('hidden');
+
 }
 
 async function openChatPanel(userId, username, avatar) {
