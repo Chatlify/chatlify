@@ -373,8 +373,8 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
         friendElement.innerHTML = `
                     <div class="friend-avatar">
                 <img src="${avatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
-                <span class="status-dot offline"></span>
-                    </div>
+                        <span class="status-dot offline"></span>
+                            </div>
                     <div class="friend-info">
                 <div class="friend-name">${username}</div>
                 <div class="friend-status">Çevrimdışı</div>
@@ -855,68 +855,73 @@ function updateFriendCounters() {
     }
 }
 
-// İki kullanıcı arasındaki sohbeti bulur veya oluşturur
+// İki kullanıcı arasındaki DM sohbetini bulur veya oluşturur
 async function findOrCreateConversation(userId1, userId2) {
     if (!userId1 || !userId2) {
         console.error("findOrCreateConversation: İki kullanıcı ID'si de gerekli.");
         return null;
     }
-    console.log(`Sohbet aranıyor/oluşturuluyor: ${userId1} ve ${userId2}`);
+    // Kendisiyle sohbeti engelle (isteğe bağlı ama önerilir)
+    if (userId1 === userId2) {
+        console.warn("Kendinizle sohbet oluşturamazsınız.");
+        return null;
+    }
+    console.log(`DM Sohbeti aranıyor/oluşturuluyor: ${userId1} ve ${userId2}`);
 
     try {
-        // Mevcut sohbeti ara (her iki yönde de)
-        // NOT: conversations tablonuzdaki kullanıcı ID sütun adları 'user1_id' ve 'user2_id' varsayılmıştır.
-        // Eğer farklıysa (örn: participant1, participant2) aşağıdaki sorguyu güncelleyin.
+        // Mevcut DM sohbetini ara: participantIds her iki kullanıcıyı da içermeli VE isGroup=false olmalı
+        const participants = [userId1, userId2].sort(); // Tutarlılık için ID'leri sırala
         const { data: existingConversation, error: findError } = await supabase
             .from('conversations')
             .select('id')
-            .or(`and(user1_id.eq.${userId1},user2_id.eq.${userId2}),and(user1_id.eq.${userId2},user2_id.eq.${userId1})`)
-            .maybeSingle(); // Tek bir kayıt veya null döner
+            // participantIds dizisinin her iki kullanıcıyı da içerdiğini kontrol et (@> operatörü)
+            .contains('participantIds', participants)
+            // Sadece DM sohbetlerini bul (grup olmayanları)
+            .eq('isGroup', false)
+            .maybeSingle();
 
         if (findError) {
             console.error("Sohbet aranırken hata:", findError);
-            // Belki tablo/sütun adı yanlıştır? Veya RLS engelliyor?
-            if (findError.message.includes("relation") && findError.message.includes("does not exist")) {
-                alert("Veritabanı hatası: 'conversations' tablosu veya sütunları bulunamadı.");
-            }
             throw findError;
         }
 
         // Sohbet bulunduysa ID'sini döndür
         if (existingConversation) {
-            console.log("Mevcut sohbet bulundu:", existingConversation.id);
+            console.log("Mevcut DM sohbeti bulundu:", existingConversation.id);
             return existingConversation.id;
         }
 
-        // Sohbet yoksa yeni bir tane oluştur
-        console.log("Mevcut sohbet bulunamadı, yenisi oluşturuluyor...");
+        // Sohbet yoksa yeni bir DM sohbeti oluştur
+        console.log("Mevcut DM sohbeti bulunamadı, yenisi oluşturuluyor...");
         const { data: newConversation, error: createError } = await supabase
             .from('conversations')
             .insert([
-                // NOT: Yine sütun adları varsayımdır.
-                { user1_id: userId1, user2_id: userId2 }
-                // { participants: [userId1, userId2] } gibi bir yapı da kullanıyor olabilirsiniz.
-                // Varsayılan olarak conversation_type = 'dm' gibi bir değer ekleyebilirsiniz
+                {
+                    participantIds: participants, // Sıralanmış ID dizisini ekle
+                    isGroup: false // Bunun bir DM sohbeti olduğunu belirt
+                    // groupName, groupAvatar null olabilir veya varsayılan değer atanabilir
+                }
             ])
             .select('id')
-            .single(); // Tek bir kayıt döner
+            .single();
 
         if (createError) {
-            console.error("Yeni sohbet oluşturulurken hata:", createError);
-            // RLS INSERT'ü engelliyor olabilir.
+            console.error("Yeni DM sohbeti oluşturulurken hata:", createError);
+            // RLS veya başka kısıtlamalar olabilir
             if (createError.message.includes("security policies")) {
                 alert("Yeni sohbet oluşturulamadı. Güvenlik politikaları (RLS) INSERT işlemini engelliyor olabilir.");
+            } else if (createError.message.includes("violates check constraint")) {
+                alert("Yeni sohbet oluşturulamadı. Bir CHECK kuralı ihlal edilmiş olabilir (örn: participantIds boş olamaz).");
             } else if (createError.message.includes("violates not-null constraint")) {
-                alert("Yeni sohbet oluşturulamadı. Gerekli bir sütun (örn: user1_id, user2_id) boş bırakılmış olabilir.");
+                alert("Yeni sohbet oluşturulamadı. Gerekli bir sütun (örn: isGroup) boş bırakılmış olabilir.");
             }
             throw createError;
         }
 
         if (newConversation) {
-            console.log("Yeni sohbet oluşturuldu:", newConversation.id);
+            console.log("Yeni DM sohbeti oluşturuldu:", newConversation.id);
             return newConversation.id;
         } else {
-            // Bu durum normalde olmamalı ama olursa diye
             console.error("Sohbet oluşturuldu ancak Supabase ID döndürmedi.");
             throw new Error("Sohbet oluşturuldu ancak ID alınamadı.");
         }
@@ -924,6 +929,6 @@ async function findOrCreateConversation(userId1, userId2) {
     } catch (error) {
         console.error("findOrCreateConversation içinde genel hata:", error);
         alert("Sohbet bilgisi alınırken veya oluşturulurken bir hata oluştu. Konsolu kontrol edin.")
-        return null; // Hata durumunda null döndür
+        return null;
     }
 } 
