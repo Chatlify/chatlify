@@ -6,7 +6,7 @@ let onlineFriends = new Set();
 let presenceChannel = null;
 let currentConversationId = null; // Aktif sohbet için ID
 let messageSubscription = null; // Realtime mesaj aboneliği
-let sampleColumnFormat = 'snake_case'; // Varsayılan olarak snake_case formatını kullan
+let sampleColumnFormat = 'camelCase'; // Varsayılan olarak camelCase formatını kullan
 const defaultAvatar = 'images/DefaultAvatar.png';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -615,7 +615,7 @@ async function loadConversationMessages(userId) {
         const { data: messages, error } = await supabase
             .from('messages')
             .select('*')
-            .or(`conversation_id.eq.${userId},conversation_id.eq.${currentUserId}`)
+            .or(`conversationId.eq.${userId},conversationId.eq.${currentUserId}`)
             .order('created_at', { ascending: true });
 
         if (error) {
@@ -775,7 +775,7 @@ function setupMessageSending(chatTextarea) {
             // Daha önceki örnek verilerdeki sütun adlarını kullan
             const messageData = {
                 content: messageText,
-                conversation_id: currentConversationId
+                conversationId: currentConversationId
             };
 
             // SenderId veya sender_id formatını belirle
