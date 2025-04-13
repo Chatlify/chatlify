@@ -1,33 +1,76 @@
 import { supabase } from './auth_config.js'; // Supabase istemcisini import et
 
+// Global değişkenler tanımları
+let currentUserId = null;
+let onlineFriends = new Set();
+let presenceChannel = null;
+const defaultAvatar = 'images/DefaultAvatar.png';
+
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Dashboard JS başlatılıyor...');
 
     try {
-        // Element tanımlamaları (Mevcut tanımlamaları kullan)
-        // ...
+        // Element tanımlamaları
+        const userPanelUsernameElement = document.querySelector('.dm-footer .dm-user-name');
+        const userPanelAvatarElement = document.querySelector('.dm-footer .dm-user-avatar img');
+
+        const tabs = document.querySelectorAll('.dashboard-header .tab');
+        const onlineSection = document.querySelector('.online-section-title');
+        const onlineList = document.querySelector('.online-friends');
+        const offlineSection = document.querySelector('.offline-section-title');
+        const offlineList = document.querySelector('.offline-friends');
+        const pendingSection = document.querySelector('.pending-section-title');
+        const pendingList = document.querySelector('.pending-requests');
+        const pendingCountBadge = document.querySelector('.pending-count');
+        const dmList = document.querySelector('#friends-group .dm-items');
+        const chatPanel = document.querySelector('.chat-panel');
+        const chatHeaderUser = chatPanel?.querySelector('.chat-header-user');
+        const chatMessagesContainer = chatPanel?.querySelector('.chat-messages');
+        const friendsPanelContainer = document.querySelector('.friends-panel-container');
+        const sponsorSidebar = document.querySelector('.sponsor-sidebar');
+        const settingsButtonContainer = document.querySelector('.server-sidebar .server-item:has(.server-settings-icon)');
+        const chatCloseBtn = chatPanel?.querySelector('.chat-close-btn');
+        const chatEmojiBtn = chatPanel?.querySelector('.emoji-btn');
+        const chatTextarea = chatPanel?.querySelector('.chat-textbox textarea');
+        const emojiPicker = document.querySelector('emoji-picker');
 
         // Kritik elementlerin varlığını kontrol et
-        validateRequiredElements();
+        validateRequiredElements({
+            userPanelUsernameElement,
+            userPanelAvatarElement,
+            chatPanel,
+            chatMessagesContainer,
+            chatTextarea
+        });
 
         // Kullanıcı oturumunu başlat
-        const userSessionActive = await initializeUserSession();
+        const userSessionActive = await initializeUserSession({
+            userPanelUsernameElement,
+            userPanelAvatarElement
+        });
+
         if (!userSessionActive) return; // Oturum yoksa devam etme
 
         // Tab kontrolünü kur
-        setupTabControls();
+        setupTabControls(tabs);
 
         // Mesaj göndermesi için gerekli dinleyicileri ekle
-        setupMessageSending();
+        setupMessageSending(chatTextarea);
 
         // Varsayılan sekmeyi göster
         showSection('Tüm Arkadaşlar');
 
         // Arkadaş listesini yükle
-        await loadAllFriends();
+        await loadAllFriends({
+            onlineList,
+            offlineList,
+            dmList,
+            onlineSection,
+            offlineSection
+        });
 
         // Bekleyen istekleri yükle
-        await loadPendingRequests();
+        await loadPendingRequests(pendingList, pendingCountBadge);
 
         // Sunucu panelini kur
         setupServerPanel();
@@ -45,13 +88,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Zorunlu elementlerin varlığını kontrol eden yardımcı fonksiyon
-    function validateRequiredElements() {
+    function validateRequiredElements(elements) {
         const criticalElements = [
-            { element: userPanelUsernameElement, name: '.dm-footer .dm-user-name' },
-            { element: userPanelAvatarElement, name: '.dm-footer .dm-user-avatar img' },
-            { element: chatPanel, name: '.chat-panel' },
-            { element: chatMessagesContainer, name: '.chat-messages' },
-            { element: chatTextarea, name: '.chat-textbox textarea' }
+            { element: elements.userPanelUsernameElement, name: '.dm-footer .dm-user-name' },
+            { element: elements.userPanelAvatarElement, name: '.dm-footer .dm-user-avatar img' },
+            { element: elements.chatPanel, name: '.chat-panel' },
+            { element: elements.chatMessagesContainer, name: '.chat-messages' },
+            { element: elements.chatTextarea, name: '.chat-textbox textarea' }
         ];
 
         const missingElements = criticalElements.filter(item => !item.element);
@@ -63,7 +106,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Tab yönetimi için dinleyicileri oluşturan yardımcı fonksiyon
-    function setupTabControls() {
+    function setupTabControls(tabs) {
+        if (!tabs) return;
+
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 tabs.forEach(t => t.classList.remove('active'));
@@ -76,7 +121,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // Kullanıcı bilgilerini ve oturumu yönetme
-async function initializeUserSession() {
+async function initializeUserSession({ userPanelUsernameElement, userPanelAvatarElement }) {
     try {
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         if (userError) throw userError;
@@ -177,7 +222,7 @@ function setDefaultProfileUI() {
 }
 
 // Tüm arkadaşları yükleme fonksiyonu (optimize edilmiş)
-async function loadAllFriends() {
+async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, offlineSection }) {
     if (!onlineList || !offlineList || !dmList) {
         console.error('loadAllFriends: Arkadaş ve DM listesi elementleri bulunamadı');
         return;
@@ -372,4 +417,58 @@ async function loadAllFriends() {
 
         return dmElement;
     }
+}
+
+// Bekleyen istekleri yükleme
+async function loadPendingRequests(pendingList, pendingCountBadge) {
+    try {
+        const { data: pendingRequests, error } = await supabase
+            .from('friendships')
+            .select('*')
+            .eq('status', 'pending')
+            .eq('user_id_2', currentUserId);
+
+        if (error) {
+            throw error;
+        }
+
+        pendingList.textContent = pendingRequests.length;
+        pendingCountBadge.textContent = pendingRequests.length;
+    } catch (error) {
+        console.error('Bekleyen istekler yüklenirken hata:', error);
+        pendingList.textContent = 'Hata oluştu';
+        pendingCountBadge.textContent = 'Hata';
+    }
+}
+
+// Sunucu panelini kurma
+function setupServerPanel() {
+    // Sunucu panelini kurma işlemleri burada yapılabilir
+}
+
+// Kontekst menüleri için dinleyicileri ekleme
+function addContextMenuListeners() {
+    // Kontekst menüleri için dinleyicileri ekleme işlemleri burada yapılabilir
+}
+
+// Presence takip sistemini başlatma
+function initializePresence() {
+    // Presence takip sistemini başlatma işlemleri burada yapılabilir
+}
+
+// Diğer yardımcı fonksiyonlar burada tanımlanabilir
+function showSection(section) {
+    // showSection işlemi burada yapılabilir
+}
+
+function openChatPanel(userId, username, avatar) {
+    // openChatPanel işlemi burada yapılabilir
+}
+
+function setupMessageSending(chatTextarea) {
+    // setupMessageSending işlemi burada yapılabilir
+}
+
+function updateFriendCounters() {
+    // updateFriendCounters işlemi burada yapılabilir
 } 
