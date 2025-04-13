@@ -89,6 +89,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Presence takip sistemini başlat
         initializePresence();
 
+        // Arkadaş Ekle modalını kur
+        setupAddFriendModal();
+
         console.log('Dashboard JS başlatma tamamlandı.');
     } catch (error) {
         console.error('Dashboard başlatma hatası:', error);
