@@ -3911,7 +3911,12 @@
 }
 
 .message-group.own-message .message-group-avatar {
-    display: none;
+    display: block;
+    /* Artık avatarı göster */
+    margin-left: 12px;
+    /* Sağ tarafta olduğu için margin-left ekle */
+    margin-right: 0;
+    /* margin-right'ı kaldır */
 }
 
 .message-group-avatar img {
@@ -6025,4 +6030,23 @@ emoji-picker {
     .server-option-text p {
         font-size: 13px;
     }
+}
+
+.message-group.own-message .message-group-avatar {
+    display: block;
+    /* Artık avatarı göster */
+    margin-left: 12px;
+    /* Sağ tarafta olduğu için margin-left ekle */
+    margin-right: 0;
+    /* margin-right'ı kaldır */
+}
+
+/* Mesaj grubunun ters düzenini korumak için diğer ayarları da ekleyelim */
+.message-group.own-message .message-group-header {
+    flex-direction: row-reverse;
+}
+
+.message-group.own-message .message-author {
+    margin-right: 0;
+    margin-left: 8px;
 }
