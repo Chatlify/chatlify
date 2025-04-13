@@ -453,7 +453,241 @@ function showSection(section) {
 }
 
 function openChatPanel(userId, username, avatar) {
-    // openChatPanel işlemi burada yapılabilir
+    console.log(`Opening chat panel for user: ${username} (ID: ${userId})`);
+
+    // Panel elementlerini al
+    const chatPanel = document.querySelector('.chat-panel');
+    const chatHeaderUser = chatPanel?.querySelector('.chat-header-user');
+    const chatMessagesContainer = chatPanel?.querySelector('.chat-messages');
+    const friendsPanelContainer = document.querySelector('.friends-panel-container');
+    const sponsorSidebar = document.querySelector('.sponsor-sidebar');
+
+    // Elementlerin varlığını kontrol et
+    if (!chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer) {
+        console.error('Chat panel elements not found, cannot open chat.');
+        return;
+    }
+
+    // Global değişkeni ayarla (mesaj gönderme için)
+    currentConversationId = userId;
+
+    // Sohbet başlığını güncelle
+    const chatUsernameElement = chatHeaderUser.querySelector('.chat-username');
+    const chatAvatarElement = chatHeaderUser.querySelector('.chat-avatar img');
+    const chatStatusDot = chatHeaderUser.querySelector('.chat-avatar .status-dot');
+    const chatStatusTextElement = chatHeaderUser.querySelector('.chat-user-info .chat-status');
+
+    if (chatUsernameElement) chatUsernameElement.textContent = username;
+    if (chatAvatarElement) chatAvatarElement.src = avatar || defaultAvatar;
+
+    // Çevrimiçi durumunu kontrol et
+    const isFriendOnline = onlineFriends.has(userId);
+    const statusText = isFriendOnline ? 'Çevrimiçi' : 'Çevrimdışı';
+    const statusClass = isFriendOnline ? 'online' : 'offline';
+    if (chatStatusDot) chatStatusDot.className = `status-dot ${statusClass}`;
+    if (chatStatusTextElement) chatStatusTextElement.textContent = statusText;
+
+    // Mesajlar alanını temizle ve yükleniyor göster
+    chatMessagesContainer.innerHTML = '';
+    const loadingElement = document.createElement('div');
+    loadingElement.className = 'loading-placeholder';
+    loadingElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mesajlar yükleniyor...';
+    chatMessagesContainer.appendChild(loadingElement);
+
+    // Panelleri göster/gizle
+    friendsPanelContainer.classList.add('hidden');
+    if (sponsorSidebar) sponsorSidebar.style.display = 'none';
+    chatPanel.classList.remove('hidden');
+
+    // Aktif sohbetin user ID'sini panele ekle (durum güncellemesi için)
+    chatPanel.dataset.activeChatUserId = userId;
+
+    // Header butonlarının işlevselliğini ayarla
+    setupChatHeaderActions(userId, username, avatar);
+
+    // Önceki mesajları yükle
+    loadConversationMessages(userId);
+
+    // Realtime aboneliği başlat
+    subscribeToMessages(userId);
+}
+
+// Sohbet paneli header butonlarını ayarlama
+function setupChatHeaderActions(userId, username, avatar) {
+    const chatHeader = document.querySelector('.chat-header');
+    if (!chatHeader) {
+        console.error('Chat header not found!');
+        return;
+    }
+
+    // Kapatma butonu
+    const closeChatBtn = chatHeader.querySelector('.chat-close-btn');
+    if (closeChatBtn) {
+        // Eski listener'ları temizlemek için klon oluştur
+        const newCloseChatBtn = closeChatBtn.cloneNode(true);
+        closeChatBtn.parentNode.replaceChild(newCloseChatBtn, closeChatBtn);
+
+        // Yeni listener ekle
+        newCloseChatBtn.addEventListener('click', () => {
+            closeChatPanel();
+        });
+    }
+
+    // Profil butonu
+    const profileBtn = chatHeader.querySelector('button[title="Profili Görüntüle"]');
+    if (profileBtn) {
+        const newProfileBtn = profileBtn.cloneNode(true);
+        profileBtn.parentNode.replaceChild(newProfileBtn, profileBtn);
+
+        newProfileBtn.addEventListener('click', () => {
+            // Profil görüntüleme işlevi (eğer varsa)
+            console.log(`${username} profilini görüntüle`);
+        });
+    }
+}
+
+// Sohbet panelini kapatma
+function closeChatPanel() {
+    const chatPanel = document.querySelector('.chat-panel');
+    const friendsPanelContainer = document.querySelector('.friends-panel-container');
+    const sponsorSidebar = document.querySelector('.sponsor-sidebar');
+
+    if (!chatPanel || !friendsPanelContainer) return;
+
+    // Paneli gizle
+    chatPanel.classList.add('hidden');
+    friendsPanelContainer.classList.remove('hidden');
+
+    // Sponsor sidebar'ı göster (eğer varsa)
+    if (sponsorSidebar) sponsorSidebar.style.display = '';
+
+    // Aktif DM stilini kaldır
+    document.querySelectorAll('.dm-item.active').forEach(item => item.classList.remove('active'));
+
+    // Aktif sohbet ID'sini temizle
+    currentConversationId = null;
+
+    // Realtime aboneliğini sonlandır
+    unsubscribeFromMessages();
+}
+
+// Kullanıcının mesajlarını yükleme
+async function loadConversationMessages(userId) {
+    const chatMessagesContainer = document.querySelector('.chat-panel .chat-messages');
+    if (!chatMessagesContainer) return;
+
+    try {
+        // Supabase'den mesajları al
+        const { data: messages, error } = await supabase
+            .from('messages')
+            .select('*')
+            .or(`sender_id.eq.${currentUserId},sender_id.eq.${userId}`)
+            .or(`receiver_id.eq.${currentUserId},receiver_id.eq.${userId}`)
+            .order('created_at', { ascending: true });
+
+        if (error) throw error;
+
+        // Mesaj alanını temizle
+        chatMessagesContainer.innerHTML = '';
+
+        if (!messages || messages.length === 0) {
+            const emptyElement = document.createElement('div');
+            emptyElement.className = 'empty-placeholder chat-empty';
+            emptyElement.textContent = 'Bu sohbetin başlangıcı.';
+            chatMessagesContainer.appendChild(emptyElement);
+            return;
+        }
+
+        // Fragment kullanarak DOM işlemlerini optimize et
+        const fragment = document.createDocumentFragment();
+
+        messages.forEach(message => {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${message.sender_id === currentUserId ? 'sent' : 'received'}`;
+
+            const contentElem = document.createElement('div');
+            contentElem.className = 'message-content';
+            contentElem.textContent = message.content;
+
+            const timeElem = document.createElement('div');
+            timeElem.className = 'message-time';
+            timeElem.textContent = new Date(message.created_at).toLocaleTimeString();
+
+            messageElement.appendChild(contentElem);
+            messageElement.appendChild(timeElem);
+            fragment.appendChild(messageElement);
+        });
+
+        // Tek seferde DOM'a ekle
+        chatMessagesContainer.appendChild(fragment);
+
+        // Scrollu en alta indir
+        chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+
+    } catch (error) {
+        console.error('Mesajlar yüklenirken hata oluştu:', error);
+        chatMessagesContainer.innerHTML = '';
+
+        const errorElement = document.createElement('div');
+        errorElement.className = 'error-placeholder';
+        errorElement.textContent = 'Mesajlar yüklenirken bir hata oluştu.';
+        chatMessagesContainer.appendChild(errorElement);
+    }
+}
+
+// Realtime mesaj aboneliği
+function subscribeToMessages(userId) {
+    unsubscribeFromMessages(); // Önceki aboneliği iptal et
+
+    if (!userId) return;
+
+    try {
+        messageSubscription = supabase
+            .channel(`messages:${currentUserId}-${userId}`)
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'messages',
+                filter: `or(and(sender_id.eq.${currentUserId},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${currentUserId}))`
+            }, (payload) => {
+                displayMessage(payload.new);
+            })
+            .subscribe();
+
+    } catch (error) {
+        console.error('Mesaj aboneliğinde hata:', error);
+    }
+}
+
+// Mesaj aboneliğini sonlandırma
+function unsubscribeFromMessages() {
+    if (messageSubscription) {
+        supabase.removeChannel(messageSubscription);
+        messageSubscription = null;
+    }
+}
+
+// Yeni bir mesajı ekrana görüntüleme
+function displayMessage(message) {
+    const chatMessagesContainer = document.querySelector('.chat-panel .chat-messages');
+    if (!chatMessagesContainer) return;
+
+    const messageElement = document.createElement('div');
+    messageElement.className = `message ${message.sender_id === currentUserId ? 'sent' : 'received'}`;
+
+    const contentElem = document.createElement('div');
+    contentElem.className = 'message-content';
+    contentElem.textContent = message.content;
+
+    const timeElem = document.createElement('div');
+    timeElem.className = 'message-time';
+    timeElem.textContent = new Date(message.created_at).toLocaleTimeString();
+
+    messageElement.appendChild(contentElem);
+    messageElement.appendChild(timeElem);
+
+    chatMessagesContainer.appendChild(messageElement);
+    chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
 }
 
 function setupMessageSending(chatTextarea) {
