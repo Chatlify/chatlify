@@ -6,6 +6,7 @@ let onlineFriends = new Set();
 let presenceChannel = null;
 let currentConversationId = null; // Aktif sohbet için ID
 let messageSubscription = null; // Realtime mesaj aboneliği
+let sampleColumnFormat = 'snake_case'; // Varsayılan olarak snake_case formatını kullan
 const defaultAvatar = 'images/DefaultAvatar.png';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -579,15 +580,48 @@ async function loadConversationMessages(userId) {
     if (!chatMessagesContainer) return;
 
     try {
-        // Supabase'den mesajları al (camelCase sütun adları ile)
+        console.log(`Mesajları yükleme: CurrentUserId=${currentUserId}, TargetUserId=${userId}`);
+
+        // Önce mesaj tablosunun şemasını anlamak için tek bir mesajı çekmeyi deneyelim
+        const { data: sampleData, error: sampleError } = await supabase
+            .from('messages')
+            .select('*')
+            .limit(1);
+
+        if (sampleError) {
+            console.error('Mesaj tablosu örneği yüklenirken hata:', sampleError);
+            throw sampleError;
+        }
+
+        // Varsa sütun adlarını logla
+        if (sampleData && sampleData.length > 0) {
+            console.log('Mesaj tablosu sütunları:', Object.keys(sampleData[0]));
+
+            // Sütun formatını belirle
+            if (Object.keys(sampleData[0]).includes('senderId')) {
+                sampleColumnFormat = 'camelCase';
+                console.log('Sütun formatı: camelCase');
+            } else if (Object.keys(sampleData[0]).includes('sender_id')) {
+                sampleColumnFormat = 'snake_case';
+                console.log('Sütun formatı: snake_case');
+            } else {
+                console.warn('senderId veya sender_id sütunu bulunamadı, varsayılan format kullanılacak');
+            }
+        } else {
+            console.log('Mesaj tablosunda henüz veri yok. Varsayılan sütun adlarını kullanıyoruz.');
+        }
+
+        // Sorguyu daha açık ve basit hale getirelim
         const { data: messages, error } = await supabase
             .from('messages')
             .select('*')
-            .or(`senderId.eq.${currentUserId},senderId.eq.${userId}`)
-            .or(`receiverId.eq.${currentUserId},receiverId.eq.${userId}`)
+            .or(`conversation_id.eq.${userId},conversation_id.eq.${currentUserId}`)
             .order('created_at', { ascending: true });
 
-        if (error) throw error;
+        if (error) {
+            console.error('Mesaj sorgusunda hata:', error);
+            throw error;
+        }
 
         // Mesaj alanını temizle
         chatMessagesContainer.innerHTML = '';
@@ -600,12 +634,17 @@ async function loadConversationMessages(userId) {
             return;
         }
 
+        console.log(`Toplam ${messages.length} mesaj bulundu`);
+
         // Fragment kullanarak DOM işlemlerini optimize et
         const fragment = document.createDocumentFragment();
 
         messages.forEach(message => {
+            // Güvenli erişim için önce sütun adlarını kontrol et
+            const senderId = message.senderId || message.sender_id;
+
             const messageElement = document.createElement('div');
-            messageElement.className = `message ${message.senderId === currentUserId ? 'sent' : 'received'}`;
+            messageElement.className = `message ${senderId === currentUserId ? 'sent' : 'received'}`;
 
             const contentElem = document.createElement('div');
             contentElem.className = 'message-content';
@@ -733,22 +772,37 @@ function setupMessageSending(chatTextarea) {
         console.log(`Mesaj gönderiliyor: ${messageText} (AlıcıID: ${currentConversationId})`);
 
         try {
+            // Daha önceki örnek verilerdeki sütun adlarını kullan
+            const messageData = {
+                content: messageText,
+                conversation_id: currentConversationId
+            };
+
+            // SenderId veya sender_id formatını belirle
+            if (sampleColumnFormat === 'camelCase') {
+                messageData.senderId = currentUserId;
+                messageData.receiverId = currentConversationId;
+            } else {
+                messageData.sender_id = currentUserId;
+                messageData.receiver_id = currentConversationId;
+            }
+
             const { data, error } = await supabase
                 .from('messages')
-                .insert([{
-                    senderId: currentUserId,
-                    receiverId: currentConversationId,
-                    content: messageText
-                }])
+                .insert([messageData])
                 .select();
 
-            if (error) throw error;
+            if (error) {
+                console.error('Mesaj eklenirken hata:', error);
+                throw error;
+            }
 
             // Mesaj alanını temizle
             textarea.value = '';
 
             // Başarılı mesaj gönderildiyse ve veri döndüyse ekranda göster
             if (data && data.length > 0) {
+                console.log('Mesaj başarıyla gönderildi:', data[0]);
                 displayMessage(data[0]);
             }
 
