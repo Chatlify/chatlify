@@ -1271,4 +1271,147 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
             emojiPickerElement.style.display = 'none';
         }
     });
+}
+
+// Helper function to show the modal
+function showModal(modalElement) {
+    if (modalElement) {
+        modalElement.style.display = 'flex'; // Use 'flex' or 'block' based on your CSS
+        // Optionally add a class for animations
+        // modalElement.classList.add('modal-visible');
+    }
+}
+
+// Helper function to hide the modal
+function hideModal(modalElement) {
+    if (modalElement) {
+        modalElement.style.display = 'none';
+        // Optionally remove the animation class
+        // modalElement.classList.remove('modal-visible');
+    }
+}
+
+// Arkadaş Ekle modalını kur
+function setupAddFriendModal() {
+    const addFriendButton = document.querySelector('.add-friend-btn'); // Selector for your "Add Friend" button
+    const addFriendModal = document.getElementById('addFriendModal'); // ID of your modal container
+    const closeModalButton = addFriendModal?.querySelector('.close-modal-btn'); // Selector for the close button inside the modal
+    const addFriendForm = addFriendModal?.querySelector('#add-friend-form'); // ID of the form inside the modal
+    const usernameInput = addFriendModal?.querySelector('#add-friend-username-input'); // ID of the username input
+    const messageArea = addFriendModal?.querySelector('.modal-message-area'); // Selector for the message area
+
+    if (!addFriendButton || !addFriendModal || !closeModalButton || !addFriendForm || !usernameInput || !messageArea) {
+        console.warn('Arkadaş Ekle modal elementleri bulunamadı. Buton işlevsiz olabilir.');
+        return;
+    }
+
+    // Show modal when Add Friend button is clicked
+    addFriendButton.addEventListener('click', () => {
+        showModal(addFriendModal);
+        usernameInput.focus(); // Focus the input when modal opens
+        // Clear previous messages
+        messageArea.style.display = 'none';
+        messageArea.textContent = '';
+        messageArea.className = 'modal-message-area'; // Reset classes
+    });
+
+    // Hide modal when close button is clicked
+    closeModalButton.addEventListener('click', () => {
+        hideModal(addFriendModal);
+    });
+
+    // Hide modal when clicking outside the modal content
+    addFriendModal.addEventListener('click', (event) => {
+        if (event.target === addFriendModal) {
+            hideModal(addFriendModal);
+        }
+    });
+
+    // Handle form submission
+    addFriendForm.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent default form submission
+        const username = usernameInput.value.trim();
+        const submitButton = addFriendForm.querySelector('.modal-submit-button'); // Selector for the submit button
+
+        if (!username) {
+            displayModalMessage('Lütfen bir kullanıcı adı girin.', 'error', messageArea);
+            return;
+        }
+
+        if (submitButton) submitButton.disabled = true; // Disable button during request
+        displayModalMessage('Arkadaşlık isteği gönderiliyor...', 'info', messageArea); // Use 'info' or similar class for loading
+
+        try {
+            // 1. Find the user by username
+            const { data: users, error: findError } = await supabase
+                .from('users')
+                .select('id')
+                .eq('username', username)
+                .neq('id', currentUserId); // Exclude self
+
+            if (findError) throw new Error(`Kullanıcı aranırken hata: ${findError.message}`);
+            if (!users || users.length === 0) {
+                throw new Error(`'${username}' kullanıcısı bulunamadı.`);
+            }
+            if (users.length > 1) {
+                // Should ideally not happen if username is unique, but handle just in case
+                throw new Error(`'${username}' ile eşleşen birden fazla kullanıcı bulundu. Lütfen daha belirgin bir kullanıcı adı deneyin.`);
+            }
+
+            const friendId = users[0].id;
+
+            // 2. Check if already friends or request pending
+            const { data: existingFriendship, error: checkError } = await supabase
+                .from('friendships')
+                .select('id, status')
+                .or(`(user_id_1.eq.${currentUserId},user_id_2.eq.${friendId}),(user_id_1.eq.${friendId},user_id_2.eq.${currentUserId})`)
+                .maybeSingle();
+
+            if (checkError) throw new Error(`Arkadaşlık durumu kontrol edilirken hata: ${checkError.message}`);
+
+            if (existingFriendship) {
+                if (existingFriendship.status === 'accepted') {
+                    throw new Error(`'${username}' ile zaten arkadaşsınız.`);
+                } else if (existingFriendship.status === 'pending') {
+                    throw new Error(`'${username}' kullanıcısına zaten bir istek gönderilmiş veya ondan bir istek var.`);
+                } else if (existingFriendship.status === 'blocked') {
+                    throw new Error(`Bu kullanıcıyla etkileşim kuramazsınız.`);
+                }
+            }
+
+
+            // 3. Send friend request
+            const { error: insertError } = await supabase
+                .from('friendships')
+                .insert({
+                    user_id_1: currentUserId,
+                    user_id_2: friendId,
+                    status: 'pending'
+                });
+
+            if (insertError) throw new Error(`Arkadaşlık isteği gönderilirken hata: ${insertError.message}`);
+
+            displayModalMessage(`'${username}' kullanıcısına arkadaşlık isteği gönderildi!`, 'success', messageArea);
+            usernameInput.value = ''; // Clear input on success
+            // Optionally close the modal after a short delay
+            // setTimeout(() => hideModal(addFriendModal), 2000);
+
+        } catch (error) {
+            console.error('Arkadaş ekleme hatası:', error);
+            displayModalMessage(error.message || 'Bir hata oluştu.', 'error', messageArea);
+        } finally {
+            if (submitButton) submitButton.disabled = false; // Re-enable button
+        }
+    });
+}
+
+// Helper function to display messages inside the modal
+function displayModalMessage(message, type, messageAreaElement) {
+    if (messageAreaElement) {
+        messageAreaElement.textContent = message;
+        // Reset classes and add the new type
+        messageAreaElement.className = 'modal-message-area'; // Base class
+        messageAreaElement.classList.add(type); // 'success', 'error', or 'info'
+        messageAreaElement.style.display = 'flex'; // Show the message area
+    }
 } 
