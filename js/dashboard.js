@@ -455,9 +455,7 @@ function showSection(section) {
     // showSection işlemi burada yapılabilir
 }
 
-function openChatPanel(userId, username, avatar) {
-    console.log(`Opening chat panel for user: ${username} (ID: ${userId})`);
-
+async function openChatPanel(userId, username, avatar) {
     // Panel elementlerini al
     const chatPanel = document.querySelector('.chat-panel');
     const chatHeaderUser = chatPanel?.querySelector('.chat-header-user');
@@ -470,9 +468,20 @@ function openChatPanel(userId, username, avatar) {
         console.error('Chat panel elements not found, cannot open chat.');
         return;
     }
+    console.log(`Sohbet paneli açılıyor (kullanıcı): ${username} (ID: ${userId})`);
 
-    // Global değişkeni ayarla (mesaj gönderme için)
-    currentConversationId = userId;
+    // Önce gerçek sohbet ID'sini bul/oluştur
+    const actualConversationId = await findOrCreateConversation(currentUserId, userId);
+
+    if (!actualConversationId) {
+        console.error("Sohbet ID'si alınamadı veya oluşturulamadı.");
+        alert("Sohbet başlatılamadı. Lütfen tekrar deneyin.");
+        return; // Sohbet ID'si yoksa devam etme
+    }
+
+    // Global değişkeni GERÇEK sohbet ID'si ile güncelle
+    currentConversationId = actualConversationId;
+    console.log("Aktif sohbet ID'si (gerçek):", currentConversationId);
 
     // Sohbet başlığını güncelle
     const chatUsernameElement = chatHeaderUser.querySelector('.chat-username');
@@ -508,11 +517,11 @@ function openChatPanel(userId, username, avatar) {
     // Header butonlarının işlevselliğini ayarla
     setupChatHeaderActions(userId, username, avatar);
 
-    // Önceki mesajları yükle
-    loadConversationMessages(userId);
+    // Mesajları GERÇEK sohbet ID'si ile yükle
+    loadConversationMessages(currentConversationId);
 
-    // Realtime aboneliği başlat
-    subscribeToMessages(userId);
+    // Realtime aboneliği GERÇEK sohbet ID'si ile başlat
+    subscribeToMessages(currentConversationId);
 }
 
 // Sohbet paneli header butonlarını ayarlama
@@ -575,20 +584,18 @@ function closeChatPanel() {
 }
 
 // Kullanıcının mesajlarını yükleme
-async function loadConversationMessages(userId) {
+async function loadConversationMessages(conversationId) {
     const chatMessagesContainer = document.querySelector('.chat-panel .chat-messages');
     if (!chatMessagesContainer) return;
 
     try {
-        console.log(`Mesajları yükleme: CurrentUserId=${currentUserId}, TargetUserId=${userId}`);
+        console.log(`Mesajları yükleme (ConversationID: ${conversationId})`);
 
-        // Sorguyu camelCase sütun adlarıyla yap
+        // Sorguyu conversationId'ye göre yap
         const { data: messages, error } = await supabase
             .from('messages')
             .select('*')
-            // İki yönlü sohbeti filtrele:
-            // (gönderen=ben AND alıcı=diğeri) OR (gönderen=diğeri AND alıcı=ben)
-            .or(`and(senderId.eq.${currentUserId},receiverId.eq.${userId}),and(senderId.eq.${userId},receiverId.eq.${currentUserId})`)
+            .eq('conversationId', conversationId) // Sadece bu sohbete ait mesajları al
             .order('createdAt', { ascending: true });
 
         if (error) {
@@ -650,23 +657,41 @@ async function loadConversationMessages(userId) {
 }
 
 // Realtime mesaj aboneliği
-function subscribeToMessages(userId) {
+function subscribeToMessages(conversationId) {
     unsubscribeFromMessages(); // Önceki aboneliği iptal et
 
-    if (!userId) return;
+    if (!conversationId) {
+        console.warn('subscribeToMessages: Geçerli conversationId gerekli.');
+        return;
+    }
 
     try {
+        const channelName = `messages:${conversationId}`; // Kanal adını basitleştir
+        console.log(`Mesaj kanalına abone olunuyor: ${channelName}`);
+
         messageSubscription = supabase
-            .channel(`messages:${currentUserId}-${userId}`)
+            .channel(channelName)
             .on('postgres_changes', {
                 event: 'INSERT',
                 schema: 'public',
                 table: 'messages',
-                filter: `or(and(senderId.eq.${currentUserId},receiverId.eq.${userId}),and(senderId.eq.${userId},receiverId.eq.${currentUserId}))`
+                // Filtrelemeyi sadece conversationId ile yap
+                filter: `conversationId=eq.${conversationId}`
             }, (payload) => {
-                displayMessage(payload.new);
+                // Kendi gönderdiğimiz mesajları tekrar eklememek için kontrol edebiliriz
+                // Ancak genellikle realtime olayı sadece diğer istemcilere gider.
+                // Emin olmak için kontrol ekleyelim:
+                if (payload.new && payload.new.senderId !== currentUserId) {
+                    console.log('Yeni mesaj alındı (realtime):', payload.new);
+                    displayMessage(payload.new);
+                }
             })
-            .subscribe();
+            .subscribe((status) => {
+                console.log(`${channelName} abonelik durumu: ${status}`);
+                if (status === 'SUBSCRIBED') {
+                    console.log(`Başarıyla ${channelName} kanalına abone olundu.`);
+                }
+            });
 
     } catch (error) {
         console.error('Mesaj aboneliğinde hata:', error);
@@ -827,5 +852,78 @@ function updateFriendCounters() {
 
     if (offlineSection) {
         offlineSection.style.display = offlineFriendElements.length > 0 ? 'flex' : 'none';
+    }
+}
+
+// İki kullanıcı arasındaki sohbeti bulur veya oluşturur
+async function findOrCreateConversation(userId1, userId2) {
+    if (!userId1 || !userId2) {
+        console.error("findOrCreateConversation: İki kullanıcı ID'si de gerekli.");
+        return null;
+    }
+    console.log(`Sohbet aranıyor/oluşturuluyor: ${userId1} ve ${userId2}`);
+
+    try {
+        // Mevcut sohbeti ara (her iki yönde de)
+        // NOT: conversations tablonuzdaki kullanıcı ID sütun adları 'user1_id' ve 'user2_id' varsayılmıştır.
+        // Eğer farklıysa (örn: participant1, participant2) aşağıdaki sorguyu güncelleyin.
+        const { data: existingConversation, error: findError } = await supabase
+            .from('conversations')
+            .select('id')
+            .or(`and(user1_id.eq.${userId1},user2_id.eq.${userId2}),and(user1_id.eq.${userId2},user2_id.eq.${userId1})`)
+            .maybeSingle(); // Tek bir kayıt veya null döner
+
+        if (findError) {
+            console.error("Sohbet aranırken hata:", findError);
+            // Belki tablo/sütun adı yanlıştır? Veya RLS engelliyor?
+            if (findError.message.includes("relation") && findError.message.includes("does not exist")) {
+                alert("Veritabanı hatası: 'conversations' tablosu veya sütunları bulunamadı.");
+            }
+            throw findError;
+        }
+
+        // Sohbet bulunduysa ID'sini döndür
+        if (existingConversation) {
+            console.log("Mevcut sohbet bulundu:", existingConversation.id);
+            return existingConversation.id;
+        }
+
+        // Sohbet yoksa yeni bir tane oluştur
+        console.log("Mevcut sohbet bulunamadı, yenisi oluşturuluyor...");
+        const { data: newConversation, error: createError } = await supabase
+            .from('conversations')
+            .insert([
+                // NOT: Yine sütun adları varsayımdır.
+                { user1_id: userId1, user2_id: userId2 }
+                // { participants: [userId1, userId2] } gibi bir yapı da kullanıyor olabilirsiniz.
+                // Varsayılan olarak conversation_type = 'dm' gibi bir değer ekleyebilirsiniz
+            ])
+            .select('id')
+            .single(); // Tek bir kayıt döner
+
+        if (createError) {
+            console.error("Yeni sohbet oluşturulurken hata:", createError);
+            // RLS INSERT'ü engelliyor olabilir.
+            if (createError.message.includes("security policies")) {
+                alert("Yeni sohbet oluşturulamadı. Güvenlik politikaları (RLS) INSERT işlemini engelliyor olabilir.");
+            } else if (createError.message.includes("violates not-null constraint")) {
+                alert("Yeni sohbet oluşturulamadı. Gerekli bir sütun (örn: user1_id, user2_id) boş bırakılmış olabilir.");
+            }
+            throw createError;
+        }
+
+        if (newConversation) {
+            console.log("Yeni sohbet oluşturuldu:", newConversation.id);
+            return newConversation.id;
+        } else {
+            // Bu durum normalde olmamalı ama olursa diye
+            console.error("Sohbet oluşturuldu ancak Supabase ID döndürmedi.");
+            throw new Error("Sohbet oluşturuldu ancak ID alınamadı.");
+        }
+
+    } catch (error) {
+        console.error("findOrCreateConversation içinde genel hata:", error);
+        alert("Sohbet bilgisi alınırken veya oluşturulurken bir hata oluştu. Konsolu kontrol edin.")
+        return null; // Hata durumunda null döndür
     }
 } 
