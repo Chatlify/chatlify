@@ -579,12 +579,12 @@ async function loadConversationMessages(userId) {
     if (!chatMessagesContainer) return;
 
     try {
-        // Supabase'den mesajları al
+        // Supabase'den mesajları al (camelCase sütun adları ile)
         const { data: messages, error } = await supabase
             .from('messages')
             .select('*')
-            .or(`sender_id.eq.${currentUserId},sender_id.eq.${userId}`)
-            .or(`receiver_id.eq.${currentUserId},receiver_id.eq.${userId}`)
+            .or(`senderId.eq.${currentUserId},senderId.eq.${userId}`)
+            .or(`receiverId.eq.${currentUserId},receiverId.eq.${userId}`)
             .order('created_at', { ascending: true });
 
         if (error) throw error;
@@ -605,7 +605,7 @@ async function loadConversationMessages(userId) {
 
         messages.forEach(message => {
             const messageElement = document.createElement('div');
-            messageElement.className = `message ${message.sender_id === currentUserId ? 'sent' : 'received'}`;
+            messageElement.className = `message ${message.senderId === currentUserId ? 'sent' : 'received'}`;
 
             const contentElem = document.createElement('div');
             contentElem.className = 'message-content';
@@ -650,7 +650,7 @@ function subscribeToMessages(userId) {
                 event: 'INSERT',
                 schema: 'public',
                 table: 'messages',
-                filter: `or(and(sender_id.eq.${currentUserId},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${currentUserId}))`
+                filter: `or(and(senderId.eq.${currentUserId},receiverId.eq.${userId}),and(senderId.eq.${userId},receiverId.eq.${currentUserId}))`
             }, (payload) => {
                 displayMessage(payload.new);
             })
@@ -675,7 +675,7 @@ function displayMessage(message) {
     if (!chatMessagesContainer) return;
 
     const messageElement = document.createElement('div');
-    messageElement.className = `message ${message.sender_id === currentUserId ? 'sent' : 'received'}`;
+    messageElement.className = `message ${message.senderId === currentUserId ? 'sent' : 'received'}`;
 
     const contentElem = document.createElement('div');
     contentElem.className = 'message-content';
@@ -736,8 +736,8 @@ function setupMessageSending(chatTextarea) {
             const { data, error } = await supabase
                 .from('messages')
                 .insert([{
-                    sender_id: currentUserId,
-                    receiver_id: currentConversationId,
+                    senderId: currentUserId,
+                    receiverId: currentConversationId,
                     content: messageText
                 }])
                 .select();
