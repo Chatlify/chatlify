@@ -714,7 +714,7 @@ async function loadConversationMessages(conversationId) {
 }
 
 // Realtime mesaj aboneliği
-function subscribeToMessages(conversationId) {
+async function subscribeToMessages(conversationId) {
     unsubscribeFromMessages(); // Önceki aboneliği iptal et
 
     if (!conversationId) {
@@ -732,15 +732,35 @@ function subscribeToMessages(conversationId) {
                 event: 'INSERT',
                 schema: 'public',
                 table: 'messages',
-                // Filtrelemeyi sadece conversationId ile yap
                 filter: `conversationId=eq.${conversationId}`
-            }, (payload) => {
-                // Kendi gönderdiğimiz mesajları tekrar eklememek için kontrol edebiliriz
-                // Ancak genellikle realtime olayı sadece diğer istemcilere gider.
-                // Emin olmak için kontrol ekleyelim:
+            }, async (payload) => {
                 if (payload.new && payload.new.senderId !== currentUserId) {
                     console.log('Yeni mesaj alındı (realtime):', payload.new);
-                    displayMessage(payload.new);
+
+                    // Gönderenin kullanıcı adını ve avatarını çek
+                    const senderId = payload.new.senderId;
+                    let senderUsername = 'Kullanıcı'; // Varsayılan
+                    let senderAvatar = defaultAvatar; // Varsayılan
+
+                    try {
+                        const { data: profile, error } = await supabase
+                            .from('users')
+                            .select('username, avatar')
+                            .eq('id', senderId)
+                            .maybeSingle();
+
+                        if (error) {
+                            console.error('Realtime mesaj için gönderen profili alınamadı:', error);
+                        } else if (profile) {
+                            senderUsername = profile.username || senderUsername;
+                            senderAvatar = profile.avatar || senderAvatar;
+                        }
+                    } catch (profileError) {
+                        console.error('Profil alınırken hata (realtime):', profileError);
+                    }
+
+                    // Alınan bilgilerle displayMessage fonksiyonunu çağır
+                    displayMessage(payload.new, senderUsername, senderAvatar);
                 }
             })
             .subscribe((status) => {
@@ -763,49 +783,50 @@ function unsubscribeFromMessages() {
     }
 }
 
-// Yeni bir mesajı ekrana görüntüleme (Kendi avatar fotoğrafını da gösterecek şekilde güncellendi)
-function displayMessage(message) {
+// Yeni bir mesajı ekrana görüntüleme (Kullanıcı adı ve avatarı parametre olarak alacak şekilde güncellendi)
+function displayMessage(message, authorName = null, authorAvatar = null) {
     const chatMessagesContainer = document.querySelector('.chat-panel .chat-messages');
-    if (!chatMessagesContainer || !message) return; // message null olabilir
+    if (!chatMessagesContainer || !message) return;
 
-    // Mesaj objesinden senderId al (camelCase)
     const senderId = message.senderId;
     if (!senderId) {
         console.warn('displayMessage: Gelen mesajda senderId bulunamadı.', message);
         return;
     }
 
-    // Avatar URL'ini belirle
-    let avatarUrl = defaultAvatar; // Varsayılan avatar
+    // Kimin mesajı olduğunu ve gösterilecek bilgileri belirle
+    const isOwnMessage = senderId === currentUserId;
+    const displayName = isOwnMessage ? 'Sen' : (authorName || 'Kullanıcı'); // Gelen adı kullan, yoksa 'Kullanıcı'
+    let displayAvatar = defaultAvatar;
 
-    // Eğer mesaj güncel kullanıcıdan geliyorsa, mevcut kullanıcının avatarını kullan
-    if (senderId === currentUserId) {
-        const userAvatar = document.querySelector('.dm-footer .dm-user-avatar img');
-        if (userAvatar) {
-            avatarUrl = userAvatar.src;
+    if (isOwnMessage) {
+        // Kendi avatarımızı al
+        const userAvatarElement = document.querySelector('.dm-footer .dm-user-avatar img');
+        if (userAvatarElement) {
+            displayAvatar = userAvatarElement.src;
         }
     } else {
-        // Sohbet başlığından diğer kullanıcının avatarını al
-        const chatHeaderAvatar = document.querySelector('.chat-avatar img');
-        if (chatHeaderAvatar) {
-            avatarUrl = chatHeaderAvatar.src;
-        }
+        // Diğer kullanıcının avatarını kullan (parametre olarak geleni veya varsayılanı)
+        displayAvatar = authorAvatar || defaultAvatar;
+        // İsteğe bağlı: Sohbet başlığındaki avatarı da kontrol edebiliriz ama parametre daha güvenilir
+        // const chatHeaderAvatar = document.querySelector('.chat-avatar img');
+        // if (chatHeaderAvatar) displayAvatar = chatHeaderAvatar.src;
     }
 
     // Mesaj öğesini oluştur
     const messageElement = document.createElement('div');
-    messageElement.className = `message-group ${senderId === currentUserId ? 'own-message' : ''}`;
+    messageElement.className = `message-group ${isOwnMessage ? 'own-message' : ''}`;
     messageElement.setAttribute('data-sender-id', senderId);
 
-    // HTML şablonu oluştur (Kendi mesajlarım için de avatar eklenmiş)
+    // HTML şablonu oluştur (Kullanıcı adı dinamik olarak eklendi)
     messageElement.innerHTML = `
         <div class="message-group-avatar">
-            <img src="${avatarUrl}" alt="Avatar" onerror="this.src='${defaultAvatar}'">
+            <img src="${displayAvatar}" alt="${displayName}" onerror="this.src='${defaultAvatar}'">
         </div>
         <div class="message-group-content">
             <div class="message-group-header">
-                <span class="message-author">${senderId === currentUserId ? 'Sen' : 'Kullanıcı'}</span>
-                <span class="message-time">${new Date(message.createdAt).toLocaleTimeString()}</span>
+                <span class="message-author">${displayName}</span>
+                <span class="message-time">${new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
             <div class="message-content">
                 <p>${message.content}</p>
