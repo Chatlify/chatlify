@@ -616,6 +616,30 @@ async function loadConversationMessages(conversationId) {
 
         console.log(`Toplam ${messages.length} mesaj bulundu`);
 
+        // Gönderen kullanıcıların profil bilgilerini çek
+        const senderIds = [...new Set(messages.map(msg => msg.senderId))];
+
+        // Kullanıcı bilgilerini almak için Supabase sorgusu
+        const { data: userProfiles, error: userError } = await supabase
+            .from('users')
+            .select('id, username, avatar')
+            .in('id', senderIds);
+
+        if (userError) {
+            console.error('Kullanıcı profilleri alınırken hata:', userError);
+        }
+
+        // Kullanıcı ID'lerine göre profil bilgilerini eşleştir
+        const userMap = {};
+        if (userProfiles) {
+            userProfiles.forEach(profile => {
+                userMap[profile.id] = profile;
+            });
+        }
+
+        // Tarih ayırıcılarını takip etmek için
+        let lastMessageDate = null;
+
         // Fragment kullanarak DOM işlemlerini optimize et
         const fragment = document.createDocumentFragment();
 
@@ -623,19 +647,47 @@ async function loadConversationMessages(conversationId) {
             // Doğrudan camelCase kullan
             const senderId = message.senderId;
 
+            // Tarih kontrolü yaparak gerekirse tarih ayırıcısı ekle
+            const messageDate = new Date(message.createdAt).toLocaleDateString();
+            if (messageDate !== lastMessageDate) {
+                const dateDivider = document.createElement('div');
+                dateDivider.className = 'chat-date-divider';
+                dateDivider.innerHTML = `<span>${messageDate}</span>`;
+                fragment.appendChild(dateDivider);
+                lastMessageDate = messageDate;
+            }
+
+            // Avatar URL'ini belirle
+            let avatarUrl = defaultAvatar;
+            let username = senderId === currentUserId ? 'Sen' : 'Kullanıcı';
+
+            // Kullanıcı profil bilgilerini kontrol et
+            if (userMap[senderId]) {
+                avatarUrl = userMap[senderId].avatar || defaultAvatar;
+                username = userMap[senderId].username || username;
+            }
+
+            // Mesaj öğesini oluştur
             const messageElement = document.createElement('div');
-            messageElement.className = `message ${senderId === currentUserId ? 'sent' : 'received'}`;
+            messageElement.className = `message-group ${senderId === currentUserId ? 'own-message' : ''}`;
+            messageElement.setAttribute('data-sender-id', senderId);
 
-            const contentElem = document.createElement('div');
-            contentElem.className = 'message-content';
-            contentElem.textContent = message.content;
+            // HTML şablonu oluştur
+            messageElement.innerHTML = `
+                <div class="message-group-avatar">
+                    <img src="${avatarUrl}" alt="${username}" onerror="this.src='${defaultAvatar}'">
+                </div>
+                <div class="message-group-content">
+                    <div class="message-group-header">
+                        <span class="message-author">${username}</span>
+                        <span class="message-time">${new Date(message.createdAt).toLocaleTimeString()}</span>
+                    </div>
+                    <div class="message-content">
+                        <p>${message.content}</p>
+                    </div>
+                </div>
+            `;
 
-            const timeElem = document.createElement('div');
-            timeElem.className = 'message-time';
-            timeElem.textContent = new Date(message.createdAt).toLocaleTimeString();
-
-            messageElement.appendChild(contentElem);
-            messageElement.appendChild(timeElem);
             fragment.appendChild(messageElement);
         });
 
@@ -718,19 +770,43 @@ function displayMessage(message) {
         return;
     }
 
+    // Avatar URL'ini belirle
+    let avatarUrl = defaultAvatar; // Varsayılan avatar
+
+    // Eğer mesaj güncel kullanıcıdan geliyorsa, mevcut kullanıcının avatarını kullan
+    if (senderId === currentUserId) {
+        const userAvatar = document.querySelector('.dm-footer .dm-user-avatar img');
+        if (userAvatar) {
+            avatarUrl = userAvatar.src;
+        }
+    } else {
+        // Sohbet başlığından diğer kullanıcının avatarını al
+        const chatHeaderAvatar = document.querySelector('.chat-avatar img');
+        if (chatHeaderAvatar) {
+            avatarUrl = chatHeaderAvatar.src;
+        }
+    }
+
+    // Mesaj öğesini oluştur
     const messageElement = document.createElement('div');
-    messageElement.className = `message ${senderId === currentUserId ? 'sent' : 'received'}`;
+    messageElement.className = `message-group ${senderId === currentUserId ? 'own-message' : ''}`;
+    messageElement.setAttribute('data-sender-id', senderId);
 
-    const contentElem = document.createElement('div');
-    contentElem.className = 'message-content';
-    contentElem.textContent = message.content;
-
-    const timeElem = document.createElement('div');
-    timeElem.className = 'message-time';
-    timeElem.textContent = new Date(message.createdAt).toLocaleTimeString();
-
-    messageElement.appendChild(contentElem);
-    messageElement.appendChild(timeElem);
+    // HTML şablonu oluştur
+    messageElement.innerHTML = `
+        <div class="message-group-avatar">
+            <img src="${avatarUrl}" alt="Avatar">
+        </div>
+        <div class="message-group-content">
+            <div class="message-group-header">
+                <span class="message-author">${senderId === currentUserId ? 'Sen' : 'Kullanıcı'}</span>
+                <span class="message-time">${new Date(message.createdAt).toLocaleTimeString()}</span>
+            </div>
+            <div class="message-content">
+                <p>${message.content}</p>
+            </div>
+        </div>
+    `;
 
     chatMessagesContainer.appendChild(messageElement);
     chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
