@@ -1,326 +1,82 @@
 import { supabase } from './auth_config.js'; // Supabase istemcisini import et
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Dashboard JS Loaded - DOMContentLoaded Start'); // Başlangıç logu
+    console.log('Dashboard JS başlatılıyor...');
 
-    // --- Önce Gerekli Elementleri ve Sabitleri Tanımla ---
-    const userPanelUsernameElement = document.querySelector('.dm-footer .dm-user-name');
-    const userPanelAvatarElement = document.querySelector('.dm-footer .dm-user-avatar img');
-    const defaultAvatar = 'images/DefaultAvatar.png'; // Varsayılan avatar yolu
+    try {
+        // Element tanımlamaları (Mevcut tanımlamaları kullan)
+        // ...
 
-    const tabs = document.querySelectorAll('.dashboard-header .tab');
-    const onlineSection = document.querySelector('.online-section-title');
-    const onlineList = document.querySelector('.online-friends');
-    const offlineSection = document.querySelector('.offline-section-title');
-    const offlineList = document.querySelector('.offline-friends');
-    const pendingSection = document.querySelector('.pending-section-title');
-    const pendingList = document.querySelector('.pending-requests');
-    const pendingCountBadge = document.querySelector('.pending-count'); // Sayı için
-    let presenceChannel = null; // Supabase presence kanalı için değişken
-    let onlineFriends = new Set(); // Çevrimiçi arkadaşların ID\'lerini tutacak set
-    let currentUserId = null; // Mevcut kullanıcı ID\'si
-    const dmList = document.querySelector('#friends-group .dm-items'); // DM listesi
-    const chatPanel = document.querySelector('.chat-panel'); // Sağdaki sohbet paneli
-    const chatHeaderUser = chatPanel?.querySelector('.chat-header-user'); // Sohbet başlığı kullanıcı alanı
-    const chatMessagesContainer = chatPanel?.querySelector('.chat-messages'); // Sohbet mesajları alanı
-    const friendsPanelContainer = document.querySelector('.friends-panel-container'); // Arkadaşlar paneli (gizlemek için)
-    const sponsorSidebar = document.querySelector('.sponsor-sidebar'); // Sponsor alanı (gizlemek için)
-    const settingsButtonContainer = document.querySelector('.server-sidebar .server-item:has(.server-settings-icon)'); // Ayarlar butonu kapsayıcısı
-    const chatCloseBtn = chatPanel?.querySelector('.chat-close-btn'); // Sohbet kapatma butonu
-    const chatEmojiBtn = chatPanel?.querySelector('.emoji-btn'); // Emoji butonu
-    const chatTextarea = chatPanel?.querySelector('.chat-textbox textarea'); // Mesaj yazma alanı
-    const emojiPicker = document.querySelector('emoji-picker'); // Emoji picker elementi
-    const addFriendButton = document.querySelector('.dashboard-header .add-friend'); // Eski Arkadaş Ekle Butonu
-    const newAddFriendButton = document.getElementById('add-friend-button'); // Yeni Arkadaş Ekle Butonu
-    const callOverlay = document.querySelector('.call-panel-overlay');
-    const outgoingCallPanel = callOverlay.querySelector('.outgoing-call');
-    const incomingCallPanel = callOverlay.querySelector('.incoming-call');
-    const activeCallPanel = callOverlay.querySelector('.active-call');
-    let currentCallTarget = null; // Aranan veya görüşülen kişiyi tutacak
-    // --- End Element Tanımlamaları ---
+        // Kritik elementlerin varlığını kontrol et
+        validateRequiredElements();
 
-    // --- Modal Elementlerini Tanımla ---
-    const addFriendModal = document.getElementById('add-friend-modal');
-    const closeModalButton = addFriendModal?.querySelector('.close-modal-btn');
-    const addFriendUsernameInput = addFriendModal?.querySelector('#add-friend-username-input');
-    const addFriendSubmitButton = addFriendModal?.querySelector('#add-friend-submit-button');
-    const addFriendMessageArea = addFriendModal?.querySelector('#add-friend-message-area');
-    // --- End Modal Element Tanımlamaları ---
+        // Kullanıcı oturumunu başlat
+        const userSessionActive = await initializeUserSession();
+        if (!userSessionActive) return; // Oturum yoksa devam etme
 
-    // --- Kontekst Menü (Sağ Tık) Sistemi ---
-    let activeContextMenu = null;
+        // Tab kontrolünü kur
+        setupTabControls();
 
-    // Sayfa üzerinde kontekst menü göster
-    function showContextMenu(event, userData) {
-        event.preventDefault(); // Varsayılan sağ tık menüsünü engelle
+        // Mesaj göndermesi için gerekli dinleyicileri ekle
+        setupMessageSending();
 
-        // Varsa önceki menüyü temizle
-        if (activeContextMenu) {
-            document.body.removeChild(activeContextMenu);
-        }
+        // Varsayılan sekmeyi göster
+        showSection('Tüm Arkadaşlar');
 
-        // Yeni kontekst menüsü oluştur
-        const contextMenu = document.createElement('div');
-        contextMenu.className = 'context-menu';
+        // Arkadaş listesini yükle
+        await loadAllFriends();
 
-        // Menü içeriği - başlık ve avatar ile
-        let menuContent = '';
+        // Bekleyen istekleri yükle
+        await loadPendingRequests();
 
-        // Eğer kullanıcı bilgisi varsa header ekle
-        if (userData && userData.name) {
-            menuContent += `
-                <div class="context-menu-header">
-                    <div class="context-menu-avatar">
-                        <img src="${userData.avatar || defaultAvatar}" alt="${userData.name}">
-                    </div>
-                    <div class="context-menu-name">${userData.name}</div>
-                </div>
-            `;
-        }
+        // Sunucu panelini kur
+        setupServerPanel();
 
-        // Sunucu/DM/Arkadaş türüne göre menü öğeleri ekle
-        switch (userData.type) {
-            case 'friend':
-                menuContent += `
-                    <div class="context-menu-item" data-action="message" data-id="${userData.id}">
-                        <i class="fas fa-comment"></i> Mesaj Gönder
-                    </div>
-                    <div class="context-menu-item" data-action="profile" data-id="${userData.id}">
-                        <i class="fas fa-user"></i> Profili Görüntüle
-                    </div>
-                    <div class="context-menu-divider"></div>
-                    <div class="context-menu-item" data-action="remove-friend" data-id="${userData.id}">
-                        <i class="fas fa-user-times"></i> Arkadaşlıktan Çıkar
-                    </div>
-                `;
-                break;
+        // Kontekst menüleri için dinleyicileri ekle
+        addContextMenuListeners();
 
-            case 'server':
-                menuContent += `
-                    <div class="context-menu-item" data-action="visit-server" data-id="${userData.id}">
-                        <i class="fas fa-sign-in-alt"></i> Sunucuya Git
-                    </div>
-                    <div class="context-menu-divider"></div>
-                    <div class="context-menu-item" data-action="leave-server" data-id="${userData.id}">
-                        <i class="fas fa-sign-out-alt"></i> Sunucudan Ayrıl
-                    </div>
-                `;
-                break;
+        // Presence takip sistemini başlat
+        initializePresence();
 
-            case 'dm':
-                menuContent += `
-                    <div class="context-menu-item" data-action="message" data-id="${userData.id}">
-                        <i class="fas fa-comment"></i> Mesaj Gönder
-                    </div>
-                    <div class="context-menu-item" data-action="profile" data-id="${userData.id}">
-                        <i class="fas fa-user"></i> Profili Görüntüle
-                    </div>
-                    <div class="context-menu-divider"></div>
-                    <div class="context-menu-item" data-action="remove-dm" data-id="${userData.id}">
-                        <i class="fas fa-times"></i> Sohbeti Kapat
-                    </div>
-                `;
-                break;
-        }
-
-        contextMenu.innerHTML = menuContent;
-        document.body.appendChild(contextMenu);
-
-        // Menüyü doğru konuma yerleştir 
-        positionContextMenu(contextMenu, event);
-
-        // Menü öğelerine olay dinleyicileri ekle
-        contextMenu.querySelectorAll('.context-menu-item').forEach(item => {
-            item.addEventListener('click', handleContextMenuAction);
-        });
-
-        // Animasyonu aktifleştir
-        setTimeout(() => {
-            contextMenu.classList.add('active');
-        }, 10);
-
-        // Aktif menüyü kaydet
-        activeContextMenu = contextMenu;
+        console.log('Dashboard JS başlatma tamamlandı.');
+    } catch (error) {
+        console.error('Dashboard başlatma hatası:', error);
+        alert('Sayfa başlatılırken bir hata oluştu. Lütfen sayfayı yenileyiniz.');
     }
 
-    // Kontekst menüsünü konumlandırma fonksiyonu
-    function positionContextMenu(menu, event) {
-        const x = event.clientX;
-        const y = event.clientY;
-        const menuWidth = 220; // context-menu için CSS'de tanımlanan genişlik
-        const menuHeight = menu.offsetHeight || 200; // Henüz DOM'a eklenmemiş olabilir, tahmini kullan
+    // Zorunlu elementlerin varlığını kontrol eden yardımcı fonksiyon
+    function validateRequiredElements() {
+        const criticalElements = [
+            { element: userPanelUsernameElement, name: '.dm-footer .dm-user-name' },
+            { element: userPanelAvatarElement, name: '.dm-footer .dm-user-avatar img' },
+            { element: chatPanel, name: '.chat-panel' },
+            { element: chatMessagesContainer, name: '.chat-messages' },
+            { element: chatTextarea, name: '.chat-textbox textarea' }
+        ];
 
-        // Ekranın sağ ve alt sınırlarını kontrol et
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
+        const missingElements = criticalElements.filter(item => !item.element);
 
-        // Sağ kenar kontrolü - eğer taşacaksa solda göster
-        let menuX = x;
-        if (x + menuWidth > windowWidth) {
-            menuX = x - menuWidth;
-        }
-
-        // Alt kenar kontrolü - eğer taşacaksa yukarı kaydır
-        let menuY = y;
-        if (y + menuHeight > windowHeight) {
-            menuY = windowHeight - menuHeight - 10; // 10px bottom margin
-            if (menuY < 10) menuY = 10; // En azından 10px yukarıdan olsun
-        }
-
-        // Menüyü konumlandır
-        menu.style.left = menuX + 'px';
-        menu.style.top = menuY + 'px';
-    }
-
-    // Kontekst menü öğelerine tıklanınca yapılacak işlemler
-    function handleContextMenuAction(e) {
-        const action = e.currentTarget.dataset.action;
-        const id = e.currentTarget.dataset.id;
-
-        console.log(`Kontekst menü aksiyonu: ${action} için ID: ${id}`);
-
-        switch (action) {
-            case 'message':
-                // DM aç
-                const targetElement = document.querySelector(`.friend-row[data-user-id="${id}"]`) ||
-                    document.querySelector(`.dm-item[data-user-id="${id}"]`);
-
-                if (targetElement) {
-                    const username = targetElement.dataset.username;
-                    const avatar = targetElement.dataset.avatar;
-
-                    if (username && id) {
-                        openChatPanel(id, username, avatar || defaultAvatar);
-                        // DM listesinde ilgili öğeyi aktif et
-                        document.querySelectorAll('.dm-item').forEach(item => item.classList.remove('active'));
-                        document.querySelector(`.dm-item[data-user-id="${id}"]`)?.classList.add('active');
-                    }
-                }
-                break;
-
-            case 'profile':
-                // Profili göster
-                const userElement = document.querySelector(`.friend-row[data-user-id="${id}"]`) ||
-                    document.querySelector(`.dm-item[data-user-id="${id}"]`);
-
-                if (userElement) {
-                    const userData = {
-                        id: id,
-                        name: userElement.dataset.username,
-                        avatar: userElement.dataset.avatar,
-                        status: onlineFriends.has(id) ? 'online' : 'offline'
-                    };
-                    createProfilePanel(userData);
-                }
-                break;
-
-            // Diğer aksiyonlar kullanıcı taleplerine göre eklenebilir
-            case 'remove-friend':
-                alert('Bu özellik henüz aktif değil: Arkadaşlıktan çıkarma');
-                break;
-
-            case 'visit-server':
-                alert('Bu özellik henüz aktif değil: Sunucuya gitme');
-                break;
-
-            case 'leave-server':
-                alert('Bu özellik henüz aktif değil: Sunucudan ayrılma');
-                break;
-
-            case 'remove-dm':
-                alert('Bu özellik henüz aktif değil: Sohbeti kaldırma');
-                break;
-        }
-
-        // Menüyü kapat
-        if (activeContextMenu) {
-            activeContextMenu.classList.remove('active');
-            setTimeout(() => {
-                if (activeContextMenu && activeContextMenu.parentNode) {
-                    activeContextMenu.parentNode.removeChild(activeContextMenu);
-                }
-                activeContextMenu = null;
-            }, 150);
+        if (missingElements.length > 0) {
+            console.error('Kritik elementler bulunamadı:',
+                missingElements.map(item => item.name).join(', '));
         }
     }
 
-    // Döküman üzerinde başka bir yere tıklanınca menüyü kapat
-    document.addEventListener('click', () => {
-        if (activeContextMenu) {
-            activeContextMenu.classList.remove('active');
-            setTimeout(() => {
-                if (activeContextMenu && activeContextMenu.parentNode) {
-                    activeContextMenu.parentNode.removeChild(activeContextMenu);
-                }
-                activeContextMenu = null;
-            }, 150);
-        }
-    });
-
-    // Elemanlara sağ tık menüsü ekle
-    function addContextMenuListeners() {
-        // Arkadaş Satırları
-        document.querySelectorAll('.friend-row').forEach(item => {
-            item.addEventListener('contextmenu', (e) => {
-                const userData = {
-                    id: item.dataset.userId,
-                    name: item.dataset.username,
-                    avatar: item.dataset.avatar,
-                    type: 'friend'
-                };
-                showContextMenu(e, userData);
-            });
-        });
-
-        // Özel Mesaj Satırları
-        document.querySelectorAll('.dm-item').forEach(item => {
-            item.addEventListener('contextmenu', (e) => {
-                const userData = {
-                    id: item.dataset.userId,
-                    name: item.dataset.username,
-                    avatar: item.dataset.avatar,
-                    type: 'dm'
-                };
-                showContextMenu(e, userData);
-            });
-        });
-
-        // Sunucu Satırları
-        document.querySelectorAll('.server-item:not(.home):not(:last-child)').forEach(item => {
-            item.addEventListener('contextmenu', (e) => {
-                // Sunucu ID, ad ve avatar data attributelerden alınabilir
-                const serverName = item.querySelector('.server-tooltip')?.textContent || 'Sunucu';
-                const serverAvatar = item.querySelector('.server-icon img')?.src || defaultAvatar;
-                const serverId = item.dataset.serverId || 'unknown'; // Eğer data-server-id eklenmişse
-
-                const userData = {
-                    id: serverId,
-                    name: serverName,
-                    avatar: serverAvatar,
-                    type: 'server'
-                };
-                showContextMenu(e, userData);
+    // Tab yönetimi için dinleyicileri oluşturan yardımcı fonksiyon
+    function setupTabControls() {
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const tabText = tab.textContent.trim();
+                showSection(tabText);
             });
         });
     }
+});
 
-    // --- End Kontekst Menü Sistemi ---
-
-    // Elementler bulunamadıysa kontrol et (Kullanıcı Paneli)
-    if (!userPanelUsernameElement) {
-        console.error('User panel username element (.dm-footer .dm-user-name) not found.');
-    }
-    if (!userPanelAvatarElement) {
-        console.error('User panel avatar element (.dm-footer .dm-user-avatar img) not found.');
-    }
-    // Elementler bulunamadıysa kontrol et (Arkadaş Paneli)
-    if (!pendingList || !pendingCountBadge || !pendingSection || !onlineList || !onlineSection || !offlineList || !offlineSection || !dmList || !chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer || !sponsorSidebar || !settingsButtonContainer || !chatCloseBtn || !chatEmojiBtn || !chatTextarea || !emojiPicker || !addFriendButton ||
-        // Modal elementlerini de kontrol et
-        !addFriendModal || !closeModalButton || !addFriendUsernameInput || !addFriendSubmitButton || !addFriendMessageArea) {
-        console.error('One or more friend panel or modal elements are missing in HTML.');
-    }
-
-    // --- Kullanıcı Bilgilerini Al ve Paneli Güncelle ---
+// Kullanıcı bilgilerini ve oturumu yönetme
+async function initializeUserSession() {
     try {
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         if (userError) throw userError;
@@ -329,1433 +85,291 @@ document.addEventListener('DOMContentLoaded', async () => {
             currentUserId = user.id;
             console.log('Kullanıcı ID:', currentUserId);
 
-            // Profili yükle
-            loadProfile();
+            // Profili yükle (yeni güvenli fonksiyon)
+            await loadUserProfile();
 
             // Arkadaşları yükle
             loadAllFriends();
 
             // Mesaj gönderme sistemini kur
             setupMessageSending();
+
+            // Presence sistemini başlat
+            initializePresence();
+
+            return true;
         } else {
             console.error('Oturum açık değil, giriş sayfasına yönlendiriliyor.');
-            window.location.href = 'login.html';
+            redirectToLogin();
+            return false;
         }
     } catch (error) {
         console.error('Kullanıcı bilgileri alınırken hata:', error);
+        redirectToLogin();
+        return false;
     }
-    // --- End Kullanıcı Bilgileri & Presence Başlatma ---
+}
 
-    // --- Supabase Presence Fonksiyonları ---
-    function initializePresence() {
-        if (!currentUserId) return;
+// Login sayfasına yönlendirme
+function redirectToLogin() {
+    console.log('Oturum bulunamadı veya süresi doldu, giriş sayfasına yönlendiriliyor...');
+    window.location.href = 'login.html';
+}
 
-        presenceChannel = supabase.channel('online-users', {
-            config: {
-                presence: { key: currentUserId } // Her kullanıcıyı kendi ID'si ile takip et
+// Kullanıcı profil bilgilerini yükleme
+async function loadUserProfile() {
+    if (!currentUserId) {
+        console.error('loadUserProfile için currentUserId gerekli');
+        return;
+    }
+
+    try {
+        const { data: profile, error } = await supabase
+            .from('users')
+            .select('username, avatar')
+            .eq('id', currentUserId)
+            .maybeSingle();
+
+        if (error) {
+            console.error('Profil bilgileri alınamadı:', error);
+            setDefaultProfileUI();
+            return;
+        }
+
+        if (profile) {
+            updateProfileUI(profile);
+        } else {
+            console.warn(`${currentUserId} ID'li kullanıcı için profil bulunamadı`);
+            setDefaultProfileUI();
+        }
+    } catch (error) {
+        console.error('Profil yüklenirken beklenmeyen hata:', error);
+        setDefaultProfileUI();
+    }
+}
+
+// Profil UI güncellemesi
+function updateProfileUI(profile) {
+    if (userPanelUsernameElement) {
+        userPanelUsernameElement.textContent = profile.username || 'Kullanıcı';
+    }
+
+    if (userPanelAvatarElement) {
+        userPanelAvatarElement.src = profile.avatar || defaultAvatar;
+        userPanelAvatarElement.onerror = () => {
+            console.warn('Profil resmi yüklenemedi, varsayılan görsel kullanılıyor');
+            userPanelAvatarElement.src = defaultAvatar;
+        };
+    }
+
+    console.log('Profil arayüzü güncellendi:', profile.username);
+}
+
+// Varsayılan profil UI'ı
+function setDefaultProfileUI() {
+    if (userPanelUsernameElement) {
+        userPanelUsernameElement.textContent = 'Kullanıcı';
+    }
+
+    if (userPanelAvatarElement) {
+        userPanelAvatarElement.src = defaultAvatar;
+    }
+}
+
+// Tüm arkadaşları yükleme fonksiyonu (optimize edilmiş)
+async function loadAllFriends() {
+    if (!onlineList || !offlineList || !dmList) {
+        console.error('loadAllFriends: Arkadaş ve DM listesi elementleri bulunamadı');
+        return;
+    }
+
+    // Yükleniyor göstergelerini göster
+    showLoadingState();
+
+    try {
+        // Kullanıcı ID kontrolü
+        if (!currentUserId) {
+            console.error('loadAllFriends: currentUserId tanımlı değil');
+            showError('Kullanıcı bilgisi bulunamadı. Lütfen sayfayı yenileyiniz.');
+            return;
+        }
+
+        // Arkadaşlık verilerini çek
+        const { data: friendships, error } = await supabase
+            .from('friendships')
+            .select(`
+                id,
+                user_id_1, 
+                user_id_2,
+                user1:user_id_1(id, username, avatar),
+                user2:user_id_2(id, username, avatar)
+            `)
+            .eq('status', 'accepted')
+            .or(`user_id_1.eq.${currentUserId},user_id_2.eq.${currentUserId}`);
+
+        if (error) {
+            throw error;
+        }
+
+        // Listeleri temizle
+        clearLists();
+
+        // Arkadaşlık yoksa boş durumu göster
+        if (!friendships || friendships.length === 0) {
+            showEmptyState();
+            return;
+        }
+
+        // Arkadaşlıkları ekrana ekle - fragment kullanarak performansı artır
+        const onlineFragment = document.createDocumentFragment();
+        const offlineFragment = document.createDocumentFragment();
+        const dmFragment = document.createDocumentFragment();
+
+        friendships.forEach(friendship => {
+            // Doğru arkadaş bilgisini al
+            const friendUser = friendship.user_id_1 === currentUserId ? friendship.user2 : friendship.user1;
+
+            if (!friendUser) {
+                console.warn(`Friendship ${friendship.id} için arkadaş bilgisi bulunamadı`);
+                return;
             }
-        });
 
-        presenceChannel
-            .on('presence', { event: 'sync' }, () => {
-                console.log('Presence sync event received');
-                const presenceState = presenceChannel.presenceState();
-                onlineFriends = new Set(Object.keys(presenceState)); // Tüm online kullanıcı ID'lerini al
-                console.log('Currently online users:', onlineFriends);
-                // Başlangıçta tüm arkadaş listesini durumlarına göre güncelle
-                updateAllFriendStatuses();
-            })
-            .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-                console.log('Presence join:', key, newPresences);
-                onlineFriends.add(key); // Yeni katılanı online setine ekle
-                updateFriendStatusUI(key, true); // Arayüzü güncelle (çevrimiçi)
-            })
-            .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-                console.log('Presence leave:', key, leftPresences);
-                onlineFriends.delete(key); // Ayrılanı online setinden çıkar
-                updateFriendStatusUI(key, false); // Arayüzü güncelle (çevrimdışı)
-            })
-            .subscribe(async (status) => {
-                if (status === 'SUBSCRIBED') {
-                    console.log('Successfully subscribed to presence channel!');
-                    // Kullanıcı kendi durumunu kanala gönderir
-                    const status = await presenceChannel.track({
-                        user_id: currentUserId,
-                        online_at: new Date().toISOString()
-                    });
-                    console.log('Track status:', status);
-                } else {
-                    console.error('Failed to subscribe to presence channel:', status);
-                }
-            });
-    }
+            // Güvenli default değerler
+            const username = friendUser.username || 'Bilinmeyen Kullanıcı';
+            const avatar = friendUser.avatar || defaultAvatar;
+            const userId = friendUser.id;
 
-    // Tüm arkadaşların durumunu tek seferde güncelleyen yardımcı fonksiyon
-    function updateAllFriendStatuses() {
-        const allFriendRows = document.querySelectorAll('.friends-list .friend-row[data-user-id]');
-        allFriendRows.forEach(row => {
-            const userId = row.dataset.userId;
-            const isOnline = onlineFriends.has(userId);
-            updateFriendStatusUI(userId, isOnline, row); // Belirli bir satırı güncelle
-        });
-        // Online/Offline sayılarını da güncelle
-        updateFriendCounters();
-    }
+            // Arkadaş satırını oluştur
+            const friendRow = createFriendRow(userId, username, avatar);
 
-    // Belirli bir arkadaşın UI durumunu güncelleyen fonksiyon
-    function updateFriendStatusUI(userId, isOnline, specificRow = null) {
-        const friendRow = specificRow || document.querySelector(`.friend-row[data-user-id="${userId}"]`);
-        const dmRow = dmList.querySelector(`.dm-item[data-user-id="${userId}"]`);
+            // DM satırını oluştur
+            const dmRow = createDMRow(userId, username, avatar);
 
-        // Arkadaş Paneli Güncellemesi
-        if (friendRow) {
-            if (isOnline) {
-                friendRow.classList.remove('offline');
+            // Online durumuna göre ekle
+            if (onlineFriends.has(userId)) {
                 friendRow.classList.add('online');
+                friendRow.classList.remove('offline');
                 friendRow.querySelector('.status-dot').className = 'status-dot online';
                 friendRow.querySelector('.friend-status').textContent = 'Çevrimiçi';
-                moveFriendRow(friendRow, onlineList);
+                onlineFragment.appendChild(friendRow);
+
+                if (dmRow) {
+                    dmRow.querySelector('.dm-status').className = 'dm-status online';
+                    dmRow.querySelector('.dm-activity').textContent = 'Çevrimiçi';
+                }
             } else {
-                friendRow.classList.remove('online');
                 friendRow.classList.add('offline');
+                friendRow.classList.remove('online');
                 friendRow.querySelector('.status-dot').className = 'status-dot offline';
                 friendRow.querySelector('.friend-status').textContent = 'Çevrimdışı';
-                moveFriendRow(friendRow, offlineList);
+                offlineFragment.appendChild(friendRow);
+
+                if (dmRow) {
+                    dmRow.querySelector('.dm-status').className = 'dm-status offline';
+                    dmRow.querySelector('.dm-activity').textContent = 'Çevrimdışı';
+                }
             }
-        }
 
-        // DM Listesi Güncellemesi
-        if (dmRow) {
-            if (isOnline) {
-                dmRow.querySelector('.dm-status').className = 'dm-status online';
-                dmRow.querySelector('.dm-activity').textContent = 'Çevrimiçi';
-            } else {
-                dmRow.querySelector('.dm-status').className = 'dm-status offline';
-                dmRow.querySelector('.dm-activity').textContent = 'Çevrimdışı';
-            }
-        }
+            // DM satırını her zaman ekle
+            if (dmRow) dmFragment.appendChild(dmRow);
+        });
 
-        // Açık olan sohbet panelinin başlığını da güncelle (eğer o kişiye aitse)
-        if (chatPanel && !chatPanel.classList.contains('hidden') && chatPanel.dataset.activeChatUserId === userId) {
-            const chatStatusDot = chatHeaderUser?.querySelector('.chat-avatar .status-dot');
-            const chatStatusTextElement = chatHeaderUser?.querySelector('.chat-user-info .chat-status');
-            const statusText = isOnline ? 'Çevrimiçi' : 'Çevrimdışı';
-            const statusClass = isOnline ? 'online' : 'offline';
-            if (chatStatusDot) chatStatusDot.className = `status-dot ${statusClass}`;
-            if (chatStatusTextElement) chatStatusTextElement.textContent = statusText;
-        }
+        // Fragmanları DOM'a ekle
+        onlineList.appendChild(onlineFragment);
+        offlineList.appendChild(offlineFragment);
+        dmList.appendChild(dmFragment);
 
+        // Sayaçları güncelle
+        updateFriendCounters();
+
+        // Kontekst menüleri ekle
+        addContextMenuListeners();
+
+    } catch (error) {
+        console.error('Arkadaşlar yüklenirken hata:', error);
+        showError('Arkadaşlar yüklenirken bir hata oluştu.');
+    }
+
+    // Yardımcı fonksiyonlar
+    function showLoadingState() {
+        onlineList.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin"></i> Arkadaşlar yükleniyor...</div>';
+        offlineList.innerHTML = '';
+        dmList.innerHTML = '';
+
+        // Sayaçları sıfırla
+        const onlineCountBadge = document.querySelector('.online-count');
+        const offlineCountBadge = document.querySelector('.offline-count');
+        if (onlineCountBadge) onlineCountBadge.textContent = '0';
+        if (offlineCountBadge) offlineCountBadge.textContent = '0';
+
+        // Başlıkları gizle
+        if (onlineSection) onlineSection.style.display = 'none';
+        if (offlineSection) offlineSection.style.display = 'none';
+    }
+
+    function clearLists() {
+        onlineList.innerHTML = '';
+        offlineList.innerHTML = '';
+        dmList.innerHTML = '';
+    }
+
+    function showEmptyState() {
+        offlineList.innerHTML = '<div class="empty-placeholder">Henüz hiç arkadaşınız yok.</div>';
+        dmList.innerHTML = '<div class="empty-placeholder dm-empty">Henüz hiç özel mesajınız yok.</div>';
         updateFriendCounters();
     }
 
-    // Arkadaş satırını doğru listeye taşıyan yardımcı fonksiyon
-    function moveFriendRow(friendRow, targetList) {
-        if (targetList && friendRow.parentNode !== targetList) {
-            targetList.appendChild(friendRow);
-            // Eğer listede "boş" mesajı varsa kaldır
-            const emptyPlaceholder = targetList.querySelector('.empty-placeholder');
-            if (emptyPlaceholder) emptyPlaceholder.remove();
-        }
-        // Hedef liste görünür değilse (örneğin sadece çevrimiçiler görünüyorsa ve offline olduysa) satır gizlenebilir.
-        // Bu, showSection mantığına bağlı.
-    }
-
-    // Online/Offline sayaçlarını güncelleyen fonksiyon
-    function updateFriendCounters() {
-        const onlineCountBadge = document.querySelector('.online-count');
-        const offlineCountBadge = document.querySelector('.offline-count');
-
-        if (onlineCountBadge && onlineList) {
-            const onlineFriendsCount = onlineList.querySelectorAll('.friend-row').length;
-            onlineCountBadge.textContent = onlineFriendsCount;
-            if (onlineSection) onlineSection.style.display = onlineFriendsCount > 0 ? 'flex' : 'none';
-        }
-        if (offlineCountBadge && offlineList) {
-            const offlineFriendsCount = offlineList.querySelectorAll('.friend-row').length;
-            offlineCountBadge.textContent = offlineFriendsCount;
-            if (offlineSection) offlineSection.style.display = offlineFriendsCount > 0 ? 'flex' : 'none';
-        }
-    }
-
-    // Tarayıcıdan ayrılırken kanaldan çıkış yap (isteğe bağlı ama önerilir)
-    window.addEventListener('beforeunload', () => {
-        if (presenceChannel) {
-            supabase.removeChannel(presenceChannel);
-        }
-    });
-    // --- End Supabase Presence Fonksiyonları ---
-
-    // --- Sekme Yönetimi ve İçerik Yükleme ---
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            const tabText = tab.textContent.trim();
-            showSection(tabText);
-        });
-    });
-
-    // Başlangıçta 'Tüm Arkadaşlar' sekmesini göster ve yükle
-    showSection('Tüm Arkadaşlar');
-
-    function showSection(tabName) {
-        if (!onlineSection || !onlineList || !offlineSection || !offlineList || !pendingSection || !pendingList) return;
-
-        onlineSection.style.display = 'none';
-        onlineList.style.display = 'none';
-        offlineSection.style.display = 'none';
-        offlineList.style.display = 'none';
-        pendingSection.style.display = 'none';
-        pendingList.style.display = 'none';
-
-        if (tabName === 'Tüm Arkadaşlar') {
-            onlineSection.style.display = 'flex'; // Çevrimiçi başlığını göster
-            onlineList.style.display = 'block'; // Çevrimiçi listesini göster (şimdilik boş olacak)
-            offlineSection.style.display = 'flex'; // Çevrimdışı başlığını göster
-            offlineList.style.display = 'block'; // Çevrimdışı listesini göster
-            loadAllFriends(); // Tüm (kabul edilmiş) arkadaşları yükle
-        } else if (tabName === 'Çevrimiçi') {
-            onlineSection.style.display = 'flex';
-            onlineList.style.display = 'block';
-            // loadOnlineFriends(); // Şimdilik sadece çevrimiçi arkadaşları yükleme fonksiyonu çağrılmıyor
-            // Geçici olarak boş liste göster
-            onlineList.innerHTML = '<div class="empty-placeholder">Çevrimiçi arkadaşları gösterme özelliği yakında eklenecektir.</div>';
-            document.querySelector('.online-count').textContent = '0';
-        } else if (tabName === 'Bekleyen') {
-            pendingSection.style.display = 'flex';
-            pendingList.style.display = 'block';
-            loadPendingRequests();
-        }
-    }
-
-    // --- Tüm (Kabul Edilmiş) Arkadaşları Yükleme Fonksiyonu (Profil butonu kontrolü) ---
-    async function loadAllFriends() {
-        if (!onlineList || !offlineList || !dmList || !document.querySelector('.online-count') || !document.querySelector('.offline-count')) return;
-
-        onlineList.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin"></i> Arkadaşlar yükleniyor...</div>';
+    function showError(message) {
+        onlineList.innerHTML = `<div class="error-placeholder">${message}</div>`;
         offlineList.innerHTML = '';
-        dmList.innerHTML = ''; // DM listesini de temizle
-        document.querySelector('.online-count').textContent = '0';
-        document.querySelector('.offline-count').textContent = '0';
-        if (onlineSection) onlineSection.style.display = 'none';
-        if (offlineSection) offlineSection.style.display = 'none';
-
-        try {
-            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-            if (sessionError || !session) {
-                onlineList.innerHTML = '<div class="error-placeholder">Oturum bulunamadı.</div>';
-                return;
-            }
-
-            const { data: friendships, error: friendsError } = await supabase
-                .from('friendships')
-                .select(`id, user_id_1, user_id_2, user1:user_id_1(id, username, avatar), user2:user_id_2(id, username, avatar)`)
-                .eq('status', 'accepted')
-                .or(`user_id_1.eq.${currentUserId},user_id_2.eq.${currentUserId}`);
-
-            if (friendsError) {
-                console.error('Error fetching accepted friends:', friendsError);
-                onlineList.innerHTML = '<div class="error-placeholder">Arkadaşlar yüklenirken hata oluştu.</div>';
-                return;
-            }
-
-            onlineList.innerHTML = '';
-            offlineList.innerHTML = '';
-            dmList.innerHTML = ''; // DM listesini de temizle
-
-            if (friendships.length === 0) {
-                offlineList.innerHTML = '<div class="empty-placeholder">Henüz hiç arkadaşınız yok.</div>';
-                dmList.innerHTML = '<div class="empty-placeholder dm-empty">Henüz hiç özel mesajınız yok.</div>';
-                updateFriendCounters();
-
-                // Kontekst menüsü ekle
-                addContextMenuListeners();
-                return;
-            }
-
-            friendships.forEach(friendship => {
-                const friendUser = friendship.user_id_1 === currentUserId ? friendship.user2 : friendship.user1;
-                if (!friendUser) {
-                    console.warn('Friend user data missing for friendship:', friendship.id);
-                    return;
-                }
-
-                const friendElement = document.createElement('div');
-                friendElement.className = 'friend-row';
-                friendElement.dataset.userId = friendUser.id;
-                friendElement.dataset.username = friendUser.username;
-                friendElement.dataset.avatar = friendUser.avatar || defaultAvatar;
-                friendElement.innerHTML = `
-                    <div class="friend-avatar">
-                        <img src="${friendUser.avatar || defaultAvatar}" alt="${friendUser.username}">
-                        <span class="status-dot offline"></span>
-                    </div>
-                    <div class="friend-info">
-                        <div class="friend-name">${friendUser.username}</div>
-                        <div class="friend-status">Çevrimdışı</div>
-                    </div>
-                `;
-
-                const dmElement = document.createElement('div');
-                dmElement.className = 'dm-item';
-                dmElement.dataset.userId = friendUser.id;
-                dmElement.dataset.username = friendUser.username;
-                dmElement.dataset.avatar = friendUser.avatar || defaultAvatar;
-                dmElement.innerHTML = `
-                    <div class="dm-avatar">
-                        <img src="${friendUser.avatar || defaultAvatar}" alt="${friendUser.username}">
-                        <div class="dm-status offline"></div>
-                    </div>
-                    <div class="dm-info">
-                        <div class="dm-name">${friendUser.username}</div>
-                        <div class="dm-activity">Çevrimdışı</div>
-                    </div>
-                `;
-
-                offlineList.appendChild(friendElement);
-                dmList.appendChild(dmElement);
-
-                // Listener'ları ekle
-                dmElement.addEventListener('click', () => {
-                    openChatPanel(friendUser.id, friendUser.username, friendUser.avatar || defaultAvatar);
-                    document.querySelectorAll('.dm-item').forEach(item => item.classList.remove('active'));
-                    dmElement.classList.add('active');
-                });
-            });
-
-            // Arkadaşları ekledikten sonra Presence durumuna göre güncelle
-            updateAllFriendStatuses();
-
-            // Kontekst menüsü ekle
-            addContextMenuListeners();
-
-        } catch (error) {
-            console.error('Error in loadAllFriends:', error);
-            onlineList.innerHTML = '<div class="error-placeholder">Arkadaşlar yüklenirken beklenmedik bir hata oluştu.</div>';
-        }
-    }
-    // --- End Tüm Arkadaşları Yükleme ---
-
-    // --- Sohbet Paneli Açma Fonksiyonu (Güncellendi - Seçiciler düzeltildi) ---
-    function openChatPanel(userId, username, avatar) {
-        if (!chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer || !sponsorSidebar) {
-            console.error('Chat panel elements not found, cannot open chat.');
-            return;
-        }
-        console.log(`Opening chat panel for user: ${username} (ID: ${userId})`);
-
-        // Aktif sohbet ID'sini ayarla (mesaj göndermek için)
-        currentConversationId = userId;
-
-        // Sohbet başlığını güncelle - DOĞRU SEÇİCİLER
-        const chatUsernameElement = chatHeaderUser.querySelector('.chat-username');
-        const chatAvatarElement = chatHeaderUser.querySelector('.chat-avatar img'); // .chat-avatar içindeki img
-        const chatStatusDot = chatHeaderUser.querySelector('.chat-avatar .status-dot'); // .chat-avatar içindeki status-dot
-        const chatStatusTextElement = chatHeaderUser.querySelector('.chat-user-info .chat-status'); // .chat-user-info içindeki chat-status
-
-        if (chatUsernameElement) chatUsernameElement.textContent = username;
-        if (chatAvatarElement) chatAvatarElement.src = avatar;
-
-        const isFriendOnline = onlineFriends.has(userId);
-        const statusText = isFriendOnline ? 'Çevrimiçi' : 'Çevrimdışı';
-        const statusClass = isFriendOnline ? 'online' : 'offline';
-        if (chatStatusDot) chatStatusDot.className = `status-dot ${statusClass}`;
-        if (chatStatusTextElement) chatStatusTextElement.textContent = statusText;
-
-        // Mesajlar alanını temizle
-        chatMessagesContainer.innerHTML = '<div class="empty-placeholder chat-empty">Bu sohbetin başlangıcı.</div>';
-
-        // Panelleri göster/gizle
-        friendsPanelContainer.classList.add('hidden');
-        if (sponsorSidebar) sponsorSidebar.style.display = 'none'; // Sponsoru gizle
-        chatPanel.classList.remove('hidden');
-
-        // Aktif sohbetin user ID'sini panele ekle (durum güncellemesi için)
-        chatPanel.dataset.activeChatUserId = userId;
-
-        // Header butonlarına listener ekle
-        setupChatHeaderActions(userId, username, avatar);
-
-        // Önceki mesajları yükle ve realtime takip başlat
-        loadMessages(userId);
-        subscribeToMessages(userId);
-
-        // Scrollu en alta indir (yeni mesajlar için)
-        const messagesContainer = chatPanel.querySelector('.chat-messages');
-        if (messagesContainer) {
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-    }
-    // --- End Sohbet Panelini Açma ---
-
-    // Mesajları veritabanından yükleme fonksiyonu
-    async function loadMessages(conversationId) {
-        try {
-            chatMessagesContainer.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin"></i> Mesajlar yükleniyor...</div>';
-
-            const { data: messages, error } = await supabase
-                .from('messages')
-                .select('*')
-                .eq('conversation_id', conversationId)
-                .order('created_at', { ascending: true });
-
-            if (error) throw error;
-
-            chatMessagesContainer.innerHTML = '';
-
-            if (messages.length === 0) {
-                chatMessagesContainer.innerHTML = '<div class="empty-placeholder chat-empty">Bu sohbetin başlangıcı.</div>';
-                return;
-            }
-
-            messages.forEach(message => {
-                displayMessage(message);
-            });
-
-        } catch (error) {
-            console.error('Mesajlar yüklenirken hata oluştu:', error);
-            chatMessagesContainer.innerHTML = '<div class="error-placeholder">Mesajlar yüklenirken bir hata oluştu.</div>';
-        }
     }
 
-    // --- Bekleyen İstekleri Yükleme Fonksiyonu (Değişiklik Yok) ---
-    async function loadPendingRequests() {
-        if (!pendingList || !pendingCountBadge) return;
+    function createFriendRow(userId, username, avatar) {
+        const friendElement = document.createElement('div');
+        friendElement.className = 'friend-row';
+        friendElement.dataset.userId = userId;
+        friendElement.dataset.username = username;
+        friendElement.dataset.avatar = avatar;
 
-        pendingList.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin"></i> Bekleyen istekler yükleniyor...</div>';
-        pendingCountBadge.textContent = '0';
+        friendElement.innerHTML = `
+            <div class="friend-avatar">
+                <img src="${avatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
+                <span class="status-dot offline"></span>
+            </div>
+            <div class="friend-info">
+                <div class="friend-name">${username}</div>
+                <div class="friend-status">Çevrimdışı</div>
+            </div>
+        `;
 
-        try {
-            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-            if (sessionError || !session) {
-                pendingList.innerHTML = '<div class="error-placeholder">Oturum bulunamadı.</div>';
-                return;
-            }
-            const currentUserId = session.user.id;
-
-            const { data: requests, error: requestsError } = await supabase
-                .from('friendships')
-                .select(`
-                    id,
-                    requested_at,
-                    sender:user_id_1 ( id, username, avatar )
-                `)
-                .eq('user_id_2', currentUserId)
-                .eq('status', 'pending');
-
-            if (requestsError) {
-                console.error('Error fetching pending requests:', requestsError);
-                pendingList.innerHTML = '<div class="error-placeholder">İstekler yüklenirken hata oluştu.</div>';
-                return;
-            }
-
-            pendingList.innerHTML = '';
-            pendingCountBadge.textContent = requests.length;
-
-            if (requests.length === 0) {
-                pendingList.innerHTML = '<div class="empty-placeholder">Bekleyen arkadaşlık isteğiniz yok.</div>';
-                return;
-            }
-
-            requests.forEach(request => {
-                const sender = request.sender;
-                if (!sender) return;
-
-                const requestElement = document.createElement('div');
-                requestElement.className = 'friend-row pending';
-                requestElement.dataset.friendshipId = request.id;
-                requestElement.dataset.senderId = sender.id;
-
-                requestElement.innerHTML = `
-                    <div class="friend-avatar">
-                        <img src="${sender.avatar || defaultAvatar}" alt="${sender.username}">
-                        <span class="status-dot offline"></span>
-                            </div>
-                    <div class="friend-info">
-                        <div class="friend-name">${sender.username}</div>
-                        <div class="friend-status">Arkadaşlık isteği gönderdi</div>
-                            </div>
-                    <div class="friend-actions pending-actions">
-                        <button class="friend-action-btn accept-request-btn" title="Kabul Et">
-                            <i class="fas fa-check"></i>
-                        </button>
-                        <button class="friend-action-btn decline-request-btn" title="Reddet">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                `;
-                pendingList.appendChild(requestElement);
-
-                const acceptBtn = requestElement.querySelector('.accept-request-btn');
-                const declineBtn = requestElement.querySelector('.decline-request-btn');
-                acceptBtn.addEventListener('click', () => handleFriendRequest(request.id, 'accepted'));
-                declineBtn.addEventListener('click', () => handleFriendRequest(request.id, 'declined'));
-            });
-        } catch (error) {
-            console.error('Error in loadPendingRequests:', error);
-            pendingList.innerHTML = '<div class="error-placeholder">Beklenmedik bir hata oluştu.</div>';
-        }
+        return friendElement;
     }
-    // --- End Bekleyen İstekleri Yükleme ---
 
-    // --- Arkadaşlık İsteği Kabul/Red Fonksiyonu (Güncellendi) ---
-    async function handleFriendRequest(friendshipId, newStatus) {
-        console.log(`Handling request ${friendshipId} with status ${newStatus}`);
-        const requestRow = pendingList.querySelector(`.friend-row[data-friendship-id="${friendshipId}"]`);
-        if (!requestRow) return;
+    function createDMRow(userId, username, avatar) {
+        const dmElement = document.createElement('div');
+        dmElement.className = 'dm-item';
+        dmElement.dataset.userId = userId;
+        dmElement.dataset.username = username;
+        dmElement.dataset.avatar = avatar;
 
-        const buttons = requestRow.querySelectorAll('.friend-action-btn');
-        buttons.forEach(btn => btn.disabled = true);
-        const originalIcon = newStatus === 'accepted' ? requestRow.querySelector('.accept-request-btn i') : requestRow.querySelector('.decline-request-btn i');
-        if (originalIcon) originalIcon.className = 'fas fa-spinner fa-spin';
+        dmElement.innerHTML = `
+            <div class="dm-avatar">
+                <img src="${avatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
+                <div class="dm-status offline"></div>
+            </div>
+            <div class="dm-info">
+                <div class="dm-name">${username}</div>
+                <div class="dm-activity">Çevrimdışı</div>
+            </div>
+        `;
 
-        try {
-            const updateData = { status: newStatus };
-            if (newStatus === 'accepted') {
-                updateData.accepted_at = new Date().toISOString();
-            }
-
-            const { error } = await supabase
-                .from('friendships')
-                .update(updateData)
-                .eq('id', friendshipId);
-
-            if (error) {
-                console.error(`Error updating friendship ${friendshipId} to ${newStatus}:`, error);
-                alert(`İstek işlenirken hata oluştu: ${error.message}`);
-                buttons.forEach(btn => btn.disabled = false);
-                if (originalIcon) originalIcon.className = newStatus === 'accepted' ? 'fas fa-check' : 'fas fa-times';
-            } else {
-                console.log(`Friendship ${friendshipId} updated to ${newStatus}`);
-                requestRow.style.transition = 'opacity 0.5s ease';
-                requestRow.style.opacity = '0';
-                setTimeout(() => {
-                    requestRow.remove();
-                    const currentCount = parseInt(pendingCountBadge.textContent || '0', 10);
-                    pendingCountBadge.textContent = Math.max(0, currentCount - 1);
-                    if (pendingList.children.length === 0 && pendingCountBadge.textContent === '0') {
-                        pendingList.innerHTML = '<div class="empty-placeholder">Bekleyen arkadaşlık isteğiniz yok.</div>';
-                    }
-
-                    // Eğer istek KABUL edildiyse, arkadaş listesini yenile
-                    if (newStatus === 'accepted') {
-                        loadAllFriends();
-                    }
-
-                }, 500);
-            }
-        } catch (error) {
-            console.error('Error in handleFriendRequest:', error);
-            alert('Beklenmedik bir hata oluştu.');
-            buttons.forEach(btn => btn.disabled = false);
-            if (originalIcon) originalIcon.className = newStatus === 'accepted' ? 'fas fa-check' : 'fas fa-times';
-        }
-    }
-    // --- End Arkadaşlık İsteği Kabul/Red ---
-
-    // --- Sohbet Paneli Kapatma İşlevi --- 
-    function closeChatPanel() {
-        console.log("Close chat button clicked");
-        if (chatPanel) chatPanel.classList.add('hidden');
-        if (friendsPanelContainer) friendsPanelContainer.classList.remove('hidden');
-        if (sponsorSidebar) sponsorSidebar.style.display = ''; // veya 'flex'
-        // Aktif DM stilini kaldır
-        document.querySelectorAll('.dm-item.active').forEach(item => item.classList.remove('active'));
-        // Aktif sohbet ID'sini temizle
-        if (chatPanel) delete chatPanel.dataset.activeChatUserId;
-    }
-    // --- End Sohbet Kapatma --- 
-
-    // --- Ayarlar Butonu İşlevi ---
-    if (settingsButtonContainer) {
-        settingsButtonContainer.addEventListener('click', () => {
-            console.log('Settings button clicked');
-            window.location.href = 'settings.html';
-        });
-    }
-    // --- End Ayarlar Butonu ---
-
-    // --- Profil Paneli Oluşturma (Doğru HTML ve veri kullanımı) ---
-    function createProfilePanel(userData) {
-        console.log("Attempting to create profile panel for:", userData);
-        if (!userData || typeof userData.name === 'undefined' || typeof userData.avatar === 'undefined') {
-            console.error("Invalid or incomplete user data passed to createProfilePanel:", userData);
-            alert('Profil paneli için geçersiz veri.');
-            return;
-        }
-
-        const existingPanel = document.querySelector('.profile-panel');
-        if (existingPanel) existingPanel.remove();
-
-        const profilePanel = document.createElement('div');
-        profilePanel.className = 'profile-panel';
-
-        // Verileri güvenli kullan
-        const userNameToShow = userData.name || 'Bilinmiyor'; // name null ise fallback
-        const userAvatarToShow = userData.avatar || defaultAvatar; // avatar null ise fallback
-
-        profilePanel.innerHTML = `
-                <div class="profile-panel-content">
-                    <button class="profile-close-btn">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <div class="profile-left-section">
-                        <div class="profile-cover"></div>
-                        <div class="profile-overlay"></div>
-                        <div class="profile-left-content">
-                            <div class="profile-avatar-large">
-                            <img src="${userAvatarToShow}" alt="${userNameToShow}">
-                            <!-- Status indicator kaldırıldı -->
-                            </div>
-                        <h2 class="profile-username">${userNameToShow}</h2>
-                            </div>
-                        </div>
-                    <div class="profile-right-section">
-                        <div class="profile-tabs">
-                            <div class="profile-tab active">Profil</div>
-                        </div>
-                        <div class="profile-section">
-                         <p>Detaylı profil bilgileri yakında eklenecek.</p>
-                            </div>
-                        <div class="profile-action-buttons">
-                            <button class="profile-action-btn message-btn">
-                                <i class="fas fa-comment"></i>
-                                <span>Mesaj Gönder</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-        document.body.appendChild(profilePanel);
-        setTimeout(() => { profilePanel.classList.add('show'); }, 10);
-
-        const closeBtn = profilePanel.querySelector('.profile-close-btn');
-        closeBtn?.addEventListener('click', () => {
-            profilePanel.classList.remove('show');
-            setTimeout(() => profilePanel.remove(), 300);
+        // DM öğesine tıklama event listener'ı ekle
+        dmElement.addEventListener('click', () => {
+            openChatPanel(userId, username, avatar);
+            document.querySelectorAll('.dm-item').forEach(item => item.classList.remove('active'));
+            dmElement.classList.add('active');
         });
 
-        profilePanel.addEventListener('click', (e) => {
-            if (e.target === profilePanel) closeBtn?.click();
-        });
-
-        const messageBtn = profilePanel.querySelector('.message-btn');
-        if (messageBtn && userData.id) {
-            messageBtn.addEventListener('click', () => {
-                closeBtn?.click();
-                openChatPanel(userData.id, userData.name, userData.avatar || defaultAvatar);
-            });
-        }
+        return dmElement;
     }
-    // --- End Profil Paneli --- 
-
-    // --- Emoji Picker İşlevselliği ---
-    if (chatEmojiBtn && emojiPicker && chatTextarea) {
-        // Emoji butonuna tıklanınca picker'ı göster/gizle
-        chatEmojiBtn.addEventListener('click', (event) => {
-            event.stopPropagation(); // Başka tıklama olaylarını engelle
-            const isPickerVisible = emojiPicker.style.display === 'block';
-            if (isPickerVisible) {
-                emojiPicker.style.display = 'none';
-            } else {
-                positionEmojiPicker();
-                emojiPicker.style.display = 'block';
-                emojiPicker.focus(); // Fokuslanınca arama kutusu aktif olur
-            }
-        });
-
-        // Emoji seçildiğinde textarea'ya ekle
-        emojiPicker.addEventListener('emoji-click', event => {
-            const emoji = event.detail.unicode;
-            insertEmoji(emoji);
-            // İsteğe bağlı: Seçimden sonra picker'ı gizle
-            // emojiPicker.style.display = 'none'; 
-        });
-
-        // Picker dışına tıklanınca gizle
-        document.addEventListener('click', (event) => {
-            if (emojiPicker.style.display === 'block' &&
-                !emojiPicker.contains(event.target) &&
-                event.target !== chatEmojiBtn &&
-                !chatEmojiBtn.contains(event.target)) {
-                emojiPicker.style.display = 'none';
-            }
-        });
-
-        // Emoji picker'ı konumlandırma fonksiyonu
-        function positionEmojiPicker() {
-            const buttonRect = chatEmojiBtn.getBoundingClientRect();
-            const pickerHeight = 450; // Tahmini picker yüksekliği
-            const pickerWidth = 350; // Tahmini picker genişliği
-            const spaceAbove = buttonRect.top;
-            const spaceBelow = window.innerHeight - buttonRect.bottom;
-
-            let top, left;
-
-            // Genellikle butonun üstüne yerleştir
-            if (spaceAbove > pickerHeight || spaceAbove > spaceBelow) {
-                // Üstte yeterli yer var veya üstteki boşluk alttakinden fazla
-                top = buttonRect.top - pickerHeight - 5; // 5px boşluk
-            } else {
-                // Altta daha fazla yer var
-                top = buttonRect.bottom + 5;
-            }
-
-            // Yatayda butonun sağına hizala (veya sola taşır)
-            left = buttonRect.left;
-            // Ekranın sağ kenarını kontrol et
-            if (left + pickerWidth > window.innerWidth) {
-                left = window.innerWidth - pickerWidth - 10; // Sağdan boşluk bırak
-            }
-            // Ekranın sol kenarını kontrol et (nadiren gerekir)
-            if (left < 0) {
-                left = 10;
-            }
-
-
-            emojiPicker.style.top = `${top}px`;
-            emojiPicker.style.left = `${left}px`;
-        }
-
-        // Textarea'ya emoji ekleme (imleç konumunu koruyarak)
-        function insertEmoji(emoji) {
-            const start = chatTextarea.selectionStart;
-            const end = chatTextarea.selectionEnd;
-            const text = chatTextarea.value;
-            const before = text.substring(0, start);
-            const after = text.substring(end, text.length);
-            chatTextarea.value = before + emoji + after;
-            // İmleci emojiden sonraya taşı
-            chatTextarea.selectionStart = chatTextarea.selectionEnd = start + emoji.length;
-            chatTextarea.focus();
-            // Textarea yüksekliğini güncelle (varsa)
-            const event = new Event('input', { bubbles: true });
-            chatTextarea.dispatchEvent(event);
-        }
-    }
-    // --- End Emoji Picker İşlevselliği ---
-
-    // --- Arkadaş Ekle Modalını Yönetme --- 
-    function openAddFriendModal() {
-        if (!addFriendModal || !addFriendUsernameInput || !addFriendMessageArea || !addFriendSubmitButton) return;
-
-        // Modal açılmadan önce input ve mesaj alanını temizle, butonu sıfırla
-        addFriendUsernameInput.value = '';
-        addFriendMessageArea.innerHTML = '';
-        addFriendMessageArea.className = 'modal-message-area'; // Mesaj stillerini temizle
-        addFriendMessageArea.style.display = 'none';
-        addFriendUsernameInput.disabled = false;
-        addFriendSubmitButton.disabled = false;
-        addFriendSubmitButton.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Arkadaşlık İsteği Gönder</span>';
-
-        // Önce görünür hale getir, sonra animasyon için open sınıfını ekle
-        addFriendModal.style.display = 'flex';
-
-        // Body'nin kaydırmasını devre dışı bırak
-        document.body.style.overflow = 'hidden';
-
-        // Küçük bir gecikme ile opacity/transform animasyonu başlat
-        setTimeout(() => {
-            addFriendModal.classList.add('open');
-            addFriendUsernameInput.focus(); // Açıldığında inputa odaklan
-        }, 10);
-    }
-
-    function closeAddFriendModal() {
-        if (!addFriendModal) return;
-
-        // Önce open sınıfını kaldır (animasyon başlar)
-        addFriendModal.classList.remove('open');
-
-        // Body'nin kaydırmasını tekrar etkinleştir
-        document.body.style.overflow = '';
-
-        // CSS transition bittikten sonra display none yap
-        setTimeout(() => {
-            addFriendModal.style.display = 'none';
-
-            // Modalı kapatırken içeriği temizle (opsiyonel)
-            if (addFriendUsernameInput) addFriendUsernameInput.value = '';
-            if (addFriendMessageArea) {
-                addFriendMessageArea.innerHTML = '';
-                addFriendMessageArea.className = 'modal-message-area';
-                addFriendMessageArea.style.display = 'none';
-            }
-        }, 300); // CSS transition süresi ile aynı olmalı
-    }
-
-    // Yeni eklediğimiz "Arkadaş Ekle" butonuna olay dinleyicisi ekle
-    if (newAddFriendButton) {
-        newAddFriendButton.addEventListener('click', openAddFriendModal);
-    }
-
-    // Eski "Arkadaş Ekle" butonuna olay dinleyicisi ekle (eğer varsa)
-    if (addFriendButton) {
-        addFriendButton.addEventListener('click', openAddFriendModal);
-    }
-
-    // Kapatma butonuna tıklanınca modalı kapat
-    if (closeModalButton) {
-        closeModalButton.addEventListener('click', closeAddFriendModal);
-    }
-
-    // Overlay'e (modal dışına) tıklanınca modalı kapat
-    if (addFriendModal) {
-        addFriendModal.addEventListener('click', (event) => {
-            if (event.target === addFriendModal) { // Sadece overlay'e tıklandıysa kapat
-                closeAddFriendModal();
-            }
-        });
-
-        // ESC tuşuna basınca modalı kapat
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && addFriendModal.style.display !== 'none') {
-                closeAddFriendModal();
-            }
-        });
-    }
-
-    // Modal içindeki "Arkadaşlık İsteği Gönder" butonu için olay dinleyicisi
-    if (addFriendSubmitButton && addFriendUsernameInput && addFriendMessageArea) {
-
-        // Yardımcı mesaj gösterme fonksiyonu (modal için özelleştirilmiş)
-        function showModalMessage(message, type = 'info') {
-            if (!addFriendMessageArea) return;
-
-            // Mesaj alanını temizle
-            addFriendMessageArea.innerHTML = message;
-            addFriendMessageArea.className = `modal-message-area ${type}`; // success veya error class'ı ekle
-
-            // Animasyon efektini yeniden tetiklemek için kısa bir süre gizle ve sonra göster
-            addFriendMessageArea.style.display = 'none';
-            setTimeout(() => {
-                addFriendMessageArea.style.display = 'flex';
-            }, 10);
-        }
-
-        // Butonu ve inputu sıfırlama fonksiyonu (modal için)
-        function resetModalSubmitButton() {
-            if (!addFriendSubmitButton || !addFriendUsernameInput) return;
-
-            addFriendSubmitButton.disabled = false;
-            addFriendUsernameInput.disabled = false;
-            addFriendSubmitButton.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Arkadaşlık İsteği Gönder</span>';
-        }
-
-        addFriendSubmitButton.addEventListener('click', async () => {
-            const targetUsername = addFriendUsernameInput.value.trim();
-
-            // Giriş yoksa, input'a odaklan ve hafif bir sarsma animasyonu ekle
-            if (!targetUsername) {
-                addFriendUsernameInput.focus();
-                addFriendUsernameInput.classList.add('shake-input');
-                setTimeout(() => {
-                    addFriendUsernameInput.classList.remove('shake-input');
-                }, 500);
-                showModalMessage('Lütfen bir kullanıcı adı girin.', 'error');
-                return;
-            }
-
-            // Loading durumunu başlat
-            addFriendUsernameInput.disabled = true;
-            addFriendSubmitButton.disabled = true;
-            addFriendSubmitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Gönderiliyor...</span>';
-            addFriendMessageArea.style.display = 'none'; // Önceki mesajı gizle
-
-            try {
-                // Bu kısım daha önceki kodunuzdan alındı ve modal elementleri kullanacak şekilde güncellendi
-                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-                if (sessionError || !session) {
-                    showModalMessage('Oturum bulunamadı. Lütfen tekrar giriş yapın.', 'error');
-                    resetModalSubmitButton();
-                    closeAddFriendModal(); // Oturum yoksa modalı kapat
-                    return;
-                }
-                const currentUserId = session.user.id;
-
-                const { data: targetUser, error: findUserError } = await supabase.from('users').select('id').eq('username', targetUsername).single();
-                if (findUserError || !targetUser) {
-                    showModalMessage(`Kullanıcı bulunamadı: ${targetUsername}`, 'error');
-                    resetModalSubmitButton();
-                    return;
-                }
-                const targetUserId = targetUser.id;
-
-                if (currentUserId === targetUserId) {
-                    showModalMessage('Kendinize arkadaşlık isteği gönderemezsiniz.', 'error');
-                    resetModalSubmitButton();
-                    return;
-                }
-
-                const { data: existingFriendship, error: checkError } = await supabase.from('friendships').select('status').or(`and(user_id_1.eq.${currentUserId},user_id_2.eq.${targetUserId}),and(user_id_1.eq.${targetUserId},user_id_2.eq.${currentUserId})`).maybeSingle();
-                if (checkError) {
-                    console.error('Error checking existing friendship:', checkError);
-                    showModalMessage('İstek gönderilirken bir hata oluştu. (Kod: CHECK)', 'error');
-                    resetModalSubmitButton();
-                    return;
-                }
-
-                if (existingFriendship) {
-                    let errorMsg = 'Bu kullanıcıyla ilgili mevcut bir ilişki durumu var.';
-                    if (existingFriendship.status === 'pending') errorMsg = 'Bu kullanıcıya zaten bir istek gönderilmiş veya ondan bir istek var.';
-                    else if (existingFriendship.status === 'accepted') errorMsg = 'Bu kullanıcı zaten arkadaş listenizde.';
-                    else if (existingFriendship.status === 'blocked') errorMsg = 'Bu kullanıcıyla ilgili bir engelleme mevcut.';
-                    showModalMessage(errorMsg, 'error');
-                    resetModalSubmitButton();
-                    return;
-                }
-
-                const { error: insertError } = await supabase.from('friendships').insert({ user_id_1: currentUserId, user_id_2: targetUserId, status: 'pending' });
-                if (insertError) {
-                    console.error('Error sending friend request:', insertError);
-                    if (insertError.code === '23505') {
-                        showModalMessage('Bu kullanıcıya zaten bir istek gönderilmiş veya ondan bir istek var.', 'error');
-                    } else {
-                        showModalMessage(`Arkadaşlık isteği gönderilemedi. (Kod: ${insertError.code})`, 'error');
-                    }
-                    resetModalSubmitButton();
-                    return;
-                }
-
-                // Başarılı olduğunda 
-                showModalMessage(`Arkadaşlık isteği ${targetUsername} kullanıcısına başarıyla gönderildi!`, 'success');
-                addFriendUsernameInput.value = ''; // Başarılıysa inputu temizle
-
-                // Başarıdan sonra belirli bir süre bekleyip modalı kapat
-                setTimeout(() => {
-                    closeAddFriendModal();
-                }, 2500);
-
-                // Bekleyen arkadaşlık isteklerini yenile (eğer ilgili bölüm aktif ise)
-                setTimeout(() => {
-                    loadPendingRequests(); // Bu fonksiyon mevcutsa çalıştır
-                }, 1000);
-
-            } catch (error) {
-                console.error('Friend request error:', error);
-                showModalMessage('Beklenmedik bir hata oluştu.', 'error');
-                resetModalSubmitButton();
-            }
-        });
-
-        // Input alanında Enter'a basılınca gönderme butonunu tetikle
-        addFriendUsernameInput.addEventListener('keydown', e => {
-            if (e.key === 'Enter' && !addFriendSubmitButton.disabled) {
-                e.preventDefault(); // Form varsa gönderilmesini engelle
-                addFriendSubmitButton.click();
-            }
-
-            // Yazmaya başlayınca hata mesajını temizle
-            if (addFriendMessageArea.classList.contains('error')) {
-                addFriendMessageArea.style.display = 'none';
-            }
-        });
-
-        // Input içeriği değiştiğinde de hata mesajını gizle (daha iyi UX)
-        addFriendUsernameInput.addEventListener('input', () => {
-            if (addFriendMessageArea.classList.contains('error')) {
-                addFriendMessageArea.style.display = 'none';
-            }
-        });
-    }
-    // --- End Arkadaş Ekle Modalını Yönetme ---
-
-    // Sohbet panelini açan fonksiyonu güncelleyelim veya event listener ekleyelim
-    function setupChatHeaderActions(userId, username, avatar) {
-        console.log(`[setupChatHeaderActions] Called for user: ${username} (${userId})`); // Debug Log 1
-        const chatHeader = document.querySelector('.chat-header');
-        if (!chatHeader) {
-            console.error('[setupChatHeaderActions] Chat header not found!');
-            return;
-        }
-
-        const actionsContainer = chatHeader.querySelector('.chat-header-actions');
-        if (!actionsContainer) {
-            console.error('[setupChatHeaderActions] Chat header actions container not found!');
-            return;
-        }
-
-        // Sesli arama butonu
-        const voiceCallBtn = actionsContainer.querySelector('button[title="Sesli Arama"]'); // Daha spesifik bir seçici
-        if (voiceCallBtn) {
-            console.log('[setupChatHeaderActions] Voice call button found.'); // Debug Log 2
-            // Klonlama yerine doğrudan listener eklemeyi deneyelim (Önce eskileri temizle)
-            const newVoiceCallBtn = voiceCallBtn.cloneNode(true); // Klonla
-            voiceCallBtn.parentNode.replaceChild(newVoiceCallBtn, voiceCallBtn); // Eskisini yenisiyle değiştir
-
-            newVoiceCallBtn.addEventListener('click', () => {
-                console.log('[setupChatHeaderActions] Voice call button clicked!'); // Debug Log 3
-                startVoiceCall(userId, username, avatar);
-            });
-            console.log('[setupChatHeaderActions] Voice call listener attached.'); // Debug Log 4
-        } else {
-            console.error('[setupChatHeaderActions] Voice call button not found with selector: button[title="Sesli Arama"]');
-        }
-
-        // Kapatma butonu
-        const closeChatBtn = actionsContainer.querySelector('.chat-close-btn');
-        if (closeChatBtn) {
-            console.log('[setupChatHeaderActions] Close chat button found.');
-            const newCloseChatBtn = closeChatBtn.cloneNode(true); // Klonla
-            closeChatBtn.parentNode.replaceChild(newCloseChatBtn, closeChatBtn); // Eskisini yenisiyle değiştir
-
-            newCloseChatBtn.addEventListener('click', closeChatPanel);
-            console.log('[setupChatHeaderActions] Close chat listener attached.');
-        } else {
-            console.error('[setupChatHeaderActions] Close chat button not found!');
-        }
-
-        // Video arama butonu (varsa)
-        const videoCallBtn = actionsContainer.querySelector('button[title="Görüntülü Arama"]');
-        if (videoCallBtn) {
-            console.log('[setupChatHeaderActions] Video call button found.');
-            const newVideoCallBtn = videoCallBtn.cloneNode(true);
-            videoCallBtn.parentNode.replaceChild(newVideoCallBtn, videoCallBtn);
-            // newVideoCallBtn.addEventListener('click', () => startVideoCall(userId, username, avatar)); // Gelecekte eklenecek
-            console.log('[setupChatHeaderActions] Video call listener placeholder added.');
-        } else {
-            console.warn('[setupChatHeaderActions] Video call button not found.'); // Bu bir hata olmayabilir
-        }
-
-        // Profil butonu (varsa)
-        const profileBtn = actionsContainer.querySelector('button[title="Profili Görüntüle"]'); // Title'a göre bulmayı deneyelim
-        if (profileBtn) {
-            console.log('[setupChatHeaderActions] Profile button found in header.');
-            const newProfileBtn = profileBtn.cloneNode(true);
-            profileBtn.parentNode.replaceChild(newProfileBtn, profileBtn);
-            newProfileBtn.addEventListener('click', () => {
-                const profileData = {
-                    id: userId,
-                    name: username,
-                    avatar: avatar || defaultAvatar,
-                    status: onlineFriends.has(userId) ? 'online' : 'offline'
-                };
-                createProfilePanel(profileData);
-            });
-            console.log('[setupChatHeaderActions] Header profile listener attached.');
-        } else {
-            console.warn('[setupChatHeaderActions] Profile button not found in header.'); // Bu bir hata olmayabilir
-        }
-
-    }
-
-    // Sesli Arama Fonksiyonları
-    function startVoiceCall(userId, username, avatar) {
-        console.log(`[startVoiceCall] ${username} (${userId}) aranıyor...`); // Daha belirgin log
-        currentCallTarget = { userId, username, avatar };
-
-        // Panellerin varlığını ve mevcut display stilini kontrol et
-        console.log('[startVoiceCall] Checking panel elements...');
-        if (!callOverlay) {
-            console.error('[startVoiceCall] FATAL: callOverlay element is null!');
-            return; // Panel yoksa devam etmenin anlamı yok
-        } else {
-            console.log(`[startVoiceCall] callOverlay found. Current display: ${window.getComputedStyle(callOverlay).display}`);
-        }
-        if (!outgoingCallPanel) {
-            console.error('[startVoiceCall] FATAL: outgoingCallPanel element is null!');
-            return; // Panel yoksa devam etmenin anlamı yok
-        } else {
-            console.log(`[startVoiceCall] outgoingCallPanel found. Current display: ${window.getComputedStyle(outgoingCallPanel).display}`);
-        }
-
-        // Giden arama panelini doldur
-        const outAvatar = outgoingCallPanel?.querySelector('.call-avatar'); // Null check eklendi
-        const outUsername = outgoingCallPanel?.querySelector('.call-username'); // Null check eklendi
-        if (outAvatar) outAvatar.src = avatar || defaultAvatar;
-        if (outUsername) outUsername.textContent = `${username} aranıyor...`;
-
-        // Panelleri göster/gizle
-        console.log('[startVoiceCall] Attempting to show panels...');
-        if (outgoingCallPanel) {
-            console.log('[startVoiceCall] Setting outgoingCallPanel display to block');
-            outgoingCallPanel.style.display = 'block';
-        }
-        if (incomingCallPanel) incomingCallPanel.style.display = 'none';
-        if (activeCallPanel) activeCallPanel.style.display = 'none';
-        if (callOverlay) {
-            console.log('[startVoiceCall] Setting callOverlay display to flex');
-            callOverlay.style.display = 'flex';
-            // Stilin gerçekten değişip değişmediğini kontrol et (tarayıcı işlemi hemen yapmayabilir)
-            setTimeout(() => {
-                console.log(`[startVoiceCall] callOverlay computed display after setting: ${window.getComputedStyle(callOverlay).display}`);
-                console.log(`[startVoiceCall] outgoingCallPanel computed display after setting: ${window.getComputedStyle(outgoingCallPanel).display}`);
-            }, 0);
-        }
-
-        // TODO: Backend'e arama isteği gönder
-    }
-
-    function endCall() {
-        console.log('[endCall] Arama sonlandırıldı.'); // Daha belirgin log
-        if (callOverlay) callOverlay.style.display = 'none';
-        if (outgoingCallPanel) outgoingCallPanel.style.display = 'none';
-        if (incomingCallPanel) incomingCallPanel.style.display = 'none';
-        if (activeCallPanel) activeCallPanel.style.display = 'none';
-        currentCallTarget = null;
-        // TODO: Backend'e arama sonlandırma bilgisi gönder
-    }
-
-    // Olay Dinleyicileri
-    document.addEventListener('DOMContentLoaded', () => {
-        // ... (Mevcut DOMContentLoaded kodları) ...
-
-        // Arama paneli butonları için listener'lar
-        if (callOverlay) {
-            // Kapatma butonları (tüm panellerde aynı sınıf var)
-            callOverlay.querySelectorAll('.hangup-btn').forEach(btn => {
-                btn.addEventListener('click', endCall);
-            });
-            callOverlay.querySelectorAll('.decline-btn').forEach(btn => {
-                btn.addEventListener('click', endCall);
-            });
-
-            // TODO: Kabul etme (.accept-btn) ve Sesi Kapatma (.mute-btn) butonları için listener ekle
-            // const acceptBtn = incomingCallPanel.querySelector('.accept-btn');
-            // const muteBtn = activeCallPanel.querySelector('.mute-btn');
-
-            // Overlay'a tıklayınca kapatma (opsiyonel)
-            // callOverlay.addEventListener('click', (e) => {
-            //     if (e.target === callOverlay) {
-            //         endCall();
-            //     }
-            // });
-        }
-
-        // Sohbet paneli açıldığında header butonlarını ayarlamak için
-        // Örnek: DM listesindeki birine tıklayınca
-        const dmListElement = document.querySelector('#friends-group .dm-items');
-        if (dmListElement) {
-            dmListElement.addEventListener('click', (e) => {
-                const dmItem = e.target.closest('.dm-item');
-                if (dmItem) {
-                    const userId = dmItem.dataset.userId;
-                    const username = dmItem.dataset.username;
-                    const avatar = dmItem.dataset.avatar;
-                    if (userId && username) {
-                        openChatPanel(userId, username, avatar);
-                    }
-                }
-            });
-            console.log('[DOMContentLoaded] DM list click listener attached.'); // Log
-        }
-
-        // Arkadaş listesindeki birine tıklayınca
-        const friendsListContainer = document.querySelector('.friends-list.online-friends, .friends-list.offline-friends'); // Her iki listeyi de seç
-        if (friendsListContainer) {
-            friendsListContainer.addEventListener('click', (e) => {
-                const friendRow = e.target.closest('.friend-row');
-                if (friendRow) {
-                    const messageBtn = e.target.closest('.message-btn');
-                    const profileBtn = e.target.closest('.profile-btn'); // Arkadaş satırındaki profil butonu
-
-                    const userId = friendRow.dataset.userId;
-                    const username = friendRow.dataset.username;
-                    const avatar = friendRow.dataset.avatar;
-
-                    if (userId && username) {
-                        if (messageBtn) { // Mesaj butonuna tıklandıysa
-                            openChatPanel(userId, username, avatar);
-                        } else if (profileBtn) { // Profil butonuna tıklandıysa
-                            const profileData = {
-                                id: userId,
-                                name: username,
-                                avatar: avatar,
-                                status: onlineFriends.has(userId) ? 'online' : 'offline'
-                            };
-                            createProfilePanel(profileData);
-                        }
-                    }
-                }
-            });
-            console.log('[DOMContentLoaded] Friends list click listener attached.'); // Log
-        } else {
-            // Belki listeler dinamik yükleniyor, o zaman listeler yüklendikten sonra listener eklenmeli
-            // Veya seçici yanlış. Kontrol edelim:
-            console.warn('Friend list container (.friends-list.online-friends, .friends-list.offline-friends) not found initially. Listener might be attached later.');
-        }
-
-    });
-
-    // --- Sunucu Ekle Panel Elementlerini Tanımla ---
-    const serverAddIcon = document.querySelector('.server-add-icon');
-    const serverModal = document.getElementById('server-modal');
-    const closeServerBtn = document.querySelector('.close-server-modal-btn');
-    const serverOptionsContainer = document.querySelector('.server-options-container');
-    const createServerOption = document.getElementById('server-option-create');
-    const joinServerOption = document.getElementById('server-option-join');
-    const createServerForm = document.getElementById('server-create-form');
-    const joinServerForm = document.getElementById('server-join-form');
-    const backToOptionsButtons = document.querySelectorAll('.back-to-options-btn');
-    const serverIconPreview = document.getElementById('server-icon-preview-img');
-    const serverIconUpload = document.querySelector('.server-icon-preview');
-    const serverIconInput = document.getElementById('server-icon-upload-input');
-    const serverNameInput = document.getElementById('server-name-input');
-    const serverInviteInput = document.getElementById('server-invite-input');
-    const createServerBtn = document.getElementById('server-create-btn');
-    const joinServerBtn = document.getElementById('server-join-btn');
-    const serverMessageArea = document.getElementById('server-message-area');
-    // --- End Sunucu Ekle Panel Element Tanımlamaları ---
-
-    // --- Sunucu Ekle Panel İşlevselliği ---
-    function setupServerPanel() {
-        if (!serverAddIcon || !serverModal || !closeServerBtn) {
-            console.error('Sunucu paneli için gerekli elementler bulunamadı.');
-            return;
-        }
-
-        // Sunucu ekle ikonuna tıklanınca modalı aç
-        serverAddIcon.addEventListener('click', openServerModal);
-
-        // Modalı kapatma işlevselliği
-        closeServerBtn.addEventListener('click', closeServerModal);
-
-        // Modal dışına tıklanınca kapat
-        serverModal.addEventListener('click', (e) => {
-            if (e.target === serverModal) {
-                closeServerModal();
-            }
-        });
-
-        // Sunucu oluştur seçeneğine tıklanınca
-        createServerOption?.addEventListener('click', () => {
-            showServerCreateForm();
-        });
-
-        // Sunucuya katıl seçeneğine tıklanınca
-        joinServerOption?.addEventListener('click', () => {
-            showServerJoinForm();
-        });
-
-        // Geri butonlarına tıklanınca
-        backToOptionsButtons.forEach(button => {
-            button.addEventListener('click', showServerOptions);
-        });
-
-        // Sunucu ikonu yükleme
-        serverIconUpload?.addEventListener('click', () => {
-            serverIconInput?.click();
-        });
-
-        // İkon dosyası seçildiğinde
-        serverIconInput?.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    serverIconPreview.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Sunucu oluştur butonuna tıklanınca
-        createServerBtn?.addEventListener('click', handleCreateServer);
-
-        // Sunucuya katıl butonuna tıklanınca
-        joinServerBtn?.addEventListener('click', handleJoinServer);
-
-        // ESC tuşuna basınca modalı kapat
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && serverModal.style.display !== 'none') {
-                closeServerModal();
-            }
-        });
-
-        // Sunucu adı inputu için listener
-        serverNameInput?.addEventListener('input', validateServerName);
-
-        // Davet kodu inputu için listener
-        serverInviteInput?.addEventListener('input', validateInviteCode);
-    }
-
-    // Sunucu modalını açma fonksiyonu
-    function openServerModal() {
-        console.log('Sunucu modalı açılıyor');
-        serverModal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-
-        // Reset to options view
-        showServerOptions();
-
-        // Gecikmeli açılış animasyonu
-        setTimeout(() => {
-            serverModal.classList.add('open');
-        }, 10);
-    }
-
-    // Sunucu modalını kapatma fonksiyonu
-    function closeServerModal() {
-        console.log('Sunucu modalı kapatılıyor');
-        serverModal.classList.remove('open');
-        document.body.style.overflow = '';
-
-        // Animasyon tamamlandıktan sonra gizle
-        setTimeout(() => {
-            serverModal.style.display = 'none';
-            resetServerForms();
-        }, 300);
-    }
-
-    // Sunucu seçeneklerini gösterme fonksiyonu
-    function showServerOptions() {
-        console.log('Sunucu seçenekleri gösteriliyor');
-        serverOptionsContainer.style.display = 'flex';
-        createServerForm.style.display = 'none';
-        joinServerForm.style.display = 'none';
-        serverMessageArea.style.display = 'none';
-    }
-
-    // Sunucu oluşturma formunu gösterme fonksiyonu
-    function showServerCreateForm() {
-        console.log('Sunucu oluşturma formu gösteriliyor');
-        serverOptionsContainer.style.display = 'none';
-        createServerForm.style.display = 'block';
-        joinServerForm.style.display = 'none';
-    }
-
-    // Sunucuya katılma formunu gösterme fonksiyonu
-    function showServerJoinForm() {
-        console.log('Sunucuya katılma formu gösteriliyor');
-        serverOptionsContainer.style.display = 'none';
-        createServerForm.style.display = 'none';
-        joinServerForm.style.display = 'block';
-    }
-
-    // Sunucu adı validasyonu
-    function validateServerName() {
-        const serverName = serverNameInput.value.trim();
-        if (serverName.length < 2) {
-            createServerBtn.disabled = true;
-        } else {
-            createServerBtn.disabled = false;
-        }
-    }
-
-    // Davet kodu validasyonu
-    function validateInviteCode() {
-        const inviteCode = serverInviteInput.value.trim();
-        if (inviteCode.length < 3) {
-            joinServerBtn.disabled = true;
-        } else {
-            joinServerBtn.disabled = false;
-        }
-    }
-
-    // Sunucu oluşturma işlemi
-    function handleCreateServer() {
-        const serverName = serverNameInput.value.trim();
-
-        if (serverName.length < 2) {
-            showServerMessage('Sunucu adı en az 2 karakter olmalıdır.', 'error');
-            return;
-        }
-
-        // Loading durumu
-        createServerBtn.disabled = true;
-        createServerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Oluşturuluyor...</span>';
-
-        // Normalde burada API çağrısı yapılır, şimdilik simulasyon
-        setTimeout(() => {
-            showServerMessage(`"${serverName}" sunucusu başarıyla oluşturuldu!`, 'success');
-
-            // Modalı 2 saniye sonra kapat
-            setTimeout(() => {
-                closeServerModal();
-            }, 2000);
-        }, 1500);
-    }
-
-    // Sunucuya katılma işlemi
-    function handleJoinServer() {
-        const inviteCode = serverInviteInput.value.trim();
-
-        if (inviteCode.length < 3) {
-            showServerMessage('Geçerli bir davet kodu giriniz.', 'error');
-            return;
-        }
-
-        // Loading durumu
-        joinServerBtn.disabled = true;
-        joinServerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Katılıyor...</span>';
-
-        // Normalde burada API çağrısı yapılır, şimdilik simulasyon
-        setTimeout(() => {
-            // Örnek başarı mesajı (gerçekte sunucu adı API'den gelir)
-            showServerMessage('Sunucuya başarıyla katıldınız!', 'success');
-
-            // Modalı 2 saniye sonra kapat
-            setTimeout(() => {
-                closeServerModal();
-            }, 2000);
-        }, 1500);
-    }
-
-    // Sunucu mesajı gösterme fonksiyonu
-    function showServerMessage(message, type = 'info') {
-        if (!serverMessageArea) return;
-
-        serverMessageArea.innerHTML = message;
-        serverMessageArea.className = `modal-message-area ${type}`;
-        serverMessageArea.style.display = 'flex';
-
-        // Animasyon efekti
-        serverMessageArea.style.opacity = '0';
-        setTimeout(() => {
-            serverMessageArea.style.opacity = '1';
-        }, 10);
-    }
-
-    // Form alanlarını sıfırlama fonksiyonu
-    function resetServerForms() {
-        if (serverNameInput) serverNameInput.value = '';
-        if (serverInviteInput) serverInviteInput.value = '';
-        if (serverIconPreview) serverIconPreview.src = 'images/DefaultServerIcon.png';
-        if (createServerBtn) {
-            createServerBtn.disabled = true;
-            createServerBtn.innerHTML = '<i class="fas fa-check"></i> <span>Sunucuyu Oluştur</span>';
-        }
-        if (joinServerBtn) {
-            joinServerBtn.disabled = true;
-            joinServerBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> <span>Sunucuya Katıl</span>';
-        }
-        if (serverMessageArea) {
-            serverMessageArea.style.display = 'none';
-            serverMessageArea.innerHTML = '';
-        }
-    }
-
-    // Sunucu panel kurulumu başlat
-    setupServerPanel();
-    // --- End Sunucu Ekle Panel İşlevselliği ---
-
-    // Kullanıcı profilini yükleme fonksiyonu
-    async function loadProfile() {
-        try {
-            const { data: profile, error } = await supabase
-                .from('users')
-                .select('username, avatar')
-                .eq('id', currentUserId)
-                .single();
-
-            if (error) throw error;
-
-            if (profile) {
-                console.log('Kullanıcı profili yüklendi:', profile);
-                if (userPanelUsernameElement) userPanelUsernameElement.textContent = profile.username || 'Kullanıcı';
-                if (userPanelAvatarElement) userPanelAvatarElement.src = profile.avatar || defaultAvatar;
-            } else {
-                console.warn('Kullanıcı profili bulunamadı');
-                if (userPanelUsernameElement) userPanelUsernameElement.textContent = 'Kullanıcı';
-                if (userPanelAvatarElement) userPanelAvatarElement.src = defaultAvatar;
-            }
-        } catch (error) {
-            console.error('Profil yüklenirken hata:', error);
-            if (userPanelUsernameElement) userPanelUsernameElement.textContent = 'Kullanıcı';
-            if (userPanelAvatarElement) userPanelAvatarElement.src = defaultAvatar;
-        }
-    }
-
-    console.log('Dashboard JS - DOMContentLoaded End'); // Bitiş logu
-}); 
+} 
