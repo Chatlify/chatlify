@@ -237,7 +237,7 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
         const { data: friendships, error } = await supabase
             .from('friendships')
             .select(`
-                id,
+                id, 
                 user_id_1, 
                 user_id_2,
                 user1:user_id_1(id, username, avatar),
@@ -371,15 +371,15 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
         friendElement.dataset.avatar = avatar;
 
         friendElement.innerHTML = `
-            <div class="friend-avatar">
+                    <div class="friend-avatar">
                 <img src="${avatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
                 <span class="status-dot offline"></span>
-            </div>
-            <div class="friend-info">
+                    </div>
+                    <div class="friend-info">
                 <div class="friend-name">${username}</div>
                 <div class="friend-status">Çevrimdışı</div>
-            </div>
-        `;
+                    </div>
+                `;
 
         return friendElement;
     }
@@ -395,12 +395,12 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
             <div class="dm-avatar">
                 <img src="${avatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
                 <div class="dm-status offline"></div>
-            </div>
+             </div>
             <div class="dm-info">
                 <div class="dm-name">${username}</div>
                 <div class="dm-activity">Çevrimdışı</div>
-            </div>
-        `;
+        </div>
+    `;
 
         // DM öğesine tıklama event listener'ı ekle
         dmElement.addEventListener('click', () => {
@@ -582,40 +582,13 @@ async function loadConversationMessages(userId) {
     try {
         console.log(`Mesajları yükleme: CurrentUserId=${currentUserId}, TargetUserId=${userId}`);
 
-        // Önce mesaj tablosunun şemasını anlamak için tek bir mesajı çekmeyi deneyelim
-        const { data: sampleData, error: sampleError } = await supabase
-            .from('messages')
-            .select('*')
-            .limit(1);
-
-        if (sampleError) {
-            console.error('Mesaj tablosu örneği yüklenirken hata:', sampleError);
-            throw sampleError;
-        }
-
-        // Varsa sütun adlarını logla
-        if (sampleData && sampleData.length > 0) {
-            console.log('Mesaj tablosu sütunları:', Object.keys(sampleData[0]));
-
-            // Sütun formatını belirle
-            if (Object.keys(sampleData[0]).includes('senderId')) {
-                sampleColumnFormat = 'camelCase';
-                console.log('Sütun formatı: camelCase');
-            } else if (Object.keys(sampleData[0]).includes('sender_id')) {
-                sampleColumnFormat = 'snake_case';
-                console.log('Sütun formatı: snake_case');
-            } else {
-                console.warn('senderId veya sender_id sütunu bulunamadı, varsayılan format kullanılacak');
-            }
-        } else {
-            console.log('Mesaj tablosunda henüz veri yok. Varsayılan sütun adlarını kullanıyoruz.');
-        }
-
-        // Sorguyu daha açık ve basit hale getirelim
+        // Sorguyu camelCase sütun adlarıyla yap
         const { data: messages, error } = await supabase
             .from('messages')
             .select('*')
-            .or(`conversationId.eq.${userId},conversationId.eq.${currentUserId}`)
+            // İki yönlü sohbeti filtrele:
+            // (gönderen=ben AND alıcı=diğeri) OR (gönderen=diğeri AND alıcı=ben)
+            .or(`and(senderId.eq.${currentUserId},receiverId.eq.${userId}),and(senderId.eq.${userId},receiverId.eq.${currentUserId})`)
             .order('created_at', { ascending: true });
 
         if (error) {
@@ -640,8 +613,8 @@ async function loadConversationMessages(userId) {
         const fragment = document.createDocumentFragment();
 
         messages.forEach(message => {
-            // Güvenli erişim için önce sütun adlarını kontrol et
-            const senderId = message.senderId || message.sender_id;
+            // Doğrudan camelCase kullan
+            const senderId = message.senderId;
 
             const messageElement = document.createElement('div');
             messageElement.className = `message ${senderId === currentUserId ? 'sent' : 'received'}`;
@@ -711,10 +684,17 @@ function unsubscribeFromMessages() {
 // Yeni bir mesajı ekrana görüntüleme
 function displayMessage(message) {
     const chatMessagesContainer = document.querySelector('.chat-panel .chat-messages');
-    if (!chatMessagesContainer) return;
+    if (!chatMessagesContainer || !message) return; // message null olabilir
+
+    // Mesaj objesinden senderId al (camelCase)
+    const senderId = message.senderId;
+    if (!senderId) {
+        console.warn('displayMessage: Gelen mesajda senderId bulunamadı.', message);
+        return;
+    }
 
     const messageElement = document.createElement('div');
-    messageElement.className = `message ${message.senderId === currentUserId ? 'sent' : 'received'}`;
+    messageElement.className = `message ${senderId === currentUserId ? 'sent' : 'received'}`;
 
     const contentElem = document.createElement('div');
     contentElem.className = 'message-content';
@@ -772,20 +752,12 @@ function setupMessageSending(chatTextarea) {
         console.log(`Mesaj gönderiliyor: ${messageText} (AlıcıID: ${currentConversationId})`);
 
         try {
-            // Daha önceki örnek verilerdeki sütun adlarını kullan
+            // Doğrudan camelCase sütun adlarını kullan
             const messageData = {
                 content: messageText,
-                conversationId: currentConversationId
+                senderId: currentUserId,
+                receiverId: currentConversationId // Alıcı ID'sini conversationId'den alıyoruz
             };
-
-            // SenderId veya sender_id formatını belirle
-            if (sampleColumnFormat === 'camelCase') {
-                messageData.senderId = currentUserId;
-                messageData.receiverId = currentConversationId;
-            } else {
-                messageData.sender_id = currentUserId;
-                messageData.receiver_id = currentConversationId;
-            }
 
             const { data, error } = await supabase
                 .from('messages')
