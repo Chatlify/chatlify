@@ -747,17 +747,27 @@ function setupMessageSending(chatTextarea) {
     // Mesaj gönderme yardımcı fonksiyonu
     async function sendMessage(textarea) {
         const messageText = textarea.value.trim();
-        if (!messageText || !currentConversationId) return;
+        if (!messageText || !currentConversationId) {
+            console.warn('Mesaj göndermek için içerik ve geçerli conversationId gerekli.');
+            return;
+        }
 
-        console.log(`Mesaj gönderiliyor: ${messageText} (AlıcıID: ${currentConversationId})`);
+        console.log(`Mesaj gönderiliyor: ${messageText} (ConversationID: ${currentConversationId}, SenderID: ${currentUserId})`);
 
         try {
-            // Doğrudan camelCase sütun adlarını kullan
+            // Insert edilecek veriye conversationId'yi ekle
             const messageData = {
                 content: messageText,
                 senderId: currentUserId,
-                receiverId: currentConversationId // Alıcı ID'sini conversationId'den alıyoruz
+                conversationId: currentConversationId, // CHECK kuralı için eklendi
+                // receiverId'yi ayrıca göndermeye gerek yok, conversationId yeterli olabilir.
+                // Eğer tablo yapınızda receiverId zorunluysa, onu da ekleyebilirsiniz:
+                // receiverId: currentConversationId // Bu isimlendirme kafa karıştırıcı, 
+                // currentConversationId aslında diğer kullanıcının ID'si
+                // DM sisteminde conversationId'nin neyi temsil ettiğini netleştirmek iyi olur.
             };
+
+            console.log('Eklenecek mesaj verisi:', messageData);
 
             const { data, error } = await supabase
                 .from('messages')
@@ -765,8 +775,14 @@ function setupMessageSending(chatTextarea) {
                 .select();
 
             if (error) {
-                console.error('Mesaj eklenirken hata:', error);
-                throw error;
+                console.error('Mesaj eklenirken Supabase hatası:', error);
+                // Hata detayını kullanıcıya göstermeyi düşünebilirsiniz
+                if (error.code === '23514') { // Check constraint hatası
+                    alert('Mesaj gönderilemedi. (Kural İhlali: ' + error.message + ')');
+                } else {
+                    alert('Mesaj gönderilemedi. Lütfen tekrar deneyiniz.');
+                }
+                throw error; // Hatayı tekrar fırlatarak işlemi durdur
             }
 
             // Mesaj alanını temizle
@@ -774,13 +790,14 @@ function setupMessageSending(chatTextarea) {
 
             // Başarılı mesaj gönderildiyse ve veri döndüyse ekranda göster
             if (data && data.length > 0) {
-                console.log('Mesaj başarıyla gönderildi:', data[0]);
+                console.log('Mesaj başarıyla gönderildi ve eklendi:', data[0]);
                 displayMessage(data[0]);
             }
 
         } catch (error) {
-            console.error('Mesaj gönderilirken hata:', error);
-            alert('Mesaj gönderilemedi. Lütfen tekrar deneyiniz.');
+            // Zaten yukarıda loglandı ve kullanıcıya alert gösterildi.
+            // Burada ek bir işlem yapmaya gerek yok.
+            // console.error('Mesaj gönderilirken genel hata:', error);
         }
     }
 }
