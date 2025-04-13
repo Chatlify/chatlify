@@ -130,17 +130,8 @@ async function initializeUserSession({ userPanelUsernameElement, userPanelAvatar
             currentUserId = user.id;
             console.log('Kullanıcı ID:', currentUserId);
 
-            // Profili yükle (yeni güvenli fonksiyon)
-            await loadUserProfile();
-
-            // Arkadaşları yükle
-            loadAllFriends();
-
-            // Mesaj gönderme sistemini kur
-            setupMessageSending();
-
-            // Presence sistemini başlat
-            initializePresence();
+            // Kullanıcı profilini yükle
+            await loadUserProfile({ userPanelUsernameElement, userPanelAvatarElement });
 
             return true;
         } else {
@@ -162,7 +153,7 @@ function redirectToLogin() {
 }
 
 // Kullanıcı profil bilgilerini yükleme
-async function loadUserProfile() {
+async function loadUserProfile({ userPanelUsernameElement, userPanelAvatarElement }) {
     if (!currentUserId) {
         console.error('loadUserProfile için currentUserId gerekli');
         return;
@@ -177,24 +168,24 @@ async function loadUserProfile() {
 
         if (error) {
             console.error('Profil bilgileri alınamadı:', error);
-            setDefaultProfileUI();
+            setDefaultProfileUI({ userPanelUsernameElement, userPanelAvatarElement });
             return;
         }
 
         if (profile) {
-            updateProfileUI(profile);
+            updateProfileUI({ profile, userPanelUsernameElement, userPanelAvatarElement });
         } else {
             console.warn(`${currentUserId} ID'li kullanıcı için profil bulunamadı`);
-            setDefaultProfileUI();
+            setDefaultProfileUI({ userPanelUsernameElement, userPanelAvatarElement });
         }
     } catch (error) {
         console.error('Profil yüklenirken beklenmeyen hata:', error);
-        setDefaultProfileUI();
+        setDefaultProfileUI({ userPanelUsernameElement, userPanelAvatarElement });
     }
 }
 
 // Profil UI güncellemesi
-function updateProfileUI(profile) {
+function updateProfileUI({ profile, userPanelUsernameElement, userPanelAvatarElement }) {
     if (userPanelUsernameElement) {
         userPanelUsernameElement.textContent = profile.username || 'Kullanıcı';
     }
@@ -211,7 +202,7 @@ function updateProfileUI(profile) {
 }
 
 // Varsayılan profil UI'ı
-function setDefaultProfileUI() {
+function setDefaultProfileUI({ userPanelUsernameElement, userPanelAvatarElement }) {
     if (userPanelUsernameElement) {
         userPanelUsernameElement.textContent = 'Kullanıcı';
     }
