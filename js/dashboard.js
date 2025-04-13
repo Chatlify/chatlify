@@ -4,6 +4,8 @@ import { supabase } from './auth_config.js'; // Supabase istemcisini import et
 let currentUserId = null;
 let onlineFriends = new Set();
 let presenceChannel = null;
+let currentConversationId = null; // Aktif sohbet için ID
+let messageSubscription = null; // Realtime mesaj aboneliği
 const defaultAvatar = 'images/DefaultAvatar.png';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -691,9 +693,96 @@ function displayMessage(message) {
 }
 
 function setupMessageSending(chatTextarea) {
-    // setupMessageSending işlemi burada yapılabilir
+    if (!chatTextarea) {
+        console.error('setupMessageSending: chatTextarea elementi bulunamadı');
+        return;
+    }
+
+    // Eski listener'ları temizle (varsa)
+    const newTextarea = chatTextarea.cloneNode(true);
+    if (chatTextarea.parentNode) {
+        chatTextarea.parentNode.replaceChild(newTextarea, chatTextarea);
+    }
+
+    // Enter tuşu ile mesaj gönderme
+    newTextarea.addEventListener('keydown', async (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage(newTextarea);
+        }
+    });
+
+    // Gönder butonu için event listener
+    const sendButton = document.querySelector('.chat-textbox .send-message-btn');
+    if (sendButton) {
+        const newSendButton = sendButton.cloneNode(true);
+        if (sendButton.parentNode) {
+            sendButton.parentNode.replaceChild(newSendButton, sendButton);
+        }
+
+        newSendButton.addEventListener('click', () => {
+            sendMessage(newTextarea);
+        });
+    }
+
+    // Mesaj gönderme yardımcı fonksiyonu
+    async function sendMessage(textarea) {
+        const messageText = textarea.value.trim();
+        if (!messageText || !currentConversationId) return;
+
+        console.log(`Mesaj gönderiliyor: ${messageText} (AlıcıID: ${currentConversationId})`);
+
+        try {
+            const { data, error } = await supabase
+                .from('messages')
+                .insert([{
+                    sender_id: currentUserId,
+                    receiver_id: currentConversationId,
+                    content: messageText
+                }])
+                .select();
+
+            if (error) throw error;
+
+            // Mesaj alanını temizle
+            textarea.value = '';
+
+            // Başarılı mesaj gönderildiyse ve veri döndüyse ekranda göster
+            if (data && data.length > 0) {
+                displayMessage(data[0]);
+            }
+
+        } catch (error) {
+            console.error('Mesaj gönderilirken hata:', error);
+            alert('Mesaj gönderilemedi. Lütfen tekrar deneyiniz.');
+        }
+    }
 }
 
 function updateFriendCounters() {
-    // updateFriendCounters işlemi burada yapılabilir
+    // Çevrimiçi arkadaş sayacı
+    const onlineCount = document.querySelector('.online-count');
+    const onlineFriendElements = document.querySelectorAll('.online-friends .friend-row');
+    if (onlineCount) {
+        onlineCount.textContent = onlineFriendElements.length;
+    }
+
+    // Çevrimdışı arkadaş sayacı
+    const offlineCount = document.querySelector('.offline-count');
+    const offlineFriendElements = document.querySelectorAll('.offline-friends .friend-row');
+    if (offlineCount) {
+        offlineCount.textContent = offlineFriendElements.length;
+    }
+
+    // Başlıkların görünürlüğünü ayarla
+    const onlineSection = document.querySelector('.online-section-title');
+    const offlineSection = document.querySelector('.offline-section-title');
+
+    if (onlineSection) {
+        onlineSection.style.display = onlineFriendElements.length > 0 ? 'flex' : 'none';
+    }
+
+    if (offlineSection) {
+        offlineSection.style.display = offlineFriendElements.length > 0 ? 'flex' : 'none';
+    }
 } 
