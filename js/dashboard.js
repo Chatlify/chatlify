@@ -589,7 +589,7 @@ async function loadConversationMessages(userId) {
             // İki yönlü sohbeti filtrele:
             // (gönderen=ben AND alıcı=diğeri) OR (gönderen=diğeri AND alıcı=ben)
             .or(`and(senderId.eq.${currentUserId},receiverId.eq.${userId}),and(senderId.eq.${userId},receiverId.eq.${currentUserId})`)
-            .order('created_at', { ascending: true });
+            .order('createdAt', { ascending: true });
 
         if (error) {
             console.error('Mesaj sorgusunda hata:', error);
@@ -625,7 +625,7 @@ async function loadConversationMessages(userId) {
 
             const timeElem = document.createElement('div');
             timeElem.className = 'message-time';
-            timeElem.textContent = new Date(message.created_at).toLocaleTimeString();
+            timeElem.textContent = new Date(message.createdAt).toLocaleTimeString();
 
             messageElement.appendChild(contentElem);
             messageElement.appendChild(timeElem);
@@ -702,7 +702,7 @@ function displayMessage(message) {
 
     const timeElem = document.createElement('div');
     timeElem.className = 'message-time';
-    timeElem.textContent = new Date(message.created_at).toLocaleTimeString();
+    timeElem.textContent = new Date(message.createdAt).toLocaleTimeString();
 
     messageElement.appendChild(contentElem);
     messageElement.appendChild(timeElem);
