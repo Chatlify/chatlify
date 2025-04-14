@@ -436,7 +436,6 @@ async function loadPendingRequests(pendingList, pendingCountBadge) {
                 id, 
                 user_id_1,
                 status,
-                createdAt,
                 users:user_id_1(id, username, avatar)
             `)
             .eq('status', 'pending')
@@ -496,23 +495,6 @@ async function loadPendingRequests(pendingList, pendingCountBadge) {
             const avatar = sender.avatar || defaultAvatar;
             const userId = sender.id;
 
-            // Tarih bilgisini güvenli bir şekilde al
-            let requestDate = 'Bilinmeyen tarih';
-            try {
-                // Farklı tarih sütun adları için kontrol et
-                if (request.createdAt) {
-                    requestDate = new Date(request.createdAt).toLocaleDateString();
-                } else if (request.created_at) {
-                    requestDate = new Date(request.created_at).toLocaleDateString();
-                } else if (request.insertedAt) {
-                    requestDate = new Date(request.insertedAt).toLocaleDateString();
-                } else if (request.inserted_at) {
-                    requestDate = new Date(request.inserted_at).toLocaleDateString();
-                }
-            } catch (e) {
-                console.warn('Tarih dönüşümünde hata:', e);
-            }
-
             // İstek satırını oluştur
             const requestRow = document.createElement('div');
             requestRow.className = 'friend-row pending';
@@ -526,7 +508,7 @@ async function loadPendingRequests(pendingList, pendingCountBadge) {
                 </div>
                 <div class="friend-info">
                     <div class="friend-name">${username}</div>
-                    <div class="friend-status">İstek gönderdi: ${requestDate}</div>
+                    <div class="friend-status">İstek gönderdi</div>
                 </div>
                 <div class="friend-actions pending-actions">
                     <button class="accept-request-btn" title="Kabul Et">
