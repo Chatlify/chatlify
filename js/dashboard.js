@@ -12,6 +12,89 @@ let messageNotificationSound = null; // Ses nesnesi için global değişken
 let unreadCounts = {}; // Okunmamış mesaj sayıları için global nesne
 let allMessagesSubscription = null; // Tüm mesajları dinleyen abonelik
 
+// Mesaj gönderme işlevselliğini kurar
+function setupMessageSending(chatTextarea) {
+    if (!chatTextarea) {
+        console.error('setupMessageSending: chatTextarea elementi bulunamadı');
+        return;
+    }
+
+    // Eski listener'ları temizle (varsa)
+    const newTextarea = chatTextarea.cloneNode(true);
+    if (chatTextarea.parentNode) {
+        chatTextarea.parentNode.replaceChild(newTextarea, chatTextarea);
+    }
+
+    // Enter tuşu ile mesaj gönderme
+    newTextarea.addEventListener('keydown', async (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage(newTextarea);
+        }
+    });
+
+    // Gönder butonu için event listener
+    const sendButton = document.querySelector('.chat-textbox .send-message-btn');
+    if (sendButton) {
+        const newSendButton = sendButton.cloneNode(true);
+        if (sendButton.parentNode) {
+            sendButton.parentNode.replaceChild(newSendButton, sendButton);
+        }
+
+        newSendButton.addEventListener('click', () => {
+            sendMessage(newTextarea);
+        });
+    }
+
+    // Mesaj gönderme yardımcı fonksiyonu
+    async function sendMessage(textarea) {
+        const messageText = textarea.value.trim();
+        if (!messageText || !currentConversationId) {
+            console.warn('Mesaj göndermek için içerik ve geçerli conversationId gerekli.');
+            return;
+        }
+
+        console.log(`Mesaj gönderiliyor: ${messageText} (ConversationID: ${currentConversationId}, SenderID: ${currentUserId})`);
+
+        try {
+            // Insert edilecek veriye conversationId'yi ekle
+            const messageData = {
+                content: messageText,
+                senderId: currentUserId,
+                conversationId: currentConversationId,
+            };
+
+            console.log('Eklenecek mesaj verisi:', messageData);
+
+            const { data, error } = await supabase
+                .from('messages')
+                .insert([messageData])
+                .select();
+
+            if (error) {
+                console.error('Mesaj eklenirken Supabase hatası:', error);
+                if (error.code === '23514') {
+                    alert('Mesaj gönderilemedi. (Kural İhlali: ' + error.message + ')');
+                } else {
+                    alert('Mesaj gönderilemedi. Lütfen tekrar deneyiniz.');
+                }
+                throw error;
+            }
+
+            textarea.value = '';
+
+            if (data && data.length > 0) {
+                console.log('Mesaj başarıyla gönderildi ve eklendi:', data[0]);
+                // Kendi gönderdiğimiz mesajı da göstermek için (opsiyonel)
+                // displayMessage(data[0]); 
+            }
+
+        } catch (error) {
+            // Hata zaten loglandı ve alert gösterildi.
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Dashboard JS başlatılıyor...');
 
