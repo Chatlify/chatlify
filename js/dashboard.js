@@ -95,6 +95,54 @@ function setupMessageSending(chatTextarea) {
     }
 }
 
+// Emoji picker'ı kuran fonksiyon
+function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
+    // Emoji picker'ı gizle
+    if (emojiPickerElement) {
+        emojiPickerElement.style.display = 'none';
+        emojiPickerElement.style.position = 'absolute';
+        emojiPickerElement.style.bottom = '80px';
+        emojiPickerElement.style.right = '16px';
+        emojiPickerElement.style.zIndex = '1000';
+    }
+
+    // Emoji butonuna tıklama olayı
+    emojiButton.addEventListener('click', () => {
+        if (emojiPickerElement) {
+            // Toggle emoji picker görünürlüğü
+            const isVisible = emojiPickerElement.style.display === 'block';
+            emojiPickerElement.style.display = isVisible ? 'none' : 'block';
+        } else {
+            console.error('Emoji picker elementi bulunamadı');
+        }
+    });
+
+    // Emoji seçildiğinde textarea'ya ekleme
+    if (emojiPickerElement) {
+        emojiPickerElement.addEventListener('emoji-click', event => {
+            const emoji = event.detail.unicode;
+            const cursorPos = textareaElement.selectionStart;
+            const text = textareaElement.value;
+            const newText = text.substring(0, cursorPos) + emoji + text.substring(cursorPos);
+            textareaElement.value = newText;
+            textareaElement.focus();
+            textareaElement.selectionStart = cursorPos + emoji.length;
+            textareaElement.selectionEnd = cursorPos + emoji.length;
+        });
+    }
+
+    // Döküman tıklamalarını dinleyerek emoji picker'ı kapat
+    document.addEventListener('click', event => {
+        if (emojiPickerElement &&
+            event.target !== emojiButton &&
+            event.target !== emojiPickerElement &&
+            !emojiButton.contains(event.target) &&
+            !emojiPickerElement.contains(event.target)) {
+            emojiPickerElement.style.display = 'none';
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Dashboard JS başlatılıyor...');
 
