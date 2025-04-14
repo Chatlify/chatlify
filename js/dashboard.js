@@ -569,11 +569,25 @@ async function loadPendingRequests(pendingList, pendingCountBadge) {
 // Arkadaşlık isteğini kabul et veya reddet
 async function handleFriendRequest(requestId, action, userId, username) {
     try {
-        // İstek durumunu güncelle
-        const { error } = await supabase
-            .from('friendships')
-            .update({ status: action })
-            .eq('id', requestId);
+        let error = null;
+
+        if (action === 'accepted') {
+            // İstek kabul edildiğinde status'u güncelle
+            const { error: updateError } = await supabase
+                .from('friendships')
+                .update({ status: action })
+                .eq('id', requestId);
+
+            error = updateError;
+        } else if (action === 'rejected') {
+            // İstek reddedildiğinde kaydı sil
+            const { error: deleteError } = await supabase
+                .from('friendships')
+                .delete()
+                .eq('id', requestId);
+
+            error = deleteError;
+        }
 
         if (error) throw error;
 
