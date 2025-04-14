@@ -6050,3 +6050,330 @@ emoji-picker {
     margin-right: 0;
     margin-left: 8px;
 }
+
+/* ------------------------------ */
+/* Yeni Modern Arkadaş Ekle Modal Stilleri */
+/* ------------------------------ */
+
+.friend-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.friend-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.friend-modal-container {
+    width: 480px;
+    max-width: 90%;
+    background: linear-gradient(135deg, #161b2d, #0f1326);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(94, 114, 228, 0.15);
+    overflow: hidden;
+    animation: modalSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    border: 1px solid rgba(94, 114, 228, 0.2);
+}
+
+@keyframes modalSlideIn {
+    0% {
+        transform: translateY(30px) scale(0.95);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.friend-modal-header {
+    background: linear-gradient(90deg, #212a4e, #1a2036);
+    padding: 18px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(94, 114, 228, 0.15);
+}
+
+.friend-modal-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.friend-modal-title i {
+    color: #5e72e4;
+    font-size: 22px;
+    filter: drop-shadow(0 0 8px rgba(94, 114, 228, 0.4));
+}
+
+.friend-modal-title h2 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 20px;
+    color: #ffffff;
+    letter-spacing: 0.01em;
+}
+
+.friend-modal-close-btn {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.friend-modal-close-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    transform: rotate(90deg);
+}
+
+.friend-modal-close-btn i {
+    font-size: 16px;
+}
+
+.friend-modal-content {
+    padding: 24px;
+}
+
+.friend-search-intro {
+    margin-bottom: 20px;
+}
+
+.friend-search-intro p {
+    color: #dde1f0;
+    font-size: 15px;
+    margin: 0 0 12px;
+}
+
+.friend-search-tip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(94, 114, 228, 0.08);
+    border: 1px solid rgba(94, 114, 228, 0.15);
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-top: 12px;
+}
+
+.friend-search-tip i {
+    color: #5e72e4;
+    font-size: 14px;
+}
+
+.friend-search-tip span {
+    color: #a8b1db;
+    font-size: 14px;
+}
+
+.friend-search-form {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.friend-search-input-wrapper {
+    flex: 1;
+    position: relative;
+}
+
+.friend-search-input-wrapper i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #8c94bc;
+    font-size: 14px;
+    transition: color 0.2s ease;
+}
+
+.friend-search-input-wrapper input {
+    width: 100%;
+    background: rgba(15, 19, 34, 0.5);
+    border: 2px solid rgba(94, 114, 228, 0.2);
+    color: #ffffff;
+    border-radius: 8px;
+    padding: 12px 16px 12px 40px;
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+.friend-search-input-wrapper input:focus {
+    outline: none;
+    border-color: #5e72e4;
+    box-shadow: 0 0 0 3px rgba(94, 114, 228, 0.15);
+    background: rgba(15, 19, 34, 0.7);
+}
+
+.friend-search-input-wrapper input:focus+i {
+    color: #5e72e4;
+}
+
+.friend-search-button {
+    background: linear-gradient(135deg, #5e72e4, #825ee4);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0 20px;
+    height: 46px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 8px rgba(94, 114, 228, 0.3);
+}
+
+.friend-search-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(94, 114, 228, 0.4);
+    background: linear-gradient(135deg, #6c82f7, #9269ff);
+}
+
+.friend-search-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(94, 114, 228, 0.3);
+}
+
+.friend-search-button i {
+    font-size: 14px;
+}
+
+.friend-search-results {
+    min-height: 20px;
+    margin-bottom: 15px;
+}
+
+.friend-search-message {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: fadeInUp 0.3s ease;
+}
+
+.friend-search-message.success {
+    background-color: rgba(46, 204, 113, 0.1);
+    border: 1px solid rgba(46, 204, 113, 0.3);
+    color: #2ecc71;
+}
+
+.friend-search-message.error {
+    background-color: rgba(231, 76, 60, 0.1);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    color: #e74c3c;
+}
+
+.friend-search-message.info {
+    background-color: rgba(94, 114, 228, 0.1);
+    border: 1px solid rgba(94, 114, 228, 0.3);
+    color: #5e72e4;
+}
+
+.friend-search-message.success::before {
+    content: '\f058';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+}
+
+.friend-search-message.error::before {
+    content: '\f057';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+}
+
+.friend-search-message.info::before {
+    content: '\f05a';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+}
+
+.friend-modal-footer {
+    background: rgba(15, 19, 34, 0.3);
+    padding: 18px 24px;
+    border-top: 1px solid rgba(94, 114, 228, 0.15);
+}
+
+.friend-modal-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.friend-modal-tip i {
+    color: #f1c40f;
+    font-size: 16px;
+    margin-top: 2px;
+    text-shadow: 0 0 8px rgba(241, 196, 15, 0.4);
+}
+
+.friend-modal-tip p {
+    color: #9ba3c2;
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.5;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobil uyumluluk için düzenlemeler */
+@media (max-width: 576px) {
+    .friend-search-form {
+        flex-direction: column;
+    }
+
+    .friend-search-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .friend-modal-title h2 {
+        font-size: 18px;
+    }
+
+    .friend-modal-content {
+        padding: 20px;
+    }
+
+    .friend-modal-footer {
+        padding: 16px 20px;
+    }
+}

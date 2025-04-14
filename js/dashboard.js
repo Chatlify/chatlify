@@ -1273,98 +1273,116 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
     });
 }
 
-// Helper function to show the modal
-function showModal(modalElement) {
-    if (modalElement) {
-        modalElement.style.display = 'flex'; // Use 'flex' or 'block' based on your CSS
-        // Optionally add a class for animations
-        // modalElement.classList.add('modal-visible');
-    }
-}
-
-// Helper function to hide the modal
-function hideModal(modalElement) {
-    if (modalElement) {
-        modalElement.style.display = 'none';
-        // Optionally remove the animation class
-        // modalElement.classList.remove('modal-visible');
-    }
-}
-
 // Arkadaş Ekle modalını kur
 function setupAddFriendModal() {
-    const addFriendButton = document.querySelector('.add-friend-btn'); // Selector for your "Add Friend" button
-    const addFriendModal = document.getElementById('addFriendModal'); // ID of your modal container
-    const closeModalButton = addFriendModal?.querySelector('.close-modal-btn'); // Selector for the close button inside the modal
-    const addFriendForm = addFriendModal?.querySelector('#add-friend-form'); // ID of the form inside the modal
-    const usernameInput = addFriendModal?.querySelector('#add-friend-username-input'); // ID of the username input
-    const messageArea = addFriendModal?.querySelector('.modal-message-area'); // Selector for the message area
+    const addFriendBtn = document.querySelector('.add-friend-btn');
+    const modalOverlay = document.getElementById('addFriendModal');
+    const closeModalBtn = document.getElementById('closeFriendModal');
+    const friendForm = document.getElementById('friendSearchForm');
+    const usernameInput = document.getElementById('friendUsernameInput');
+    const messageArea = document.querySelector('.friend-search-message');
 
-    if (!addFriendButton || !addFriendModal || !closeModalButton || !addFriendForm || !usernameInput || !messageArea) {
-        console.warn('Arkadaş Ekle modal elementleri bulunamadı. Buton işlevsiz olabilir.');
+    if (!addFriendBtn || !modalOverlay || !closeModalBtn || !friendForm || !usernameInput) {
+        console.warn('Arkadaş ekleme modalı için gerekli elementler bulunamadı.');
         return;
     }
 
-    // Show modal when Add Friend button is clicked
-    addFriendButton.addEventListener('click', () => {
-        showModal(addFriendModal);
-        usernameInput.focus(); // Focus the input when modal opens
-        // Clear previous messages
-        messageArea.style.display = 'none';
-        messageArea.textContent = '';
-        messageArea.className = 'modal-message-area'; // Reset classes
-    });
+    // Modalı göster
+    const showFriendModal = () => {
+        modalOverlay.style.display = 'flex';
+        // Animasyon için active sınıfını ekle
+        setTimeout(() => {
+            modalOverlay.classList.add('active');
+            usernameInput.focus(); // Input'a otomatik odaklan
+        }, 10);
+    };
 
-    // Hide modal when close button is clicked
-    closeModalButton.addEventListener('click', () => {
-        hideModal(addFriendModal);
-    });
+    // Modalı gizle
+    const hideFriendModal = () => {
+        modalOverlay.classList.remove('active');
+        // Animasyon tamamlandıktan sonra display özelliğini değiştir
+        setTimeout(() => {
+            modalOverlay.style.display = 'none';
+            // İçeriği temizle
+            usernameInput.value = '';
+            if (messageArea) {
+                messageArea.style.display = 'none';
+                messageArea.textContent = '';
+                messageArea.className = 'friend-search-message';
+            }
+        }, 300);
+    };
 
-    // Hide modal when clicking outside the modal content
-    addFriendModal.addEventListener('click', (event) => {
-        if (event.target === addFriendModal) {
-            hideModal(addFriendModal);
+    // Mesaj gösterme fonksiyonu
+    const showMessage = (message, type = 'info') => {
+        if (!messageArea) return;
+
+        messageArea.textContent = message;
+        messageArea.className = 'friend-search-message'; // Önceki sınıfları temizle
+        messageArea.classList.add(type); // 'success', 'error', veya 'info'
+        messageArea.style.display = 'flex';
+
+        // Mesaj alanına düzgünce kaydır
+        messageArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    };
+
+    // Arkadaş Ekle butonuna tıklama işlevini ekle
+    addFriendBtn.addEventListener('click', showFriendModal);
+
+    // Kapatma butonuna tıklama işlevini ekle
+    closeModalBtn.addEventListener('click', hideFriendModal);
+
+    // Modal dışına tıklandığında kapat
+    modalOverlay.addEventListener('click', (event) => {
+        if (event.target === modalOverlay) {
+            hideFriendModal();
         }
     });
 
-    // Handle form submission
-    addFriendForm.addEventListener('submit', async (event) => {
-        event.preventDefault(); // Prevent default form submission
+    // Klavye kontrolü ekle (ESC tuşuyla kapat)
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && modalOverlay.classList.contains('active')) {
+            hideFriendModal();
+        }
+    });
+
+    // Form gönderimini işle
+    friendForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
         const username = usernameInput.value.trim();
-        const submitButton = addFriendForm.querySelector('.modal-submit-button'); // Selector for the submit button
+        const submitButton = friendForm.querySelector('.friend-search-button');
 
         if (!username) {
-            displayModalMessage('Lütfen bir kullanıcı adı girin.', 'error', messageArea);
+            showMessage('Lütfen bir kullanıcı adı girin.', 'error');
             return;
         }
 
-        if (submitButton) submitButton.disabled = true; // Disable button during request
-        displayModalMessage('Arkadaşlık isteği gönderiliyor...', 'info', messageArea); // Use 'info' or similar class for loading
+        if (submitButton) submitButton.disabled = true;
+        showMessage('Kullanıcı aranıyor...', 'info');
 
         try {
-            // 1. Find the user by username
+            // 1. Kullanıcıyı kullanıcı adına göre bul
             const { data: users, error: findError } = await supabase
                 .from('users')
-                .select('id')
+                .select('id, username, avatar')
                 .eq('username', username)
-                .neq('id', currentUserId); // Exclude self
+                .neq('id', currentUserId) // Kendini hariç tut
+                .limit(1);
 
             if (findError) throw new Error(`Kullanıcı aranırken hata: ${findError.message}`);
+
             if (!users || users.length === 0) {
                 throw new Error(`'${username}' kullanıcısı bulunamadı.`);
             }
-            if (users.length > 1) {
-                // Should ideally not happen if username is unique, but handle just in case
-                throw new Error(`'${username}' ile eşleşen birden fazla kullanıcı bulundu. Lütfen daha belirgin bir kullanıcı adı deneyin.`);
-            }
 
-            const friendId = users[0].id;
+            const friend = users[0];
 
-            // 2. Check if already friends or request pending
+            // 2. Zaten arkadaş olup olmadığını veya bekleyen istek olup olmadığını kontrol et
             const { data: existingFriendship, error: checkError } = await supabase
                 .from('friendships')
-                .select('id, status')
-                .or(`(user_id_1.eq.${currentUserId},user_id_2.eq.${friendId}),(user_id_1.eq.${friendId},user_id_2.eq.${currentUserId})`)
+                .select('id, status, user_id_1, user_id_2')
+                .or(`(user_id_1.eq.${currentUserId},user_id_2.eq.${friend.id}),(user_id_1.eq.${friend.id},user_id_2.eq.${currentUserId})`)
                 .maybeSingle();
 
             if (checkError) throw new Error(`Arkadaşlık durumu kontrol edilirken hata: ${checkError.message}`);
@@ -1373,45 +1391,46 @@ function setupAddFriendModal() {
                 if (existingFriendship.status === 'accepted') {
                     throw new Error(`'${username}' ile zaten arkadaşsınız.`);
                 } else if (existingFriendship.status === 'pending') {
-                    throw new Error(`'${username}' kullanıcısına zaten bir istek gönderilmiş veya ondan bir istek var.`);
+                    // Kimin kime istek gönderdiğini kontrol et
+                    if (existingFriendship.user_id_1 === currentUserId) {
+                        throw new Error(`'${username}' kullanıcısına zaten arkadaşlık isteği gönderilmiş.`);
+                    } else {
+                        throw new Error(`'${username}' kullanıcısından bekleyen bir arkadaşlık isteğiniz var. Gelen istekleri kontrol edin.`);
+                    }
                 } else if (existingFriendship.status === 'blocked') {
                     throw new Error(`Bu kullanıcıyla etkileşim kuramazsınız.`);
                 }
             }
 
-
-            // 3. Send friend request
+            // 3. Yeni arkadaşlık isteği gönder
             const { error: insertError } = await supabase
                 .from('friendships')
                 .insert({
                     user_id_1: currentUserId,
-                    user_id_2: friendId,
+                    user_id_2: friend.id,
                     status: 'pending'
                 });
 
             if (insertError) throw new Error(`Arkadaşlık isteği gönderilirken hata: ${insertError.message}`);
 
-            displayModalMessage(`'${username}' kullanıcısına arkadaşlık isteği gönderildi!`, 'success', messageArea);
-            usernameInput.value = ''; // Clear input on success
-            // Optionally close the modal after a short delay
-            // setTimeout(() => hideModal(addFriendModal), 2000);
+            // Başarılı mesajı göster
+            showMessage(`'${username}' kullanıcısına arkadaşlık isteği gönderildi!`, 'success');
+            usernameInput.value = ''; // Input'u temizle
+
+            // Bekleyen istekleri güncelle (isteğe bağlı)
+            const pendingList = document.querySelector('.pending-requests');
+            const pendingCountBadge = document.querySelector('.pending-count');
+            if (pendingList && pendingCountBadge) {
+                loadPendingRequests(pendingList, pendingCountBadge);
+            }
 
         } catch (error) {
             console.error('Arkadaş ekleme hatası:', error);
-            displayModalMessage(error.message || 'Bir hata oluştu.', 'error', messageArea);
+            showMessage(error.message || 'Bir hata oluştu. Lütfen daha sonra tekrar deneyin.', 'error');
         } finally {
-            if (submitButton) submitButton.disabled = false; // Re-enable button
+            if (submitButton) submitButton.disabled = false;
         }
     });
-}
 
-// Helper function to display messages inside the modal
-function displayModalMessage(message, type, messageAreaElement) {
-    if (messageAreaElement) {
-        messageAreaElement.textContent = message;
-        // Reset classes and add the new type
-        messageAreaElement.className = 'modal-message-area'; // Base class
-        messageAreaElement.classList.add(type); // 'success', 'error', or 'info'
-        messageAreaElement.style.display = 'flex'; // Show the message area
-    }
+    console.log('Arkadaş ekleme modalı başarıyla ayarlandı.');
 } 
