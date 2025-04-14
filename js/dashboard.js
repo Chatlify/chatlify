@@ -1382,7 +1382,8 @@ function setupAddFriendModal() {
             const { data: existingFriendship, error: checkError } = await supabase
                 .from('friendships')
                 .select('id, status, user_id_1, user_id_2')
-                .or(`(user_id_1.eq.${currentUserId},user_id_2.eq.${friend.id}),(user_id_1.eq.${friend.id},user_id_2.eq.${currentUserId})`)
+                .or(`user_id_1.eq.${currentUserId},user_id_2.eq.${friend.id}`)
+                .or(`user_id_1.eq.${friend.id},user_id_2.eq.${currentUserId}`)
                 .maybeSingle();
 
             if (checkError) throw new Error(`Arkadaşlık durumu kontrol edilirken hata: ${checkError.message}`);
