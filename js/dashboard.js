@@ -289,35 +289,20 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
             const avatar = friendUser.avatar || defaultAvatar;
             const userId = friendUser.id;
 
-            // Arkadaş satırını oluştur
-            const friendRow = createFriendRow(userId, username, avatar);
+            // Başlangıç online durumunu kontrol et
+            const isInitiallyOnline = onlineFriends.has(userId);
 
-            // DM satırını oluştur
-            const dmRow = createDMRow(userId, username, avatar);
+            // Arkadaş satırını oluştur ve durumu ayarla
+            const friendRow = createFriendRow(userId, username, avatar, isInitiallyOnline);
+
+            // DM satırını oluştur ve durumu ayarla
+            const dmRow = createDMRow(userId, username, avatar, isInitiallyOnline);
 
             // Online durumuna göre ekle
-            if (onlineFriends.has(userId)) {
-                friendRow.classList.add('online');
-                friendRow.classList.remove('offline');
-                friendRow.querySelector('.status-dot').className = 'status-dot online';
-                friendRow.querySelector('.friend-status').textContent = 'Çevrimiçi';
+            if (isInitiallyOnline) {
                 onlineFragment.appendChild(friendRow);
-
-                if (dmRow) {
-                    dmRow.querySelector('.dm-status').className = 'dm-status online';
-                    dmRow.querySelector('.dm-activity').textContent = 'Çevrimiçi';
-                }
             } else {
-                friendRow.classList.add('offline');
-                friendRow.classList.remove('online');
-                friendRow.querySelector('.status-dot').className = 'status-dot offline';
-                friendRow.querySelector('.friend-status').textContent = 'Çevrimdışı';
                 offlineFragment.appendChild(friendRow);
-
-                if (dmRow) {
-                    dmRow.querySelector('.dm-status').className = 'dm-status offline';
-                    dmRow.querySelector('.dm-activity').textContent = 'Çevrimdışı';
-                }
             }
 
             // DM satırını her zaman ekle
@@ -374,9 +359,11 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
         offlineList.innerHTML = '';
     }
 
-    function createFriendRow(userId, username, avatar) {
+    function createFriendRow(userId, username, avatar, isOnline) {
         const friendElement = document.createElement('div');
-        friendElement.className = 'friend-row';
+        const statusClass = isOnline ? 'online' : 'offline';
+        const statusText = isOnline ? 'Çevrimiçi' : 'Çevrimdışı';
+        friendElement.className = `friend-row ${statusClass}`;
         friendElement.dataset.userId = userId;
         friendElement.dataset.username = username;
         friendElement.dataset.avatar = avatar;
@@ -384,19 +371,21 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
         friendElement.innerHTML = `
                     <div class="friend-avatar">
                 <img src="${avatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
-                        <span class="status-dot offline"></span>
+                        <span class="status-dot ${statusClass}"></span>
                             </div>
                     <div class="friend-info">
                 <div class="friend-name">${username}</div>
-                <div class="friend-status">Çevrimdışı</div>
+                <div class="friend-status">${statusText}</div>
                     </div>
                 `;
 
         return friendElement;
     }
 
-    function createDMRow(userId, username, avatar) {
+    function createDMRow(userId, username, avatar, isOnline) {
         const dmElement = document.createElement('div');
+        const statusClass = isOnline ? 'online' : 'offline';
+        const statusText = isOnline ? 'Çevrimiçi' : 'Çevrimdışı';
         dmElement.className = 'dm-item';
         dmElement.dataset.userId = userId;
         dmElement.dataset.username = username;
@@ -405,11 +394,11 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
         dmElement.innerHTML = `
             <div class="dm-avatar">
                 <img src="${avatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
-                <div class="dm-status offline"></div>
+                <div class="dm-status ${statusClass}"></div>
              </div>
             <div class="dm-info">
                 <div class="dm-name">${username}</div>
-                <div class="dm-activity">Çevrimdışı</div>
+                <div class="dm-activity">${statusText}</div>
         </div>
     `;
 
@@ -797,209 +786,134 @@ function hideContextMenu(menu) {
     }
 }
 
-// Presence takip sistemini başlat
+// initializePresence fonksiyon tanımı
 function initializePresence() {
-    const { data: { user } } = supabase.auth.getSession();
-    if (!user) return;
+    if (!supabase || !currentUserId) {
+        console.error('Presence başlatılamadı: Supabase veya kullanıcı ID eksik.');
+        return;
+    }
 
-    const userId = user.id;
-    const presenceChannel = supabase.channel('online', {
+    console.log("Presence sistemi başlatılıyor...");
+
+    // Online kullanıcıları takip etmek için kanal oluştur
+    presenceChannel = supabase.channel('online-users', {
         config: {
             presence: {
-                key: userId,
-            },
-        },
-    });
-
-    // Presence olaylarını dinle
-    presenceChannel
-        .on('presence', { event: 'sync' }, () => {
-            const state = presenceChannel.presenceState();
-            console.log('Presence durumu senkronize edildi:', state);
-            updateOnlineStatus(state);
-        })
-        .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-            console.log('Kullanıcı katıldı:', key, newPresences);
-            const state = presenceChannel.presenceState();
-            updateOnlineStatus(state);
-        })
-        .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-            console.log('Kullanıcı ayrıldı:', key, leftPresences);
-            const state = presenceChannel.presenceState();
-            updateOnlineStatus(state);
-        })
-        .subscribe(async (status) => {
-            if (status === 'SUBSCRIBED') {
-                // Kendi durumumuzu 'online' olarak ayarla
-                await presenceChannel.track({ online_at: new Date().toISOString() });
-                console.log('Presence kanalına abone olundu, durum: Çevrimiçi');
+                key: currentUserId // Her istemciyi benzersiz şekilde tanımla
             }
-        });
-
-    // Sayfa unload olduğunda çevrimdışı olarak işaretleyelim
-    window.addEventListener('beforeunload', async () => {
-        await presenceChannel.untrack();
-        console.log('Kullanıcı sayfadan ayrıldı, durum: Çevrimdışı');
+        }
     });
 
-    // Sayfa görünür olmadığında çevrimdışı olarak işaretleyelim
-    document.addEventListener('visibilitychange', async () => {
-        if (document.visibilityState === 'hidden') {
-            await presenceChannel.untrack();
-            console.log('Sayfa gizlendi, durum: Çevrimdışı');
+    // Kanala katıldığında tetiklenir
+    presenceChannel.on('presence', { event: 'sync' }, () => {
+        console.log('Presence durumu senkronize edildi.');
+        const presenceState = presenceChannel.presenceState();
+
+        // Başlangıçta online olan tüm arkadaşları güncelle
+        onlineFriends.clear(); // Önceki durumu temizle
+        for (const id in presenceState) {
+            if (id !== currentUserId) { // Kendimizi eklemeyelim
+                onlineFriends.add(id);
+            }
+        }
+        // Tüm arkadaş listesini dolaşarak UI'ı güncelle
+        updateAllFriendsOnlineStatus();
+        console.log('Başlangıçtaki online arkadaşlar:', Array.from(onlineFriends));
+    });
+
+    // Bir kullanıcı katıldığında tetiklenir
+    presenceChannel.on('presence', { event: 'join' }, ({ key, newPresences }) => {
+        console.log('Kullanıcı katıldı:', key, newPresences);
+        if (key !== currentUserId) {
+            onlineFriends.add(key);
+            updateOnlineStatusUI(key, true); // UI'ı güncelle
+        }
+    });
+
+    // Bir kullanıcı ayrıldığında tetiklenir
+    presenceChannel.on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+        console.log('Kullanıcı ayrıldı:', key, leftPresences);
+        if (key !== currentUserId) {
+            onlineFriends.delete(key);
+            updateOnlineStatusUI(key, false); // UI'ı güncelle
+        }
+    });
+
+    // Kanala abone ol
+    presenceChannel.subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+            console.log('Presence kanalına başarıyla abone olundu.');
+            // Kendimizi online olarak işaretle
+            const statusUpdate = await presenceChannel.track({ online_at: new Date().toISOString() });
+            console.log('Online durumu takip isteği sonucu:', statusUpdate);
         } else {
-            await presenceChannel.track({ online_at: new Date().toISOString() });
-            console.log('Sayfa görünür oldu, durum: Çevrimiçi');
+            console.warn(`Presence kanalı abonelik durumu: ${status}`);
         }
     });
-
-    // Presence kanalını global olarak erişilebilir yapalım
-    window.presenceChannel = presenceChannel;
-
-    return presenceChannel;
 }
 
-// Çevrimiçi kullanıcıları güncelleme
-function updateOnlineStatus(presenceState) {
-    // Eski online kullanıcıları temizle
-    onlineFriends.clear();
+// Belirli bir kullanıcının online durumunu UI'da günceller
+function updateOnlineStatusUI(userId, isOnline) {
+    console.log(`UI güncelleniyor: Kullanıcı ${userId}, Online: ${isOnline}`);
+    const statusClass = isOnline ? 'online' : 'offline';
+    const statusText = isOnline ? 'Çevrimiçi' : 'Çevrimdışı';
 
-    // Presence durumundan online kullanıcıları al
-    Object.keys(presenceState).forEach(userId => {
-        if (presenceState[userId].length > 0) {
-            onlineFriends.add(userId);
-        }
-    });
-
-    console.log('Çevrimiçi arkadaşlar güncellendi:', Array.from(onlineFriends));
-
-    // UI elemanlarını güncelle
-    updateFriendStatusUI();
-
-    // DM listesini güncelle
-    updateDMListStatus();
-}
-
-// Arkadaşlar listesindeki durumları güncelleme
-function updateFriendStatusUI() {
-    // Tüm arkadaş satırlarını seç
-    const friendRows = document.querySelectorAll('.friend-row');
-
+    // 1. Arkadaş Listesi (.friend-row)
+    const friendRows = document.querySelectorAll(`.friend-row[data-user-id="${userId}"]`);
     friendRows.forEach(row => {
-        const userId = row.dataset.userId;
-        if (!userId) return;
-
-        const statusElement = row.querySelector('.friend-status');
-        if (!statusElement) return;
-
-        // Durum noktasını kaldırıyoruz
+        row.classList.remove('online', 'offline');
+        row.classList.add(statusClass);
         const statusDot = row.querySelector('.status-dot');
-        if (statusDot) statusDot.remove();
+        const statusElement = row.querySelector('.friend-status');
+        if (statusDot) statusDot.className = `status-dot ${statusClass}`;
+        if (statusElement) statusElement.textContent = statusText;
 
-        if (onlineFriends.has(userId)) {
-            // Çevrimiçi
-            statusElement.textContent = 'Çevrimiçi';
-            statusElement.classList.add('online-status');
-            statusElement.classList.remove('offline-status');
-
-            // Satırı online kategorisine taşı
-            const currentParent = row.parentElement;
-            if (currentParent && currentParent.classList.contains('offline-friends')) {
-                const onlineList = document.querySelector('.online-friends');
-                if (onlineList) {
-                    onlineList.appendChild(row);
-                }
+        // Arkadaşı doğru listeye taşı (online/offline)
+        const onlineList = document.querySelector('.online-friends');
+        const offlineList = document.querySelector('.offline-friends');
+        if (isOnline) {
+            if (offlineList && offlineList.contains(row)) {
+                onlineList.appendChild(row);
             }
         } else {
-            // Çevrimdışı
-            statusElement.textContent = 'Çevrimdışı';
-            statusElement.classList.add('offline-status');
-            statusElement.classList.remove('online-status');
-
-            // Satırı offline kategorisine taşı
-            const currentParent = row.parentElement;
-            if (currentParent && currentParent.classList.contains('online-friends')) {
-                const offlineList = document.querySelector('.offline-friends');
-                if (offlineList) {
-                    offlineList.appendChild(row);
-                }
+            if (onlineList && onlineList.contains(row)) {
+                offlineList.appendChild(row);
             }
         }
     });
+
+    // 2. DM Listesi (.dm-item)
+    const dmItems = document.querySelectorAll(`.dm-item[data-user-id="${userId}"]`);
+    dmItems.forEach(item => {
+        const statusDot = item.querySelector('.dm-status'); // DM'deki durum noktası
+        const statusElement = item.querySelector('.dm-activity');
+        if (statusDot) statusDot.className = `dm-status ${statusClass}`;
+        if (statusElement) statusElement.textContent = statusText;
+    });
+
+    // 3. Aktif Sohbet Paneli Başlığı
+    const chatPanel = document.querySelector('.chat-panel');
+    if (chatPanel && chatPanel.dataset.activeChatUserId === userId) {
+        const chatStatusDot = chatPanel.querySelector('.chat-header-user .status-dot');
+        const chatStatusText = chatPanel.querySelector('.chat-header-user .chat-status');
+        if (chatStatusDot) chatStatusDot.className = `status-dot ${statusClass}`;
+        if (chatStatusText) chatStatusText.textContent = statusText;
+    }
 
     // Sayaçları güncelle
     updateFriendCounters();
 }
 
-// DM listesindeki durumları güncelleme
-function updateDMListStatus() {
-    // Tüm DM satırlarını seç
-    const dmItems = document.querySelectorAll('.dm-item');
-
-    dmItems.forEach(item => {
-        const userId = item.dataset.userId;
-        if (!userId) return;
-
-        // Durum göstergesini güncelle
-        const statusIndicator = item.querySelector('.dm-status');
-        const activityText = item.querySelector('.dm-activity');
-
-        if (onlineFriends.has(userId)) {
-            // Çevrimiçi
-            if (statusIndicator) {
-                statusIndicator.className = 'dm-status online';
-            }
-            if (activityText) {
-                activityText.textContent = 'Çevrimiçi';
-                activityText.classList.add('online-status');
-                activityText.classList.remove('offline-status');
-            }
-        } else {
-            // Çevrimdışı
-            if (statusIndicator) {
-                statusIndicator.className = 'dm-status offline';
-            }
-            if (activityText) {
-                activityText.textContent = 'Çevrimdışı';
-                activityText.classList.add('offline-status');
-                activityText.classList.remove('online-status');
-            }
+// Tüm arkadaşların online durumunu başlangıçta ayarlar
+function updateAllFriendsOnlineStatus() {
+    const allFriendElements = document.querySelectorAll('.friend-row[data-user-id], .dm-item[data-user-id]');
+    allFriendElements.forEach(element => {
+        const userId = element.dataset.userId;
+        if (userId && userId !== currentUserId) {
+            const isOnline = onlineFriends.has(userId);
+            updateOnlineStatusUI(userId, isOnline); // Her arkadaş için durumu güncelle
         }
     });
-}
-
-// Aktif sohbetteki kişinin durumunu güncelle
-function updateActiveChatStatus(userId) {
-    const chatPanel = document.querySelector('.chat-panel');
-    if (!chatPanel || chatPanel.classList.contains('hidden')) return;
-
-    const activeChatUserId = chatPanel.dataset.activeChatUserId;
-    if (!activeChatUserId || activeChatUserId !== userId) return;
-
-    const chatStatusDot = chatPanel.querySelector('.chat-avatar .status-dot');
-    const chatStatusText = chatPanel.querySelector('.chat-user-info .chat-status');
-
-    if (onlineFriends.has(userId)) {
-        // Çevrimiçi
-        if (chatStatusDot) {
-            chatStatusDot.className = 'status-dot online';
-        }
-        if (chatStatusText) {
-            chatStatusText.textContent = 'Çevrimiçi';
-            chatStatusText.classList.add('online-status');
-            chatStatusText.classList.remove('offline-status');
-        }
-    } else {
-        // Çevrimdışı
-        if (chatStatusDot) {
-            chatStatusDot.className = 'status-dot offline';
-        }
-        if (chatStatusText) {
-            chatStatusText.textContent = 'Çevrimdışı';
-            chatStatusText.classList.add('offline-status');
-            chatStatusText.classList.remove('online-status');
-        }
-    }
 }
 
 // showSection fonksiyon tanımı
@@ -1068,8 +982,6 @@ function showSection(sectionName) {
     }
 }
 
-// ... existing code ...
-
 async function openChatPanel(userId, username, avatar) {
     // Panel elementlerini al
     const chatPanel = document.querySelector('.chat-panel');
@@ -1107,7 +1019,7 @@ async function openChatPanel(userId, username, avatar) {
     if (chatUsernameElement) chatUsernameElement.textContent = username;
     if (chatAvatarElement) chatAvatarElement.src = avatar || defaultAvatar;
 
-    // Çevrimiçi durumunu kontrol et
+    // Çevrimiçi durumunu KONTROL ET (`onlineFriends` setinden)
     const isFriendOnline = onlineFriends.has(userId);
     const statusText = isFriendOnline ? 'Çevrimiçi' : 'Çevrimdışı';
     const statusClass = isFriendOnline ? 'online' : 'offline';
@@ -2035,67 +1947,4 @@ async function subscribeFriendshipUpdates() {
     } catch (error) {
         console.error('Arkadaşlık durumu aboneliğinde hata:', error);
     }
-}
-
-// showChatPanel fonksiyonu
-function showChatPanel(userId, username, avatarUrl) {
-    console.log(`Sohbet paneli gösteriliyor: ${userId} - ${username}`);
-
-    // Gerekli elementleri seç
-    const friendsPanel = document.querySelector('.friends-panel-container');
-    const chatPanel = document.querySelector('.chat-panel');
-    const chatAvatar = document.querySelector('.chat-avatar img');
-    const chatUsername = document.querySelector('.chat-user-info .chat-username');
-    const chatStatus = document.querySelector('.chat-user-info .chat-status');
-    const statusDot = document.querySelector('.chat-avatar .status-dot');
-
-    if (!chatPanel || !friendsPanel) {
-        console.error("Sohbet paneli veya arkadaşlar paneli bulunamadı.");
-        return;
-    }
-
-    // Kullanıcı bilgilerini ayarla
-    chatPanel.dataset.activeChatUserId = userId;
-    if (chatAvatar) chatAvatar.src = avatarUrl || 'img/default-avatar.png';
-    if (chatUsername) chatUsername.textContent = username;
-
-    // Çevrimiçi/çevrimdışı durumunu belirle
-    const isOnline = onlineFriends.has(userId);
-    if (statusDot) {
-        statusDot.className = isOnline ? 'status-dot online' : 'status-dot offline';
-    }
-    if (chatStatus) {
-        chatStatus.textContent = isOnline ? 'Çevrimiçi' : 'Çevrimdışı';
-        chatStatus.className = 'chat-status ' + (isOnline ? 'online-status' : 'offline-status');
-    }
-
-    // Mesajları temizle
-    const chatMessages = document.querySelector('.chat-messages');
-    if (chatMessages) chatMessages.innerHTML = '';
-
-    // Panelleri değiştir
-    friendsPanel.classList.add('hidden');
-    chatPanel.classList.remove('hidden');
-
-    // Mesaj kutusuna fokuslan
-    const messageInput = document.querySelector('.message-input');
-    if (messageInput) {
-        setTimeout(() => {
-            messageInput.focus();
-        }, 100);
-    }
-
-    // Mesajları yükle
-    loadMessages(userId);
-}
-
-// closeChatPanel fonksiyonu
-function closeChatPanel() {
-    console.log("Sohbet paneli kapatılıyor");
-
-    const chatPanel = document.querySelector('.chat-panel');
-    if (chatPanel) {
-        chatPanel.classList.add('hidden');
-        chatPanel.dataset.activeChatUserId = '';
-    }
-}
+} 
