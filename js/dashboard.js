@@ -8,9 +8,20 @@ let currentConversationId = null; // Aktif sohbet için ID
 let messageSubscription = null; // Realtime mesaj aboneliği
 let sampleColumnFormat = 'camelCase'; // Varsayılan olarak camelCase formatını kullan
 const defaultAvatar = 'images/DefaultAvatar.png';
+let messageNotificationSound = null; // Ses nesnesi için global değişken
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Dashboard JS başlatılıyor...');
+
+    // Ses dosyasını yükle
+    try {
+        messageNotificationSound = new Audio('sounds/MessageNotificationSound.mp3');
+        messageNotificationSound.load(); // Tarayıcının sesi önceden yüklemesini sağla
+        console.log('Mesaj bildirim sesi yüklendi.');
+    } catch (error) {
+        console.error('Mesaj bildirim sesi yüklenirken hata:', error);
+        messageNotificationSound = null; // Hata durumunda null yap
+    }
 
     try {
         // Element tanımlamaları
@@ -951,6 +962,18 @@ async function subscribeToMessages(conversationId) {
 
                     // Alınan bilgilerle displayMessage fonksiyonunu çağır
                     displayMessage(payload.new, senderUsername, senderAvatar);
+
+                    // Bildirim sesini çal
+                    if (messageNotificationSound) {
+                        try {
+                            // Sesi başa sar (arka arkaya gelen mesajlar için)
+                            messageNotificationSound.currentTime = 0;
+                            await messageNotificationSound.play();
+                        } catch (playError) {
+                            console.warn('Bildirim sesi çalınamadı:', playError);
+                            // Tarayıcı politikaları veya ses dosyası hatası olabilir
+                        }
+                    }
                 }
             })
             .subscribe((status) => {
