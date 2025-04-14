@@ -662,14 +662,14 @@
 
 .dm-status {
     position: absolute;
-    bottom: -2px;
-    right: -2px;
+    bottom: 0;
+    right: 0;
     width: 10px;
     height: 10px;
     border-radius: 50%;
     background-color: var(--status-offline);
     box-shadow: 0 0 0 2px var(--dm-bg);
-    z-index: 1;
+    z-index: 5;
 }
 
 .dm-status.online {
@@ -6695,7 +6695,7 @@ emoji-picker {
 
 /* Online Durumu için Yeşil Renk */
 .friend-row.online .friend-status,
-.dm-item .dm-status.online+.dm-info .dm-activity,
+.dm-item.online .dm-activity,
 .chat-header-user .status-dot.online+.chat-user-info .chat-status {
     color: var(--success-color);
     /* Daha belirgin yeşil */
@@ -6704,7 +6704,7 @@ emoji-picker {
 
 /* Offline Durumu için Gri Renk (Zaten var ama tutarlılık için) */
 .friend-row.offline .friend-status,
-.dm-item .dm-status.offline+.dm-info .dm-activity,
+.dm-item.offline .dm-activity,
 .chat-header-user .status-dot.offline+.chat-user-info .chat-status {
     color: var(--text-secondary);
     /* Varsayılan gri */

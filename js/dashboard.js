@@ -384,9 +384,9 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
 
     function createDMRow(userId, username, avatar, isOnline) {
         const dmElement = document.createElement('div');
-        const statusClass = isOnline ? 'online' : 'offline';
+        const statusClass = isOnline ? 'online' : 'offline'; // Bu hala metin için kullanılacak
         const statusText = isOnline ? 'Çevrimiçi' : 'Çevrimdışı';
-        dmElement.className = 'dm-item';
+        dmElement.className = `dm-item ${statusClass}`; // dm-item'a sınıfı ekleyelim
         dmElement.dataset.userId = userId;
         dmElement.dataset.username = username;
         dmElement.dataset.avatar = avatar;
@@ -394,7 +394,7 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
         dmElement.innerHTML = `
             <div class="dm-avatar">
                 <img src="${avatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
-                <div class="dm-status ${statusClass}"></div>
+                <!-- Avatar içindeki status-dot kaldırıldı -->
              </div>
             <div class="dm-info">
                 <div class="dm-name">${username}</div>
@@ -909,9 +909,14 @@ function updateOnlineStatusUI(userId, isOnline) {
     // 2. DM Listesi (.dm-item)
     const dmItems = document.querySelectorAll(`.dm-item[data-user-id="${userId}"]`);
     dmItems.forEach(item => {
-        const statusDot = item.querySelector('.dm-status'); // DM'deki durum noktası
+        item.classList.remove('online', 'offline'); // Önceki sınıfları kaldır
+        item.classList.add(statusClass); // Yeni sınıfı dm-item'a ekle
+
+        // Avatar içindeki kaldırıldığı için burası yoruma alınabilir veya kaldırılabilir
+        // const statusDot = item.querySelector('.dm-status'); 
+        // if (statusDot) statusDot.className = `dm-status ${statusClass}`;
+
         const statusElement = item.querySelector('.dm-activity');
-        if (statusDot) statusDot.className = `dm-status ${statusClass}`;
         if (statusElement) statusElement.textContent = statusText;
     });
 
