@@ -797,10 +797,209 @@ function hideContextMenu(menu) {
     }
 }
 
-// initializePresence fonksiyon tanımı (içi boş kalsa da fonksiyonun var olması önemli)
+// Presence takip sistemini başlat
 function initializePresence() {
-    // Bu fonksiyonun içeriği varsa korunmalı, yoksa boş kalabilir.
-    // console.log("Presence sistemi başlatılıyor...");
+    const { data: { user } } = supabase.auth.getSession();
+    if (!user) return;
+
+    const userId = user.id;
+    const presenceChannel = supabase.channel('online', {
+        config: {
+            presence: {
+                key: userId,
+            },
+        },
+    });
+
+    // Presence olaylarını dinle
+    presenceChannel
+        .on('presence', { event: 'sync' }, () => {
+            const state = presenceChannel.presenceState();
+            console.log('Presence durumu senkronize edildi:', state);
+            updateOnlineStatus(state);
+        })
+        .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+            console.log('Kullanıcı katıldı:', key, newPresences);
+            const state = presenceChannel.presenceState();
+            updateOnlineStatus(state);
+        })
+        .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+            console.log('Kullanıcı ayrıldı:', key, leftPresences);
+            const state = presenceChannel.presenceState();
+            updateOnlineStatus(state);
+        })
+        .subscribe(async (status) => {
+            if (status === 'SUBSCRIBED') {
+                // Kendi durumumuzu 'online' olarak ayarla
+                await presenceChannel.track({ online_at: new Date().toISOString() });
+                console.log('Presence kanalına abone olundu, durum: Çevrimiçi');
+            }
+        });
+
+    // Sayfa unload olduğunda çevrimdışı olarak işaretleyelim
+    window.addEventListener('beforeunload', async () => {
+        await presenceChannel.untrack();
+        console.log('Kullanıcı sayfadan ayrıldı, durum: Çevrimdışı');
+    });
+
+    // Sayfa görünür olmadığında çevrimdışı olarak işaretleyelim
+    document.addEventListener('visibilitychange', async () => {
+        if (document.visibilityState === 'hidden') {
+            await presenceChannel.untrack();
+            console.log('Sayfa gizlendi, durum: Çevrimdışı');
+        } else {
+            await presenceChannel.track({ online_at: new Date().toISOString() });
+            console.log('Sayfa görünür oldu, durum: Çevrimiçi');
+        }
+    });
+
+    // Presence kanalını global olarak erişilebilir yapalım
+    window.presenceChannel = presenceChannel;
+
+    return presenceChannel;
+}
+
+// Çevrimiçi kullanıcıları güncelleme
+function updateOnlineStatus(presenceState) {
+    // Eski online kullanıcıları temizle
+    onlineFriends.clear();
+
+    // Presence durumundan online kullanıcıları al
+    Object.keys(presenceState).forEach(userId => {
+        if (presenceState[userId].length > 0) {
+            onlineFriends.add(userId);
+        }
+    });
+
+    console.log('Çevrimiçi arkadaşlar güncellendi:', Array.from(onlineFriends));
+
+    // UI elemanlarını güncelle
+    updateFriendStatusUI();
+
+    // DM listesini güncelle
+    updateDMListStatus();
+}
+
+// Arkadaşlar listesindeki durumları güncelleme
+function updateFriendStatusUI() {
+    // Tüm arkadaş satırlarını seç
+    const friendRows = document.querySelectorAll('.friend-row');
+
+    friendRows.forEach(row => {
+        const userId = row.dataset.userId;
+        if (!userId) return;
+
+        const statusElement = row.querySelector('.friend-status');
+        if (!statusElement) return;
+
+        // Durum noktasını kaldırıyoruz
+        const statusDot = row.querySelector('.status-dot');
+        if (statusDot) statusDot.remove();
+
+        if (onlineFriends.has(userId)) {
+            // Çevrimiçi
+            statusElement.textContent = 'Çevrimiçi';
+            statusElement.classList.add('online-status');
+            statusElement.classList.remove('offline-status');
+
+            // Satırı online kategorisine taşı
+            const currentParent = row.parentElement;
+            if (currentParent && currentParent.classList.contains('offline-friends')) {
+                const onlineList = document.querySelector('.online-friends');
+                if (onlineList) {
+                    onlineList.appendChild(row);
+                }
+            }
+        } else {
+            // Çevrimdışı
+            statusElement.textContent = 'Çevrimdışı';
+            statusElement.classList.add('offline-status');
+            statusElement.classList.remove('online-status');
+
+            // Satırı offline kategorisine taşı
+            const currentParent = row.parentElement;
+            if (currentParent && currentParent.classList.contains('online-friends')) {
+                const offlineList = document.querySelector('.offline-friends');
+                if (offlineList) {
+                    offlineList.appendChild(row);
+                }
+            }
+        }
+    });
+
+    // Sayaçları güncelle
+    updateFriendCounters();
+}
+
+// DM listesindeki durumları güncelleme
+function updateDMListStatus() {
+    // Tüm DM satırlarını seç
+    const dmItems = document.querySelectorAll('.dm-item');
+
+    dmItems.forEach(item => {
+        const userId = item.dataset.userId;
+        if (!userId) return;
+
+        // Durum göstergesini güncelle
+        const statusIndicator = item.querySelector('.dm-status');
+        const activityText = item.querySelector('.dm-activity');
+
+        if (onlineFriends.has(userId)) {
+            // Çevrimiçi
+            if (statusIndicator) {
+                statusIndicator.className = 'dm-status online';
+            }
+            if (activityText) {
+                activityText.textContent = 'Çevrimiçi';
+                activityText.classList.add('online-status');
+                activityText.classList.remove('offline-status');
+            }
+        } else {
+            // Çevrimdışı
+            if (statusIndicator) {
+                statusIndicator.className = 'dm-status offline';
+            }
+            if (activityText) {
+                activityText.textContent = 'Çevrimdışı';
+                activityText.classList.add('offline-status');
+                activityText.classList.remove('online-status');
+            }
+        }
+    });
+}
+
+// Aktif sohbetteki kişinin durumunu güncelle
+function updateActiveChatStatus(userId) {
+    const chatPanel = document.querySelector('.chat-panel');
+    if (!chatPanel || chatPanel.classList.contains('hidden')) return;
+
+    const activeChatUserId = chatPanel.dataset.activeChatUserId;
+    if (!activeChatUserId || activeChatUserId !== userId) return;
+
+    const chatStatusDot = chatPanel.querySelector('.chat-avatar .status-dot');
+    const chatStatusText = chatPanel.querySelector('.chat-user-info .chat-status');
+
+    if (onlineFriends.has(userId)) {
+        // Çevrimiçi
+        if (chatStatusDot) {
+            chatStatusDot.className = 'status-dot online';
+        }
+        if (chatStatusText) {
+            chatStatusText.textContent = 'Çevrimiçi';
+            chatStatusText.classList.add('online-status');
+            chatStatusText.classList.remove('offline-status');
+        }
+    } else {
+        // Çevrimdışı
+        if (chatStatusDot) {
+            chatStatusDot.className = 'status-dot offline';
+        }
+        if (chatStatusText) {
+            chatStatusText.textContent = 'Çevrimdışı';
+            chatStatusText.classList.add('offline-status');
+            chatStatusText.classList.remove('online-status');
+        }
+    }
 }
 
 // showSection fonksiyon tanımı
@@ -868,6 +1067,8 @@ function showSection(sectionName) {
         loadPendingRequests(pendingList, pendingCountBadge);
     }
 }
+
+// ... existing code ...
 
 async function openChatPanel(userId, username, avatar) {
     // Panel elementlerini al
@@ -1834,4 +2035,67 @@ async function subscribeFriendshipUpdates() {
     } catch (error) {
         console.error('Arkadaşlık durumu aboneliğinde hata:', error);
     }
-} 
+}
+
+// showChatPanel fonksiyonu
+function showChatPanel(userId, username, avatarUrl) {
+    console.log(`Sohbet paneli gösteriliyor: ${userId} - ${username}`);
+
+    // Gerekli elementleri seç
+    const friendsPanel = document.querySelector('.friends-panel-container');
+    const chatPanel = document.querySelector('.chat-panel');
+    const chatAvatar = document.querySelector('.chat-avatar img');
+    const chatUsername = document.querySelector('.chat-user-info .chat-username');
+    const chatStatus = document.querySelector('.chat-user-info .chat-status');
+    const statusDot = document.querySelector('.chat-avatar .status-dot');
+
+    if (!chatPanel || !friendsPanel) {
+        console.error("Sohbet paneli veya arkadaşlar paneli bulunamadı.");
+        return;
+    }
+
+    // Kullanıcı bilgilerini ayarla
+    chatPanel.dataset.activeChatUserId = userId;
+    if (chatAvatar) chatAvatar.src = avatarUrl || 'img/default-avatar.png';
+    if (chatUsername) chatUsername.textContent = username;
+
+    // Çevrimiçi/çevrimdışı durumunu belirle
+    const isOnline = onlineFriends.has(userId);
+    if (statusDot) {
+        statusDot.className = isOnline ? 'status-dot online' : 'status-dot offline';
+    }
+    if (chatStatus) {
+        chatStatus.textContent = isOnline ? 'Çevrimiçi' : 'Çevrimdışı';
+        chatStatus.className = 'chat-status ' + (isOnline ? 'online-status' : 'offline-status');
+    }
+
+    // Mesajları temizle
+    const chatMessages = document.querySelector('.chat-messages');
+    if (chatMessages) chatMessages.innerHTML = '';
+
+    // Panelleri değiştir
+    friendsPanel.classList.add('hidden');
+    chatPanel.classList.remove('hidden');
+
+    // Mesaj kutusuna fokuslan
+    const messageInput = document.querySelector('.message-input');
+    if (messageInput) {
+        setTimeout(() => {
+            messageInput.focus();
+        }, 100);
+    }
+
+    // Mesajları yükle
+    loadMessages(userId);
+}
+
+// closeChatPanel fonksiyonu
+function closeChatPanel() {
+    console.log("Sohbet paneli kapatılıyor");
+
+    const chatPanel = document.querySelector('.chat-panel');
+    if (chatPanel) {
+        chatPanel.classList.add('hidden');
+        chatPanel.dataset.activeChatUserId = '';
+    }
+}

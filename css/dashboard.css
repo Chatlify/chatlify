@@ -6674,3 +6674,81 @@ emoji-picker {
 .status-dot.pending {
     background-color: var(--warning-color);
 }
+
+/* Çevrimiçi/Çevrimdışı Durum Stilleri */
+.online-status {
+    color: var(--online-color);
+    font-weight: 500;
+}
+
+.offline-status {
+    color: var(--grey-medium);
+    font-weight: 400;
+}
+
+.friend-status {
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+    margin-left: 8px;
+}
+
+.dm-activity {
+    font-size: 0.8rem;
+    transition: color 0.3s ease;
+}
+
+/* DM listesi durum göstergesi */
+.dm-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.dm-status.online {
+    background-color: var(--online-color);
+}
+
+.dm-status.offline {
+    background-color: var(--grey-medium);
+}
+
+/* Arkadaş kategorileri */
+.friends-category {
+    margin-bottom: 12px;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.category-count {
+    margin-left: 8px;
+    background-color: var(--background-light);
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+}
+
+.online-friends,
+.offline-friends {
+    transition: max-height 0.3s ease;
+    overflow: hidden;
+}
+
+.friends-category.collapsed .online-friends,
+.friends-category.collapsed .offline-friends {
+    max-height: 0;
+}
+
+.category-header:hover {
+    background-color: var(--background-hover);
+    border-radius: 4px;
+    cursor: pointer;
+}
