@@ -92,6 +92,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Arkadaş Ekle modalını kur
         setupAddFriendModal();
 
+        // Arkadaşlık durumu için realtime abonelik başlat
+        subscribeFriendshipUpdates();
+
         console.log('Dashboard JS başlatma tamamlandı.');
     } catch (error) {
         console.error('Dashboard başlatma hatası:', error);
@@ -504,7 +507,7 @@ async function loadPendingRequests(pendingList, pendingCountBadge) {
             requestRow.innerHTML = `
                 <div class="friend-avatar">
                     <img src="${avatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
-                    <span class="status-dot"></span>
+                    <span class="status-dot pending"></span>
                 </div>
                 <div class="friend-info">
                     <div class="friend-name">${username}</div>
@@ -1773,5 +1776,48 @@ async function updateNotificationCount() {
     } catch (error) {
         console.error('Bildirim sayacı güncellenirken hata:', error);
         return 0;
+    }
+}
+
+// Arkadaşlık durumu için realtime abonelik
+async function subscribeFriendshipUpdates() {
+    try {
+        console.log('Arkadaşlık durumu güncellemeleri için abone olunuyor...');
+
+        const friendshipSubscription = supabase
+            .channel('friendship-updates')
+            .on('postgres_changes', {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'friendships',
+                filter: `user_id_1.eq.${currentUserId}`
+            }, async (payload) => {
+                console.log('Arkadaşlık durumu güncellendi (gönderen olarak):', payload);
+
+                // Status accepted ise, arkadaş kabul edilmiş
+                if (payload.new && payload.new.status === 'accepted') {
+                    showToast('Arkadaşlık isteğiniz kabul edildi!', 'success');
+                    await loadFriends();
+                }
+            })
+            .on('postgres_changes', {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'friendships',
+                filter: `user_id_2.eq.${currentUserId}`
+            }, async (payload) => {
+                console.log('Arkadaşlık durumu güncellendi (alıcı olarak):', payload);
+
+                // Status accepted ise, arkadaş listesini güncelle
+                if (payload.new && payload.new.status === 'accepted') {
+                    await loadFriends();
+                }
+            })
+            .subscribe((status) => {
+                console.log(`Arkadaşlık kanalı abonelik durumu: ${status}`);
+            });
+
+    } catch (error) {
+        console.error('Arkadaşlık durumu aboneliğinde hata:', error);
     }
 } 

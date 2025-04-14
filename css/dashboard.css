@@ -6654,3 +6654,23 @@ emoji-picker {
 .friend-actions.pending-actions .decline-request-btn:hover {
     background-color: rgba(235, 77, 75, 0.2);
 }
+
+/* Durum noktaları */
+.status-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-secondary);
+    background-color: var(--offline-color);
+}
+
+.status-dot.online {
+    background-color: var(--online-color);
+}
+
+.status-dot.pending {
+    background-color: var(--warning-color);
+}
