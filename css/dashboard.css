@@ -6401,3 +6401,256 @@ emoji-picker {
         padding: 16px 20px;
     }
 }
+
+/* Bekleyen İstekler CSS */
+.pending-section-title {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px 10px;
+    margin-top: 10px;
+    border-bottom: 1px solid rgba(94, 114, 228, 0.1);
+}
+
+.pending-section-title i {
+    color: #f39c12;
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.pending-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(243, 156, 18, 0.2);
+    color: #f39c12;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 10px;
+    min-width: 20px;
+}
+
+.friend-row.pending {
+    padding: 16px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.4s ease;
+    background: rgba(94, 114, 228, 0.05);
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.friend-row.pending:hover {
+    background: rgba(94, 114, 228, 0.08);
+}
+
+.friend-request-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.accept-request-btn,
+.decline-request-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.accept-request-btn {
+    background-color: rgba(46, 204, 113, 0.1);
+    color: #2ecc71;
+    border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.accept-request-btn:hover {
+    background-color: rgba(46, 204, 113, 0.2);
+    color: #3ff38a;
+    transform: translateY(-2px);
+}
+
+.decline-request-btn {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.decline-request-btn:hover {
+    background-color: rgba(231, 76, 60, 0.2);
+    color: #ff6b6b;
+    transform: translateY(-2px);
+}
+
+.accept-request-btn:active,
+.decline-request-btn:active {
+    transform: translateY(0);
+}
+
+.accept-request-btn:disabled,
+.decline-request-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.friend-row.processing {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.request-processed {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    color: var(--text-color);
+    background-color: rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease;
+}
+
+.request-processed i {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.request-processed i.fa-check-circle {
+    color: var(--success-color);
+}
+
+.request-processed i.fa-times-circle {
+    color: var(--danger-color);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.empty-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    color: #7f8c8d;
+    text-align: center;
+    background: rgba(15, 19, 34, 0.2);
+    border-radius: 12px;
+    margin: 20px;
+}
+
+.empty-placeholder i {
+    font-size: 32px;
+    margin-bottom: 15px;
+    opacity: 0.7;
+}
+
+.empty-placeholder p {
+    font-size: 15px;
+    max-width: 300px;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.error-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #e74c3c;
+    text-align: center;
+    background: rgba(231, 76, 60, 0.1);
+    border-radius: 8px;
+    margin: 20px;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+/* Animasyonlar */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.fade-out {
+    animation: fadeOut 0.5s ease forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        height: auto;
+        margin-bottom: 10px;
+        padding: 16px;
+    }
+
+    to {
+        opacity: 0;
+        height: 0;
+        margin-bottom: 0;
+        padding: 0 16px;
+        overflow: hidden;
+    }
+}
+
+.friend-actions.pending-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.friend-actions.pending-actions button {
+    background: none;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.friend-actions.pending-actions .accept-request-btn {
+    color: var(--success-color);
+    background-color: rgba(35, 209, 96, 0.1);
+}
+
+.friend-actions.pending-actions .decline-request-btn {
+    color: var(--danger-color);
+    background-color: rgba(235, 77, 75, 0.1);
+}
+
+.friend-actions.pending-actions button:hover {
+    transform: scale(1.1);
+}
+
+.friend-actions.pending-actions .accept-request-btn:hover {
+    background-color: rgba(35, 209, 96, 0.2);
+}
+
+.friend-actions.pending-actions .decline-request-btn:hover {
+    background-color: rgba(235, 77, 75, 0.2);
+}

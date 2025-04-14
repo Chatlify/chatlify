@@ -423,10 +423,22 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
 
 // Bekleyen istekleri yükleme
 async function loadPendingRequests(pendingList, pendingCountBadge) {
+    if (!pendingList || !pendingCountBadge) {
+        console.error('Bekleyen istekler için gerekli elementler bulunamadı');
+        return;
+    }
+
     try {
+        // Bekleyen istekleri al - user_id_2 mevcut kullanıcı ise bu bir gelen istektir
         const { data: pendingRequests, error } = await supabase
             .from('friendships')
-            .select('*')
+            .select(`
+                id, 
+                user_id_1,
+                status,
+                created_at,
+                users:user_id_1(id, username, avatar)
+            `)
             .eq('status', 'pending')
             .eq('user_id_2', currentUserId);
 
@@ -434,12 +446,155 @@ async function loadPendingRequests(pendingList, pendingCountBadge) {
             throw error;
         }
 
-        pendingList.textContent = pendingRequests.length;
-        pendingCountBadge.textContent = pendingRequests.length;
+        // Sayacı güncelle
+        const pendingCount = pendingRequests ? pendingRequests.length : 0;
+        pendingCountBadge.textContent = pendingCount;
+
+        // Panel görünürlüğünü ayarla
+        const pendingSection = document.querySelector('.pending-section-title');
+        if (pendingSection) {
+            pendingSection.style.display = pendingCount > 0 ? '' : 'none';
+        }
+
+        // Paneli temizle
+        pendingList.innerHTML = '';
+
+        // Bekleyen istek yoksa boş mesaj göster
+        if (!pendingRequests || pendingRequests.length === 0) {
+            const emptyElement = document.createElement('div');
+            emptyElement.className = 'empty-placeholder';
+            emptyElement.innerHTML = `
+                <i class="fas fa-inbox"></i>
+                <p>Bekleyen arkadaşlık isteği bulunmuyor.</p>
+            `;
+            pendingList.appendChild(emptyElement);
+            return;
+        }
+
+        // Fragment kullanarak DOM işlemlerini optimize et
+        const fragment = document.createDocumentFragment();
+
+        // Her istek için bir satır oluştur
+        pendingRequests.forEach(request => {
+            if (!request.users) {
+                console.warn('Kullanıcı bilgisi eksik', request);
+                return;
+            }
+
+            const sender = request.users;
+            const requestId = request.id;
+
+            // Varsayılan değerler
+            const username = sender.username || 'Bilinmeyen Kullanıcı';
+            const avatar = sender.avatar || defaultAvatar;
+            const userId = sender.id;
+            const requestDate = new Date(request.created_at).toLocaleDateString();
+
+            // İstek satırını oluştur
+            const requestRow = document.createElement('div');
+            requestRow.className = 'friend-row pending';
+            requestRow.dataset.requestId = requestId;
+            requestRow.dataset.userId = userId;
+
+            requestRow.innerHTML = `
+                <div class="friend-avatar">
+                    <img src="${avatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
+                    <span class="status-dot"></span>
+                </div>
+                <div class="friend-info">
+                    <div class="friend-name">${username}</div>
+                    <div class="friend-status">İstek gönderdi: ${requestDate}</div>
+                </div>
+                <div class="friend-actions pending-actions">
+                    <button class="accept-request-btn" title="Kabul Et">
+                        <i class="fas fa-check"></i>
+                    </button>
+                    <button class="decline-request-btn" title="Reddet">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+
+            // Kabul butonuna tıklama işlevi
+            const acceptBtn = requestRow.querySelector('.accept-request-btn');
+            if (acceptBtn) {
+                acceptBtn.addEventListener('click', async () => {
+                    await handleFriendRequest(requestId, 'accepted', userId, username);
+                });
+            }
+
+            // Reddetme butonuna tıklama işlevi
+            const declineBtn = requestRow.querySelector('.decline-request-btn');
+            if (declineBtn) {
+                declineBtn.addEventListener('click', async () => {
+                    await handleFriendRequest(requestId, 'rejected', userId, username);
+                });
+            }
+
+            fragment.appendChild(requestRow);
+        });
+
+        // Oluşturulan satırları DOM'a ekle
+        pendingList.appendChild(fragment);
+
     } catch (error) {
         console.error('Bekleyen istekler yüklenirken hata:', error);
-        pendingList.textContent = 'Hata oluştu';
+        pendingList.innerHTML = `<div class="error-placeholder">İstekler yüklenirken hata oluştu: ${error.message}</div>`;
         pendingCountBadge.textContent = 'Hata';
+    }
+}
+
+// Arkadaşlık isteğini kabul et veya reddet
+async function handleFriendRequest(requestId, action, userId, username) {
+    try {
+        // İstek durumunu güncelle
+        const { error } = await supabase
+            .from('friendships')
+            .update({ status: action })
+            .eq('id', requestId);
+
+        if (error) throw error;
+
+        // İşlem başarılı olduğunda UI'ı güncelle
+        const requestRow = document.querySelector(`.friend-row[data-request-id="${requestId}"]`);
+        if (requestRow) {
+            // Animasyonla satırı kaldır
+            requestRow.classList.add('fade-out');
+            setTimeout(() => {
+                requestRow.remove();
+
+                // Bekleyen istekler konteynerini kontrol et
+                const pendingList = document.getElementById('pending-list');
+                if (pendingList && pendingList.children.length === 0) {
+                    loadPendingRequests(
+                        pendingList,
+                        document.getElementById('pending-count')
+                    );
+                }
+
+                // Eğer kabul edildiyse arkadaş listesini güncelle
+                if (action === 'accepted') {
+                    showToast(`${username} arkadaşlık isteği kabul edildi.`, 'success');
+                    loadFriends(); // Arkadaşlar listesini güncelle
+                } else {
+                    showToast(`${username} arkadaşlık isteği reddedildi.`, 'info');
+                }
+            }, 300);
+        }
+
+        // Bildirimleri güncelle
+        await updateNotificationCount();
+
+        // Bekleyen istekleri ve sayacı güncelle
+        const pendingList = document.getElementById('pending-list');
+        const pendingCountBadge = document.getElementById('pending-count');
+        if (pendingList && pendingCountBadge) {
+            loadPendingRequests(pendingList, pendingCountBadge);
+        }
+
+    } catch (error) {
+        console.error('Arkadaşlık isteği işlenirken hata:', error);
+        showToast('İstek işlenirken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
     }
 }
 
@@ -493,7 +648,7 @@ function addContextMenuListeners() {
         });
     });
 
-    // Sayfanın herhangi bir yerine tıklanınca menüyü gizle
+    // Sayfanın herhangi bir yerine tıklandığında menüyü gizle
     document.addEventListener('click', () => {
         hideContextMenu(contextMenu);
     });
@@ -614,19 +769,24 @@ function initializePresence() {
 
 // showSection fonksiyon tanımı
 function showSection(sectionName) {
-    // Bu fonksiyonun içeriği varsa korunmalı, yoksa boş kalabilir.
     console.log(`Bölüm gösteriliyor: ${sectionName}`);
-    // Gerçek içerik: İlgili panelleri göster/gizle
+
+    // Gerekli elementleri seç
     const friendsPanel = document.querySelector('.friends-panel-container');
     const chatPanel = document.querySelector('.chat-panel');
-    // Diğer bölümler için de elementler alınabilir
+    const onlineSection = document.querySelector('.online-section-title');
+    const offlineSection = document.querySelector('.offline-section-title');
+    const pendingSection = document.querySelector('.pending-section-title');
+    const onlineList = document.querySelector('.online-friends');
+    const offlineList = document.querySelector('.offline-friends');
+    const pendingList = document.querySelector('.pending-requests');
 
-    if (!friendsPanel || !chatPanel) return;
+    if (!friendsPanel) return;
 
     // Önce sohbeti kapat (açıksa)
-    closeChatPanel(); // Bu fonksiyon sohbeti kapatıp arkadaş panelini gösterir
+    closeChatPanel();
 
-    // Aktif tab'ı ayarla (görsel olarak)
+    // Tüm sekmelerin active sınıfını kaldır
     document.querySelectorAll('.dashboard-header .tab').forEach(tab => {
         if (tab.textContent.trim() === sectionName) {
             tab.classList.add('active');
@@ -635,19 +795,42 @@ function showSection(sectionName) {
         }
     });
 
-    // Hangi bölümün gösterileceğine karar ver (Bu kısım daha detaylı olmalı)
-    // Örneğin:
-    // if (sectionName === 'Tüm Arkadaşlar') {
-    //     // Tüm arkadaşları gösteren listeyi filtrele/göster
-    // } else if (sectionName === 'Çevrimiçi') {
-    //     // Sadece çevrimiçi arkadaşları göster
-    // } else if (sectionName === 'Bekleyen') {
-    //     // Bekleyen istekler bölümünü göster
-    // }
-
-    // Şimdilik sadece arkadaş panelinin görünür kaldığından emin olalım
+    // Ana paneli görünür yap
     friendsPanel.classList.remove('hidden');
+    if (chatPanel) chatPanel.classList.add('hidden');
 
+    // Hangi içeriğin gösterileceğine karar ver
+    if (sectionName === 'Tüm Arkadaşlar') {
+        // Tüm sekme, herşeyi göster
+        if (onlineSection) onlineSection.style.display = '';
+        if (offlineSection) offlineSection.style.display = '';
+        if (pendingSection) pendingSection.style.display = 'none';
+        if (onlineList) onlineList.style.display = '';
+        if (offlineList) offlineList.style.display = '';
+        if (pendingList) pendingList.style.display = 'none';
+    }
+    else if (sectionName === 'Çevrimiçi') {
+        // Sadece çevrimiçi olanları göster
+        if (onlineSection) onlineSection.style.display = '';
+        if (offlineSection) offlineSection.style.display = 'none';
+        if (pendingSection) pendingSection.style.display = 'none';
+        if (onlineList) onlineList.style.display = '';
+        if (offlineList) offlineList.style.display = 'none';
+        if (pendingList) pendingList.style.display = 'none';
+    }
+    else if (sectionName === 'Bekleyen') {
+        // Sadece bekleyen istekleri göster
+        if (onlineSection) onlineSection.style.display = 'none';
+        if (offlineSection) offlineSection.style.display = 'none';
+        if (pendingSection) pendingSection.style.display = '';
+        if (onlineList) onlineList.style.display = 'none';
+        if (offlineList) offlineList.style.display = 'none';
+        if (pendingList) pendingList.style.display = '';
+
+        // Bekleyen istekleri yeniden yükle
+        const pendingCountBadge = document.querySelector('.pending-count');
+        loadPendingRequests(pendingList, pendingCountBadge);
+    }
 }
 
 async function openChatPanel(userId, username, avatar) {
@@ -1434,4 +1617,142 @@ function setupAddFriendModal() {
     });
 
     console.log('Arkadaş ekleme modalı başarıyla ayarlandı.');
+}
+
+// Bildirim gösterme fonksiyonu
+function showToast(message, type = 'info') {
+    // Zaten açık olan bildirimleri kontrol et
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+
+    // Bildirim konteynerini kontrol et veya oluştur
+    let notificationContainer = document.querySelector('.notification-container');
+    if (!notificationContainer) {
+        notificationContainer = document.createElement('div');
+        notificationContainer.className = 'notification-container';
+        document.body.appendChild(notificationContainer);
+    }
+
+    // Bildirim elementini oluştur
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas ${getIconForType(type)}"></i>
+            <span>${message}</span>
+        </div>
+        <button class="notification-close">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+
+    // Kapatma düğmesi işlevselliğini ekle
+    const closeBtn = notification.querySelector('.notification-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        });
+    }
+
+    // Bildirimi konteyner'a ekle
+    notificationContainer.appendChild(notification);
+
+    // Gösterme animasyonu
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 10);
+
+    // Otomatik kaldırma süresi
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, 5000);
+
+    // Bildirim ikonu tipini al
+    function getIconForType(type) {
+        switch (type) {
+            case 'success': return 'fa-check-circle';
+            case 'error': return 'fa-times-circle';
+            case 'warning': return 'fa-exclamation-triangle';
+            case 'info':
+            default: return 'fa-info-circle';
+        }
+    }
+}
+
+// Arkadaş listesini yeniden yüklemek için yardımcı fonksiyon
+async function loadFriends() {
+    try {
+        // Gerekli elementleri seç
+        const onlineList = document.querySelector('.online-friends');
+        const offlineList = document.querySelector('.offline-friends');
+        const dmList = document.querySelector('#friends-group .dm-items');
+        const onlineSection = document.querySelector('.online-section-title');
+        const offlineSection = document.querySelector('.offline-section-title');
+
+        // Element kontrolü
+        if (!onlineList || !offlineList || !dmList) {
+            console.error('loadFriends: Gerekli liste elementleri bulunamadı');
+            return;
+        }
+
+        // Arkadaş listesini yükle
+        await loadAllFriends({
+            onlineList,
+            offlineList,
+            dmList,
+            onlineSection,
+            offlineSection
+        });
+
+        console.log('Arkadaş listesi başarıyla güncellendi');
+    } catch (error) {
+        console.error('Arkadaş listesi güncellenirken hata:', error);
+        showToast('Arkadaş listesi güncellenirken bir hata oluştu.', 'error');
+    }
+}
+
+// Bildirim sayacını güncelleme fonksiyonu
+async function updateNotificationCount() {
+    try {
+        // Bekleyen istekleri say
+        const { data: pendingRequests, error } = await supabase
+            .from('friendships')
+            .select('id')
+            .eq('status', 'pending')
+            .eq('user_id_2', currentUserId);
+
+        if (error) throw error;
+
+        // Bildirim sayacını güncelle
+        const pendingCount = pendingRequests ? pendingRequests.length : 0;
+        const pendingCountBadge = document.querySelector('.pending-count');
+        if (pendingCountBadge) {
+            pendingCountBadge.textContent = pendingCount;
+        }
+
+        // Sekme başlığındaki sayacı güncelle
+        const pendingTab = document.querySelector('.tab:nth-child(3)');
+        if (pendingTab) {
+            if (pendingCount > 0) {
+                pendingTab.innerHTML = `Bekleyen <span class="tab-count">${pendingCount}</span>`;
+            } else {
+                pendingTab.textContent = 'Bekleyen';
+            }
+        }
+
+        return pendingCount;
+    } catch (error) {
+        console.error('Bildirim sayacı güncellenirken hata:', error);
+        return 0;
+    }
 } 
