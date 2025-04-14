@@ -436,14 +436,21 @@ async function loadPendingRequests(pendingList, pendingCountBadge) {
                 id, 
                 user_id_1,
                 status,
-                created_at,
+                createdAt,
                 users:user_id_1(id, username, avatar)
             `)
             .eq('status', 'pending')
             .eq('user_id_2', currentUserId);
 
         if (error) {
+            console.error('Supabase sorgu hatası:', error);
             throw error;
+        }
+
+        // Debug: Verileri ve sütun adlarını konsola yazdır
+        if (pendingRequests && pendingRequests.length > 0) {
+            console.log('İlk bekleyen istek verisi:', pendingRequests[0]);
+            console.log('Mevcut sütun adları:', Object.keys(pendingRequests[0]));
         }
 
         // Sayacı güncelle
@@ -488,7 +495,23 @@ async function loadPendingRequests(pendingList, pendingCountBadge) {
             const username = sender.username || 'Bilinmeyen Kullanıcı';
             const avatar = sender.avatar || defaultAvatar;
             const userId = sender.id;
-            const requestDate = new Date(request.created_at).toLocaleDateString();
+
+            // Tarih bilgisini güvenli bir şekilde al
+            let requestDate = 'Bilinmeyen tarih';
+            try {
+                // Farklı tarih sütun adları için kontrol et
+                if (request.createdAt) {
+                    requestDate = new Date(request.createdAt).toLocaleDateString();
+                } else if (request.created_at) {
+                    requestDate = new Date(request.created_at).toLocaleDateString();
+                } else if (request.insertedAt) {
+                    requestDate = new Date(request.insertedAt).toLocaleDateString();
+                } else if (request.inserted_at) {
+                    requestDate = new Date(request.inserted_at).toLocaleDateString();
+                }
+            } catch (e) {
+                console.warn('Tarih dönüşümünde hata:', e);
+            }
 
             // İstek satırını oluştur
             const requestRow = document.createElement('div');
@@ -539,8 +562,22 @@ async function loadPendingRequests(pendingList, pendingCountBadge) {
 
     } catch (error) {
         console.error('Bekleyen istekler yüklenirken hata:', error);
-        pendingList.innerHTML = `<div class="error-placeholder">İstekler yüklenirken hata oluştu: ${error.message}</div>`;
-        pendingCountBadge.textContent = 'Hata';
+        let errorMessage = 'İstekler yüklenirken hata oluştu.';
+
+        // Daha spesifik hata mesajları
+        if (error.message && error.message.includes('does not exist')) {
+            const columnMatch = error.message.match(/column\s+([\w\.]+)\s+does not exist/i);
+            if (columnMatch && columnMatch[1]) {
+                const columnName = columnMatch[1];
+                errorMessage = `Veritabanı sütunu bulunamadı: ${columnName}. Lütfen sistem yöneticinize başvurun.`;
+                console.error(`Sütun adı hatası: Beklenen '${columnName}' sütunu veritabanında yok.`);
+            } else {
+                errorMessage = 'Veritabanı şemasında bir sütun bulunamadı. Lütfen sistem yöneticinize başvurun.';
+            }
+        }
+
+        pendingList.innerHTML = `<div class="error-placeholder">${errorMessage}</div>`;
+        pendingCountBadge.textContent = '!';
     }
 }
 
