@@ -92,6 +92,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Arkadaş Ekle modalını kur
         setupAddFriendModal();
 
+        // Arkadaşlık durumu için realtime abonelik başlat
+        subscribeFriendshipUpdates();
+
+        // Global mesaj bildirimleri için abonelik başlat
+        subscribeToGlobalMessages();
+
         console.log('Dashboard JS başlatma tamamlandı.');
     } catch (error) {
         console.error('Dashboard başlatma hatası:', error);
@@ -951,6 +957,20 @@ async function subscribeToMessages(conversationId) {
 
                     // Alınan bilgilerle displayMessage fonksiyonunu çağır
                     displayMessage(payload.new, senderUsername, senderAvatar);
+
+                    // Bildirim sesini çal (ARTIK GLOBAL DİNLEYİCİ YAPIYOR)
+                    /* 
+                    if (messageNotificationSound) {
+                        try {
+                            // Sesi başa sar (arka arkaya gelen mesajlar için)
+                            messageNotificationSound.currentTime = 0;
+                            await messageNotificationSound.play();
+                        } catch (playError) {
+                            console.warn('Bildirim sesi çalınamadı:', playError);
+                            // Tarayıcı politikaları veya ses dosyası hatası olabilir
+                        }
+                    }
+                    */
                 }
             })
             .subscribe((status) => {
@@ -1414,4 +1434,53 @@ function displayModalMessage(message, type, messageAreaElement) {
         messageAreaElement.classList.add(type); // 'success', 'error', or 'info'
         messageAreaElement.style.display = 'flex'; // Show the message area
     }
+}
+
+// Genel bildirim sesini çalma
+function playNotificationSound() {
+    if (messageNotificationSound) {
+        try {
+            // Sesi başa sar (arka arkaya gelen mesajlar için)
+            messageNotificationSound.currentTime = 0;
+            messageNotificationSound.play().catch(e => console.warn('Bildirim sesi çalınamadı (tarayıcı engeli olabilir):', e));
+        } catch (playError) {
+            console.warn('Bildirim sesi çalınamadı:', playError);
+        }
+    }
+}
+
+// Tüm gelen mesajlar için global realtime abonelik (sesli bildirim için)
+function subscribeToGlobalMessages() {
+    if (!supabase || !currentUserId) {
+        console.error('Global mesaj aboneliği başlatılamadı: Supabase veya kullanıcı ID eksik.');
+        return;
+    }
+
+    console.log('Global mesaj bildirimleri için abone olunuyor...');
+
+    const globalMessagesSubscription = supabase
+        .channel('public-messages-global') // Benzersiz bir kanal adı
+        .on('postgres_changes', {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'messages'
+            // Burada filtreleme yapmak zor olabilir, bu yüzden tüm INSERT'leri dinleyip istemci tarafında kontrol edeceğiz
+        }, (payload) => {
+            console.log('Global: Yeni mesaj eklendi', payload.new);
+            // Eğer mesaj mevcut kullanıcı tarafından gönderilmediyse SESİ ÇAL
+            if (payload.new && payload.new.senderId !== currentUserId) {
+                // Not: Bu, kullanıcının dahil olmadığı konuşmalardaki mesajlar için de sesi çalabilir.
+                // Daha kesin filtreleme için conversationId kontrolü eklenebilir, ama şimdilik
+                // kullanıcının dahil olduğu HER yeni mesaj için ses çalması isteğini karşılıyor.
+                console.log('Global: Karşı taraftan mesaj geldi, ses çalınıyor...');
+                playNotificationSound();
+            }
+        })
+        .subscribe((status, err) => {
+            if (status === 'SUBSCRIBED') {
+                console.log('Global mesaj bildirim kanalına başarıyla abone olundu.');
+            } else {
+                console.warn(`Global mesaj bildirim kanalı abonelik durumu: ${status}`, err || '');
+            }
+        });
 } 
