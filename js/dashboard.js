@@ -871,13 +871,37 @@ function updateOnlineStatusUI(userId, isOnline) {
         // Arkadaşı doğru listeye taşı (online/offline)
         const onlineList = document.querySelector('.online-friends');
         const offlineList = document.querySelector('.offline-friends');
-        if (isOnline) {
-            if (offlineList && offlineList.contains(row)) {
-                onlineList.appendChild(row);
-            }
-        } else {
-            if (onlineList && onlineList.contains(row)) {
-                offlineList.appendChild(row);
+
+        // Hedef ve kaynak listelerin varlığını kontrol et
+        if (!onlineList || !offlineList) {
+            console.warn("Online veya offline listesi bulunamadı, taşıma yapılamıyor.");
+            // Eğer listeler yoksa işlemi burada durdurabiliriz veya devam edebiliriz.
+            // Şimdilik devam edelim ki diğer UI güncellemeleri çalışsın.
+        }
+        // Sadece listeler varsa taşıma yap
+        else {
+            if (isOnline) {
+                // Eğer eleman offline listesinde ise online listesine taşı
+                if (offlineList.contains(row)) {
+                    console.log(`Taşı: ${row.dataset.username} -> Online Listesi`);
+                    onlineList.appendChild(row);
+                }
+                // Eğer eleman hiçbir listede değilse (ilk yüklemede olabilir), online listesine ekle
+                else if (!onlineList.contains(row)) {
+                    console.log(`Ekle (Bulunamadı): ${row.dataset.username} -> Online Listesi`);
+                    onlineList.appendChild(row);
+                }
+            } else { // isOffline
+                // Eğer eleman online listesinde ise offline listesine taşı
+                if (onlineList.contains(row)) {
+                    console.log(`Taşı: ${row.dataset.username} -> Offline Listesi`);
+                    offlineList.appendChild(row);
+                }
+                // Eğer eleman hiçbir listede değilse (ilk yüklemede olabilir), offline listesine ekle
+                else if (!offlineList.contains(row)) {
+                    console.log(`Ekle (Bulunamadı): ${row.dataset.username} -> Offline Listesi`);
+                    offlineList.appendChild(row);
+                }
             }
         }
     });
