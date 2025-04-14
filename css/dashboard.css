@@ -708,17 +708,32 @@
 }
 
 .dm-notification {
+    background-color: var(--danger-color);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
     min-width: 18px;
     height: 18px;
-    background-color: var(--danger-color);
     border-radius: 9px;
-    color: white;
-    font-size: 12px;
-    font-weight: 700;
+    padding: 0 5px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 5px;
+    margin-left: auto;
+    /* Sağa yasla */
+    margin-right: 5px;
+    /* Sağdan biraz boşluk */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    /* Diğer elemanların üzerinde kalması için */
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    opacity: 1;
+    transform: scale(1);
+}
+
+.dm-notification[style*="display: none"] {
+    opacity: 0;
+    transform: scale(0.8);
 }
 
 .dm-footer {
@@ -6715,42 +6730,4 @@ emoji-picker {
 /* DM listesindeki avatar içi durum noktasını gizle */
 .dm-avatar .dm-status {
     display: none;
-}
-
-/* Okunmamış Mesaj Rozeti */
-.dm-item .unread-badge {
-    background-color: var(--danger-color);
-    color: white;
-    font-size: 10px;
-    font-weight: 600;
-    padding: 0 5px;
-    /* Yüksekliğe göre ayarlanabilir */
-    min-width: 16px;
-    /* Minimum genişlik */
-    height: 16px;
-    border-radius: 8px;
-    /* Yüksekliğin yarısı */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    /* Konumlandırma için */
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 2;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    line-height: 1;
-    /* Metnin tam ortalanması için */
-    transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-/* Fazla mesaj için stil (isteğe bağlı) */
-.dm-item .unread-badge:empty {
-    /* Sayı yokken gizli kalsın (display:none ile zaten yapılıyor) */
-}
-
-/* Unread durumu olan item için ek stil (isteğe bağlı) */
-.dm-item.has-unread .dm-name {
-    font-weight: 600;
 }

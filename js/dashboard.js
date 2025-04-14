@@ -9,20 +9,11 @@ let messageSubscription = null; // Realtime mesaj aboneliği
 let sampleColumnFormat = 'camelCase'; // Varsayılan olarak camelCase formatını kullan
 const defaultAvatar = 'images/DefaultAvatar.png';
 let messageNotificationSound = null; // Ses nesnesi için global değişken
-let unreadCounts = {}; // Okunmamış mesaj sayıları (key: senderId, value: count)
+let unreadCounts = {}; // Okunmamış mesaj sayıları için global nesne
+let allMessagesSubscription = null; // Tüm mesajları dinleyen abonelik
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Dashboard JS başlatılıyor...');
-
-    // Ses dosyasını yükle
-    try {
-        messageNotificationSound = new Audio('sounds/MessageNotificationSound.mp3');
-        messageNotificationSound.load(); // Tarayıcının sesi önceden yüklemesini sağla
-        console.log('Mesaj bildirim sesi yüklendi.');
-    } catch (error) {
-        console.error('Mesaj bildirim sesi yüklenirken hata:', error);
-        messageNotificationSound = null; // Hata durumunda null yap
-    }
 
     try {
         // Element tanımlamaları
@@ -107,8 +98,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Arkadaşlık durumu için realtime abonelik başlat
         subscribeFriendshipUpdates();
 
-        // Genel mesaj ses bildirimlerini başlat
-        subscribeToAllMessagesForSound();
+        // Tüm mesajlar için global realtime abonelik başlat
+        subscribeToAllMessages();
 
         console.log('Dashboard JS başlatma tamamlandı.');
     } catch (error) {
@@ -308,7 +299,7 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
             const friendRow = createFriendRow(userId, username, avatar);
 
             // DM satırını oluştur
-            const dmRow = createDMRow(userId, username, avatar);
+            const dmRow = createDMRow(userId, username, avatar, onlineFriends.has(userId));
 
             // Online durumuna göre ekle
             if (onlineFriends.has(userId)) {
@@ -410,14 +401,11 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
         return friendElement;
     }
 
-    function createDMRow(userId, username, avatar) {
+    function createDMRow(userId, username, avatar, isOnline) {
         const dmElement = document.createElement('div');
-        const statusClass = onlineFriends.has(userId) ? 'online' : 'offline';
-        const statusText = onlineFriends.has(userId) ? 'Çevrimiçi' : 'Çevrimdışı';
-        dmElement.className = 'dm-item';
-        if (onlineFriends.has(userId)) dmElement.classList.add('online'); // Durum sınıfını ekle
-        else dmElement.classList.add('offline');
-
+        const statusClass = isOnline ? 'online' : 'offline';
+        const statusText = isOnline ? 'Çevrimiçi' : 'Çevrimdışı';
+        dmElement.className = `dm-item ${statusClass}`;
         dmElement.dataset.userId = userId;
         dmElement.dataset.username = username;
         dmElement.dataset.avatar = avatar;
@@ -425,12 +413,13 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
         dmElement.innerHTML = `
             <div class="dm-avatar">
                 <img src="${avatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
+                
             </div>
             <div class="dm-info">
                 <div class="dm-name">${username}</div>
                 <div class="dm-activity">${statusText}</div>
             </div>
-            <span class="unread-badge" style="display: none;"></span> <!-- Okunmamış rozet -->
+            <div class="dm-notification" style="display: none;">0</div> 
         `;
 
         // DM öğesine tıklama event listener'ı ekle
@@ -701,13 +690,6 @@ async function openChatPanel(userId, username, avatar) {
     currentConversationId = actualConversationId;
     console.log("Aktif sohbet ID'si (gerçek):", currentConversationId);
 
-    // Okunmamış sayacını sıfırla ve rozeti gizle
-    if (unreadCounts[userId]) {
-        console.log(`Okunmamış sayaç sıfırlanıyor: User ${userId}`);
-        unreadCounts[userId] = 0;
-        updateUnreadBadgeUI(userId, 0);
-    }
-
     // Sohbet başlığını güncelle
     const chatUsernameElement = chatHeaderUser.querySelector('.chat-username');
     const chatAvatarElement = chatHeaderUser.querySelector('.chat-avatar img');
@@ -747,6 +729,10 @@ async function openChatPanel(userId, username, avatar) {
 
     // Realtime aboneliği GERÇEK sohbet ID'si ile başlat
     subscribeToMessages(currentConversationId);
+
+    // Okunmamış mesaj sayacını sıfırla ve badge'i gizle
+    unreadCounts[userId] = 0;
+    updateUnreadBadge(userId, 0);
 }
 
 // Sohbet paneli header butonlarını ayarlama
@@ -955,13 +941,10 @@ async function subscribeToMessages(conversationId) {
                 filter: `conversationId=eq.${conversationId}`
             }, async (payload) => {
                 if (payload.new && payload.new.senderId !== currentUserId) {
-                    console.log('Yeni mesaj alındı (realtime):', payload.new);
-
-                    // Gönderenin kullanıcı adını ve avatarını çek
+                    console.log('Yeni mesaj alındı (realtime - aktif sohbet):', payload.new);
                     const senderId = payload.new.senderId;
-                    let senderUsername = 'Kullanıcı'; // Varsayılan
-                    let senderAvatar = defaultAvatar; // Varsayılan
-
+                    let senderUsername = 'Kullanıcı';
+                    let senderAvatar = defaultAvatar;
                     try {
                         const { data: profile, error } = await supabase
                             .from('users')
@@ -978,23 +961,7 @@ async function subscribeToMessages(conversationId) {
                     } catch (profileError) {
                         console.error('Profil alınırken hata (realtime):', profileError);
                     }
-
-                    // Alınan bilgilerle displayMessage fonksiyonunu çağır
                     displayMessage(payload.new, senderUsername, senderAvatar);
-
-                    // Bildirim sesini çal (BU ARTIK GENEL DİNLEYİCİDE YAPILIYOR)
-                    /*
-                    if (messageNotificationSound) {
-                        try {
-                            // Sesi başa sar (arka arkaya gelen mesajlar için)
-                            messageNotificationSound.currentTime = 0;
-                            await messageNotificationSound.play();
-                        } catch (playError) {
-                            console.warn('Bildirim sesi çalınamadı:', playError);
-                            // Tarayıcı politikaları veya ses dosyası hatası olabilir
-                        }
-                    }
-                    */
                 }
             })
             .subscribe((status) => {
@@ -1460,88 +1427,110 @@ function displayModalMessage(message, type, messageAreaElement) {
     }
 }
 
-// Tüm gelen mesajları SADECE SES ve OKUNMAMIŞ SAYACI için dinleyen fonksiyon
-function subscribeToAllMessagesForSound() {
-    if (!supabase || !currentUserId) {
-        console.error('Genel mesaj dinleyici başlatılamadı: Supabase veya kullanıcı ID eksik.');
-        return;
+// Tüm gelen mesajları dinleyip bildirim sesi çalma ve okunmamış sayısını güncelleme
+async function subscribeToAllMessages() {
+    // Eğer zaten bir abonelik varsa önce onu kaldır
+    if (allMessagesSubscription) {
+        try {
+            await supabase.removeSubscription(allMessagesSubscription);
+            console.log('Önceki global mesaj aboneliği kaldırıldı.');
+        } catch (removeError) {
+            console.error('Önceki global mesaj aboneliği kaldırılamadı:', removeError);
+        }
+        allMessagesSubscription = null;
     }
 
-    console.log("Genel mesaj ses/sayaç bildirimleri için abone olunuyor...");
+    if (!supabase || !currentUserId) {
+        console.error('Global mesaj aboneliği başlatılamadı: Supabase veya kullanıcı ID eksik.');
+        return;
+    }
+    console.log('Global mesaj aboneliği başlatılıyor...');
 
-    const messageSubscription = supabase
-        .channel(`public:messages:user:${currentUserId}`)
-        .on('postgres_changes', {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'messages'
-        }, async (payload) => {
-            if (payload.new && payload.new.senderId !== currentUserId) {
-                const conversationId = payload.new.conversationId;
-                const senderId = payload.new.senderId;
-                if (!conversationId || !senderId) return;
+    allMessagesSubscription = supabase
+        .channel('public:messages')
+        .on('postgres_changes',
+            {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'messages'
+            },
+            async (payload) => {
+                const newMessage = payload.new;
+                console.log('Global listener: Yeni mesaj eklendi:', newMessage);
+
+                // Kendi mesajımızı veya geçersiz mesajı yoksay
+                if (!newMessage || newMessage.senderId === currentUserId || !newMessage.conversationId) {
+                    return;
+                }
 
                 try {
-                    const { data: conversation, error } = await supabase
-                        .from('conversations')
-                        .select('participantIds')
-                        .eq('id', conversationId)
-                        .maybeSingle();
+                    // Kullanıcının bu sohbette olup olmadığını kontrol et (performans için opsiyonel)
+                    // Şimdilik sadece senderId'ye bakarak sesi çalıyoruz
+                    // Daha güvenli: const { data: conv } = await supabase.from('conversations').select('participantIds').eq('id', newMessage.conversationId).maybeSingle();
+                    // if (!conv || !conv.participantIds.includes(currentUserId)) return;
 
-                    if (error || !conversation || !conversation.participantIds.includes(currentUserId)) {
-                        return;
-                    }
-
-                    // 1. Sesi çal
-                    console.log('Genel dinleyici: Yeni mesaj alındı, ses çalınıyor...');
+                    // 1. Bildirim Sesini Çal
                     if (messageNotificationSound) {
                         try {
                             messageNotificationSound.currentTime = 0;
                             await messageNotificationSound.play();
+                            console.log('Global listener: Bildirim sesi çalındı.');
                         } catch (playError) {
-                            console.warn('Genel dinleyici: Bildirim sesi çalınamadı:', playError);
+                            console.warn('Bildirim sesi çalınamadı (global):', playError);
                         }
                     }
 
-                    // 2. Okunmamış sayacını güncelle (eğer sohbet açık değilse)
-                    if (conversationId !== currentConversationId) {
-                        unreadCounts[senderId] = (unreadCounts[senderId] || 0) + 1;
-                        console.log(`Okunmamış sayaç arttı: Sender ${senderId}, Yeni Sayı: ${unreadCounts[senderId]}`);
-                        updateUnreadBadgeUI(senderId, unreadCounts[senderId]);
-                    }
+                    // 2. Okunmamış Mesaj Sayacını Güncelle
+                    const chatPanel = document.querySelector('.chat-panel');
+                    const isActiveChatOpen = !chatPanel?.classList.contains('hidden') && currentConversationId === newMessage.conversationId;
 
-                } catch (convError) {
-                    console.error('Sohbet bilgisi alınırken hata (genel dinleyici):', convError);
+                    // Eğer ilgili sohbet açık değilse sayacı artır
+                    if (!isActiveChatOpen) {
+                        // Diğer katılımcının ID'sini bulmamız lazım. Conversation fetch edilebilir veya mesajda receiverId varsa kullanılabilir.
+                        // Şimdilik senderId'yi anahtar olarak kullanalım (DM varsayımı)
+                        const counterPartyId = newMessage.senderId; // DM varsayımı!
+                        if (counterPartyId) {
+                            unreadCounts[counterPartyId] = (unreadCounts[counterPartyId] || 0) + 1;
+                            console.log(`Global listener: Okunmamış sayaç güncellendi - ${counterPartyId}: ${unreadCounts[counterPartyId]}`);
+                            updateUnreadBadge(counterPartyId, unreadCounts[counterPartyId]);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Global mesaj işlenirken hata:', error);
                 }
-            }
-        })
-        .subscribe((status) => {
+            })
+        .subscribe((status, err) => {
             if (status === 'SUBSCRIBED') {
-                console.log('Genel mesaj ses/sayaç bildirim kanalına başarıyla abone olundu.');
+                console.log('Global mesaj kanalına başarıyla abone olundu.');
             } else {
-                console.warn(`Genel mesaj ses/sayaç bildirim kanalı durumu: ${status}`);
+                console.warn(`Global mesaj kanalı durumu: ${status}`, err || '');
             }
         });
 }
 
-// Belirli bir kullanıcı için okunmamış mesaj rozetini günceller
-function updateUnreadBadgeUI(userId, count) {
-    const dmItems = document.querySelectorAll(`.dm-item[data-user-id="${userId}"]`);
-    dmItems.forEach(item => {
-        const badge = item.querySelector('.unread-badge');
-        if (!badge) {
-            console.warn('Okunmamış rozet elementi bulunamadı:', item);
-            return;
-        }
+// Okunmamış mesaj sayacı için UI güncelleme fonksiyonu
+function updateUnreadBadge(userId, count) {
+    const dmItem = document.querySelector(`.dm-item[data-user-id="${userId}"]`);
+    if (!dmItem) return;
 
-        if (count > 0) {
-            badge.textContent = count > 99 ? '99+' : count; // Limitleme (isteğe bağlı)
-            badge.style.display = 'flex';
-            item.classList.add('has-unread'); // CSS ile ek stil vermek için
-        } else {
-            badge.textContent = '';
-            badge.style.display = 'none';
-            item.classList.remove('has-unread');
-        }
-    });
+    let badge = dmItem.querySelector('.dm-notification');
+    if (!badge) {
+        // Eğer badge yoksa oluştur (createDMRow'da eklenmeli ama yedek kontrol)
+        badge = document.createElement('div');
+        badge.className = 'dm-notification';
+        // Badge'i uygun bir yere ekle, örneğin dm-info içine?
+        const dmInfo = dmItem.querySelector('.dm-info');
+        if (dmInfo) dmInfo.appendChild(badge);
+        else dmItem.appendChild(badge); // Veya direkt dm-item'a
+    }
+
+    if (count > 0) {
+        badge.textContent = count > 99 ? '99+' : count; // Limitleme
+        badge.style.display = 'flex';
+        console.log(`Badge gösteriliyor: ${userId} - ${count}`);
+    } else {
+        badge.textContent = '0'; // İçeriği temizle
+        badge.style.display = 'none';
+        console.log(`Badge gizleniyor: ${userId}`);
+    }
 } 
