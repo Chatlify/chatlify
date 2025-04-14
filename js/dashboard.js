@@ -92,9 +92,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Arkadaş Ekle modalını kur
         setupAddFriendModal();
 
-        // Arkadaşlık durumu için realtime abonelik başlat
-        subscribeFriendshipUpdates();
-
         console.log('Dashboard JS başlatma tamamlandı.');
     } catch (error) {
         console.error('Dashboard başlatma hatası:', error);
@@ -289,20 +286,35 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
             const avatar = friendUser.avatar || defaultAvatar;
             const userId = friendUser.id;
 
-            // Başlangıç online durumunu kontrol et
-            const isInitiallyOnline = onlineFriends.has(userId);
+            // Arkadaş satırını oluştur
+            const friendRow = createFriendRow(userId, username, avatar);
 
-            // Arkadaş satırını oluştur ve durumu ayarla
-            const friendRow = createFriendRow(userId, username, avatar, isInitiallyOnline);
-
-            // DM satırını oluştur ve durumu ayarla
-            const dmRow = createDMRow(userId, username, avatar, isInitiallyOnline);
+            // DM satırını oluştur
+            const dmRow = createDMRow(userId, username, avatar);
 
             // Online durumuna göre ekle
-            if (isInitiallyOnline) {
+            if (onlineFriends.has(userId)) {
+                friendRow.classList.add('online');
+                friendRow.classList.remove('offline');
+                friendRow.querySelector('.status-dot').className = 'status-dot online';
+                friendRow.querySelector('.friend-status').textContent = 'Çevrimiçi';
                 onlineFragment.appendChild(friendRow);
+
+                if (dmRow) {
+                    dmRow.querySelector('.dm-status').className = 'dm-status online';
+                    dmRow.querySelector('.dm-activity').textContent = 'Çevrimiçi';
+                }
             } else {
+                friendRow.classList.add('offline');
+                friendRow.classList.remove('online');
+                friendRow.querySelector('.status-dot').className = 'status-dot offline';
+                friendRow.querySelector('.friend-status').textContent = 'Çevrimdışı';
                 offlineFragment.appendChild(friendRow);
+
+                if (dmRow) {
+                    dmRow.querySelector('.dm-status').className = 'dm-status offline';
+                    dmRow.querySelector('.dm-activity').textContent = 'Çevrimdışı';
+                }
             }
 
             // DM satırını her zaman ekle
@@ -359,11 +371,9 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
         offlineList.innerHTML = '';
     }
 
-    function createFriendRow(userId, username, avatar, isOnline) {
+    function createFriendRow(userId, username, avatar) {
         const friendElement = document.createElement('div');
-        const statusClass = isOnline ? 'online' : 'offline';
-        const statusText = isOnline ? 'Çevrimiçi' : 'Çevrimdışı';
-        friendElement.className = `friend-row ${statusClass}`;
+        friendElement.className = 'friend-row';
         friendElement.dataset.userId = userId;
         friendElement.dataset.username = username;
         friendElement.dataset.avatar = avatar;
@@ -371,22 +381,20 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
         friendElement.innerHTML = `
                     <div class="friend-avatar">
                 <img src="${avatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
-                        <span class="status-dot ${statusClass}"></span>
+                        <span class="status-dot offline"></span>
                             </div>
                     <div class="friend-info">
                 <div class="friend-name">${username}</div>
-                <div class="friend-status">${statusText}</div>
+                <div class="friend-status">Çevrimdışı</div>
                     </div>
                 `;
 
         return friendElement;
     }
 
-    function createDMRow(userId, username, avatar, isOnline) {
+    function createDMRow(userId, username, avatar) {
         const dmElement = document.createElement('div');
-        const statusClass = isOnline ? 'online' : 'offline'; // Bu hala metin için kullanılacak
-        const statusText = isOnline ? 'Çevrimiçi' : 'Çevrimdışı';
-        dmElement.className = `dm-item ${statusClass}`; // dm-item'a sınıfı ekleyelim
+        dmElement.className = 'dm-item';
         dmElement.dataset.userId = userId;
         dmElement.dataset.username = username;
         dmElement.dataset.avatar = avatar;
@@ -394,11 +402,11 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
         dmElement.innerHTML = `
             <div class="dm-avatar">
                 <img src="${avatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
-                <!-- Avatar içindeki status-dot kaldırıldı -->
+                <div class="dm-status offline"></div>
              </div>
             <div class="dm-info">
                 <div class="dm-name">${username}</div>
-                <div class="dm-activity">${statusText}</div>
+                <div class="dm-activity">Çevrimdışı</div>
         </div>
     `;
 
@@ -415,211 +423,23 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
 
 // Bekleyen istekleri yükleme
 async function loadPendingRequests(pendingList, pendingCountBadge) {
-    if (!pendingList || !pendingCountBadge) {
-        console.error('Bekleyen istekler için gerekli elementler bulunamadı');
-        return;
-    }
-
     try {
-        // Bekleyen istekleri al - user_id_2 mevcut kullanıcı ise bu bir gelen istektir
         const { data: pendingRequests, error } = await supabase
             .from('friendships')
-            .select(`
-                id, 
-                user_id_1,
-                status,
-                users:user_id_1(id, username, avatar)
-            `)
+            .select('*')
             .eq('status', 'pending')
             .eq('user_id_2', currentUserId);
 
         if (error) {
-            console.error('Supabase sorgu hatası:', error);
             throw error;
         }
 
-        // Debug: Verileri ve sütun adlarını konsola yazdır
-        if (pendingRequests && pendingRequests.length > 0) {
-            console.log('İlk bekleyen istek verisi:', pendingRequests[0]);
-            console.log('Mevcut sütun adları:', Object.keys(pendingRequests[0]));
-        }
-
-        // Sayacı güncelle
-        const pendingCount = pendingRequests ? pendingRequests.length : 0;
-        pendingCountBadge.textContent = pendingCount;
-
-        // Panel görünürlüğünü ayarla
-        const pendingSection = document.querySelector('.pending-section-title');
-        if (pendingSection) {
-            pendingSection.style.display = pendingCount > 0 ? '' : 'none';
-        }
-
-        // Paneli temizle
-        pendingList.innerHTML = '';
-
-        // Bekleyen istek yoksa boş mesaj göster
-        if (!pendingRequests || pendingRequests.length === 0) {
-            const emptyElement = document.createElement('div');
-            emptyElement.className = 'empty-placeholder';
-            emptyElement.innerHTML = `
-                <i class="fas fa-inbox"></i>
-                <p>Bekleyen arkadaşlık isteği bulunmuyor.</p>
-            `;
-            pendingList.appendChild(emptyElement);
-            return;
-        }
-
-        // Fragment kullanarak DOM işlemlerini optimize et
-        const fragment = document.createDocumentFragment();
-
-        // Her istek için bir satır oluştur
-        pendingRequests.forEach(request => {
-            if (!request.users) {
-                console.warn('Kullanıcı bilgisi eksik', request);
-                return;
-            }
-
-            const sender = request.users;
-            const requestId = request.id;
-
-            // Varsayılan değerler
-            const username = sender.username || 'Bilinmeyen Kullanıcı';
-            const avatar = sender.avatar || defaultAvatar;
-            const userId = sender.id;
-
-            // İstek satırını oluştur
-            const requestRow = document.createElement('div');
-            requestRow.className = 'friend-row pending';
-            requestRow.dataset.requestId = requestId;
-            requestRow.dataset.userId = userId;
-
-            requestRow.innerHTML = `
-                <div class="friend-avatar">
-                    <img src="${avatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
-                    <span class="status-dot pending"></span>
-                </div>
-                <div class="friend-info">
-                    <div class="friend-name">${username}</div>
-                    <div class="friend-status">İstek gönderdi</div>
-                </div>
-                <div class="friend-actions pending-actions">
-                    <button class="accept-request-btn" title="Kabul Et">
-                        <i class="fas fa-check"></i>
-                    </button>
-                    <button class="decline-request-btn" title="Reddet">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-
-            // Kabul butonuna tıklama işlevi
-            const acceptBtn = requestRow.querySelector('.accept-request-btn');
-            if (acceptBtn) {
-                acceptBtn.addEventListener('click', async () => {
-                    await handleFriendRequest(requestId, 'accepted', userId, username);
-                });
-            }
-
-            // Reddetme butonuna tıklama işlevi
-            const declineBtn = requestRow.querySelector('.decline-request-btn');
-            if (declineBtn) {
-                declineBtn.addEventListener('click', async () => {
-                    await handleFriendRequest(requestId, 'rejected', userId, username);
-                });
-            }
-
-            fragment.appendChild(requestRow);
-        });
-
-        // Oluşturulan satırları DOM'a ekle
-        pendingList.appendChild(fragment);
-
+        pendingList.textContent = pendingRequests.length;
+        pendingCountBadge.textContent = pendingRequests.length;
     } catch (error) {
         console.error('Bekleyen istekler yüklenirken hata:', error);
-        let errorMessage = 'İstekler yüklenirken hata oluştu.';
-
-        // Daha spesifik hata mesajları
-        if (error.message && error.message.includes('does not exist')) {
-            const columnMatch = error.message.match(/column\s+([\w\.]+)\s+does not exist/i);
-            if (columnMatch && columnMatch[1]) {
-                const columnName = columnMatch[1];
-                errorMessage = `Veritabanı sütunu bulunamadı: ${columnName}. Lütfen sistem yöneticinize başvurun.`;
-                console.error(`Sütun adı hatası: Beklenen '${columnName}' sütunu veritabanında yok.`);
-            } else {
-                errorMessage = 'Veritabanı şemasında bir sütun bulunamadı. Lütfen sistem yöneticinize başvurun.';
-            }
-        }
-
-        pendingList.innerHTML = `<div class="error-placeholder">${errorMessage}</div>`;
-        pendingCountBadge.textContent = '!';
-    }
-}
-
-// Arkadaşlık isteğini kabul et veya reddet
-async function handleFriendRequest(requestId, action, userId, username) {
-    try {
-        let error = null;
-
-        if (action === 'accepted') {
-            // İstek kabul edildiğinde status'u güncelle
-            const { error: updateError } = await supabase
-                .from('friendships')
-                .update({ status: action })
-                .eq('id', requestId);
-
-            error = updateError;
-        } else if (action === 'rejected') {
-            // İstek reddedildiğinde kaydı sil
-            const { error: deleteError } = await supabase
-                .from('friendships')
-                .delete()
-                .eq('id', requestId);
-
-            error = deleteError;
-        }
-
-        if (error) throw error;
-
-        // İşlem başarılı olduğunda UI'ı güncelle
-        const requestRow = document.querySelector(`.friend-row[data-request-id="${requestId}"]`);
-        if (requestRow) {
-            // Animasyonla satırı kaldır
-            requestRow.classList.add('fade-out');
-            setTimeout(() => {
-                requestRow.remove();
-
-                // Bekleyen istekler konteynerini kontrol et
-                const pendingList = document.getElementById('pending-list');
-                if (pendingList && pendingList.children.length === 0) {
-                    loadPendingRequests(
-                        pendingList,
-                        document.getElementById('pending-count')
-                    );
-                }
-
-                // Eğer kabul edildiyse arkadaş listesini güncelle
-                if (action === 'accepted') {
-                    showToast(`${username} arkadaşlık isteği kabul edildi.`, 'success');
-                    loadFriends(); // Arkadaşlar listesini güncelle
-                } else {
-                    showToast(`${username} arkadaşlık isteği reddedildi.`, 'info');
-                }
-            }, 300);
-        }
-
-        // Bildirimleri güncelle
-        await updateNotificationCount();
-
-        // Bekleyen istekleri ve sayacı güncelle
-        const pendingList = document.getElementById('pending-list');
-        const pendingCountBadge = document.getElementById('pending-count');
-        if (pendingList && pendingCountBadge) {
-            loadPendingRequests(pendingList, pendingCountBadge);
-        }
-
-    } catch (error) {
-        console.error('Arkadaşlık isteği işlenirken hata:', error);
-        showToast('İstek işlenirken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+        pendingList.textContent = 'Hata oluştu';
+        pendingCountBadge.textContent = 'Hata';
     }
 }
 
@@ -673,7 +493,7 @@ function addContextMenuListeners() {
         });
     });
 
-    // Sayfanın herhangi bir yerine tıklandığında menüyü gizle
+    // Sayfanın herhangi bir yerine tıklanınca menüyü gizle
     document.addEventListener('click', () => {
         hideContextMenu(contextMenu);
     });
@@ -786,185 +606,27 @@ function hideContextMenu(menu) {
     }
 }
 
-// initializePresence fonksiyon tanımı
+// initializePresence fonksiyon tanımı (içi boş kalsa da fonksiyonun var olması önemli)
 function initializePresence() {
-    if (!supabase || !currentUserId) {
-        console.error('Presence başlatılamadı: Supabase veya kullanıcı ID eksik.');
-        return;
-    }
-
-    console.log("Presence sistemi başlatılıyor...");
-
-    // Online kullanıcıları takip etmek için kanal oluştur
-    presenceChannel = supabase.channel('online-users', {
-        config: {
-            presence: {
-                key: currentUserId // Her istemciyi benzersiz şekilde tanımla
-            }
-        }
-    });
-
-    // Kanala katıldığında tetiklenir
-    presenceChannel.on('presence', { event: 'sync' }, () => {
-        console.log('Presence durumu senkronize edildi.');
-        const presenceState = presenceChannel.presenceState();
-
-        // Başlangıçta online olan tüm arkadaşları güncelle
-        onlineFriends.clear(); // Önceki durumu temizle
-        for (const id in presenceState) {
-            if (id !== currentUserId) { // Kendimizi eklemeyelim
-                onlineFriends.add(id);
-            }
-        }
-        // Tüm arkadaş listesini dolaşarak UI'ı güncelle
-        updateAllFriendsOnlineStatus();
-        console.log('Başlangıçtaki online arkadaşlar:', Array.from(onlineFriends));
-    });
-
-    // Bir kullanıcı katıldığında tetiklenir
-    presenceChannel.on('presence', { event: 'join' }, ({ key, newPresences }) => {
-        console.log('Kullanıcı katıldı:', key, newPresences);
-        if (key !== currentUserId) {
-            onlineFriends.add(key);
-            updateOnlineStatusUI(key, true); // UI'ı güncelle
-        }
-    });
-
-    // Bir kullanıcı ayrıldığında tetiklenir
-    presenceChannel.on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-        console.log('Kullanıcı ayrıldı:', key, leftPresences);
-        if (key !== currentUserId) {
-            onlineFriends.delete(key);
-            updateOnlineStatusUI(key, false); // UI'ı güncelle
-        }
-    });
-
-    // Kanala abone ol
-    presenceChannel.subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-            console.log('Presence kanalına başarıyla abone olundu.');
-            // Kendimizi online olarak işaretle
-            const statusUpdate = await presenceChannel.track({ online_at: new Date().toISOString() });
-            console.log('Online durumu takip isteği sonucu:', statusUpdate);
-        } else {
-            console.warn(`Presence kanalı abonelik durumu: ${status}`);
-        }
-    });
-}
-
-// Belirli bir kullanıcının online durumunu UI'da günceller
-function updateOnlineStatusUI(userId, isOnline) {
-    console.log(`UI güncelleniyor: Kullanıcı ${userId}, Online: ${isOnline}`);
-    const statusClass = isOnline ? 'online' : 'offline';
-    const statusText = isOnline ? 'Çevrimiçi' : 'Çevrimdışı';
-
-    // 1. Arkadaş Listesi (.friend-row)
-    const friendRows = document.querySelectorAll(`.friend-row[data-user-id="${userId}"]`);
-    friendRows.forEach(row => {
-        row.classList.remove('online', 'offline');
-        row.classList.add(statusClass);
-        const statusDot = row.querySelector('.status-dot');
-        const statusElement = row.querySelector('.friend-status');
-        if (statusDot) statusDot.className = `status-dot ${statusClass}`;
-        if (statusElement) statusElement.textContent = statusText;
-
-        // Arkadaşı doğru listeye taşı (online/offline)
-        const onlineList = document.querySelector('.online-friends');
-        const offlineList = document.querySelector('.offline-friends');
-
-        // Hedef ve kaynak listelerin varlığını kontrol et
-        if (!onlineList || !offlineList) {
-            console.warn("Online veya offline listesi bulunamadı, taşıma yapılamıyor.");
-            // Eğer listeler yoksa işlemi burada durdurabiliriz veya devam edebiliriz.
-            // Şimdilik devam edelim ki diğer UI güncellemeleri çalışsın.
-        }
-        // Sadece listeler varsa taşıma yap
-        else {
-            if (isOnline) {
-                // Eğer eleman offline listesinde ise online listesine taşı
-                if (offlineList.contains(row)) {
-                    console.log(`Taşı: ${row.dataset.username} -> Online Listesi`);
-                    onlineList.appendChild(row);
-                }
-                // Eğer eleman hiçbir listede değilse (ilk yüklemede olabilir), online listesine ekle
-                else if (!onlineList.contains(row)) {
-                    console.log(`Ekle (Bulunamadı): ${row.dataset.username} -> Online Listesi`);
-                    onlineList.appendChild(row);
-                }
-            } else { // isOffline
-                // Eğer eleman online listesinde ise offline listesine taşı
-                if (onlineList.contains(row)) {
-                    console.log(`Taşı: ${row.dataset.username} -> Offline Listesi`);
-                    offlineList.appendChild(row);
-                }
-                // Eğer eleman hiçbir listede değilse (ilk yüklemede olabilir), offline listesine ekle
-                else if (!offlineList.contains(row)) {
-                    console.log(`Ekle (Bulunamadı): ${row.dataset.username} -> Offline Listesi`);
-                    offlineList.appendChild(row);
-                }
-            }
-        }
-    });
-
-    // 2. DM Listesi (.dm-item)
-    const dmItems = document.querySelectorAll(`.dm-item[data-user-id="${userId}"]`);
-    dmItems.forEach(item => {
-        item.classList.remove('online', 'offline'); // Önceki sınıfları kaldır
-        item.classList.add(statusClass); // Yeni sınıfı dm-item'a ekle
-
-        // Avatar içindeki kaldırıldığı için burası yoruma alınabilir veya kaldırılabilir
-        // const statusDot = item.querySelector('.dm-status'); 
-        // if (statusDot) statusDot.className = `dm-status ${statusClass}`;
-
-        const statusElement = item.querySelector('.dm-activity');
-        if (statusElement) statusElement.textContent = statusText;
-    });
-
-    // 3. Aktif Sohbet Paneli Başlığı
-    const chatPanel = document.querySelector('.chat-panel');
-    if (chatPanel && chatPanel.dataset.activeChatUserId === userId) {
-        const chatStatusDot = chatPanel.querySelector('.chat-header-user .status-dot');
-        const chatStatusText = chatPanel.querySelector('.chat-header-user .chat-status');
-        if (chatStatusDot) chatStatusDot.className = `status-dot ${statusClass}`;
-        if (chatStatusText) chatStatusText.textContent = statusText;
-    }
-
-    // Sayaçları güncelle
-    updateFriendCounters();
-}
-
-// Tüm arkadaşların online durumunu başlangıçta ayarlar
-function updateAllFriendsOnlineStatus() {
-    const allFriendElements = document.querySelectorAll('.friend-row[data-user-id], .dm-item[data-user-id]');
-    allFriendElements.forEach(element => {
-        const userId = element.dataset.userId;
-        if (userId && userId !== currentUserId) {
-            const isOnline = onlineFriends.has(userId);
-            updateOnlineStatusUI(userId, isOnline); // Her arkadaş için durumu güncelle
-        }
-    });
+    // Bu fonksiyonun içeriği varsa korunmalı, yoksa boş kalabilir.
+    // console.log("Presence sistemi başlatılıyor...");
 }
 
 // showSection fonksiyon tanımı
 function showSection(sectionName) {
+    // Bu fonksiyonun içeriği varsa korunmalı, yoksa boş kalabilir.
     console.log(`Bölüm gösteriliyor: ${sectionName}`);
-
-    // Gerekli elementleri seç
+    // Gerçek içerik: İlgili panelleri göster/gizle
     const friendsPanel = document.querySelector('.friends-panel-container');
     const chatPanel = document.querySelector('.chat-panel');
-    const onlineSection = document.querySelector('.online-section-title');
-    const offlineSection = document.querySelector('.offline-section-title');
-    const pendingSection = document.querySelector('.pending-section-title');
-    const onlineList = document.querySelector('.online-friends');
-    const offlineList = document.querySelector('.offline-friends');
-    const pendingList = document.querySelector('.pending-requests');
+    // Diğer bölümler için de elementler alınabilir
 
-    if (!friendsPanel) return;
+    if (!friendsPanel || !chatPanel) return;
 
     // Önce sohbeti kapat (açıksa)
-    closeChatPanel();
+    closeChatPanel(); // Bu fonksiyon sohbeti kapatıp arkadaş panelini gösterir
 
-    // Tüm sekmelerin active sınıfını kaldır
+    // Aktif tab'ı ayarla (görsel olarak)
     document.querySelectorAll('.dashboard-header .tab').forEach(tab => {
         if (tab.textContent.trim() === sectionName) {
             tab.classList.add('active');
@@ -973,42 +635,19 @@ function showSection(sectionName) {
         }
     });
 
-    // Ana paneli görünür yap
+    // Hangi bölümün gösterileceğine karar ver (Bu kısım daha detaylı olmalı)
+    // Örneğin:
+    // if (sectionName === 'Tüm Arkadaşlar') {
+    //     // Tüm arkadaşları gösteren listeyi filtrele/göster
+    // } else if (sectionName === 'Çevrimiçi') {
+    //     // Sadece çevrimiçi arkadaşları göster
+    // } else if (sectionName === 'Bekleyen') {
+    //     // Bekleyen istekler bölümünü göster
+    // }
+
+    // Şimdilik sadece arkadaş panelinin görünür kaldığından emin olalım
     friendsPanel.classList.remove('hidden');
-    if (chatPanel) chatPanel.classList.add('hidden');
 
-    // Hangi içeriğin gösterileceğine karar ver
-    if (sectionName === 'Tüm Arkadaşlar') {
-        // Tüm sekme, herşeyi göster
-        if (onlineSection) onlineSection.style.display = '';
-        if (offlineSection) offlineSection.style.display = '';
-        if (pendingSection) pendingSection.style.display = 'none';
-        if (onlineList) onlineList.style.display = '';
-        if (offlineList) offlineList.style.display = '';
-        if (pendingList) pendingList.style.display = 'none';
-    }
-    else if (sectionName === 'Çevrimiçi') {
-        // Sadece çevrimiçi olanları göster
-        if (onlineSection) onlineSection.style.display = '';
-        if (offlineSection) offlineSection.style.display = 'none';
-        if (pendingSection) pendingSection.style.display = 'none';
-        if (onlineList) onlineList.style.display = '';
-        if (offlineList) offlineList.style.display = 'none';
-        if (pendingList) pendingList.style.display = 'none';
-    }
-    else if (sectionName === 'Bekleyen') {
-        // Sadece bekleyen istekleri göster
-        if (onlineSection) onlineSection.style.display = 'none';
-        if (offlineSection) offlineSection.style.display = 'none';
-        if (pendingSection) pendingSection.style.display = '';
-        if (onlineList) onlineList.style.display = 'none';
-        if (offlineList) offlineList.style.display = 'none';
-        if (pendingList) pendingList.style.display = '';
-
-        // Bekleyen istekleri yeniden yükle
-        const pendingCountBadge = document.querySelector('.pending-count');
-        loadPendingRequests(pendingList, pendingCountBadge);
-    }
 }
 
 async function openChatPanel(userId, username, avatar) {
@@ -1048,7 +687,7 @@ async function openChatPanel(userId, username, avatar) {
     if (chatUsernameElement) chatUsernameElement.textContent = username;
     if (chatAvatarElement) chatAvatarElement.src = avatar || defaultAvatar;
 
-    // Çevrimiçi durumunu KONTROL ET (`onlineFriends` setinden)
+    // Çevrimiçi durumunu kontrol et
     const isFriendOnline = onlineFriends.has(userId);
     const statusText = isFriendOnline ? 'Çevrimiçi' : 'Çevrimdışı';
     const statusClass = isFriendOnline ? 'online' : 'offline';
@@ -1634,117 +1273,98 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
     });
 }
 
+// Helper function to show the modal
+function showModal(modalElement) {
+    if (modalElement) {
+        modalElement.style.display = 'flex'; // Use 'flex' or 'block' based on your CSS
+        // Optionally add a class for animations
+        // modalElement.classList.add('modal-visible');
+    }
+}
+
+// Helper function to hide the modal
+function hideModal(modalElement) {
+    if (modalElement) {
+        modalElement.style.display = 'none';
+        // Optionally remove the animation class
+        // modalElement.classList.remove('modal-visible');
+    }
+}
+
 // Arkadaş Ekle modalını kur
 function setupAddFriendModal() {
-    const addFriendBtn = document.querySelector('.add-friend-btn');
-    const modalOverlay = document.getElementById('addFriendModal');
-    const closeModalBtn = document.getElementById('closeFriendModal');
-    const friendForm = document.getElementById('friendSearchForm');
-    const usernameInput = document.getElementById('friendUsernameInput');
-    const messageArea = document.querySelector('.friend-search-message');
+    const addFriendButton = document.querySelector('.add-friend-btn'); // Selector for your "Add Friend" button
+    const addFriendModal = document.getElementById('addFriendModal'); // ID of your modal container
+    const closeModalButton = addFriendModal?.querySelector('.close-modal-btn'); // Selector for the close button inside the modal
+    const addFriendForm = addFriendModal?.querySelector('#add-friend-form'); // ID of the form inside the modal
+    const usernameInput = addFriendModal?.querySelector('#add-friend-username-input'); // ID of the username input
+    const messageArea = addFriendModal?.querySelector('.modal-message-area'); // Selector for the message area
 
-    if (!addFriendBtn || !modalOverlay || !closeModalBtn || !friendForm || !usernameInput) {
-        console.warn('Arkadaş ekleme modalı için gerekli elementler bulunamadı.');
+    if (!addFriendButton || !addFriendModal || !closeModalButton || !addFriendForm || !usernameInput || !messageArea) {
+        console.warn('Arkadaş Ekle modal elementleri bulunamadı. Buton işlevsiz olabilir.');
         return;
     }
 
-    // Modalı göster
-    const showFriendModal = () => {
-        modalOverlay.style.display = 'flex';
-        // Animasyon için active sınıfını ekle
-        setTimeout(() => {
-            modalOverlay.classList.add('active');
-            usernameInput.focus(); // Input'a otomatik odaklan
-        }, 10);
-    };
+    // Show modal when Add Friend button is clicked
+    addFriendButton.addEventListener('click', () => {
+        showModal(addFriendModal);
+        usernameInput.focus(); // Focus the input when modal opens
+        // Clear previous messages
+        messageArea.style.display = 'none';
+        messageArea.textContent = '';
+        messageArea.className = 'modal-message-area'; // Reset classes
+    });
 
-    // Modalı gizle
-    const hideFriendModal = () => {
-        modalOverlay.classList.remove('active');
-        // Animasyon tamamlandıktan sonra display özelliğini değiştir
-        setTimeout(() => {
-            modalOverlay.style.display = 'none';
-            // İçeriği temizle
-            usernameInput.value = '';
-            if (messageArea) {
-                messageArea.style.display = 'none';
-                messageArea.textContent = '';
-                messageArea.className = 'friend-search-message';
-            }
-        }, 300);
-    };
+    // Hide modal when close button is clicked
+    closeModalButton.addEventListener('click', () => {
+        hideModal(addFriendModal);
+    });
 
-    // Mesaj gösterme fonksiyonu
-    const showMessage = (message, type = 'info') => {
-        if (!messageArea) return;
-
-        messageArea.textContent = message;
-        messageArea.className = 'friend-search-message'; // Önceki sınıfları temizle
-        messageArea.classList.add(type); // 'success', 'error', veya 'info'
-        messageArea.style.display = 'flex';
-
-        // Mesaj alanına düzgünce kaydır
-        messageArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    };
-
-    // Arkadaş Ekle butonuna tıklama işlevini ekle
-    addFriendBtn.addEventListener('click', showFriendModal);
-
-    // Kapatma butonuna tıklama işlevini ekle
-    closeModalBtn.addEventListener('click', hideFriendModal);
-
-    // Modal dışına tıklandığında kapat
-    modalOverlay.addEventListener('click', (event) => {
-        if (event.target === modalOverlay) {
-            hideFriendModal();
+    // Hide modal when clicking outside the modal content
+    addFriendModal.addEventListener('click', (event) => {
+        if (event.target === addFriendModal) {
+            hideModal(addFriendModal);
         }
     });
 
-    // Klavye kontrolü ekle (ESC tuşuyla kapat)
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && modalOverlay.classList.contains('active')) {
-            hideFriendModal();
-        }
-    });
-
-    // Form gönderimini işle
-    friendForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-
+    // Handle form submission
+    addFriendForm.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent default form submission
         const username = usernameInput.value.trim();
-        const submitButton = friendForm.querySelector('.friend-search-button');
+        const submitButton = addFriendForm.querySelector('.modal-submit-button'); // Selector for the submit button
 
         if (!username) {
-            showMessage('Lütfen bir kullanıcı adı girin.', 'error');
+            displayModalMessage('Lütfen bir kullanıcı adı girin.', 'error', messageArea);
             return;
         }
 
-        if (submitButton) submitButton.disabled = true;
-        showMessage('Kullanıcı aranıyor...', 'info');
+        if (submitButton) submitButton.disabled = true; // Disable button during request
+        displayModalMessage('Arkadaşlık isteği gönderiliyor...', 'info', messageArea); // Use 'info' or similar class for loading
 
         try {
-            // 1. Kullanıcıyı kullanıcı adına göre bul
+            // 1. Find the user by username
             const { data: users, error: findError } = await supabase
                 .from('users')
-                .select('id, username, avatar')
+                .select('id')
                 .eq('username', username)
-                .neq('id', currentUserId) // Kendini hariç tut
-                .limit(1);
+                .neq('id', currentUserId); // Exclude self
 
             if (findError) throw new Error(`Kullanıcı aranırken hata: ${findError.message}`);
-
             if (!users || users.length === 0) {
                 throw new Error(`'${username}' kullanıcısı bulunamadı.`);
             }
+            if (users.length > 1) {
+                // Should ideally not happen if username is unique, but handle just in case
+                throw new Error(`'${username}' ile eşleşen birden fazla kullanıcı bulundu. Lütfen daha belirgin bir kullanıcı adı deneyin.`);
+            }
 
-            const friend = users[0];
+            const friendId = users[0].id;
 
-            // 2. Zaten arkadaş olup olmadığını veya bekleyen istek olup olmadığını kontrol et
+            // 2. Check if already friends or request pending
             const { data: existingFriendship, error: checkError } = await supabase
                 .from('friendships')
-                .select('id, status, user_id_1, user_id_2')
-                .or(`user_id_1.eq.${currentUserId},user_id_2.eq.${friend.id}`)
-                .or(`user_id_1.eq.${friend.id},user_id_2.eq.${currentUserId}`)
+                .select('id, status')
+                .or(`(user_id_1.eq.${currentUserId},user_id_2.eq.${friendId}),(user_id_1.eq.${friendId},user_id_2.eq.${currentUserId})`)
                 .maybeSingle();
 
             if (checkError) throw new Error(`Arkadaşlık durumu kontrol edilirken hata: ${checkError.message}`);
@@ -1753,227 +1373,45 @@ function setupAddFriendModal() {
                 if (existingFriendship.status === 'accepted') {
                     throw new Error(`'${username}' ile zaten arkadaşsınız.`);
                 } else if (existingFriendship.status === 'pending') {
-                    // Kimin kime istek gönderdiğini kontrol et
-                    if (existingFriendship.user_id_1 === currentUserId) {
-                        throw new Error(`'${username}' kullanıcısına zaten arkadaşlık isteği gönderilmiş.`);
-                    } else {
-                        throw new Error(`'${username}' kullanıcısından bekleyen bir arkadaşlık isteğiniz var. Gelen istekleri kontrol edin.`);
-                    }
+                    throw new Error(`'${username}' kullanıcısına zaten bir istek gönderilmiş veya ondan bir istek var.`);
                 } else if (existingFriendship.status === 'blocked') {
                     throw new Error(`Bu kullanıcıyla etkileşim kuramazsınız.`);
                 }
             }
 
-            // 3. Yeni arkadaşlık isteği gönder
+
+            // 3. Send friend request
             const { error: insertError } = await supabase
                 .from('friendships')
                 .insert({
                     user_id_1: currentUserId,
-                    user_id_2: friend.id,
+                    user_id_2: friendId,
                     status: 'pending'
                 });
 
             if (insertError) throw new Error(`Arkadaşlık isteği gönderilirken hata: ${insertError.message}`);
 
-            // Başarılı mesajı göster
-            showMessage(`'${username}' kullanıcısına arkadaşlık isteği gönderildi!`, 'success');
-            usernameInput.value = ''; // Input'u temizle
-
-            // Bekleyen istekleri güncelle (isteğe bağlı)
-            const pendingList = document.querySelector('.pending-requests');
-            const pendingCountBadge = document.querySelector('.pending-count');
-            if (pendingList && pendingCountBadge) {
-                loadPendingRequests(pendingList, pendingCountBadge);
-            }
+            displayModalMessage(`'${username}' kullanıcısına arkadaşlık isteği gönderildi!`, 'success', messageArea);
+            usernameInput.value = ''; // Clear input on success
+            // Optionally close the modal after a short delay
+            // setTimeout(() => hideModal(addFriendModal), 2000);
 
         } catch (error) {
             console.error('Arkadaş ekleme hatası:', error);
-            showMessage(error.message || 'Bir hata oluştu. Lütfen daha sonra tekrar deneyin.', 'error');
+            displayModalMessage(error.message || 'Bir hata oluştu.', 'error', messageArea);
         } finally {
-            if (submitButton) submitButton.disabled = false;
+            if (submitButton) submitButton.disabled = false; // Re-enable button
         }
     });
-
-    console.log('Arkadaş ekleme modalı başarıyla ayarlandı.');
 }
 
-// Bildirim gösterme fonksiyonu
-function showToast(message, type = 'info') {
-    // Zaten açık olan bildirimleri kontrol et
-    const existingNotification = document.querySelector('.notification');
-    if (existingNotification) {
-        existingNotification.remove();
-    }
-
-    // Bildirim konteynerini kontrol et veya oluştur
-    let notificationContainer = document.querySelector('.notification-container');
-    if (!notificationContainer) {
-        notificationContainer = document.createElement('div');
-        notificationContainer.className = 'notification-container';
-        document.body.appendChild(notificationContainer);
-    }
-
-    // Bildirim elementini oluştur
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.innerHTML = `
-        <div class="notification-content">
-            <i class="fas ${getIconForType(type)}"></i>
-            <span>${message}</span>
-        </div>
-        <button class="notification-close">
-            <i class="fas fa-times"></i>
-        </button>
-    `;
-
-    // Kapatma düğmesi işlevselliğini ekle
-    const closeBtn = notification.querySelector('.notification-close');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 300);
-        });
-    }
-
-    // Bildirimi konteyner'a ekle
-    notificationContainer.appendChild(notification);
-
-    // Gösterme animasyonu
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 10);
-
-    // Otomatik kaldırma süresi
-    setTimeout(() => {
-        if (notification.parentNode) {
-            notification.classList.remove('show');
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.remove();
-                }
-            }, 300);
-        }
-    }, 5000);
-
-    // Bildirim ikonu tipini al
-    function getIconForType(type) {
-        switch (type) {
-            case 'success': return 'fa-check-circle';
-            case 'error': return 'fa-times-circle';
-            case 'warning': return 'fa-exclamation-triangle';
-            case 'info':
-            default: return 'fa-info-circle';
-        }
-    }
-}
-
-// Arkadaş listesini yeniden yüklemek için yardımcı fonksiyon
-async function loadFriends() {
-    try {
-        // Gerekli elementleri seç
-        const onlineList = document.querySelector('.online-friends');
-        const offlineList = document.querySelector('.offline-friends');
-        const dmList = document.querySelector('#friends-group .dm-items');
-        const onlineSection = document.querySelector('.online-section-title');
-        const offlineSection = document.querySelector('.offline-section-title');
-
-        // Element kontrolü
-        if (!onlineList || !offlineList || !dmList) {
-            console.error('loadFriends: Gerekli liste elementleri bulunamadı');
-            return;
-        }
-
-        // Arkadaş listesini yükle
-        await loadAllFriends({
-            onlineList,
-            offlineList,
-            dmList,
-            onlineSection,
-            offlineSection
-        });
-
-        console.log('Arkadaş listesi başarıyla güncellendi');
-    } catch (error) {
-        console.error('Arkadaş listesi güncellenirken hata:', error);
-        showToast('Arkadaş listesi güncellenirken bir hata oluştu.', 'error');
-    }
-}
-
-// Bildirim sayacını güncelleme fonksiyonu
-async function updateNotificationCount() {
-    try {
-        // Bekleyen istekleri say
-        const { data: pendingRequests, error } = await supabase
-            .from('friendships')
-            .select('id')
-            .eq('status', 'pending')
-            .eq('user_id_2', currentUserId);
-
-        if (error) throw error;
-
-        // Bildirim sayacını güncelle
-        const pendingCount = pendingRequests ? pendingRequests.length : 0;
-        const pendingCountBadge = document.querySelector('.pending-count');
-        if (pendingCountBadge) {
-            pendingCountBadge.textContent = pendingCount;
-        }
-
-        // Sekme başlığındaki sayacı güncelle
-        const pendingTab = document.querySelector('.tab:nth-child(3)');
-        if (pendingTab) {
-            if (pendingCount > 0) {
-                pendingTab.innerHTML = `Bekleyen <span class="tab-count">${pendingCount}</span>`;
-            } else {
-                pendingTab.textContent = 'Bekleyen';
-            }
-        }
-
-        return pendingCount;
-    } catch (error) {
-        console.error('Bildirim sayacı güncellenirken hata:', error);
-        return 0;
-    }
-}
-
-// Arkadaşlık durumu için realtime abonelik
-async function subscribeFriendshipUpdates() {
-    try {
-        console.log('Arkadaşlık durumu güncellemeleri için abone olunuyor...');
-
-        const friendshipSubscription = supabase
-            .channel('friendship-updates')
-            .on('postgres_changes', {
-                event: 'UPDATE',
-                schema: 'public',
-                table: 'friendships',
-                filter: `user_id_1.eq.${currentUserId}`
-            }, async (payload) => {
-                console.log('Arkadaşlık durumu güncellendi (gönderen olarak):', payload);
-
-                // Status accepted ise, arkadaş kabul edilmiş
-                if (payload.new && payload.new.status === 'accepted') {
-                    showToast('Arkadaşlık isteğiniz kabul edildi!', 'success');
-                    await loadFriends();
-                }
-            })
-            .on('postgres_changes', {
-                event: 'UPDATE',
-                schema: 'public',
-                table: 'friendships',
-                filter: `user_id_2.eq.${currentUserId}`
-            }, async (payload) => {
-                console.log('Arkadaşlık durumu güncellendi (alıcı olarak):', payload);
-
-                // Status accepted ise, arkadaş listesini güncelle
-                if (payload.new && payload.new.status === 'accepted') {
-                    await loadFriends();
-                }
-            })
-            .subscribe((status) => {
-                console.log(`Arkadaşlık kanalı abonelik durumu: ${status}`);
-            });
-
-    } catch (error) {
-        console.error('Arkadaşlık durumu aboneliğinde hata:', error);
+// Helper function to display messages inside the modal
+function displayModalMessage(message, type, messageAreaElement) {
+    if (messageAreaElement) {
+        messageAreaElement.textContent = message;
+        // Reset classes and add the new type
+        messageAreaElement.className = 'modal-message-area'; // Base class
+        messageAreaElement.classList.add(type); // 'success', 'error', or 'info'
+        messageAreaElement.style.display = 'flex'; // Show the message area
     }
 } 
