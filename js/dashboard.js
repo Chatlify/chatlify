@@ -9,6 +9,7 @@ let messageSubscription = null; // Realtime mesaj aboneliği
 let sampleColumnFormat = 'camelCase'; // Varsayılan olarak camelCase formatını kullan
 const defaultAvatar = 'images/DefaultAvatar.png';
 let messageNotificationSound = null; // Ses nesnesi için global değişken
+let unreadCounts = {}; // Okunmamış mesaj sayıları (key: senderId, value: count)
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Dashboard JS başlatılıyor...');
@@ -102,6 +103,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Arkadaş Ekle modalını kur
         setupAddFriendModal();
+
+        // Arkadaşlık durumu için realtime abonelik başlat
+        subscribeFriendshipUpdates();
+
+        // Genel mesaj ses bildirimlerini başlat
+        subscribeToAllMessagesForSound();
 
         console.log('Dashboard JS başlatma tamamlandı.');
     } catch (error) {
@@ -405,7 +412,12 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
 
     function createDMRow(userId, username, avatar) {
         const dmElement = document.createElement('div');
+        const statusClass = onlineFriends.has(userId) ? 'online' : 'offline';
+        const statusText = onlineFriends.has(userId) ? 'Çevrimiçi' : 'Çevrimdışı';
         dmElement.className = 'dm-item';
+        if (onlineFriends.has(userId)) dmElement.classList.add('online'); // Durum sınıfını ekle
+        else dmElement.classList.add('offline');
+
         dmElement.dataset.userId = userId;
         dmElement.dataset.username = username;
         dmElement.dataset.avatar = avatar;
@@ -413,13 +425,13 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
         dmElement.innerHTML = `
             <div class="dm-avatar">
                 <img src="${avatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
-                <div class="dm-status offline"></div>
-             </div>
+            </div>
             <div class="dm-info">
                 <div class="dm-name">${username}</div>
-                <div class="dm-activity">Çevrimdışı</div>
-        </div>
-    `;
+                <div class="dm-activity">${statusText}</div>
+            </div>
+            <span class="unread-badge" style="display: none;"></span> <!-- Okunmamış rozet -->
+        `;
 
         // DM öğesine tıklama event listener'ı ekle
         dmElement.addEventListener('click', () => {
@@ -688,6 +700,13 @@ async function openChatPanel(userId, username, avatar) {
     // Global değişkeni GERÇEK sohbet ID'si ile güncelle
     currentConversationId = actualConversationId;
     console.log("Aktif sohbet ID'si (gerçek):", currentConversationId);
+
+    // Okunmamış sayacını sıfırla ve rozeti gizle
+    if (unreadCounts[userId]) {
+        console.log(`Okunmamış sayaç sıfırlanıyor: User ${userId}`);
+        unreadCounts[userId] = 0;
+        updateUnreadBadgeUI(userId, 0);
+    }
 
     // Sohbet başlığını güncelle
     const chatUsernameElement = chatHeaderUser.querySelector('.chat-username');
@@ -963,7 +982,8 @@ async function subscribeToMessages(conversationId) {
                     // Alınan bilgilerle displayMessage fonksiyonunu çağır
                     displayMessage(payload.new, senderUsername, senderAvatar);
 
-                    // Bildirim sesini çal
+                    // Bildirim sesini çal (BU ARTIK GENEL DİNLEYİCİDE YAPILIYOR)
+                    /*
                     if (messageNotificationSound) {
                         try {
                             // Sesi başa sar (arka arkaya gelen mesajlar için)
@@ -974,6 +994,7 @@ async function subscribeToMessages(conversationId) {
                             // Tarayıcı politikaları veya ses dosyası hatası olabilir
                         }
                     }
+                    */
                 }
             })
             .subscribe((status) => {
@@ -1437,4 +1458,90 @@ function displayModalMessage(message, type, messageAreaElement) {
         messageAreaElement.classList.add(type); // 'success', 'error', or 'info'
         messageAreaElement.style.display = 'flex'; // Show the message area
     }
+}
+
+// Tüm gelen mesajları SADECE SES ve OKUNMAMIŞ SAYACI için dinleyen fonksiyon
+function subscribeToAllMessagesForSound() {
+    if (!supabase || !currentUserId) {
+        console.error('Genel mesaj dinleyici başlatılamadı: Supabase veya kullanıcı ID eksik.');
+        return;
+    }
+
+    console.log("Genel mesaj ses/sayaç bildirimleri için abone olunuyor...");
+
+    const messageSubscription = supabase
+        .channel(`public:messages:user:${currentUserId}`)
+        .on('postgres_changes', {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'messages'
+        }, async (payload) => {
+            if (payload.new && payload.new.senderId !== currentUserId) {
+                const conversationId = payload.new.conversationId;
+                const senderId = payload.new.senderId;
+                if (!conversationId || !senderId) return;
+
+                try {
+                    const { data: conversation, error } = await supabase
+                        .from('conversations')
+                        .select('participantIds')
+                        .eq('id', conversationId)
+                        .maybeSingle();
+
+                    if (error || !conversation || !conversation.participantIds.includes(currentUserId)) {
+                        return;
+                    }
+
+                    // 1. Sesi çal
+                    console.log('Genel dinleyici: Yeni mesaj alındı, ses çalınıyor...');
+                    if (messageNotificationSound) {
+                        try {
+                            messageNotificationSound.currentTime = 0;
+                            await messageNotificationSound.play();
+                        } catch (playError) {
+                            console.warn('Genel dinleyici: Bildirim sesi çalınamadı:', playError);
+                        }
+                    }
+
+                    // 2. Okunmamış sayacını güncelle (eğer sohbet açık değilse)
+                    if (conversationId !== currentConversationId) {
+                        unreadCounts[senderId] = (unreadCounts[senderId] || 0) + 1;
+                        console.log(`Okunmamış sayaç arttı: Sender ${senderId}, Yeni Sayı: ${unreadCounts[senderId]}`);
+                        updateUnreadBadgeUI(senderId, unreadCounts[senderId]);
+                    }
+
+                } catch (convError) {
+                    console.error('Sohbet bilgisi alınırken hata (genel dinleyici):', convError);
+                }
+            }
+        })
+        .subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+                console.log('Genel mesaj ses/sayaç bildirim kanalına başarıyla abone olundu.');
+            } else {
+                console.warn(`Genel mesaj ses/sayaç bildirim kanalı durumu: ${status}`);
+            }
+        });
+}
+
+// Belirli bir kullanıcı için okunmamış mesaj rozetini günceller
+function updateUnreadBadgeUI(userId, count) {
+    const dmItems = document.querySelectorAll(`.dm-item[data-user-id="${userId}"]`);
+    dmItems.forEach(item => {
+        const badge = item.querySelector('.unread-badge');
+        if (!badge) {
+            console.warn('Okunmamış rozet elementi bulunamadı:', item);
+            return;
+        }
+
+        if (count > 0) {
+            badge.textContent = count > 99 ? '99+' : count; // Limitleme (isteğe bağlı)
+            badge.style.display = 'flex';
+            item.classList.add('has-unread'); // CSS ile ek stil vermek için
+        } else {
+            badge.textContent = '';
+            badge.style.display = 'none';
+            item.classList.remove('has-unread');
+        }
+    });
 } 
