@@ -7021,3 +7021,142 @@ emoji-picker {
     --red: #ed4245;
     --dark-red: #d83c3e;
 }
+
+/* Arkadaş Silme Modal Stilleri */
+#removeFriendModal .modal-container {
+    max-width: 450px;
+}
+
+.remove-friend-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+}
+
+.remove-friend-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+    border: 2px solid var(--background-secondary);
+}
+
+.remove-friend-text {
+    flex: 1;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.modal-warning {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background-color: rgba(237, 66, 69, 0.1);
+    border-left: 3px solid var(--red);
+    border-radius: 4px;
+    margin-bottom: 20px;
+    color: var(--text-normal);
+}
+
+.modal-warning i {
+    color: var(--red);
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.cancel-button,
+.confirm-button,
+.close-button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.cancel-button {
+    background-color: var(--background-secondary);
+    color: var(--text-normal);
+}
+
+.cancel-button:hover {
+    background-color: var(--background-tertiary);
+}
+
+.confirm-button.danger {
+    background-color: var(--red);
+    color: white;
+}
+
+.confirm-button.danger:hover {
+    background-color: var(--dark-red);
+}
+
+.confirm-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.close-button {
+    background-color: var(--background-secondary);
+    color: var(--text-normal);
+    margin-left: auto;
+}
+
+.success-message,
+.error-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.success-message i,
+.error-message i {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.success-message i {
+    color: var(--green);
+}
+
+.error-message i {
+    color: var(--red);
+}
+
+.error-details {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 5px;
+    padding: 8px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    width: 100%;
+}
+
+/* Context Menu - Danger Item */
+.context-menu-item.danger {
+    color: var(--red);
+}
+
+.context-menu-item.danger:hover {
+    background-color: rgba(237, 66, 69, 0.1);
+}
+
+.context-menu-item.danger i {
+    color: var(--red);
+}
