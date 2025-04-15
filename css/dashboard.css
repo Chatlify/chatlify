@@ -41,6 +41,12 @@
     --border-radius-sm: 4px;
     --border-radius-md: 8px;
     --border-radius-lg: 12px;
+
+    --blurple: #7289da;
+    --green: #43b581;
+    --dark-green: #3ca374;
+    --red: #ed4245;
+    --dark-red: #d83c3e;
 }
 
 /* Animation Keyframes */
@@ -6795,4 +6801,223 @@ emoji-picker {
 #addFriendModal .modal-container {
     opacity: 1 !important;
     z-index: 10001 !important;
+}
+
+/* Modal animasyonları */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    animation: modalFadeIn 0.3s ease-in-out forwards;
+}
+
+.modal-container {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    position: relative;
+    z-index: 10001;
+    transform: translateY(0);
+    animation: modalSlideIn 0.4s ease-out forwards;
+}
+
+#addFriendModal {
+    z-index: 10000;
+}
+
+#addFriendModal.show-modal {
+    display: flex;
+    animation: modalFadeIn 0.3s ease-in-out forwards;
+}
+
+#addFriendModal .modal-container.show-modal {
+    animation: modalSlideIn 0.4s ease-out forwards;
+}
+
+/* Bekleyen İstekler Sekmesi */
+.pending-requests-section {
+    margin-top: 15px;
+    width: 100%;
+}
+
+.pending-section-title {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: var(--text-normal);
+}
+
+.pending-section-title i {
+    margin-right: 10px;
+    color: var(--text-muted);
+}
+
+.pending-count {
+    margin-left: 8px;
+    background-color: var(--background-accent);
+    color: var(--text-normal);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.9em;
+    min-width: 24px;
+    text-align: center;
+}
+
+.pending-requests-container {
+    overflow-y: auto;
+    max-height: calc(100vh - 220px);
+}
+
+/* Arkadaşlık İstekleri */
+.friend-row.pending {
+    background-color: rgba(114, 137, 218, 0.1);
+    border-left: 3px solid var(--blurple);
+    margin-bottom: 8px;
+}
+
+.friend-row.pending:hover {
+    background-color: rgba(114, 137, 218, 0.2);
+}
+
+.status-dot.pending {
+    background-color: var(--blurple);
+}
+
+/* Kabul/Red Butonları */
+.friend-actions.pending-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.accept-request-btn,
+.decline-request-btn {
+    border: none;
+    border-radius: 4px;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.accept-request-btn {
+    background-color: var(--green);
+    color: white;
+}
+
+.accept-request-btn:hover {
+    background-color: var(--dark-green);
+}
+
+.decline-request-btn {
+    background-color: var(--red);
+    color: white;
+}
+
+.decline-request-btn:hover {
+    background-color: var(--dark-red);
+}
+
+.accept-request-btn:disabled,
+.decline-request-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Bekleyen işlemler */
+.friend-row.processing {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Kabul/Red sonucu animasyonları */
+.request-processed {
+    display: flex;
+    align-items: center;
+    animation: fadeIn 0.3s ease-in-out;
+    padding: 5px 0;
+}
+
+.request-processed i {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.request-processed i.fa-check-circle {
+    color: var(--green);
+}
+
+.request-processed i.fa-times-circle {
+    color: var(--red);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
+/* Hata Mesajı */
+.error-message {
+    background-color: rgba(237, 66, 69, 0.1);
+    color: var(--red);
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-top: 8px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* CSS değişkenleri */
+:root {
+    --blurple: #7289da;
+    --green: #43b581;
+    --dark-green: #3ca374;
+    --red: #ed4245;
+    --dark-red: #d83c3e;
 }
