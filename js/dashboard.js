@@ -1314,10 +1314,29 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
 // Modal gösterme fonksiyonu
 function showModal(modalElement) {
     if (modalElement) {
-        console.log('Modal açılıyor:', modalElement.id); // Hata ayıklama için log ekleyelim
-        modalElement.style.display = 'flex'; // 'none' yerine 'flex' kullanılmalı
-        // Animasyon eklemek isterseniz:
-        // modalElement.classList.add('modal-visible');
+        console.log('Modal açılıyor:', modalElement.id);
+
+        // Modal görünürlük sorununu çözmek için güçlendirilmiş stil ayarları
+        modalElement.style.display = 'flex';
+        modalElement.style.opacity = '1';
+        modalElement.style.visibility = 'visible';
+        modalElement.style.zIndex = '10000';
+
+        // Modal içeriği de görünür olsun
+        const modalContainer = modalElement.querySelector('.modal-container');
+        if (modalContainer) {
+            modalContainer.style.opacity = '1';
+            modalContainer.style.visibility = 'visible';
+            modalContainer.style.zIndex = '10001';
+        }
+
+        // Tarayıcı yenileme uyumu için
+        setTimeout(() => {
+            if (modalElement.style.display !== 'flex') {
+                modalElement.style.display = 'flex';
+                console.log('Modal görünürlüğü yeniden ayarlandı');
+            }
+        }, 50);
     } else {
         console.error('Modal elementi bulunamadı');
     }

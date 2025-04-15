@@ -6749,3 +6749,50 @@ emoji-picker {
     transform: scale(1);
     opacity: 1;
 }
+
+/* Modal Overlay Güçlendirilmiş Stil */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000 !important;
+    /* Daha yüksek z-index */
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Modal Container Güçlendirilmiş Stil */
+.modal-container {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    position: relative;
+    z-index: 10001 !important;
+    /* Modal içeriği overlay'dan daha yüksek */
+    opacity: 1 !important;
+    display: flex !important;
+    flex-direction: column;
+    transform: translateY(0) !important;
+    /* Animasyon sıfırlanması */
+}
+
+/* Arkadaş Ekle Modalı Güçlendirilmiş Stil */
+#addFriendModal {
+    z-index: 10000 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+#addFriendModal .modal-container {
+    opacity: 1 !important;
+    z-index: 10001 !important;
+}
