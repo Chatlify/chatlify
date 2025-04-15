@@ -99,6 +99,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Arkadaş Ekle modalını kur
         setupAddFriendModal();
 
+        // Bekleyen arkadaşlık istekleri için realtime aboneliğini kur
+        setupPendingFriendRequestSubscription();
+
         console.log('Dashboard JS başlatma tamamlandı.');
     } catch (error) {
         console.error('Dashboard başlatma hatası:', error);
@@ -185,6 +188,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Bekleyen istek yoksa boş durum göster
             if (!pendingRequests || pendingRequests.length === 0) {
                 pendingContainer.innerHTML = '<div class="empty-placeholder">Bekleyen arkadaşlık isteği bulunmamaktadır.</div>';
+
+                // Bekleyen istek sayısını güncelle
+                document.querySelectorAll('.pending-count').forEach(badge => {
+                    badge.textContent = '0';
+                });
                 return;
             }
 
@@ -241,7 +249,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             // Bekleyen istek sayısını güncelle
-            document.querySelector('.pending-count').textContent = pendingRequests.length;
+            document.querySelectorAll('.pending-count').forEach(badge => {
+                badge.textContent = pendingRequests.length;
+            });
         } catch (error) {
             console.error('Bekleyen istekler yüklenirken hata:', error);
             pendingContainer.innerHTML = `<div class="error-placeholder">Bekleyen istekler yüklenirken bir hata oluştu: ${error.message}</div>`;
@@ -288,15 +298,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                     requestRow.remove();
 
                     // Bekleyen istek sayısını güncelle
-                    const pendingCount = document.querySelector('.pending-count');
-                    const currentCount = parseInt(pendingCount.textContent) - 1;
-                    pendingCount.textContent = currentCount > 0 ? currentCount : '0';
+                    updatePendingRequestsCount();
 
                     // Eğer başka istek kalmadıysa boş durum mesajını göster
                     const pendingContainer = document.querySelector('.pending-requests-container');
                     if (pendingContainer && pendingContainer.children.length === 0) {
                         pendingContainer.innerHTML = '<div class="empty-placeholder">Bekleyen arkadaşlık isteği bulunmamaktadır.</div>';
                     }
+
+                    // Arkadaş listesini yeniden yükle
+                    loadAllFriends({
+                        onlineList: document.querySelector('.online-friends'),
+                        offlineList: document.querySelector('.offline-friends'),
+                        dmList: document.querySelector('#friends-group .dm-items'),
+                        onlineSection: document.querySelector('.online-section-title'),
+                        offlineSection: document.querySelector('.offline-section-title')
+                    });
                 }, 1000);
             }, 2000);
 
@@ -361,9 +378,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     requestRow.remove();
 
                     // Bekleyen istek sayısını güncelle
-                    const pendingCount = document.querySelector('.pending-count');
-                    const currentCount = parseInt(pendingCount.textContent) - 1;
-                    pendingCount.textContent = currentCount > 0 ? currentCount : '0';
+                    updatePendingRequestsCount();
 
                     // Eğer başka istek kalmadıysa boş durum mesajını göster
                     const pendingContainer = document.querySelector('.pending-requests-container');
@@ -470,6 +485,49 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
 
         mainContainer.appendChild(pendingSection);
+    }
+
+    // Bekleyen arkadaşlık istekleri için realtime aboneliği
+    function setupPendingFriendRequestSubscription() {
+        if (!currentUserId) {
+            console.warn('setupPendingFriendRequestSubscription: currentUserId bulunamadı');
+            return;
+        }
+
+        console.log('Bekleyen arkadaşlık istekleri için realtime aboneliği başlatılıyor...');
+
+        const pendingFriendChannel = supabase
+            .channel('pending-friend-requests')
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'friendships',
+                filter: `user_id_2=eq.${currentUserId},status=eq.pending`
+            }, async (payload) => {
+                console.log('Yeni bekleyen arkadaşlık isteği alındı (realtime):', payload);
+
+                // Bildirim sesi çal (eğer varsa)
+                if (messageNotificationSound) {
+                    try {
+                        messageNotificationSound.currentTime = 0;
+                        await messageNotificationSound.play();
+                    } catch (error) {
+                        console.warn('Bildirim sesi çalınamadı:', error);
+                    }
+                }
+
+                // Bekleyen istekler sayacını güncelle
+                await updatePendingRequestsCount();
+
+                // Eğer bekleyen istekler sekmesi açıksa, istekleri yeniden yükle
+                const activeTab = document.querySelector('.dashboard-header .tab.active');
+                if (activeTab && activeTab.textContent.trim() === 'Bekleyen') {
+                    loadPendingFriendRequests();
+                }
+            })
+            .subscribe((status) => {
+                console.log(`Bekleyen arkadaşlık istekleri abonelik durumu: ${status}`);
+            });
     }
 });
 
@@ -786,12 +844,50 @@ async function loadPendingRequests(pendingList, pendingCountBadge) {
             throw error;
         }
 
-        pendingList.textContent = pendingRequests.length;
-        pendingCountBadge.textContent = pendingRequests.length;
+        // Bekleyen isteklerin sayısını göster
+        const pendingCount = pendingRequests ? pendingRequests.length : 0;
+
+        if (pendingList) pendingList.textContent = pendingCount;
+        if (pendingCountBadge) pendingCountBadge.textContent = pendingCount;
+
+        // Tüm sekmelerdeki bekleyen istek sayacını güncelle
+        document.querySelectorAll('.pending-count').forEach(badge => {
+            badge.textContent = pendingCount;
+        });
+
+        return pendingCount;
     } catch (error) {
         console.error('Bekleyen istekler yüklenirken hata:', error);
-        pendingList.textContent = 'Hata oluştu';
-        pendingCountBadge.textContent = 'Hata';
+        if (pendingList) pendingList.textContent = 'Hata oluştu';
+        if (pendingCountBadge) pendingCountBadge.textContent = 'Hata';
+        return 0;
+    }
+}
+
+// Bekleyen isteklerin sayısını güncelle
+async function updatePendingRequestsCount() {
+    try {
+        const { data: pendingRequests, error } = await supabase
+            .from('friendships')
+            .select('count', { count: 'exact' })
+            .eq('status', 'pending')
+            .eq('user_id_2', currentUserId);
+
+        if (error) {
+            throw error;
+        }
+
+        const pendingCount = pendingRequests ? pendingRequests.length : 0;
+
+        // Tüm bekleyen istek sayaçlarını güncelle
+        document.querySelectorAll('.pending-count').forEach(badge => {
+            badge.textContent = pendingCount;
+        });
+
+        return pendingCount;
+    } catch (error) {
+        console.error('Bekleyen istekler sayısı güncellenirken hata:', error);
+        return 0;
     }
 }
 
