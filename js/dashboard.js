@@ -37,7 +37,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const settingsButtonContainer = document.querySelector('.server-sidebar .server-item:has(.server-settings-icon)');
         const chatCloseBtn = chatPanel?.querySelector('.chat-close-btn');
         const chatEmojiBtn = chatPanel?.querySelector('.emoji-btn');
-        const chatGifBtn = chatPanel?.querySelector('.gif-btn');
+
+        // Dosya/Eklenti butonunu GIF butonu olarak kullan
+        const chatGifBtn = chatPanel?.querySelector('.chat-textbox button i.fa-paperclip, .chat-textbox button i.fas.fa-paperclip')?.closest('button');
+
         const chatTextarea = chatPanel?.querySelector('.chat-textbox textarea');
         const emojiPicker = document.querySelector('emoji-picker');
 
@@ -69,9 +72,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             setupEmojiPicker(chatEmojiBtn, chatTextarea, emojiPicker);
         }
 
-        // GIF picker dinleyicisini kur
+        // GIF picker dinleyicisini kur (eğer dosya butonu varsa)
         if (chatGifBtn && chatTextarea) {
+            console.log('GIF butonu bulundu, GIF seçici hazırlanıyor...');
             setupGifPicker(chatGifBtn, chatTextarea);
+        } else {
+            console.warn('GIF butonu bulunamadı (fa-paperclip ikonu içeren buton arandı)');
         }
 
         // Varsayılan sekmeyi göster
@@ -2138,6 +2144,8 @@ function removeFriendFromUI(userId) {
 
 // GIF picker'ı kuran fonksiyon
 function setupGifPicker(gifButton, textareaElement) {
+    console.log('GIF seçici kurulumu başladı', gifButton);
+
     // GIF picker modal elementi oluştur
     let gifPickerModal = document.getElementById('gifPickerModal');
 
@@ -2213,7 +2221,10 @@ function setupGifPicker(gifButton, textareaElement) {
     }
 
     // GIF butonuna tıklama olayı ekle
-    gifButton.addEventListener('click', () => {
+    gifButton.addEventListener('click', (e) => {
+        console.log('GIF butonu tıklandı!');
+        e.preventDefault(); // Formun gönderilmesini engelle
+        e.stopPropagation(); // Diğer event listener'ları durdur
         showModal(gifPickerModal);
     });
 }
