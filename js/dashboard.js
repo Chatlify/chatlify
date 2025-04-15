@@ -1311,40 +1311,59 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
     });
 }
 
-// Helper function to show the modal
+// Modal gösterme fonksiyonu
 function showModal(modalElement) {
     if (modalElement) {
-        modalElement.style.display = 'flex'; // Use 'flex' or 'block' based on your CSS
-        // Optionally add a class for animations
+        console.log('Modal açılıyor:', modalElement.id); // Hata ayıklama için log ekleyelim
+        modalElement.style.display = 'flex'; // 'none' yerine 'flex' kullanılmalı
+        // Animasyon eklemek isterseniz:
         // modalElement.classList.add('modal-visible');
+    } else {
+        console.error('Modal elementi bulunamadı');
     }
 }
 
-// Helper function to hide the modal
+// Modal gizleme fonksiyonu
 function hideModal(modalElement) {
     if (modalElement) {
+        console.log('Modal kapatılıyor:', modalElement.id);
         modalElement.style.display = 'none';
-        // Optionally remove the animation class
+        // Animasyon kaldırmak için:
         // modalElement.classList.remove('modal-visible');
     }
 }
 
 // Arkadaş Ekle modalını kur
 function setupAddFriendModal() {
-    const addFriendButton = document.querySelector('.add-friend-btn'); // Selector for your "Add Friend" button
-    const addFriendModal = document.getElementById('addFriendModal'); // ID of your modal container
-    const closeModalButton = addFriendModal?.querySelector('.close-modal-btn'); // Selector for the close button inside the modal
-    const addFriendForm = addFriendModal?.querySelector('#add-friend-form'); // ID of the form inside the modal
-    const usernameInput = addFriendModal?.querySelector('#add-friend-username-input'); // ID of the username input
-    const messageArea = addFriendModal?.querySelector('.modal-message-area'); // Selector for the message area
+    console.log('Arkadaş Ekle modal kurulumu başladı'); // Hata ayıklama için log ekleyelim
+    const addFriendButton = document.getElementById('add-friend-button'); // ID kullanarak butonu seçelim
+    const addFriendModal = document.getElementById('addFriendModal');
+    const closeModalButton = addFriendModal?.querySelector('.close-modal-btn');
+    const addFriendForm = addFriendModal?.querySelector('#add-friend-form');
+    const usernameInput = addFriendModal?.querySelector('#add-friend-username-input');
+    const messageArea = addFriendModal?.querySelector('.modal-message-area');
 
     if (!addFriendButton || !addFriendModal || !closeModalButton || !addFriendForm || !usernameInput || !messageArea) {
         console.warn('Arkadaş Ekle modal elementleri bulunamadı. Buton işlevsiz olabilir.');
+        // Hangi elementin eksik olduğunu görelim
+        console.warn('Eksik elementler:', {
+            addFriendButton: !addFriendButton,
+            addFriendModal: !addFriendModal,
+            closeModalButton: !closeModalButton,
+            addFriendForm: !addFriendForm,
+            usernameInput: !usernameInput,
+            messageArea: !messageArea
+        });
         return;
     }
 
+    console.log('Arkadaş Ekle modal elementleri bulundu');
+
     // Show modal when Add Friend button is clicked
-    addFriendButton.addEventListener('click', () => {
+    addFriendButton.addEventListener('click', (event) => {
+        console.log('Arkadaş Ekle butonuna tıklandı');
+        event.preventDefault(); // Event'i önleyelim
+        event.stopPropagation(); // Event'in yayılmasını durduralım
         showModal(addFriendModal);
         usernameInput.focus(); // Focus the input when modal opens
         // Clear previous messages
