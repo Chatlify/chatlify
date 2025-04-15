@@ -173,7 +173,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     id,
                     user_id_1,
                     user_id_2,
-                    created_at,
                     users!friendships_user_id_1_fkey (id, username, avatar)
                 `)
                 .eq('status', 'pending')
