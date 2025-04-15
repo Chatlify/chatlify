@@ -10,6 +10,7 @@ let sampleColumnFormat = 'camelCase'; // Varsayılan olarak camelCase formatın�
 const defaultAvatar = 'images/DefaultAvatar.png';
 let messageNotificationSound = null; // Ses nesnesi için global değişken
 let unreadCounts = {}; // Okunmamış mesaj sayaçları { userId: count }
+const TENOR_API_KEY = 'AIzaSyCjseHq-Gn4cii_fVDtSX3whyY94orNWPM'; // Tenor API anahtarı
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Dashboard JS başlatılıyor...');
@@ -36,6 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const settingsButtonContainer = document.querySelector('.server-sidebar .server-item:has(.server-settings-icon)');
         const chatCloseBtn = chatPanel?.querySelector('.chat-close-btn');
         const chatEmojiBtn = chatPanel?.querySelector('.emoji-btn');
+        const chatGifBtn = chatPanel?.querySelector('.gif-btn');
         const chatTextarea = chatPanel?.querySelector('.chat-textbox textarea');
         const emojiPicker = document.querySelector('emoji-picker');
 
@@ -65,6 +67,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Emoji picker dinleyicisini kur
         if (chatEmojiBtn && chatTextarea && emojiPicker) {
             setupEmojiPicker(chatEmojiBtn, chatTextarea, emojiPicker);
+        }
+
+        // GIF picker dinleyicisini kur
+        if (chatGifBtn && chatTextarea) {
+            setupGifPicker(chatGifBtn, chatTextarea);
         }
 
         // Varsayılan sekmeyi göster
@@ -1425,6 +1432,13 @@ function displayMessage(message, authorName = null, authorAvatar = null) {
         return;
     }
 
+    // GIF mesajı mı kontrol et
+    if (message.messageType === 'gif') {
+        displayGifMessage(message);
+        return;
+    }
+
+    // Normal metin mesajları için eski mantık devam eder
     // Kimin mesajı olduğunu ve gösterilecek bilgileri belirle
     const isOwnMessage = senderId === currentUserId;
     const displayName = isOwnMessage ? 'Sen' : (authorName || 'Kullanıcı'); // Gelen adı kullan, yoksa 'Kullanıcı'
@@ -1439,9 +1453,6 @@ function displayMessage(message, authorName = null, authorAvatar = null) {
     } else {
         // Diğer kullanıcının avatarını kullan (parametre olarak geleni veya varsayılanı)
         displayAvatar = authorAvatar || defaultAvatar;
-        // İsteğe bağlı: Sohbet başlığındaki avatarı da kontrol edebiliriz ama parametre daha güvenilir
-        // const chatHeaderAvatar = document.querySelector('.chat-avatar img');
-        // if (chatHeaderAvatar) displayAvatar = chatHeaderAvatar.src;
     }
 
     // Mesaj öğesini oluştur
@@ -1449,21 +1460,43 @@ function displayMessage(message, authorName = null, authorAvatar = null) {
     messageElement.className = `message-group ${isOwnMessage ? 'own-message' : ''}`;
     messageElement.setAttribute('data-sender-id', senderId);
 
-    // HTML şablonu oluştur (Kullanıcı adı dinamik olarak eklendi)
-    messageElement.innerHTML = `
-        <div class="message-group-avatar">
-            <img src="${displayAvatar}" alt="${displayName}" onerror="this.src='${defaultAvatar}'">
-        </div>
-        <div class="message-group-content">
-            <div class="message-group-header">
-                <span class="message-author">${displayName}</span>
-                <span class="message-time">${new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+    // Mesaj içeriğinde GIF URL'si var mı kontrol et
+    const isGifUrl = message.content.match(/https?:\/\/[^\s]+\.gif/i);
+
+    // HTML şablonu oluştur
+    if (isGifUrl) {
+        // GIF içeren mesaj
+        messageElement.innerHTML = `
+            <div class="message-group-avatar">
+                <img src="${displayAvatar}" alt="${displayName}" onerror="this.src='${defaultAvatar}'">
             </div>
-            <div class="message-content">
-                <p>${message.content}</p>
+            <div class="message-group-content">
+                <div class="message-group-header">
+                    <span class="message-author">${displayName}</span>
+                    <span class="message-time">${new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+                <div class="message-content gif-message">
+                    <img src="${message.content}" alt="GIF" class="message-gif">
+                </div>
             </div>
-        </div>
-    `;
+        `;
+    } else {
+        // Normal metin mesajı
+        messageElement.innerHTML = `
+            <div class="message-group-avatar">
+                <img src="${displayAvatar}" alt="${displayName}" onerror="this.src='${defaultAvatar}'">
+            </div>
+            <div class="message-group-content">
+                <div class="message-group-header">
+                    <span class="message-author">${displayName}</span>
+                    <span class="message-time">${new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+                <div class="message-content">
+                    <p>${message.content}</p>
+                </div>
+            </div>
+        `;
+    }
 
     chatMessagesContainer.appendChild(messageElement);
     chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
@@ -2101,4 +2134,252 @@ function removeFriendFromUI(userId) {
             dmItem.remove();
         }, 500);
     }
-} 
+}
+
+// GIF picker'ı kuran fonksiyon
+function setupGifPicker(gifButton, textareaElement) {
+    // GIF picker modal elementi oluştur
+    let gifPickerModal = document.getElementById('gifPickerModal');
+
+    // GIF picker modal yoksa oluştur
+    if (!gifPickerModal) {
+        gifPickerModal = document.createElement('div');
+        gifPickerModal.id = 'gifPickerModal';
+        gifPickerModal.className = 'modal-overlay';
+        gifPickerModal.style.display = 'none';
+
+        gifPickerModal.innerHTML = `
+            <div class="modal-container gif-picker-container">
+                <div class="modal-header">
+                    <h3>GIF Seçin</h3>
+                    <button class="close-modal-btn" title="Kapat">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-content">
+                    <div class="gif-search-container">
+                        <input type="text" class="gif-search-input" placeholder="GIF ara...">
+                        <button class="gif-search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="gif-results-container">
+                        <div class="gif-trending">
+                            <div class="loading-placeholder"><i class="fas fa-spinner fa-spin"></i> GIF'ler yükleniyor...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(gifPickerModal);
+
+        // GIF arama girdisini al
+        const gifSearchInput = gifPickerModal.querySelector('.gif-search-input');
+        const gifSearchButton = gifPickerModal.querySelector('.gif-search-btn');
+        const gifResultsContainer = gifPickerModal.querySelector('.gif-results-container');
+        const closeModalButton = gifPickerModal.querySelector('.close-modal-btn');
+
+        // Kapatma düğmesine tıklandığında modalı kapat
+        closeModalButton.addEventListener('click', () => {
+            hideModal(gifPickerModal);
+        });
+
+        // Modal dışına tıklandığında modalı kapat
+        gifPickerModal.addEventListener('click', (event) => {
+            if (event.target === gifPickerModal) {
+                hideModal(gifPickerModal);
+            }
+        });
+
+        // GIF arama butonuna tıklandığında
+        gifSearchButton.addEventListener('click', () => {
+            const searchTerm = gifSearchInput.value.trim();
+            if (searchTerm) {
+                searchGifs(searchTerm, gifResultsContainer);
+            }
+        });
+
+        // Enter tuşuna basıldığında
+        gifSearchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const searchTerm = gifSearchInput.value.trim();
+                if (searchTerm) {
+                    searchGifs(searchTerm, gifResultsContainer);
+                }
+            }
+        });
+
+        // Sayfa yüklendiğinde trend GIF'leri göster
+        loadTrendingGifs(gifResultsContainer);
+    }
+
+    // GIF butonuna tıklama olayı ekle
+    gifButton.addEventListener('click', () => {
+        showModal(gifPickerModal);
+    });
+}
+
+// Trend GIF'leri yükle
+async function loadTrendingGifs(container) {
+    try {
+        container.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin"></i> Trend GIF\'ler yükleniyor...</div>';
+
+        const response = await fetch(`https://tenor.googleapis.com/v2/featured?key=${TENOR_API_KEY}&limit=20&client_key=chatlify_web`);
+        const data = await response.json();
+
+        displayGifs(data.results, container);
+    } catch (error) {
+        console.error('Trend GIF\'ler yüklenirken hata:', error);
+        container.innerHTML = '<div class="error-placeholder">GIF\'ler yüklenirken bir hata oluştu. Lütfen tekrar deneyin.</div>';
+    }
+}
+
+// GIF arama
+async function searchGifs(searchTerm, container) {
+    try {
+        container.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin"></i> GIF\'ler aranıyor...</div>';
+
+        const response = await fetch(`https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(searchTerm)}&key=${TENOR_API_KEY}&limit=20&client_key=chatlify_web`);
+        const data = await response.json();
+
+        if (data.results && data.results.length > 0) {
+            displayGifs(data.results, container);
+        } else {
+            container.innerHTML = `<div class="empty-placeholder">\"${searchTerm}\" ile ilgili GIF bulunamadı.</div>`;
+        }
+    } catch (error) {
+        console.error('GIF\'ler aranırken hata:', error);
+        container.innerHTML = '<div class="error-placeholder">GIF\'ler aranırken bir hata oluştu. Lütfen tekrar deneyin.</div>';
+    }
+}
+
+// GIF'leri görüntüle
+function displayGifs(gifs, container) {
+    if (!gifs || gifs.length === 0) {
+        container.innerHTML = '<div class="empty-placeholder">Hiç GIF bulunamadı.</div>';
+        return;
+    }
+
+    // Container'ı temizle
+    container.innerHTML = '';
+
+    // GIF grid oluştur
+    const gifGrid = document.createElement('div');
+    gifGrid.className = 'gif-grid';
+
+    // Her GIF için
+    gifs.forEach(gif => {
+        const gifItem = document.createElement('div');
+        gifItem.className = 'gif-item';
+
+        // Ön izleme (preview) görüntüsünü kullan - daha küçük boyutlu
+        const previewUrl = gif.media_formats.tinygif.url || gif.media_formats.gif.url;
+        const originalUrl = gif.media_formats.gif.url;
+
+        gifItem.innerHTML = `<img src="${previewUrl}" alt="${gif.content_description || 'GIF'}" loading="lazy">`;
+
+        // GIF'e tıklandığında mesaj olarak gönder
+        gifItem.addEventListener('click', () => {
+            sendGifMessage(originalUrl);
+            // Modal'ı kapat
+            const gifModal = document.getElementById('gifPickerModal');
+            if (gifModal) {
+                hideModal(gifModal);
+            }
+        });
+
+        gifGrid.appendChild(gifItem);
+    });
+
+    container.appendChild(gifGrid);
+}
+
+// GIF mesajı gönder
+async function sendGifMessage(gifUrl) {
+    if (!currentConversationId) {
+        console.warn('GIF göndermek için geçerli bir sohbet ID\'si gerekli.');
+        return;
+    }
+
+    try {
+        // GIF mesajı oluştur - sadece GIF URL'ini içeren özel bir mesaj formatı
+        const gifMessage = {
+            content: gifUrl,
+            senderId: currentUserId,
+            conversationId: currentConversationId,
+            messageType: 'gif' // Mesaj tipini belirt
+        };
+
+        // Mesajı veritabanına ekle
+        const { data, error } = await supabase
+            .from('messages')
+            .insert([gifMessage])
+            .select();
+
+        if (error) {
+            console.error('GIF mesajı gönderilirken hata:', error);
+            alert('GIF gönderilemedi. Lütfen tekrar deneyin.');
+            throw error;
+        }
+
+        // Başarıyla gönderildiyse ekranda göster
+        if (data && data.length > 0) {
+            console.log('GIF mesajı başarıyla gönderildi:', data[0]);
+            displayGifMessage(data[0]);
+        }
+    } catch (error) {
+        console.error('GIF gönderilirken hata:', error);
+    }
+}
+
+// GIF mesajını ekranda göster
+function displayGifMessage(message) {
+    const chatMessagesContainer = document.querySelector('.chat-panel .chat-messages');
+    if (!chatMessagesContainer || !message) return;
+
+    const senderId = message.senderId;
+    if (!senderId) {
+        console.warn('displayGifMessage: Gelen mesajda senderId bulunamadı.', message);
+        return;
+    }
+
+    // Kimin mesajı olduğunu ve gösterilecek bilgileri belirle
+    const isOwnMessage = senderId === currentUserId;
+    const displayName = isOwnMessage ? 'Sen' : 'Kullanıcı';
+    let displayAvatar = defaultAvatar;
+
+    if (isOwnMessage) {
+        // Kendi avatarımızı al
+        const userAvatarElement = document.querySelector('.dm-footer .dm-user-avatar img');
+        if (userAvatarElement) {
+            displayAvatar = userAvatarElement.src;
+        }
+    } else {
+        // Diğer kullanıcının avatarını al
+        const chatHeaderAvatar = document.querySelector('.chat-avatar img');
+        if (chatHeaderAvatar) displayAvatar = chatHeaderAvatar.src;
+    }
+
+    // GIF mesaj öğesini oluştur
+    const messageElement = document.createElement('div');
+    messageElement.className = `message-group ${isOwnMessage ? 'own-message' : ''}`;
+    messageElement.setAttribute('data-sender-id', senderId);
+
+    // HTML şablonu oluştur - GIF mesajı için özel görünüm
+    messageElement.innerHTML = `
+        <div class="message-group-avatar">
+            <img src="${displayAvatar}" alt="${displayName}" onerror="this.src='${defaultAvatar}'">
+        </div>
+        <div class="message-group-content">
+            <div class="message-group-header">
+                <span class="message-author">${displayName}</span>
+                <span class="message-time">${new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            </div>
+            <div class="message-content gif-message">
+                <img src="${message.content}" alt="GIF" class="message-gif">
+            </div>
+        </div>
+    `;
+
+    chatMessagesContainer.appendChild(messageElement);
+    chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+}
