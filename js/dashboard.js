@@ -303,8 +303,11 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
                 onlineFragment.appendChild(friendRow);
 
                 if (dmRow) {
-                    dmRow.querySelector('.dm-status').className = 'dm-status online';
-                    dmRow.querySelector('.dm-activity').textContent = 'Çevrimiçi';
+                    const dmStatus = dmRow.querySelector('.dm-status');
+                    const dmActivity = dmRow.querySelector('.dm-activity');
+
+                    if (dmStatus) dmStatus.className = 'dm-status online';
+                    if (dmActivity) dmActivity.textContent = 'Çevrimiçi';
                 }
             } else {
                 friendRow.classList.add('offline');
@@ -314,8 +317,11 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
                 offlineFragment.appendChild(friendRow);
 
                 if (dmRow) {
-                    dmRow.querySelector('.dm-status').className = 'dm-status offline';
-                    dmRow.querySelector('.dm-activity').textContent = 'Çevrimdışı';
+                    const dmStatus = dmRow.querySelector('.dm-status');
+                    const dmActivity = dmRow.querySelector('.dm-activity');
+
+                    if (dmStatus) dmStatus.className = 'dm-status offline';
+                    if (dmActivity) dmActivity.textContent = 'Çevrimdışı';
                 }
             }
 
@@ -407,7 +413,7 @@ async function loadAllFriends({ onlineList, offlineList, dmList, onlineSection, 
         dmElement.innerHTML = `
             <div class="dm-avatar">
                 <img src="${avatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
-                
+                <div class="dm-status ${statusClass}"></div>
             </div>
             <div class="dm-info">
                 <div class="dm-name">${username}</div>
