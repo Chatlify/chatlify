@@ -37,10 +37,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         const settingsButtonContainer = document.querySelector('.server-sidebar .server-item:has(.server-settings-icon)');
         const chatCloseBtn = chatPanel?.querySelector('.chat-close-btn');
         const chatEmojiBtn = chatPanel?.querySelector('.emoji-btn');
-
-        // Dosya/Eklenti butonunu GIF butonu olarak kullan
-        const chatGifBtn = chatPanel?.querySelector('.chat-textbox button i.fa-paperclip, .chat-textbox button i.fas.fa-paperclip')?.closest('button');
-
+        
+        // Buton seçicisini düzeltiyoruz - developer tools'dan gördüğümüz gerçek sınıf adı
+        console.log('GIF butonu aranıyor...');
+        const chatGifBtn = chatPanel?.querySelector('.chat-attachment-btn');
+        console.log('Bulunan GIF butonu:', chatGifBtn);
+        
+        // Tüm butonları listeleyelim (hata ayıklama için)
+        const allButtons = chatPanel?.querySelectorAll('button');
+        console.log('Sohbet panelindeki tüm butonlar:', allButtons);
+        
         const chatTextarea = chatPanel?.querySelector('.chat-textbox textarea');
         const emojiPicker = document.querySelector('emoji-picker');
 
@@ -74,10 +80,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // GIF picker dinleyicisini kur (eğer dosya butonu varsa)
         if (chatGifBtn && chatTextarea) {
-            console.log('GIF butonu bulundu, GIF seçici hazırlanıyor...');
+            console.log('GIF butonu bulundu, GIF seçici hazırlanıyor...', chatGifBtn);
             setupGifPicker(chatGifBtn, chatTextarea);
         } else {
-            console.warn('GIF butonu bulunamadı (fa-paperclip ikonu içeren buton arandı)');
+            console.warn('GIF butonu bulunamadı! Tüm sohbet paneli butonları:', allButtons);
+            
+            // Alternatif seçiciler deneyebiliriz
+            const alternativeGifBtn = chatPanel?.querySelector('button[data-btn], button.files-btn, button.attachment-btn');
+            console.log('Alternatif GIF butonu arama sonucu:', alternativeGifBtn);
+            
+            if (alternativeGifBtn && chatTextarea) {
+                console.log('Alternatif GIF butonu kullanılıyor:', alternativeGifBtn);
+                setupGifPicker(alternativeGifBtn, chatTextarea);
+            }
         }
 
         // Varsayılan sekmeyi göster
