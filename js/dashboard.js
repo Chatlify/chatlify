@@ -68,7 +68,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Varsayılan sekmeyi göster
-        showSection('Tüm Arkadaşlar');
+        const defaultTabContents = {
+            'Tüm Arkadaşlar': '.friends-panel-container',
+            'Çevrimiçi': '.online-section',
+            'Bekleyen': '.pending-requests-section'
+        };
+        showSection('Tüm Arkadaşlar', defaultTabContents);
 
         // Arkadaş listesini yükle
         await loadAllFriends({
@@ -392,27 +397,53 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Bölümleri göster/gizle
     function showSection(sectionName, sections) {
-        // Önce tüm bölümleri gizle
-        Object.values(sections).forEach(selector => {
-            const section = document.querySelector(selector);
-            if (section) {
-                section.style.display = 'none';
+        console.log(`Bölüm gösteriliyor: ${sectionName}`);
+
+        // Sections parametresi verilmişse, o sections kullanarak bölümleri göster/gizle
+        if (sections) {
+            // Önce tüm bölümleri gizle
+            Object.values(sections).forEach(selector => {
+                const section = document.querySelector(selector);
+                if (section) {
+                    section.style.display = 'none';
+                }
+            });
+
+            // Seçilen bölümü göster
+            const sectionSelector = sections[sectionName];
+            if (sectionSelector) {
+                const section = document.querySelector(sectionSelector);
+                if (section) {
+                    section.style.display = 'block';
+                }
+            }
+
+            // Eğer bekleyen istekler bölümüyse ve daha önce oluşturulmadıysa oluştur
+            if (sectionName === 'Bekleyen' && !document.querySelector('.pending-requests-section')) {
+                createPendingSection();
+            }
+        } else {
+            // Eski davranış - sections parametresi yoksa
+            const friendsPanel = document.querySelector('.friends-panel-container');
+            const chatPanel = document.querySelector('.chat-panel');
+
+            if (!friendsPanel || !chatPanel) return;
+
+            // Önce sohbeti kapat (açıksa)
+            closeChatPanel(); // Bu fonksiyon sohbeti kapatıp arkadaş panelini gösterir
+
+            // Arkadaş panelini görünür yap
+            friendsPanel.classList.remove('hidden');
+        }
+
+        // Aktif tab'ı ayarla (görsel olarak)
+        document.querySelectorAll('.dashboard-header .tab').forEach(tab => {
+            if (tab.textContent.trim() === sectionName) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
             }
         });
-
-        // Seçilen bölümü göster
-        const sectionSelector = sections[sectionName];
-        if (sectionSelector) {
-            const section = document.querySelector(sectionSelector);
-            if (section) {
-                section.style.display = 'block';
-            }
-        }
-
-        // Eğer bekleyen istekler bölümüyse ve daha önce oluşturulmadıysa oluştur
-        if (sectionName === 'Bekleyen' && !document.querySelector('.pending-requests-section')) {
-            createPendingSection();
-        }
     }
 
     // Bekleyen istekler bölümünü oluştur
@@ -932,44 +963,6 @@ function hideContextMenu(menu) {
 function initializePresence() {
     // Bu fonksiyonun içeriği varsa korunmalı, yoksa boş kalabilir.
     // console.log("Presence sistemi başlatılıyor...");
-}
-
-// showSection fonksiyon tanımı
-function showSection(sectionName) {
-    // Bu fonksiyonun içeriği varsa korunmalı, yoksa boş kalabilir.
-    console.log(`Bölüm gösteriliyor: ${sectionName}`);
-    // Gerçek içerik: İlgili panelleri göster/gizle
-    const friendsPanel = document.querySelector('.friends-panel-container');
-    const chatPanel = document.querySelector('.chat-panel');
-    // Diğer bölümler için de elementler alınabilir
-
-    if (!friendsPanel || !chatPanel) return;
-
-    // Önce sohbeti kapat (açıksa)
-    closeChatPanel(); // Bu fonksiyon sohbeti kapatıp arkadaş panelini gösterir
-
-    // Aktif tab'ı ayarla (görsel olarak)
-    document.querySelectorAll('.dashboard-header .tab').forEach(tab => {
-        if (tab.textContent.trim() === sectionName) {
-            tab.classList.add('active');
-        } else {
-            tab.classList.remove('active');
-        }
-    });
-
-    // Hangi bölümün gösterileceğine karar ver (Bu kısım daha detaylı olmalı)
-    // Örneğin:
-    // if (sectionName === 'Tüm Arkadaşlar') {
-    //     // Tüm arkadaşları gösteren listeyi filtrele/göster
-    // } else if (sectionName === 'Çevrimiçi') {
-    //     // Sadece çevrimiçi arkadaşları göster
-    // } else if (sectionName === 'Bekleyen') {
-    //     // Bekleyen istekler bölümünü göster
-    // }
-
-    // Şimdilik sadece arkadaş panelinin görünür kaldığından emin olalım
-    friendsPanel.classList.remove('hidden');
-
 }
 
 async function openChatPanel(userId, username, avatar) {
