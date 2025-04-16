@@ -2108,33 +2108,40 @@ async function removeFriend(userId, username) {
     }
 
     try {
-        // Arkadaşlık kaydını bul
+        console.log('Arkadaşlıktan çıkarma işlemi başlatılıyor:', currentUserId, userId);
+
+        // Arkadaşlık kaydını bul - Düzeltilmiş sorgu sözdizimi
         const { data: friendship, error: findError } = await supabase
             .from('friendships')
             .select('id')
-            .or(`user_id_1.eq.${currentUserId},and(user_id_2.eq.${userId}),user_id_1.eq.${userId},and(user_id_2.eq.${currentUserId})`)
-            .eq('status', 'accepted')
-            .maybeSingle();
+            .or(`and(user_id_1.eq.${currentUserId},user_id_2.eq.${userId}),and(user_id_1.eq.${userId},user_id_2.eq.${currentUserId})`)
+            .eq('status', 'accepted');
+
+        console.log('Arkadaşlık sorgu sonucu:', friendship);
 
         if (findError) {
             throw new Error(`Arkadaşlık kaydı aranırken hata: ${findError.message}`);
         }
 
-        if (!friendship) {
+        if (!friendship || friendship.length === 0) {
             throw new Error(`'${username}' ile arkadaşlık kaydı bulunamadı.`);
         }
+
+        // Birden fazla kayıt gelebilir, ilkini kullan
+        const friendshipRecord = Array.isArray(friendship) ? friendship[0] : friendship;
+        console.log('Silinecek arkadaşlık kaydı:', friendshipRecord);
 
         // Arkadaşlık kaydını sil
         const { error: deleteError } = await supabase
             .from('friendships')
             .delete()
-            .eq('id', friendship.id);
+            .eq('id', friendshipRecord.id);
 
         if (deleteError) {
             throw new Error(`Arkadaşlık silinirken hata: ${deleteError.message}`);
         }
 
-        console.log(`Arkadaşlık silindi: ${friendship.id} (${username})`);
+        console.log(`Arkadaşlık silindi: ${friendshipRecord.id} (${username})`);
         return true;
     } catch (error) {
         console.error('removeFriend fonksiyonunda hata:', error);
