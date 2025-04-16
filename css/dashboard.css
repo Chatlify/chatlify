@@ -7160,3 +7160,177 @@ emoji-picker {
 .context-menu-item.danger i {
     color: var(--red);
 }
+
+/* ... existing styles ... */
+
+/* GIF Picker Modal Styles */
+.gif-picker-overlay {
+    /* Modal overlay stilleri (z-index vb. modal-overlay'den miras alınır) */
+    /* background-color: rgba(0, 0, 0, 0.7); /* Biraz daha belirgin overlay */
+}
+
+.gif-picker-container {
+    width: 90%;
+    max-width: 480px;
+    /* GIF'ler için uygun bir genişlik */
+    height: 70vh;
+    /* Yüksekliği artıralım */
+    max-height: 600px;
+    /* Maksimum yükseklik */
+    display: flex;
+    flex-direction: column;
+    background-color: var(--dm-bg);
+    /* DM arka planını kullanalım */
+    /* Diğer modal-container stilleri miras alınır */
+}
+
+.gif-picker-container .modal-header {
+    /* Header stilleri (modal-header'dan miras alınır) */
+    border-bottom: 1px solid var(--divider-color);
+}
+
+.gif-picker-container .modal-content {
+    padding: 15px;
+    overflow: hidden;
+    /* İçerik taşmasını engelle, scroll içeride olacak */
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    /* Kalan alanı kaplasın */
+}
+
+.gif-search-container {
+    display: flex;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+.gif-search-input {
+    flex-grow: 1;
+    padding: 10px 15px;
+    border: 1px solid var(--divider-color);
+    background-color: var(--main-bg);
+    /* Ana arka plan */
+    color: var(--text-color);
+    border-radius: var(--border-radius-md);
+    outline: none;
+    transition: border-color var(--animation-speed) ease;
+}
+
+.gif-search-input:focus {
+    border-color: var(--primary-color);
+}
+
+.gif-search-btn {
+    padding: 0 15px;
+    border: none;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--animation-speed) ease;
+}
+
+.gif-search-btn:hover {
+    background-color: var(--primary-light);
+}
+
+.gif-results-container {
+    flex-grow: 1;
+    /* Kalan alanı doldur */
+    overflow-y: auto;
+    /* Dikey scroll ekle */
+    /* Kenar boşluklarını kaldıralım, grid halledecek */
+    margin: 0 -5px;
+    /* Grid item'larına negatif margin ile boşluk */
+    padding: 0 5px;
+}
+
+/* Loading, Error, Empty States */
+.gif-loading,
+.gif-error,
+.gif-empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.gif-loading i {
+    margin-right: 8px;
+}
+
+/* GIF Grid Styles */
+.gif-grid {
+    display: grid;
+    /* Sütun sayısını otomatik ayarla, min 120px, max 1fr */
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+    /* GIF'ler arası boşluk */
+    padding-bottom: 15px;
+    /* Altta biraz boşluk */
+}
+
+.gif-item {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: var(--border-radius-sm);
+    aspect-ratio: 1 / 1;
+    /* Kare oranını koru (veya GIF oranına göre ayarla) */
+    background-color: rgba(255, 255, 255, 0.05);
+    /* Yüklenirken arka plan */
+    transition: transform var(--animation-speed) ease, box-shadow var(--animation-speed) ease;
+}
+
+.gif-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.gif-item img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Resmi kutuya sığdır, gerekirse kırp */
+}
+
+
+/* Message Area GIF Styles */
+.message-content.gif-message {
+    padding: 0;
+    /* İçeriğe özel padding olmasın */
+    background-color: transparent;
+    /* Özel arka plan olmasın */
+    max-width: 320px;
+    /* GIF için maksimum genişlik */
+    overflow: hidden;
+    border-radius: var(--border-radius-md);
+    margin-top: 5px;
+}
+
+.message-gif {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    /* Oranı koru */
+    border-radius: var(--border-radius-md);
+    /* Mesaj balonuyla uyumlu köşe */
+    cursor: pointer;
+    /* Tıklanabilir olduğunu belirt */
+    /* Tıklandığında tam ekran açma gibi özellikler eklenebilir */
+}
+
+/* Kendi mesajımızdaki GIF */
+.message-group.own-message .message-content.gif-message {
+    /* Özel stil gerekirse buraya */
+}
+
+
+</rewritten_file>
