@@ -1896,12 +1896,20 @@ function setupAddFriendModal() {
 
             const friendId = users[0].id;
 
-            // 2. Check if already friends or request pending - HATA BURADA DÜZELTILDI
+            // 2. Check if already friends or request pending - SORGU DÜZELTİLDİ
+            console.log('Arkadaşlık kontrolü yapılıyor:', currentUserId, friendId);
+
+            // Önceki hatalı sorgu:
+            // .or(`user_id_1.eq.${currentUserId},and(user_id_2.eq.${friendId}),user_id_1.eq.${friendId},and(user_id_2.eq.${currentUserId})`)
+
+            // Düzeltilmiş sorgu - OR içindeki tüm kombinasyonları doğru şekilde kontrol eder
             const { data: existingFriendship, error: checkError } = await supabase
                 .from('friendships')
                 .select('id, status')
-                .or(`user_id_1.eq.${currentUserId},and(user_id_2.eq.${friendId}),user_id_1.eq.${friendId},and(user_id_2.eq.${currentUserId})`)
+                .or(`and(user_id_1.eq.${currentUserId},user_id_2.eq.${friendId}),and(user_id_1.eq.${friendId},user_id_2.eq.${currentUserId})`)
                 .maybeSingle();
+
+            console.log('Arkadaşlık sorgu sonucu:', existingFriendship);
 
             if (checkError) throw new Error(`Arkadaşlık durumu kontrol edilirken hata: ${checkError.message}`);
 
