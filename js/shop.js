@@ -1,36 +1,92 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Sayfa ilk açıldığında modalın gösterilmemesi için başlangıçta kontrol ediyoruz
     const modal = document.getElementById('purchaseModal');
-    modal.classList.remove('active'); // Yanlışlıkla aktif kalmış olabilecek modali kapatıyoruz
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.visibility = 'hidden';
+        modal.style.opacity = '0';
+    }
 
-    // Ürün Kartı Animasyonları
-    animateProducts();
+    // Aylık/Yıllık geçişi
+    const billingToggle = document.getElementById('billingToggle');
+    if (billingToggle) {
+        billingToggle.addEventListener('change', function () {
+            const toggleLabels = document.querySelectorAll('.toggle-label');
+            if (this.checked) {
+                toggleLabels[0].classList.remove('active');
+                toggleLabels[1].classList.add('active');
+            } else {
+                toggleLabels[0].classList.add('active');
+                toggleLabels[1].classList.remove('active');
+            }
+        });
+    }
+
+    // SSS bölümü
+    const faqItems = document.querySelectorAll('.faq-item');
+    if (faqItems.length > 0) {
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            question.addEventListener('click', function () {
+                const currentlyActive = document.querySelector('.faq-item.active');
+                if (currentlyActive && currentlyActive !== item) {
+                    currentlyActive.classList.remove('active');
+                }
+                item.classList.toggle('active');
+            });
+        });
+    }
+
+    // Animasyon efektleri
+    const animateElements = function () {
+        // AOS yerine basit bir animasyon sistemi
+        const animateUpElements = document.querySelectorAll('[data-aos="fade-up"]');
+        animateUpElements.forEach((element, index) => {
+            const delay = element.getAttribute('data-aos-delay') || 0;
+            setTimeout(() => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    element.style.transition = 'all 0.5s ease';
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, 100);
+            }, delay);
+        });
+    };
+
+    // Sayfa yüklendiğinde animasyonları başlat
+    setTimeout(animateElements, 100);
 
     // Satın Al butonlarına tıklama işlemi
     const buyButtons = document.querySelectorAll('.buy-btn');
-    buyButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const productType = this.getAttribute('data-product');
-            let productName, productPrice;
+    if (buyButtons.length > 0) {
+        buyButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const productType = this.getAttribute('data-product');
+                let productName, productPrice;
 
-            switch (productType) {
-                case 'nova':
-                    productName = 'Nova Premium';
-                    productPrice = '$7.99';
-                    break;
-                case 'blaze':
-                    productName = 'Blaze Standart';
-                    productPrice = '$4.99';
-                    break;
-                case 'spark':
-                    productName = 'Spark Başlangıç';
-                    productPrice = '$2.99';
-                    break;
-            }
+                const isYearly = document.getElementById('billingToggle') && document.getElementById('billingToggle').checked;
 
-            openPurchaseModal(productName, productPrice);
+                switch (productType) {
+                    case 'nova':
+                        productName = 'Nova Ultimate';
+                        productPrice = isYearly ? '₺2389/yıl' : '₺249/ay';
+                        break;
+                    case 'blaze':
+                        productName = 'Blaze Premium';
+                        productPrice = isYearly ? '₺1429/yıl' : '₺149/ay';
+                        break;
+                    case 'spark':
+                        productName = 'Spark Başlangıç';
+                        productPrice = isYearly ? '₺759/yıl' : '₺79/ay';
+                        break;
+                }
+
+                openPurchaseModal(productName, productPrice);
+            });
         });
-    });
+    }
 
     // Satın Alma Modalını Açma Fonksiyonu
     function openPurchaseModal(productName, productPrice) {
@@ -38,59 +94,86 @@ document.addEventListener('DOMContentLoaded', function () {
         const modalTitle = document.getElementById('modalTitle');
         const modalDesc = document.getElementById('modalDesc');
 
-        modalTitle.textContent = productName + ' Satın Al';
-        modalDesc.textContent = productName + ' paketi için ' + productPrice + '/ay ödeme yapacaksınız.';
+        if (modal && modalTitle && modalDesc) {
+            modalTitle.textContent = productName + ' Satın Al';
+            modalDesc.textContent = productName + ' paketi için ' + productPrice + ' ödeme yapacaksınız.';
 
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Sayfayı kaydırmayı engelle
+            modal.classList.add('active');
+            modal.style.visibility = 'visible';
+            modal.style.opacity = '1';
+            document.body.style.overflow = 'hidden'; // Sayfayı kaydırmayı engelle
+        }
     }
 
     // Modal Kapatma İşlemi
     const closeModalBtn = document.querySelector('.close-modal-btn');
-    closeModalBtn.addEventListener('click', function (e) {
-        e.preventDefault(); // Event'i engelliyoruz
-        e.stopPropagation(); // Event'in diğer elementlere yayılmasını engelliyoruz
-        closeModal();
-    });
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeModal();
+        });
+    }
 
     function closeModal() {
         const modal = document.getElementById('purchaseModal');
-        modal.classList.remove('active');
-        document.body.style.overflow = 'auto'; // Sayfayı kaydırmayı etkinleştir
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.visibility = 'hidden';
+            modal.style.opacity = '0';
+            document.body.style.overflow = 'auto'; // Sayfayı kaydırmayı etkinleştir
+        }
     }
 
     // Modal dışına tıklanınca kapat
     const modalOverlay = document.getElementById('purchaseModal');
-    modalOverlay.addEventListener('click', function (e) {
-        if (e.target === modalOverlay) {
-            closeModal();
-        }
-    });
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', function (e) {
+            if (e.target === modalOverlay) {
+                closeModal();
+            }
+        });
+    }
 
     // Satın Alma İşlemi
     const confirmPurchaseBtn = document.getElementById('confirmPurchase');
-    confirmPurchaseBtn.addEventListener('click', function () {
-        const selectedPayment = document.querySelector('input[name="payment"]:checked').id;
+    if (confirmPurchaseBtn) {
+        confirmPurchaseBtn.addEventListener('click', function () {
+            const paymentOptions = document.querySelectorAll('input[name="payment"]');
+            let selectedPayment = '';
 
-        // Yükleniyor animasyonu
-        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İşleniyor...';
-        this.disabled = true;
+            paymentOptions.forEach(option => {
+                if (option.checked) {
+                    selectedPayment = option.id;
+                }
+            });
 
-        // API çağrısı simülasyonu
-        setTimeout(() => {
-            closeModal();
-            showSuccessNotification();
+            // Yükleniyor animasyonu
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İşleniyor...';
+            this.disabled = true;
 
-            // Butonu sıfırla
+            // API çağrısı simülasyonu
             setTimeout(() => {
-                this.innerHTML = 'Ödemeye Geç';
-                this.disabled = false;
-            }, 1000);
-        }, 2000);
-    });
+                closeModal();
+                showSuccessNotification();
+
+                // Butonu sıfırla
+                setTimeout(() => {
+                    this.innerHTML = 'Ödemeye Geç';
+                    this.disabled = false;
+                }, 1000);
+            }, 2000);
+        });
+    }
 
     // Başarılı işlem bildirimi
     function showSuccessNotification() {
+        // Mevcut bildirim varsa temizle
+        const existingNotification = document.querySelector('.success-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+
         // Bildirim elementi oluştur
         const notification = document.createElement('div');
         notification.className = 'success-notification';
@@ -100,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
             <div class="notification-content">
                 <h4>Satın Alma İşlemi Başarılı!</h4>
-                <p>Paketiniz hesabınıza tanımlandı. İyi eğlenceler!</p>
+                <p>Premium paketiniz hesabınıza tanımlandı. İyi eğlenceler!</p>
             </div>
             <button class="notification-close">
                 <i class="fas fa-times"></i>
@@ -110,23 +193,83 @@ document.addEventListener('DOMContentLoaded', function () {
         // Sayfaya ekle
         document.body.appendChild(notification);
 
+        // Bildirim stili
+        Object.assign(notification.style, {
+            position: 'fixed',
+            bottom: '30px',
+            right: '30px',
+            background: 'rgba(30, 30, 46, 0.95)',
+            borderLeft: '4px solid #4CAF50',
+            padding: '15px 20px',
+            borderRadius: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
+            transform: 'translateX(120%)',
+            transition: 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            zIndex: '1000',
+            maxWidth: '400px',
+            backdropFilter: 'blur(10px)'
+        });
+
+        // İkon stili
+        const notificationIcon = notification.querySelector('.notification-icon');
+        Object.assign(notificationIcon.style, {
+            marginRight: '15px',
+            fontSize: '24px',
+            color: '#4CAF50'
+        });
+
+        // İçerik stili
+        const notificationContent = notification.querySelector('.notification-content');
+        Object.assign(notificationContent.style, {
+            flex: '1'
+        });
+
+        // Başlık stili
+        const notificationTitle = notification.querySelector('h4');
+        Object.assign(notificationTitle.style, {
+            margin: '0 0 5px 0',
+            color: 'white',
+            fontSize: '16px'
+        });
+
+        // Metin stili
+        const notificationText = notification.querySelector('p');
+        Object.assign(notificationText.style, {
+            margin: '0',
+            color: 'rgba(255, 255, 255, 0.7)',
+            fontSize: '14px'
+        });
+
+        // Kapatma butonu stili
+        const closeBtn = notification.querySelector('.notification-close');
+        Object.assign(closeBtn.style, {
+            background: 'none',
+            border: 'none',
+            color: 'rgba(255, 255, 255, 0.5)',
+            cursor: 'pointer',
+            padding: '5px',
+            marginLeft: '10px',
+            transition: 'color 0.2s ease'
+        });
+
         // Göster
         setTimeout(() => {
-            notification.classList.add('show');
+            notification.style.transform = 'translateX(0)';
         }, 100);
 
         // Otomatik kapanma
         setTimeout(() => {
-            notification.classList.remove('show');
+            notification.style.transform = 'translateX(120%)';
             setTimeout(() => {
                 notification.remove();
             }, 500);
         }, 5000);
 
         // Kapatma butonuna tıklama
-        const closeBtn = notification.querySelector('.notification-close');
         closeBtn.addEventListener('click', function () {
-            notification.classList.remove('show');
+            notification.style.transform = 'translateX(120%)';
             setTimeout(() => {
                 notification.remove();
             }, 500);
@@ -300,4 +443,43 @@ document.addEventListener('DOMContentLoaded', function () {
         styleSheet.innerText = styles;
         document.head.appendChild(styleSheet);
     }
+
+    // Sayfa kaydırma animasyonları
+    const smoothScroll = function (target, duration) {
+        const targetElement = document.querySelector(target);
+        if (!targetElement) return;
+
+        const targetPosition = targetElement.offsetTop - 100;
+        const startPosition = window.pageYOffset;
+        const distance = targetPosition - startPosition;
+        let startTime = null;
+
+        const animation = function (currentTime) {
+            if (startTime === null) startTime = currentTime;
+            const timeElapsed = currentTime - startTime;
+            const run = ease(timeElapsed, startPosition, distance, duration);
+            window.scrollTo(0, run);
+            if (timeElapsed < duration) requestAnimationFrame(animation);
+        };
+
+        // Easing fonksiyonu
+        const ease = function (t, b, c, d) {
+            t /= d / 2;
+            if (t < 1) return c / 2 * t * t + b;
+            t--;
+            return -c / 2 * (t * (t - 2) - 1) + b;
+        };
+
+        requestAnimationFrame(animation);
+    };
+
+    // Tüm kaydırma bağlantılarını bul
+    const scrollLinks = document.querySelectorAll('a[href^="#"]');
+    scrollLinks.forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = this.getAttribute('href');
+            smoothScroll(target, 1000);
+        });
+    });
 }); 
