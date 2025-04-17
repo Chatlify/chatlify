@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Sayfa ilk açıldığında modalın gösterilmemesi için başlangıçta kontrol ediyoruz
+    const modal = document.getElementById('purchaseModal');
+    modal.classList.remove('active'); // Yanlışlıkla aktif kalmış olabilecek modali kapatıyoruz
+
     // Ürün Kartı Animasyonları
     animateProducts();
 
@@ -43,7 +47,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Modal Kapatma İşlemi
     const closeModalBtn = document.querySelector('.close-modal-btn');
-    closeModalBtn.addEventListener('click', closeModal);
+    closeModalBtn.addEventListener('click', function (e) {
+        e.preventDefault(); // Event'i engelliyoruz
+        e.stopPropagation(); // Event'in diğer elementlere yayılmasını engelliyoruz
+        closeModal();
+    });
 
     function closeModal() {
         const modal = document.getElementById('purchaseModal');
