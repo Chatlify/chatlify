@@ -3,8 +3,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('purchaseModal');
     if (modal) {
         modal.classList.remove('active');
-        modal.style.visibility = 'hidden';
+        modal.style.display = 'none';
         modal.style.opacity = '0';
+        modal.style.visibility = 'hidden';
     }
 
     // Aylık/Yıllık geçişi
@@ -98,42 +99,45 @@ document.addEventListener('DOMContentLoaded', function () {
             modalTitle.textContent = productName + ' Satın Al';
             modalDesc.textContent = productName + ' paketi için ' + productPrice + ' ödeme yapacaksınız.';
 
-            modal.classList.add('active');
+            modal.style.display = 'flex';
             modal.style.visibility = 'visible';
-            modal.style.opacity = '1';
+
+            // Animasyon için kısa bir gecikme
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                modal.classList.add('active');
+            }, 10);
             document.body.style.overflow = 'hidden'; // Sayfayı kaydırmayı engelle
         }
+    }
+
+    // Satın Alma Modalını Kapatma Fonksiyonu
+    function closePurchaseModal() {
+        const modal = document.getElementById('purchaseModal');
+        modal.classList.remove('active');
+        modal.style.opacity = '0';
+
+        // Animasyon tamamlandıktan sonra gizle
+        setTimeout(() => {
+            modal.style.visibility = 'hidden';
+            modal.style.display = 'none';
+        }, 300); // Geçiş animasyonu için bekleme süresi
+        document.body.style.overflow = 'auto'; // Sayfayı kaydırmayı etkinleştir
     }
 
     // Modal Kapatma İşlemi
     const closeModalBtn = document.querySelector('.close-modal-btn');
     if (closeModalBtn) {
-        closeModalBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            closeModal();
-        });
-    }
-
-    function closeModal() {
-        const modal = document.getElementById('purchaseModal');
-        if (modal) {
-            modal.classList.remove('active');
-            modal.style.visibility = 'hidden';
-            modal.style.opacity = '0';
-            document.body.style.overflow = 'auto'; // Sayfayı kaydırmayı etkinleştir
-        }
+        closeModalBtn.addEventListener('click', closePurchaseModal);
     }
 
     // Modal dışına tıklanınca kapat
-    const modalOverlay = document.getElementById('purchaseModal');
-    if (modalOverlay) {
-        modalOverlay.addEventListener('click', function (e) {
-            if (e.target === modalOverlay) {
-                closeModal();
-            }
-        });
-    }
+    window.addEventListener('click', function (event) {
+        const modal = document.getElementById('purchaseModal');
+        if (event.target === modal) {
+            closePurchaseModal();
+        }
+    });
 
     // Satın Alma İşlemi
     const confirmPurchaseBtn = document.getElementById('confirmPurchase');
@@ -154,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // API çağrısı simülasyonu
             setTimeout(() => {
-                closeModal();
+                closePurchaseModal();
                 showSuccessNotification();
 
                 // Butonu sıfırla
@@ -324,19 +328,19 @@ document.addEventListener('DOMContentLoaded', function () {
     function addStyles() {
         const styles = `
             .success-notification {
-                position: fixed;
+        position: fixed;
                 bottom: 30px;
                 right: 30px;
                 background: rgba(30, 30, 46, 0.95);
                 border-left: 4px solid #59E6A2;
                 padding: 15px 20px;
                 border-radius: 8px;
-                display: flex;
-                align-items: center;
+        display: flex;
+        align-items: center;
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
                 transform: translateX(120%);
                 transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                z-index: 1000;
+        z-index: 1000;
                 max-width: 400px;
                 backdrop-filter: blur(10px);
             }
@@ -362,16 +366,16 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             
             .notification-content p {
-                margin: 0;
+        margin: 0;
                 color: rgba(255, 255, 255, 0.7);
                 font-size: 14px;
-            }
-            
+    }
+    
             .notification-close {
-                background: none;
-                border: none;
+        background: none;
+        border: none;
                 color: rgba(255, 255, 255, 0.5);
-                cursor: pointer;
+        cursor: pointer;
                 padding: 5px;
                 margin-left: 10px;
                 transition: color 0.2s ease;
@@ -389,10 +393,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 background: rgba(30, 30, 46, 0.5);
                 border-radius: 8px;
                 padding: 12px 15px;
-                margin-bottom: 10px;
-                transition: all 0.2s ease;
-            }
-            
+        margin-bottom: 10px;
+        transition: all 0.2s ease;
+    }
+    
             .payment-option:hover {
                 background: rgba(40, 40, 60, 0.8);
             }
@@ -482,4 +486,76 @@ document.addEventListener('DOMContentLoaded', function () {
             smoothScroll(target, 1000);
         });
     });
-}); 
+
+    // Ürünleri tıklandığında satın alma modalını açan fonksiyon
+    function openPurchaseModal(productId, productTitle, productPrice, productImage) {
+        const modal = document.getElementById('purchaseModal');
+        const productTitleElement = document.getElementById('productTitle');
+        const productImageElement = document.getElementById('productImage');
+        const productPriceElement = document.getElementById('productPrice');
+        const productIdInput = document.getElementById('productIdInput');
+
+        if (modal && productTitleElement && productPriceElement && productImageElement && productIdInput) {
+            productTitleElement.textContent = productTitle;
+            productImageElement.src = productImage;
+            productPriceElement.textContent = productPrice;
+            productIdInput.value = productId;
+
+            modal.style.display = 'flex';
+            modal.style.visibility = 'visible';
+
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                modal.classList.add('active');
+            }, 10);
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    // Satın alma modalını kapatan fonksiyon
+    function closePurchaseModal() {
+        const modal = document.getElementById('purchaseModal');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.opacity = '0';
+
+            setTimeout(() => {
+                modal.style.visibility = 'hidden';
+                modal.style.display = 'none';
+            }, 300); // Geçiş efekti için gecikme
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    // Ürün kartlarına tıklama olayını ekleyerek modalı açan kod
+    const productCards = document.querySelectorAll('.product-card');
+    productCards.forEach(card => {
+        card.addEventListener('click', function () {
+            const productId = this.dataset.productId;
+            const productTitle = this.querySelector('.product-title').textContent;
+            const productPrice = this.querySelector('.product-price').textContent;
+            const productImage = this.querySelector('.product-image').src;
+
+            openPurchaseModal(productId, productTitle, productPrice, productImage);
+        });
+    });
+
+    // Modal kapatma butonuna tıklanınca modalı kapatan kod
+    const closeModalButton = document.querySelector('.close-modal');
+    if (closeModalButton) {
+        closeModalButton.addEventListener('click', function (e) {
+            e.preventDefault();
+            closePurchaseModal();
+        });
+    }
+
+    // Modal dışına tıklanınca modalı kapatan kod
+    const modalOverlay = document.getElementById('purchaseModal');
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', function (e) {
+            if (e.target === this) {
+                closePurchaseModal();
+            }
+        });
+    }
+});
