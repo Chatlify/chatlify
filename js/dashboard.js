@@ -124,6 +124,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Bekleyen arkadaşlık istekleri için realtime aboneliğini kur
         setupPendingFriendRequestSubscription();
 
+        // Ayarlar butonu tıklandığında settings.html sayfasına git
+        if (settingsButtonContainer) {
+            settingsButtonContainer.addEventListener('click', () => {
+                window.location.href = 'settings.html';
+            });
+        }
+
         console.log('Dashboard JS başlatma tamamlandı.');
     } catch (error) {
         console.error('Dashboard başlatma hatası:', error);

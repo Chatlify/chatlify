@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatlify - Mağaza</title>
     <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dashboard.css">
@@ -145,61 +145,43 @@
 
             <div class="shop-container">
                 <div class="shop-hero">
-                    <div class="hero-content">
-                        <h1>Chatlify Güçlendiricileri</h1>
-                        <p>Sohbet deneyiminizi güçlendirin ve özel avantajlar kazanın!</p>
+                    <div class="shop-hero-content animate-fade-in">
+                        <h1>Chatlify Güçlendiriciler</h1>
+                        <p>Daha fazla özellik, daha iyi deneyim. Paketini seç ve güçlen!</p>
                     </div>
                 </div>
 
-                <div class="boosters-container">
-                    <div class="booster-card nova">
-                        <div class="booster-glow"></div>
-                        <div class="booster-badge">Premium</div>
-                        <div class="booster-icon">
-                            <i class="fas fa-bolt"></i>
-                        </div>
-                        <div class="booster-title">Nova</div>
-                        <div class="booster-description">
-                            <p>Sohbet deneyiminizi en üst seviyeye çıkaran premium güçlendirici.</p>
-                            <ul class="booster-features">
+                <main class="shop-main animate-slide-up">
+                    <section class="product-grid">
+                        <div class="product-card nova">
+                            <div class="badge premium">Premium</div>
+                            <div class="icon"><i class="fas fa-bolt"></i></div>
+                            <h2>Nova</h2>
+                            <p class="price">$2.00 <span>/ aylık</span></p>
+                            <ul class="features">
                                 <li><i class="fas fa-check"></i> Sınırsız Mesaj Depolama</li>
                                 <li><i class="fas fa-check"></i> 4K Video Görüşmesi</li>
                                 <li><i class="fas fa-check"></i> Özel Emojiler</li>
-                                <li><i class="fas fa-check"></i> Özel Profil Rozeti</li>
-                                <li><i class="fas fa-check"></i> Reklamsız Deneyim</li>
-                                <li><i class="fas fa-check"></i> 100MB Dosya Paylaşımı</li>
+                                <li><i class="fas fa-check"></i> Özel Rozet</li>
+                                <li><i class="fas fa-check"></i> Reklamsız</li>
                             </ul>
+                            <button class="btn buy-btn nova-btn" data-product="nova">Hemen Satın Al</button>
                         </div>
-                        <div class="booster-price">
-                            <span class="price-value">$2.00</span>
-                            <span class="price-period">/ aylık</span>
-                        </div>
-                        <button class="booster-button nova-button">Hemen Satın Al</button>
-                    </div>
-
-                    <div class="booster-card blaze">
-                        <div class="booster-badge">Standart</div>
-                        <div class="booster-icon">
-                            <i class="fas fa-fire"></i>
-                        </div>
-                        <div class="booster-title">Blaze</div>
-                        <div class="booster-description">
-                            <p>Sohbet deneyiminizi geliştiren standart güçlendirici.</p>
-                            <ul class="booster-features">
+                        <div class="product-card blaze">
+                            <div class="badge standard">Standart</div>
+                            <div class="icon"><i class="fas fa-fire"></i></div>
+                            <h2>Blaze</h2>
+                            <p class="price">$1.00 <span>/ aylık</span></p>
+                            <ul class="features">
                                 <li><i class="fas fa-check"></i> 30 Gün Mesaj Depolama</li>
                                 <li><i class="fas fa-check"></i> HD Video Görüşmesi</li>
                                 <li><i class="fas fa-check"></i> 25 Özel Emoji</li>
-                                <li><i class="fas fa-check"></i> Temel Profil Rozeti</li>
-                                <li><i class="fas fa-check"></i> 50MB Dosya Paylaşımı</li>
+                                <li><i class="fas fa-check"></i> Temel Rozet</li>
                             </ul>
+                            <button class="btn buy-btn blaze-btn" data-product="blaze">Hemen Satın Al</button>
                         </div>
-                        <div class="booster-price">
-                            <span class="price-value">$1.00</span>
-                            <span class="price-period">/ aylık</span>
-                        </div>
-                        <button class="booster-button blaze-button">Hemen Satın Al</button>
-                    </div>
-                </div>
+                    </section>
+                </main>
 
                 <div class="boosters-comparison">
                     <h2>Karşılaştırma Tablosu</h2>
@@ -237,6 +219,16 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Satın Alma Modalı -->
+    <div id="purchaseModal" class="modal-overlay">
+        <div class="modal-container animate-zoom-in">
+            <button class="close-modal-btn"><i class="fas fa-times"></i></button>
+            <h3 id="modalTitle">Ürün Satın Al</h3>
+            <p id="modalDesc">Seçiminizi onaylayın ve ödeme yapın.</p>
+            <button id="confirmPurchase" class="btn confirm-btn">Onayla</button>
         </div>
     </div>
 </body>
