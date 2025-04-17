@@ -1,80 +1,78 @@
+/* Mağaza Sayfası CSS - Tamamen Yeni Tasarım */
+
 :root {
-    --nova-primary: #7e57c2;
-    --nova-secondary: #5e35b1;
-    --nova-glow: rgba(126, 87, 194, 0.6);
-    --blaze-primary: #ff7043;
-    --blaze-secondary: #e64a19;
-    --blaze-glow: rgba(255, 112, 67, 0.3);
+    --premium-color: #8C52FF;
+    --premium-gradient: linear-gradient(135deg, #8C52FF, #5E17EB);
+    --premium-glow: rgba(140, 82, 255, 0.5);
+
+    --standard-color: #30B4FF;
+    --standard-gradient: linear-gradient(135deg, #30B4FF, #0076E3);
+    --standard-glow: rgba(48, 180, 255, 0.5);
+
+    --bronze-color: #FF9966;
+    --bronze-gradient: linear-gradient(135deg, #FF9966, #FF6600);
+    --bronze-glow: rgba(255, 153, 102, 0.5);
+
+    --card-bg: rgba(30, 30, 46, 0.7);
+    --card-hover-bg: rgba(40, 40, 60, 0.8);
+    --card-border: rgba(255, 255, 255, 0.05);
+
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-tertiary: rgba(255, 255, 255, 0.5);
+
+    --button-hover-transform: translateY(-5px) scale(1.02);
 }
 
-/* Mağaza Sayfası Genel Stiller */
+/* Sayfa Genel Stil */
 .shop-page .main-content {
     background-color: var(--dm-bg);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
     overflow: auto;
+    padding: 0;
 }
 
+/* Shop Header */
 .shop-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--divider-color);
-    background-color: rgba(0, 0, 0, 0.2);
+    padding: 20px 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: rgba(20, 20, 35, 0.8);
+    backdrop-filter: blur(10px);
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 100;
 }
 
 .shop-header .main-title {
     display: flex;
     align-items: center;
-    color: var(--text-color);
-    font-size: 20px;
-    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 24px;
+    font-weight: 700;
 }
 
 .shop-header .main-title i {
-    margin-right: 12px;
-    font-size: 22px;
-    color: #f1c40f;
+    margin-right: 16px;
+    font-size: 24px;
+    color: #FFD700;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4));
 }
 
-.user-balance {
-    display: flex;
-    align-items: center;
-    background-color: rgba(255, 255, 255, 0.06);
-    padding: 8px 16px;
-    border-radius: 20px;
-    color: var(--text-color);
-    font-size: 15px;
-}
-
-.user-balance i {
-    color: #f1c40f;
-    margin-right: 8px;
-    font-size: 16px;
-}
-
-.user-balance strong {
-    font-weight: 600;
-    margin-left: 4px;
-}
-
+/* Shop Container */
 .shop-container {
-    padding: 24px;
+    padding: 0;
 }
 
 /* Hero Bölümü */
 .shop-hero {
-    background: linear-gradient(135deg, var(--nova-secondary), var(--blaze-secondary));
-    border-radius: 16px;
-    padding: 40px;
-    margin-bottom: 40px;
     position: relative;
+    padding: 80px 40px;
+    margin-bottom: 60px;
     overflow: hidden;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #2B2F4B, #1A1C30);
 }
 
 .shop-hero::before {
@@ -84,436 +82,622 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon fill="rgba(255,255,255,0.05)" points="0,100 100,0 100,100"/></svg>');
-    background-size: cover;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="12" cy="12" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+    animation: backgroundMove 30s linear infinite;
+    z-index: 0;
 }
 
-.hero-content {
+@keyframes backgroundMove {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 100px 100px;
+    }
+}
+
+.shop-hero-content {
     position: relative;
+    z-index: 1;
     text-align: center;
-    color: white;
-}
-
-.hero-content h1 {
-    font-size: 36px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.hero-content p {
-    font-size: 18px;
-    opacity: 0.9;
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
 }
 
-/* Güçlendirici Kartları */
-.boosters-container {
-    display: flex;
-    gap: 30px;
-    margin-bottom: 60px;
-    justify-content: center;
-    flex-wrap: wrap;
+.shop-hero-content h1 {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    text-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(to right, #FFFFFF, #A390FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientText 3s ease infinite;
+    background-size: 200% auto;
 }
 
-.booster-card {
-    background-color: rgba(255, 255, 255, 0.04);
+@keyframes gradientText {
+    0% {
+        background-position: 0 0;
+    }
+
+    50% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: 0 0;
+    }
+}
+
+.shop-hero-content p {
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin: 0 auto;
+    max-width: 600px;
+    line-height: 1.6;
+}
+
+/* Ürün Grid */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 0 40px;
+    margin-bottom: 60px;
+}
+
+/* Ürün Kartları */
+.product-card {
+    position: relative;
+    background: var(--card-bg);
     border-radius: 20px;
     padding: 30px;
-    width: 100%;
-    max-width: 400px;
-    position: relative;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid var(--card-border);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.product-card.nova {
+    animation-delay: 0.1s;
+}
+
+.product-card.blaze {
+    animation-delay: 0.3s;
+}
+
+.product-card.spark {
+    animation-delay: 0.5s;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.product-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 22px;
+    background: var(--premium-gradient);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.product-card.nova::before {
+    background: var(--premium-gradient);
+}
+
+.product-card.blaze::before {
+    background: var(--standard-gradient);
+}
+
+.product-card.spark::before {
+    background: var(--bronze-gradient);
+}
+
+.product-card:hover {
+    transform: var(--button-hover-transform);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    background: var(--card-hover-bg);
+}
+
+.product-card:hover::before {
+    opacity: 1;
+}
+
+.badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 8px 14px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.badge.premium {
+    background: var(--premium-gradient);
+}
+
+.badge.standard {
+    background: var(--standard-gradient);
+}
+
+.badge.bronze {
+    background: var(--bronze-gradient);
+}
+
+.icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+    position: relative;
     overflow: hidden;
 }
 
-.booster-card::before {
+.icon::after {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 5px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-100%);
+    animation: shine 3s infinite;
 }
 
-.booster-card.nova::before {
-    background: linear-gradient(90deg, var(--nova-primary), var(--nova-secondary));
-}
-
-.booster-card.blaze::before {
-    background: linear-gradient(90deg, var(--blaze-primary), var(--blaze-secondary));
-}
-
-/* Nova özel efektleri */
-.booster-card.nova {
-    border: 1px solid rgba(126, 87, 194, 0.3);
-    transform: scale(1.05);
-    z-index: 1;
-}
-
-.booster-glow {
-    position: absolute;
-    top: -80px;
-    right: -80px;
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    background: radial-gradient(var(--nova-glow), transparent 70%);
-    opacity: 0.8;
-    animation: pulse 3s infinite;
-}
-
-@keyframes pulse {
+@keyframes shine {
     0% {
-        transform: scale(1);
-        opacity: 0.7;
+        transform: translateX(-100%);
     }
 
-    50% {
-        transform: scale(1.1);
-        opacity: 0.9;
-    }
-
+    20%,
     100% {
-        transform: scale(1);
-        opacity: 0.7;
+        transform: translateX(100%);
     }
 }
 
-.booster-badge {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background-color: rgba(0, 0, 0, 0.2);
-    padding: 6px 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    color: white;
+.product-card.nova .icon {
+    background: var(--premium-gradient);
+    box-shadow: 0 10px 25px var(--premium-glow);
 }
 
-.booster-card.nova .booster-badge {
-    background: linear-gradient(90deg, var(--nova-primary), var(--nova-secondary));
-    box-shadow: 0 2px 8px rgba(126, 87, 194, 0.5);
+.product-card.blaze .icon {
+    background: var(--standard-gradient);
+    box-shadow: 0 10px 25px var(--standard-glow);
 }
 
-.booster-card.blaze .booster-badge {
-    background: linear-gradient(90deg, var(--blaze-primary), var(--blaze-secondary));
+.product-card.spark .icon {
+    background: var(--bronze-gradient);
+    box-shadow: 0 10px 25px var(--bronze-glow);
 }
 
-.booster-icon {
-    font-size: 28px;
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.booster-card.nova .booster-icon {
-    background: linear-gradient(135deg, var(--nova-primary), var(--nova-secondary));
-    color: white;
-    box-shadow: 0 4px 15px rgba(126, 87, 194, 0.5);
-    animation: nova-glow 3s infinite;
-}
-
-.booster-card.blaze .booster-icon {
-    background: linear-gradient(135deg, var(--blaze-primary), var(--blaze-secondary));
-    color: white;
-    box-shadow: 0 4px 10px rgba(255, 112, 67, 0.4);
-}
-
-@keyframes nova-glow {
-    0% {
-        box-shadow: 0 4px 15px rgba(126, 87, 194, 0.5);
-    }
-
-    50% {
-        box-shadow: 0 4px 25px rgba(126, 87, 194, 0.8);
-    }
-
-    100% {
-        box-shadow: 0 4px 15px rgba(126, 87, 194, 0.5);
-    }
-}
-
-.booster-title {
+.product-card h2 {
     font-size: 28px;
     font-weight: 700;
-    margin-bottom: 15px;
-    color: var(--text-color);
+    text-align: center;
+    margin: 0 0 10px 0;
+    color: var(--text-primary);
 }
 
-.booster-card.nova .booster-title {
-    color: var(--nova-primary);
-    text-shadow: 0 0 10px rgba(126, 87, 194, 0.2);
-}
-
-.booster-card.blaze .booster-title {
-    color: var(--blaze-primary);
-}
-
-.booster-description {
-    margin-bottom: 24px;
-    flex-grow: 1;
-}
-
-.booster-description p {
-    color: var(--text-secondary);
-    margin-bottom: 16px;
-    font-size: 15px;
-    line-height: 1.5;
-}
-
-.booster-features {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-.booster-features li {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    color: var(--text-color);
-    font-size: 14px;
-}
-
-.booster-features li i {
-    margin-right: 8px;
-    font-size: 12px;
-}
-
-.booster-card.nova .booster-features li i {
-    color: var(--nova-primary);
-}
-
-.booster-card.blaze .booster-features li i {
-    color: var(--blaze-primary);
-}
-
-.booster-price {
-    display: flex;
-    align-items: flex-end;
-    margin-bottom: 24px;
-}
-
-.price-value {
-    font-size: 32px;
+.price {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 24px;
     font-weight: 700;
-    color: var(--text-color);
+    color: var(--text-primary);
 }
 
-.booster-card.nova .price-value {
-    color: var(--nova-primary);
-}
-
-.booster-card.blaze .price-value {
-    color: var(--blaze-primary);
-}
-
-.price-period {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin-left: 4px;
-    margin-bottom: 4px;
-}
-
-.booster-button {
-    padding: 14px 0;
-    border-radius: 12px;
-    border: none;
+.price span {
     font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    color: white;
+    font-weight: 400;
+    color: var(--text-tertiary);
+}
+
+.features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 30px;
+    flex: 1;
+}
+
+.features li {
+    margin-bottom: 15px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+}
+
+.features li i {
+    margin-right: 12px;
+    color: #59E6A2;
+    font-size: 16px;
+}
+
+.buy-btn {
+    display: block;
     width: 100%;
+    padding: 16px 0;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-.nova-button {
-    background: linear-gradient(135deg, var(--nova-primary), var(--nova-secondary));
-    box-shadow: 0 4px 15px rgba(126, 87, 194, 0.5);
+.buy-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-100%);
+    animation: buttonShine 3s infinite;
 }
 
-.blaze-button {
-    background: linear-gradient(135deg, var(--blaze-primary), var(--blaze-secondary));
-    box-shadow: 0 4px 10px rgba(255, 112, 67, 0.4);
+@keyframes buttonShine {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    20%,
+    100% {
+        transform: translateX(100%);
+    }
 }
 
-.nova-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(126, 87, 194, 0.7);
+.nova-btn {
+    background: var(--premium-gradient);
+    box-shadow: 0 8px 20px var(--premium-glow);
 }
 
-.blaze-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(255, 112, 67, 0.6);
+.blaze-btn {
+    background: var(--standard-gradient);
+    box-shadow: 0 8px 20px var(--standard-glow);
 }
 
-.booster-card:hover {
-    transform: translateY(-5px);
+.spark-btn {
+    background: var(--bronze-gradient);
+    box-shadow: 0 8px 20px var(--bronze-glow);
 }
 
-.booster-card.nova:hover {
-    transform: scale(1.08);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+.buy-btn:hover {
+    transform: var(--button-hover-transform);
+}
+
+.nova-btn:hover {
+    box-shadow: 0 15px 30px var(--premium-glow);
+}
+
+.blaze-btn:hover {
+    box-shadow: 0 15px 30px var(--standard-glow);
+}
+
+.spark-btn:hover {
+    box-shadow: 0 15px 30px var(--bronze-glow);
 }
 
 /* Karşılaştırma Tablosu */
 .boosters-comparison {
-    background-color: rgba(255, 255, 255, 0.02);
-    border-radius: 16px;
-    padding: 30px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 20px 40px 60px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(20, 20, 35, 0.4);
 }
 
 .boosters-comparison h2 {
     text-align: center;
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 24px;
-    color: var(--text-color);
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: var(--text-primary);
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.boosters-comparison h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(to right, var(--premium-color), var(--standard-color));
+    border-radius: 2px;
 }
 
 .comparison-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .comparison-row {
-    display: flex;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--card-bg);
+    transition: background 0.3s ease;
+}
+
+.comparison-row:hover {
+    background: var(--card-hover-bg);
 }
 
 .comparison-row.header {
-    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-}
-
-.comparison-row:last-child {
-    border-bottom: none;
+    background: rgba(20, 20, 35, 0.8);
 }
 
 .comparison-cell {
-    padding: 16px;
-    flex: 1;
+    padding: 16px 20px;
     text-align: center;
-    font-size: 15px;
-    color: var(--text-color);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 16px;
+    color: var(--text-secondary);
+}
+
+.comparison-row:last-child .comparison-cell {
+    border-bottom: none;
 }
 
 .comparison-cell.feature {
     text-align: left;
     font-weight: 500;
+    color: var(--text-primary);
+    width: 40%;
+}
+
+.comparison-row.header .comparison-cell {
+    padding: 20px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
 }
 
 .comparison-cell.nova {
-    color: var(--nova-primary);
+    color: var(--premium-color);
     font-weight: 600;
 }
 
 .comparison-cell.blaze {
-    color: var(--blaze-primary);
-}
-
-.comparison-row.header .comparison-cell {
+    color: var(--standard-color);
     font-weight: 600;
-    color: var(--text-color);
 }
 
-.comparison-row.header .comparison-cell.nova {
-    color: var(--nova-primary);
-}
-
-.comparison-row.header .comparison-cell.blaze {
-    color: var(--blaze-primary);
+.comparison-cell.spark {
+    color: var(--bronze-color);
+    font-weight: 600;
 }
 
 .comparison-cell i.fas.fa-check {
-    color: var(--success-color);
+    color: #59E6A2;
+    font-size: 18px;
 }
 
 .comparison-cell i.fas.fa-times {
-    color: var(--danger-color);
+    color: #FF6B6B;
+    font-size: 18px;
 }
 
-/* Mobil Uyumluluk */
-@media (max-width: 768px) {
+/* Satın Alma Modalı */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+    visibility: visible;
+    opacity: 1;
+}
+
+.modal-container {
+    background: var(--card-bg);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    padding: 30px;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    transform: scale(0.8);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.animate-zoom-in {
+    animation: zoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.close-modal-btn:hover {
+    color: var(--text-primary);
+}
+
+.modal-container h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 15px 0;
+}
+
+.modal-container p {
+    color: var(--text-secondary);
+    margin-bottom: 25px;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.confirm-btn {
+    background: var(--premium-gradient);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-shadow: 0 8px 20px var(--premium-glow);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.confirm-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px var(--premium-glow);
+}
+
+/* Responsive Tasarım */
+@media (max-width: 992px) {
     .shop-hero {
-        padding: 30px 20px;
+        padding: 60px 30px;
     }
 
-    .hero-content h1 {
-        font-size: 28px;
+    .shop-hero-content h1 {
+        font-size: 36px;
     }
 
-    .hero-content p {
+    .product-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        padding: 0 30px;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .shop-header {
+        padding: 15px 20px;
+    }
+
+    .shop-hero {
+        padding: 40px 20px;
+    }
+
+    .shop-hero-content h1 {
+        font-size: 30px;
+    }
+
+    .shop-hero-content p {
         font-size: 16px;
     }
 
-    .booster-card {
-        padding: 20px;
-    }
-
-    .booster-title {
-        font-size: 24px;
+    .product-grid {
+        grid-template-columns: 1fr;
+        padding: 0 20px;
     }
 
     .boosters-comparison {
-        padding: 20px;
+        padding: 20px 20px 40px;
     }
 
     .comparison-cell {
-        padding: 12px 8px;
+        padding: 12px 10px;
         font-size: 14px;
+    }
+
+    .comparison-row.header .comparison-cell {
+        font-size: 16px;
     }
 }
 
-@media (max-width: 576px) {
-    .boosters-container {
-        flex-direction: column;
-        align-items: center;
+/* Animasyonlar */
+.animate-fade-in {
+    animation: fadeIn 1s ease forwards;
+}
+
+.animate-slide-up {
+    animation: slideUp 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
     }
 
-    .booster-card.nova {
-        transform: scale(1);
-        order: -1;
-        margin-bottom: 20px;
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
     }
 
-    .booster-card.nova:hover {
-        transform: scale(1.03);
-    }
-
-    .shop-container {
-        padding: 16px;
-    }
-
-    .comparison-row {
-        flex-direction: column;
-        border-bottom: none;
-        margin-bottom: 24px;
-    }
-
-    .comparison-cell {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        padding: 12px;
-    }
-
-    .comparison-cell.feature {
-        background-color: rgba(255, 255, 255, 0.03);
-        font-weight: 600;
-    }
-
-    .comparison-row.header {
-        display: none;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }

@@ -1,419 +1,295 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Butona tıklandığında efektler
-    const buttons = document.querySelectorAll('.booster-button');
-    buttons.forEach(button => {
-        button.addEventListener('click', function (e) {
-            e.preventDefault();
+    // Ürün Kartı Animasyonları
+    animateProducts();
 
-            // Butona tıklandığında basma animasyonu
-            this.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                this.style.transform = '';
-            }, 200);
+    // Satın Al butonlarına tıklama işlemi
+    const buyButtons = document.querySelectorAll('.buy-btn');
+    buyButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const productType = this.getAttribute('data-product');
+            let productName, productPrice;
 
-            const boosterType = this.classList.contains('nova-button') ? 'Nova' : 'Blaze';
-            const price = boosterType === 'Nova' ? '$2.00' : '$1.00';
+            switch (productType) {
+                case 'nova':
+                    productName = 'Nova Premium';
+                    productPrice = '$7.99';
+                    break;
+                case 'blaze':
+                    productName = 'Blaze Standart';
+                    productPrice = '$4.99';
+                    break;
+                case 'spark':
+                    productName = 'Spark Başlangıç';
+                    productPrice = '$2.99';
+                    break;
+            }
 
-            // Satın alma onay modalı
-            showPurchaseModal(boosterType, price);
+            openPurchaseModal(productName, productPrice);
         });
     });
 
-    // Kartlar için hover efektleri
-    const cards = document.querySelectorAll('.booster-card');
-    cards.forEach(card => {
-        card.addEventListener('mouseenter', function () {
-            this.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.2)';
-        });
+    // Satın Alma Modalını Açma Fonksiyonu
+    function openPurchaseModal(productName, productPrice) {
+        const modal = document.getElementById('purchaseModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDesc = document.getElementById('modalDesc');
 
-        card.addEventListener('mouseleave', function () {
-            this.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.1)';
-        });
-    });
+        modalTitle.textContent = productName + ' Satın Al';
+        modalDesc.textContent = productName + ' paketi için ' + productPrice + '/ay ödeme yapacaksınız.';
 
-    // Satın alma onay modalı göster
-    function showPurchaseModal(boosterType, price) {
-        // Eğer zaten modal varsa kaldır
-        const existingModal = document.querySelector('.purchase-modal');
-        if (existingModal) {
-            existingModal.remove();
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Sayfayı kaydırmayı engelle
+    }
+
+    // Modal Kapatma İşlemi
+    const closeModalBtn = document.querySelector('.close-modal-btn');
+    closeModalBtn.addEventListener('click', closeModal);
+
+    function closeModal() {
+        const modal = document.getElementById('purchaseModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto'; // Sayfayı kaydırmayı etkinleştir
+    }
+
+    // Modal dışına tıklanınca kapat
+    const modalOverlay = document.getElementById('purchaseModal');
+    modalOverlay.addEventListener('click', function (e) {
+        if (e.target === modalOverlay) {
+            closeModal();
         }
+    });
 
-        // Modal oluştur
-        const modal = document.createElement('div');
-        modal.className = 'purchase-modal';
+    // Satın Alma İşlemi
+    const confirmPurchaseBtn = document.getElementById('confirmPurchase');
+    confirmPurchaseBtn.addEventListener('click', function () {
+        const selectedPayment = document.querySelector('input[name="payment"]:checked').id;
 
-        // Modal içeriği
-        modal.innerHTML = `
-            <div class="modal-content ${boosterType.toLowerCase()}-modal">
-                <div class="modal-header">
-                    <h3>${boosterType} Güçlendirici Satın Al</h3>
-                    <button class="modal-close"><i class="fas fa-times"></i></button>
-                </div>
-                <div class="modal-body">
-                    <p><strong>${boosterType} Güçlendiriciyi</strong> ${price} karşılığında satın almak istediğinizden emin misiniz?</p>
-                    <div class="payment-methods">
-                        <div class="payment-method">
-                            <input type="radio" name="payment" id="credit-card" checked>
-                            <label for="credit-card">
-                                <i class="fas fa-credit-card"></i> Kredi Kartı
-                            </label>
-                        </div>
-                        <div class="payment-method">
-                            <input type="radio" name="payment" id="paypal">
-                            <label for="paypal">
-                                <i class="fab fa-paypal"></i> PayPal
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="cancel-button">İptal</button>
-                    <button class="confirm-button ${boosterType.toLowerCase()}-confirm">Satın Al</button>
-                </div>
+        // Yükleniyor animasyonu
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İşleniyor...';
+        this.disabled = true;
+
+        // API çağrısı simülasyonu
+        setTimeout(() => {
+            closeModal();
+            showSuccessNotification();
+
+            // Butonu sıfırla
+            setTimeout(() => {
+                this.innerHTML = 'Ödemeye Geç';
+                this.disabled = false;
+            }, 1000);
+        }, 2000);
+    });
+
+    // Başarılı işlem bildirimi
+    function showSuccessNotification() {
+        // Bildirim elementi oluştur
+        const notification = document.createElement('div');
+        notification.className = 'success-notification';
+        notification.innerHTML = `
+            <div class="notification-icon">
+                <i class="fas fa-check-circle"></i>
             </div>
+            <div class="notification-content">
+                <h4>Satın Alma İşlemi Başarılı!</h4>
+                <p>Paketiniz hesabınıza tanımlandı. İyi eğlenceler!</p>
+            </div>
+            <button class="notification-close">
+                <i class="fas fa-times"></i>
+            </button>
         `;
 
-        // Modalı sayfaya ekle
-        document.body.appendChild(modal);
+        // Sayfaya ekle
+        document.body.appendChild(notification);
 
-        // Modal animasyonu
+        // Göster
         setTimeout(() => {
-            modal.classList.add('show');
-        }, 10);
+            notification.classList.add('show');
+        }, 100);
 
-        // Modal kapatma işlevi
-        const closeModal = () => {
-            modal.classList.remove('show');
+        // Otomatik kapanma
+        setTimeout(() => {
+            notification.classList.remove('show');
             setTimeout(() => {
-                modal.remove();
-            }, 300);
-        };
+                notification.remove();
+            }, 500);
+        }, 5000);
 
         // Kapatma butonuna tıklama
-        modal.querySelector('.modal-close').addEventListener('click', closeModal);
-        modal.querySelector('.cancel-button').addEventListener('click', closeModal);
-
-        // Boş alana tıklama ile kapat
-        modal.addEventListener('click', function (e) {
-            if (e.target === modal) {
-                closeModal();
-            }
-        });
-
-        // Satın alma işlemi
-        modal.querySelector('.confirm-button').addEventListener('click', function () {
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İşleniyor...';
-            this.disabled = true;
-
-            // Satın alma simülasyonu
+        const closeBtn = notification.querySelector('.notification-close');
+        closeBtn.addEventListener('click', function () {
+            notification.classList.remove('show');
             setTimeout(() => {
-                closeModal();
-                showSuccessMessage(boosterType);
-
-                // Bakiyeyi güncelle
-                updateBalance(price);
-            }, 1500);
+                notification.remove();
+            }, 500);
         });
     }
 
-    // Başarılı satın alma mesajı
-    function showSuccessMessage(boosterType) {
-        // Başarı mesajı göster
-        const successMessage = document.createElement('div');
-        successMessage.className = 'success-message';
-        successMessage.innerHTML = `
-            <div class="success-icon"><i class="fas fa-check-circle"></i></div>
-            <div class="success-text">
-                <h4>${boosterType} Güçlendirici Satın Alındı!</h4>
-                <p>Güçlendirici hesabınıza tanımlandı. Hemen kullanmaya başlayabilirsiniz.</p>
-            </div>
+    // Ürün kartları animasyonu
+    function animateProducts() {
+        const productCards = document.querySelectorAll('.product-card');
+
+        productCards.forEach((card, index) => {
+            // Kart animasyonu için gecikme
+            setTimeout(() => {
+                card.classList.add('animated');
+            }, 100 * (index + 1));
+
+            // Hover efektleri
+            card.addEventListener('mouseenter', function () {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+                this.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.3)';
+                this.style.zIndex = '1';
+
+                // Önce :before ele al
+                this.classList.add('hover-glow');
+            });
+
+            card.addEventListener('mouseleave', function () {
+                this.style.transform = '';
+                this.style.boxShadow = '';
+                this.style.zIndex = '';
+
+                this.classList.remove('hover-glow');
+            });
+        });
+    }
+
+    // Tablo satırlarına hover efektleri
+    const comparisonRows = document.querySelectorAll('.comparison-row:not(.header)');
+    comparisonRows.forEach(row => {
+        row.addEventListener('mouseenter', function () {
+            this.style.backgroundColor = 'rgba(40, 40, 60, 0.8)';
+        });
+
+        row.addEventListener('mouseleave', function () {
+            this.style.backgroundColor = '';
+        });
+    });
+
+    // CSS stillerini ekle
+    addStyles();
+
+    function addStyles() {
+        const styles = `
+            .success-notification {
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                background: rgba(30, 30, 46, 0.95);
+                border-left: 4px solid #59E6A2;
+                padding: 15px 20px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                transform: translateX(120%);
+                transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                z-index: 1000;
+                max-width: 400px;
+                backdrop-filter: blur(10px);
+            }
+            
+            .success-notification.show {
+                transform: translateX(0);
+            }
+            
+            .notification-icon {
+                margin-right: 15px;
+                font-size: 24px;
+                color: #59E6A2;
+            }
+            
+            .notification-content {
+                flex: 1;
+            }
+            
+            .notification-content h4 {
+                margin: 0 0 5px 0;
+                color: white;
+                font-size: 16px;
+            }
+            
+            .notification-content p {
+                margin: 0;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 14px;
+            }
+            
+            .notification-close {
+                background: none;
+                border: none;
+                color: rgba(255, 255, 255, 0.5);
+                cursor: pointer;
+                padding: 5px;
+                margin-left: 10px;
+                transition: color 0.2s ease;
+            }
+            
+            .notification-close:hover {
+                color: white;
+            }
+            
+            .payment-options {
+                margin-bottom: 20px;
+            }
+            
+            .payment-option {
+                background: rgba(30, 30, 46, 0.5);
+                border-radius: 8px;
+                padding: 12px 15px;
+                margin-bottom: 10px;
+                transition: all 0.2s ease;
+            }
+            
+            .payment-option:hover {
+                background: rgba(40, 40, 60, 0.8);
+            }
+            
+            .payment-option input {
+                display: none;
+            }
+            
+            .payment-option label {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                color: rgba(255, 255, 255, 0.8);
+            }
+            
+            .payment-option i {
+                font-size: 20px;
+                margin-right: 10px;
+                width: 30px;
+                text-align: center;
+            }
+            
+            .payment-option input:checked + label {
+                color: white;
+            }
+            
+            .product-card.hover-glow::before {
+                opacity: 1;
+            }
+            
+            @keyframes pulse {
+                0% {
+                    box-shadow: 0 0 0 0 rgba(140, 82, 255, 0.7);
+                }
+                
+                70% {
+                    box-shadow: 0 0 0 10px rgba(140, 82, 255, 0);
+                }
+                
+                100% {
+                    box-shadow: 0 0 0 0 rgba(140, 82, 255, 0);
+                }
+            }
         `;
 
-        document.body.appendChild(successMessage);
-
-        setTimeout(() => {
-            successMessage.classList.add('show');
-        }, 10);
-
-        // 5 saniye sonra mesajı kaldır
-        setTimeout(() => {
-            successMessage.classList.remove('show');
-            setTimeout(() => {
-                successMessage.remove();
-            }, 300);
-        }, 5000);
+        const styleSheet = document.createElement('style');
+        styleSheet.type = 'text/css';
+        styleSheet.innerText = styles;
+        document.head.appendChild(styleSheet);
     }
-
-    // Bakiyeyi güncelle
-    function updateBalance(price) {
-        const balanceElement = document.querySelector('.user-balance strong');
-        const currentBalance = parseFloat(balanceElement.textContent.replace('$', ''));
-        const purchaseAmount = parseFloat(price.replace('$', ''));
-
-        // Yeni bakiyeyi hesapla
-        const newBalance = (currentBalance - purchaseAmount).toFixed(2);
-
-        // Bakiyeyi güncelle
-        balanceElement.textContent = `$${newBalance}`;
-
-        // Bakiye animasyonu
-        balanceElement.classList.add('balance-updated');
-        setTimeout(() => {
-            balanceElement.classList.remove('balance-updated');
-        }, 1000);
-    }
-
-    // Sayfa yüklendiğinde animasyonlar
-    animateElements();
-
-    function animateElements() {
-        const novaCard = document.querySelector('.booster-card.nova');
-        const blazeCard = document.querySelector('.booster-card.blaze');
-
-        // Kartların animasyonla görünmesi
-        setTimeout(() => {
-            novaCard.style.opacity = '1';
-            novaCard.style.transform = 'scale(1.05) translateY(0)';
-        }, 300);
-
-        setTimeout(() => {
-            blazeCard.style.opacity = '1';
-            blazeCard.style.transform = 'translateY(0)';
-        }, 500);
-    }
-
-    // Yatay kaydırma devre dışı
-    document.querySelector('.main-content').addEventListener('wheel', function (e) {
-        e.preventDefault();
-        this.scrollTop += e.deltaY;
-    });
-});
-
-// CSS stil ekle
-const style = document.createElement('style');
-style.textContent = `
-    .purchase-modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    
-    .purchase-modal.show {
-        opacity: 1;
-    }
-    
-    .modal-content {
-        background-color: var(--dm-bg);
-        border-radius: 16px;
-        width: 90%;
-        max-width: 500px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        overflow: hidden;
-        transform: scale(0.9);
-        transition: transform 0.3s ease;
-    }
-    
-    .purchase-modal.show .modal-content {
-        transform: scale(1);
-    }
-    
-    .nova-modal {
-        border-top: 5px solid var(--nova-primary);
-    }
-    
-    .blaze-modal {
-        border-top: 5px solid var(--blaze-primary);
-    }
-    
-    .modal-header {
-        padding: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .modal-header h3 {
-        margin: 0;
-        font-size: 20px;
-        color: var(--text-color);
-    }
-    
-    .modal-close {
-        background: none;
-        border: none;
-        color: var(--text-secondary);
-        font-size: 18px;
-        cursor: pointer;
-    }
-    
-    .modal-close:hover {
-        color: var(--text-color);
-    }
-    
-    .modal-body {
-        padding: 20px;
-    }
-    
-    .modal-body p {
-        margin-top: 0;
-        color: var(--text-color);
-    }
-    
-    .payment-methods {
-        margin-top: 20px;
-    }
-    
-    .payment-method {
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-    }
-    
-    .payment-method input {
-        margin-right: 10px;
-    }
-    
-    .payment-method label {
-        color: var(--text-color);
-        cursor: pointer;
-    }
-    
-    .payment-method i {
-        margin-right: 8px;
-    }
-    
-    .modal-footer {
-        padding: 15px 20px;
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .cancel-button {
-        background-color: rgba(255, 255, 255, 0.08);
-        color: var(--text-color);
-        border: none;
-        padding: 10px 16px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: 500;
-        transition: all 0.2s ease;
-    }
-    
-    .cancel-button:hover {
-        background-color: rgba(255, 255, 255, 0.12);
-    }
-    
-    .confirm-button {
-        border: none;
-        padding: 10px 20px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: 600;
-        color: white;
-        transition: all 0.2s ease;
-    }
-    
-    .nova-confirm {
-        background: linear-gradient(135deg, var(--nova-primary), var(--nova-secondary));
-    }
-    
-    .blaze-confirm {
-        background: linear-gradient(135deg, var(--blaze-primary), var(--blaze-secondary));
-    }
-    
-    .confirm-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-    }
-    
-    .confirm-button:active {
-        transform: translateY(0);
-    }
-    
-    .booster-card {
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.3s ease;
-    }
-    
-    .booster-card.nova {
-        transform: scale(1.05) translateY(20px);
-    }
-    
-    .success-message {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        background: linear-gradient(135deg, #2ecc71, #27ae60);
-        padding: 16px 20px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        color: white;
-        z-index: 1000;
-        transform: translateX(120%);
-        transition: transform 0.3s ease;
-    }
-    
-    .success-message.show {
-        transform: translateX(0);
-    }
-    
-    .success-icon {
-        font-size: 24px;
-        margin-right: 15px;
-    }
-    
-    .success-text h4 {
-        margin: 0 0 5px 0;
-        font-size: 16px;
-    }
-    
-    .success-text p {
-        margin: 0;
-        font-size: 14px;
-        opacity: 0.9;
-    }
-    
-    .balance-updated {
-        animation: flash 1s;
-    }
-    
-    @keyframes flash {
-        0%, 100% { color: var(--text-color); }
-        50% { color: #f1c40f; }
-    }
-    
-    @media (max-width: 576px) {
-        .modal-content {
-            width: 95%;
-        }
-        
-        .success-message {
-            left: 20px;
-            right: 20px;
-            bottom: 20px;
-            transform: translateY(120%);
-        }
-        
-        .success-message.show {
-            transform: translateY(0);
-        }
-    }
-`;
-
-document.head.appendChild(style); 
+}); 

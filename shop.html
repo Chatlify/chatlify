@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatlify - Mağaza</title>
     <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
@@ -30,41 +30,12 @@
         <div class="server-sidebar">
             <div class="server-sidebar-inner">
                 <div class="server-item home">
-                    <div class="server-icon">
-                        <!-- Chatlify Logo -->
-                        <svg width="28" height="28" viewBox="0 0 48 48" fill="currentColor"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path d="M24 4L7 14V34L24 44L41 34V14L24 4Z" fill="url(#paint0_linear)" />
-                            <path d="M24 24L7 14L24 4L41 14L24 24Z" fill="url(#paint1_linear)" />
-                            <path d="M24 44L24 24L41 14V34L24 44Z" fill="url(#paint2_linear)" />
-                            <path d="M24 44L24 24L7 14V34L24 44Z" fill="url(#paint3_linear)" />
-                            <text x="17" y="25" fill="white" font-family="Arial" font-size="12"
-                                font-weight="bold">C</text>
-                            <defs>
-                                <linearGradient id="paint0_linear" x1="24" y1="4" x2="24" y2="44"
-                                    gradientUnits="userSpaceOnUse">
-                                    <stop stop-color="#5f75fc" />
-                                    <stop offset="1" stop-color="#6741D9" />
-                                </linearGradient>
-                                <linearGradient id="paint1_linear" x1="24" y1="4" x2="24" y2="24"
-                                    gradientUnits="userSpaceOnUse">
-                                    <stop stop-color="#7289da" />
-                                    <stop offset="1" stop-color="#5f75fc" />
-                                </linearGradient>
-                                <linearGradient id="paint2_linear" x1="32.5" y1="19" x2="32.5" y2="44"
-                                    gradientUnits="userSpaceOnUse">
-                                    <stop stop-color="#5865F2" />
-                                    <stop offset="1" stop-color="#5546D3" />
-                                </linearGradient>
-                                <linearGradient id="paint3_linear" x1="15.5" y1="19" x2="15.5" y2="44"
-                                    gradientUnits="userSpaceOnUse">
-                                    <stop stop-color="#5865F2" />
-                                    <stop offset="1" stop-color="#5546D3" />
-                                </linearGradient>
-                            </defs>
-                        </svg>
-                    </div>
-                    <div class="server-tooltip">Chatlify</div>
+                    <a href="dashboard.html" class="server-link">
+                        <div class="server-icon">
+                            <img src="images/BGChatlifyLogo.png" alt="Chatlify Home" class="home-logo-img">
+                        </div>
+                        <div class="server-tooltip">Chatlify</div>
+                    </a>
                 </div>
 
                 <div class="server-divider"></div>
@@ -132,13 +103,7 @@
                 <div class="header-left">
                     <div class="main-title">
                         <i class="fas fa-store"></i>
-                        <span>Mağaza</span>
-                    </div>
-                </div>
-                <div class="header-right">
-                    <div class="user-balance">
-                        <i class="fas fa-coins"></i>
-                        <span>Bakiye: <strong>5.00$</strong></span>
+                        <span>Chatlify Mağaza</span>
                     </div>
                 </div>
             </div>
@@ -146,8 +111,9 @@
             <div class="shop-container">
                 <div class="shop-hero">
                     <div class="shop-hero-content animate-fade-in">
-                        <h1>Chatlify Güçlendiriciler</h1>
-                        <p>Daha fazla özellik, daha iyi deneyim. Paketini seç ve güçlen!</p>
+                        <h1>Deneyiminizi Yükseltin</h1>
+                        <p>Daha fazla özellik ve premium içeriklere sahip olun. Chatlify deneyiminizi özelleştirin ve
+                            arkadaşlarınıza gösteriş yapın.</p>
                     </div>
                 </div>
 
@@ -155,69 +121,113 @@
                     <section class="product-grid">
                         <div class="product-card nova">
                             <div class="badge premium">Premium</div>
-                            <div class="icon"><i class="fas fa-bolt"></i></div>
+                            <div class="icon"><i class="fas fa-crown"></i></div>
                             <h2>Nova</h2>
-                            <p class="price">$2.00 <span>/ aylık</span></p>
+                            <p class="price">$7.99 <span>/ aylık</span></p>
                             <ul class="features">
                                 <li><i class="fas fa-check"></i> Sınırsız Mesaj Depolama</li>
                                 <li><i class="fas fa-check"></i> 4K Video Görüşmesi</li>
-                                <li><i class="fas fa-check"></i> Özel Emojiler</li>
-                                <li><i class="fas fa-check"></i> Özel Rozet</li>
-                                <li><i class="fas fa-check"></i> Reklamsız</li>
+                                <li><i class="fas fa-check"></i> Sınırsız Özel Emoji</li>
+                                <li><i class="fas fa-check"></i> 100MB Dosya Paylaşımı</li>
+                                <li><i class="fas fa-check"></i> Premium Profil Rozeti</li>
+                                <li><i class="fas fa-check"></i> Özel Animasyonlu Avatar</li>
+                                <li><i class="fas fa-check"></i> Reklamsız Deneyim</li>
+                                <li><i class="fas fa-check"></i> Öncelikli Destek</li>
                             </ul>
-                            <button class="btn buy-btn nova-btn" data-product="nova">Hemen Satın Al</button>
+                            <button class="buy-btn nova-btn" data-product="nova">Şimdi Satın Al</button>
                         </div>
+
                         <div class="product-card blaze">
                             <div class="badge standard">Standart</div>
-                            <div class="icon"><i class="fas fa-fire"></i></div>
+                            <div class="icon"><i class="fas fa-bolt"></i></div>
                             <h2>Blaze</h2>
-                            <p class="price">$1.00 <span>/ aylık</span></p>
+                            <p class="price">$4.99 <span>/ aylık</span></p>
+                            <ul class="features">
+                                <li><i class="fas fa-check"></i> 90 Gün Mesaj Depolama</li>
+                                <li><i class="fas fa-check"></i> HD Video Görüşmesi</li>
+                                <li><i class="fas fa-check"></i> 50 Özel Emoji</li>
+                                <li><i class="fas fa-check"></i> 50MB Dosya Paylaşımı</li>
+                                <li><i class="fas fa-check"></i> Standart Profil Rozeti</li>
+                                <li><i class="fas fa-check"></i> Özel Profil Temaları</li>
+                                <li><i class="fas fa-times"></i> Reklamsız Deneyim</li>
+                                <li><i class="fas fa-times"></i> Öncelikli Destek</li>
+                            </ul>
+                            <button class="buy-btn blaze-btn" data-product="blaze">Şimdi Satın Al</button>
+                        </div>
+
+                        <div class="product-card spark">
+                            <div class="badge bronze">Başlangıç</div>
+                            <div class="icon"><i class="fas fa-star"></i></div>
+                            <h2>Spark</h2>
+                            <p class="price">$2.99 <span>/ aylık</span></p>
                             <ul class="features">
                                 <li><i class="fas fa-check"></i> 30 Gün Mesaj Depolama</li>
                                 <li><i class="fas fa-check"></i> HD Video Görüşmesi</li>
-                                <li><i class="fas fa-check"></i> 25 Özel Emoji</li>
-                                <li><i class="fas fa-check"></i> Temel Rozet</li>
+                                <li><i class="fas fa-check"></i> 15 Özel Emoji</li>
+                                <li><i class="fas fa-check"></i> 20MB Dosya Paylaşımı</li>
+                                <li><i class="fas fa-check"></i> Temel Profil Rozeti</li>
+                                <li><i class="fas fa-times"></i> Özel Profil Temaları</li>
+                                <li><i class="fas fa-times"></i> Reklamsız Deneyim</li>
+                                <li><i class="fas fa-times"></i> Öncelikli Destek</li>
                             </ul>
-                            <button class="btn buy-btn blaze-btn" data-product="blaze">Hemen Satın Al</button>
+                            <button class="buy-btn spark-btn" data-product="spark">Şimdi Satın Al</button>
                         </div>
                     </section>
-                </main>
 
-                <div class="boosters-comparison">
-                    <h2>Karşılaştırma Tablosu</h2>
-                    <div class="comparison-table">
-                        <div class="comparison-row header">
-                            <div class="comparison-cell feature">Özellik</div>
-                            <div class="comparison-cell blaze">Blaze</div>
-                            <div class="comparison-cell nova">Nova</div>
-                        </div>
-                        <div class="comparison-row">
-                            <div class="comparison-cell feature">Mesaj Depolama</div>
-                            <div class="comparison-cell blaze">30 Gün</div>
-                            <div class="comparison-cell nova">Sınırsız</div>
-                        </div>
-                        <div class="comparison-row">
-                            <div class="comparison-cell feature">Video Kalitesi</div>
-                            <div class="comparison-cell blaze">HD (720p)</div>
-                            <div class="comparison-cell nova">4K (2160p)</div>
-                        </div>
-                        <div class="comparison-row">
-                            <div class="comparison-cell feature">Özel Emojiler</div>
-                            <div class="comparison-cell blaze">25</div>
-                            <div class="comparison-cell nova">Sınırsız</div>
-                        </div>
-                        <div class="comparison-row">
-                            <div class="comparison-cell feature">Dosya Paylaşımı</div>
-                            <div class="comparison-cell blaze">50MB</div>
-                            <div class="comparison-cell nova">100MB</div>
-                        </div>
-                        <div class="comparison-row">
-                            <div class="comparison-cell feature">Reklamsız Deneyim</div>
-                            <div class="comparison-cell blaze"><i class="fas fa-times"></i></div>
-                            <div class="comparison-cell nova"><i class="fas fa-check"></i></div>
-                        </div>
+                    <div class="boosters-comparison">
+                        <h2>Paketleri Karşılaştırın</h2>
+                        <table class="comparison-table">
+                            <tr class="comparison-row header">
+                                <td class="comparison-cell feature">Özellikler</td>
+                                <td class="comparison-cell spark">Spark</td>
+                                <td class="comparison-cell blaze">Blaze</td>
+                                <td class="comparison-cell nova">Nova</td>
+                            </tr>
+                            <tr class="comparison-row">
+                                <td class="comparison-cell feature">Mesaj Depolama</td>
+                                <td class="comparison-cell spark">30 Gün</td>
+                                <td class="comparison-cell blaze">90 Gün</td>
+                                <td class="comparison-cell nova">Sınırsız</td>
+                            </tr>
+                            <tr class="comparison-row">
+                                <td class="comparison-cell feature">Video Kalitesi</td>
+                                <td class="comparison-cell spark">HD (720p)</td>
+                                <td class="comparison-cell blaze">HD (1080p)</td>
+                                <td class="comparison-cell nova">4K (2160p)</td>
+                            </tr>
+                            <tr class="comparison-row">
+                                <td class="comparison-cell feature">Özel Emojiler</td>
+                                <td class="comparison-cell spark">15</td>
+                                <td class="comparison-cell blaze">50</td>
+                                <td class="comparison-cell nova">Sınırsız</td>
+                            </tr>
+                            <tr class="comparison-row">
+                                <td class="comparison-cell feature">Dosya Paylaşımı</td>
+                                <td class="comparison-cell spark">20MB</td>
+                                <td class="comparison-cell blaze">50MB</td>
+                                <td class="comparison-cell nova">100MB</td>
+                            </tr>
+                            <tr class="comparison-row">
+                                <td class="comparison-cell feature">Özel Profil Temaları</td>
+                                <td class="comparison-cell spark"><i class="fas fa-times"></i></td>
+                                <td class="comparison-cell blaze"><i class="fas fa-check"></i></td>
+                                <td class="comparison-cell nova"><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr class="comparison-row">
+                                <td class="comparison-cell feature">Reklamsız Deneyim</td>
+                                <td class="comparison-cell spark"><i class="fas fa-times"></i></td>
+                                <td class="comparison-cell blaze"><i class="fas fa-times"></i></td>
+                                <td class="comparison-cell nova"><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr class="comparison-row">
+                                <td class="comparison-cell feature">Öncelikli Destek</td>
+                                <td class="comparison-cell spark"><i class="fas fa-times"></i></td>
+                                <td class="comparison-cell blaze"><i class="fas fa-times"></i></td>
+                                <td class="comparison-cell nova"><i class="fas fa-check"></i></td>
+                            </tr>
+                        </table>
                     </div>
-                </div>
+                </main>
             </div>
         </div>
     </div>
@@ -227,8 +237,33 @@
         <div class="modal-container animate-zoom-in">
             <button class="close-modal-btn"><i class="fas fa-times"></i></button>
             <h3 id="modalTitle">Ürün Satın Al</h3>
-            <p id="modalDesc">Seçiminizi onaylayın ve ödeme yapın.</p>
-            <button id="confirmPurchase" class="btn confirm-btn">Onayla</button>
+            <p id="modalDesc">Seçiminizi onaylayın ve ödeme yöntemini seçin.</p>
+
+            <div class="payment-options">
+                <div class="payment-option">
+                    <input type="radio" name="payment" id="credit-card" checked>
+                    <label for="credit-card">
+                        <i class="fas fa-credit-card"></i>
+                        <span>Kredi Kartı</span>
+                    </label>
+                </div>
+                <div class="payment-option">
+                    <input type="radio" name="payment" id="paypal">
+                    <label for="paypal">
+                        <i class="fab fa-paypal"></i>
+                        <span>PayPal</span>
+                    </label>
+                </div>
+                <div class="payment-option">
+                    <input type="radio" name="payment" id="crypto">
+                    <label for="crypto">
+                        <i class="fab fa-bitcoin"></i>
+                        <span>Kripto Para</span>
+                    </label>
+                </div>
+            </div>
+
+            <button id="confirmPurchase" class="confirm-btn">Ödemeye Geç</button>
         </div>
     </div>
 </body>
