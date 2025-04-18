@@ -1471,7 +1471,7 @@ function unsubscribeFromMessages() {
     }
 }
 
-// Yeni bir mesajı ekrana görüntüleme (Kullanıcı adı ve avatarı parametre olarak alacak şekilde güncellendi)
+// Yeni bir mesajı ekrana görüntüleme (GIF JSON formatını kontrol edecek şekilde güncellendi)
 function displayMessage(message, authorName = null, authorAvatar = null) {
     const chatMessagesContainer = document.querySelector('.chat-panel .chat-messages');
     if (!chatMessagesContainer || !message) return;
@@ -1482,27 +1482,38 @@ function displayMessage(message, authorName = null, authorAvatar = null) {
         return;
     }
 
-    // GIF mesajı mı kontrol et
-    if (message.messageType === 'gif') {
-        displayGifMessage(message);
-        return;
+    let isGif = false;
+    let gifUrl = '';
+    let messageContent = message.content; // Varsayılan olarak ham içeriği al
+
+    // İçeriğin GIF JSON formatında olup olmadığını kontrol et
+    try {
+        const contentData = JSON.parse(message.content);
+        if (contentData && contentData.type === 'gif' && contentData.url) {
+            isGif = true;
+            gifUrl = contentData.url;
+            console.log('🔄 displayMessage: GIF mesajı algılandı (JSON):', gifUrl);
+        } else {
+            // JSON formatında ama GIF değilse, yine de ham içeriği kullan
+            messageContent = message.content;
+        }
+    } catch (e) {
+        // JSON parse hatası - normal metin mesajı olarak devam et
+        messageContent = message.content;
     }
 
-    // Normal metin mesajları için eski mantık devam eder
     // Kimin mesajı olduğunu ve gösterilecek bilgileri belirle
     const isOwnMessage = senderId === currentUserId;
-    const displayName = isOwnMessage ? 'Sen' : (authorName || 'Kullanıcı'); // Gelen adı kullan, yoksa 'Kullanıcı'
+    const displayName = isOwnMessage ? 'Sen' : (authorName || 'Kullanıcı');
     let displayAvatar = defaultAvatar;
 
     if (isOwnMessage) {
         // Kendi avatarımızı al
         const userAvatarElement = document.querySelector('.dm-footer .dm-user-avatar img');
-        if (userAvatarElement) {
-            displayAvatar = userAvatarElement.src;
-        }
+        if (userAvatarElement) displayAvatar = userAvatarElement.src;
     } else {
-        // Diğer kullanıcının avatarını kullan (parametre olarak geleni veya varsayılanı)
-        displayAvatar = authorAvatar || defaultAvatar;
+        // Diğer kullanıcının avatarını al
+        displayAvatar = authorAvatar || document.querySelector('.chat-avatar img')?.src || defaultAvatar;
     }
 
     // Mesaj öğesini oluştur
@@ -1510,12 +1521,9 @@ function displayMessage(message, authorName = null, authorAvatar = null) {
     messageElement.className = `message-group ${isOwnMessage ? 'own-message' : ''}`;
     messageElement.setAttribute('data-sender-id', senderId);
 
-    // Mesaj içeriğinde GIF URL'si var mı kontrol et
-    const isGifUrl = message.content.match(/https?:\/\/[^\s]+\.gif/i);
-
-    // HTML şablonu oluştur
-    if (isGifUrl) {
-        // GIF içeren mesaj
+    // HTML şablonu oluştur (GIF veya metin için)
+    if (isGif) {
+        // GIF mesajı
         messageElement.innerHTML = `
             <div class="message-group-avatar">
                 <img src="${displayAvatar}" alt="${displayName}" onerror="this.src='${defaultAvatar}'">
@@ -1526,26 +1534,26 @@ function displayMessage(message, authorName = null, authorAvatar = null) {
                     <span class="message-time">${new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
                 <div class="message-content gif-message">
-                    <img src="${message.content}" alt="GIF" class="message-gif">
+                    <img src="${gifUrl}" alt="GIF" class="message-gif" loading="lazy">
                 </div>
             </div>
         `;
     } else {
         // Normal metin mesajı
         messageElement.innerHTML = `
-            <div class="message-group-avatar">
-                <img src="${displayAvatar}" alt="${displayName}" onerror="this.src='${defaultAvatar}'">
+        <div class="message-group-avatar">
+            <img src="${displayAvatar}" alt="${displayName}" onerror="this.src='${defaultAvatar}'">
+        </div>
+        <div class="message-group-content">
+            <div class="message-group-header">
+                <span class="message-author">${displayName}</span>
+                <span class="message-time">${new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
-            <div class="message-group-content">
-                <div class="message-group-header">
-                    <span class="message-author">${displayName}</span>
-                    <span class="message-time">${new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                </div>
-                <div class="message-content">
-                    <p>${message.content}</p>
-                </div>
+            <div class="message-content">
+                <p>${messageContent}</p> {/* Ham veya ayrıştırılmış metni göster */}
             </div>
-        `;
+        </div>
+    `;
     }
 
     chatMessagesContainer.appendChild(messageElement);
@@ -2686,30 +2694,22 @@ async function sendGifMessage(gifUrl) {
             .eq('id', currentConversationId)
             .maybeSingle();
 
-        if (convError) {
-            console.error('Sohbet kontrolünde hata:', JSON.stringify(convError));
-            alert('Sohbet kontrolü sırasında bir hata oluştu.');
+        if (convError || !convExists) { /* ... error handling ... */
+            console.error('Sohbet kontrolünde hata veya sohbet bulunamadı:', convError);
+            alert('Sohbet kontrolü sırasında bir hata oluştu veya sohbet bulunamadı.');
             return;
         }
 
-        if (!convExists) {
-            console.error(`Geçersiz sohbet ID'si: ${currentConversationId}`);
-            alert('Seçilen sohbet artık mevcut değil. Lütfen başka bir kişi seçin.');
-            return;
-        }
-
-        // GIF mesajı oluştur - messageType'ı content içine gömerek
+        // GIF mesajı oluştur (JSON formatında)
         const gifMessageContent = JSON.stringify({
             type: 'gif',
             url: gifUrl
         });
-
         const gifMessage = {
             content: gifMessageContent,
             senderId: currentUserId,
             conversationId: currentConversationId
         };
-
         console.log('GIF Mesaj verisi:', gifMessage);
 
         // Mesajı veritabanına ekle
@@ -2719,41 +2719,25 @@ async function sendGifMessage(gifUrl) {
             .select();
 
         if (error) {
+            // ... (existing error handling) ...
             console.error('GIF mesajı gönderilirken hata:', JSON.stringify(error));
-
-            if (error.code === '23514') { // Check constraint hatası
-                alert('GIF gönderilemedi. (Kural İhlali: ' + error.message + ')');
-            } else if (error.message && error.message.includes('violates foreign key constraint')) {
-                alert('GIF gönderilemedi. Geçersiz sohbet veya kullanıcı ID\'si.');
-            } else if (error.code === '42P01') {
-                alert('GIF gönderilemedi. Veritabanı tablosu bulunamadı.');
-            } else if (error.code === '42501') {
-                alert('GIF gönderilemedi. Yetki hatası. Oturumunuz sona ermiş olabilir.');
-            } else {
-                alert('GIF gönderilemedi. Lütfen tekrar deneyin. Hata: ' + (error.message || 'Bilinmeyen hata'));
-            }
-
-            // Hata durumunda alternatif bir çözüm olarak GIF'i direkt olarak sohbete ekleyelim
+            alert('GIF gönderilemedi. Hata: ' + (error.message || 'Bilinmeyen hata'));
             fallbackDisplayGif(gifUrl);
-
             return;
         }
 
-        // Başarıyla gönderildiyse ekranda göster
+        // Başarıyla gönderildiyse ekranda göster (displayMessage kullanarak)
         if (data && data.length > 0) {
             console.log('GIF mesajı başarıyla gönderildi:', data[0]);
-            displayGifMessage(data[0]);
+            displayMessage(data[0]); // displayGifMessage yerine displayMessage çağır
         } else {
             console.warn('GIF mesajı gönderildi ancak veri dönmedi.');
-            // Veri dönmediyse, GIF'i ekranda göster
             fallbackDisplayGif(gifUrl);
         }
     } catch (error) {
-        // Hata nesnesini doğru şekilde logla
+        // ... (existing error handling) ...
         console.error('GIF gönderilirken hata:', error ? JSON.stringify(error) : 'Bilinmeyen hata');
         alert('GIF gönderilirken bir hata oluştu: ' + (error && error.message ? error.message : 'Bilinmeyen hata'));
-
-        // Yedek çözüm: GIF'i direkt olarak sohbete ekle
         fallbackDisplayGif(gifUrl);
     }
 }
@@ -2832,72 +2816,9 @@ function fallbackDisplayGif(gifUrl) {
     }
 }
 
-// GIF mesajını ekranda göster
+// displayGifMessage fonksiyonu artık kullanılmıyor, kaldırılabilir veya yorum satırı yapılabilir.
+/*
 function displayGifMessage(message) {
-    const chatMessagesContainer = document.querySelector('.chat-panel .chat-messages');
-    if (!chatMessagesContainer || !message) return;
-
-    const senderId = message.senderId;
-    if (!senderId) {
-        console.warn('displayGifMessage: Gelen mesajda senderId bulunamadı.', message);
-        return;
-    }
-
-    // Content'ten GIF URL'ini çıkart
-    let gifUrl = '';
-    try {
-        // Mesaj içeriği JSON formatında mı kontrol et
-        const contentData = JSON.parse(message.content);
-        if (contentData && contentData.type === 'gif' && contentData.url) {
-            gifUrl = contentData.url;
-        } else {
-            // Eğer eski format ise doğrudan content'i kullan
-            gifUrl = message.content;
-        }
-    } catch (e) {
-        // JSON parse hatası - eski format olabilir, doğrudan content'i kullan
-        console.warn('GIF mesaj içeriği JSON olarak ayrıştırılamadı, doğrudan URL olarak kullanılıyor');
-        gifUrl = message.content;
-    }
-
-    // Kimin mesajı olduğunu ve gösterilecek bilgileri belirle
-    const isOwnMessage = senderId === currentUserId;
-    const displayName = isOwnMessage ? 'Sen' : 'Kullanıcı';
-    let displayAvatar = defaultAvatar;
-
-    if (isOwnMessage) {
-        // Kendi avatarımızı al
-        const userAvatarElement = document.querySelector('.dm-footer .dm-user-avatar img');
-        if (userAvatarElement) {
-            displayAvatar = userAvatarElement.src;
-        }
-    } else {
-        // Diğer kullanıcının avatarını al
-        const chatHeaderAvatar = document.querySelector('.chat-avatar img');
-        if (chatHeaderAvatar) displayAvatar = chatHeaderAvatar.src;
-    }
-
-    // GIF mesaj öğesini oluştur
-    const messageElement = document.createElement('div');
-    messageElement.className = `message-group ${isOwnMessage ? 'own-message' : ''}`;
-    messageElement.setAttribute('data-sender-id', senderId);
-
-    // HTML şablonu oluştur - GIF mesajı için özel görünüm
-    messageElement.innerHTML = `
-        <div class="message-group-avatar">
-            <img src="${displayAvatar}" alt="${displayName}" onerror="this.src='${defaultAvatar}'">
-        </div>
-        <div class="message-group-content">
-            <div class="message-group-header">
-                <span class="message-author">${displayName}</span>
-                <span class="message-time">${new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-            </div>
-            <div class="message-content gif-message">
-                <img src="${gifUrl}" alt="GIF" class="message-gif" loading="lazy">
-            </div>
-        </div>
-    `;
-
-    chatMessagesContainer.appendChild(messageElement);
-    chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+    // Bu fonksiyonun içeriği artık displayMessage içinde
 }
+*/
