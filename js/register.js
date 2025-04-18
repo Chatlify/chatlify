@@ -11,6 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingSpinner = submitButton.querySelector('.loading-spinner');
     const termsCheckbox = document.getElementById('terms');
 
+    // *** Input Alanlarını Burada Tanımla ***
+    const usernameInput = document.getElementById('username');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password'); // Şifre gücü için de kullanılacak
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+
     // Avatar Elements
     const avatarInput = document.getElementById('avatarInput');
     const avatarPreview = document.getElementById('avatarPreview');
@@ -20,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let avatarFile = null; // Seçilen dosyayı tutmak için
 
     // Şifre gücü elementleri
-    const passwordInputForStrength = document.getElementById('password');
     const strengthValueSpan = document.getElementById('strengthValue');
     const strengthMeter = document.querySelector('.strength-meter'); // Meter container
 
@@ -156,12 +161,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 
-    if (passwordInputForStrength) {
-        passwordInputForStrength.addEventListener('input', (event) => {
+    if (passwordInput) { // passwordInput'ı kullan
+        passwordInput.addEventListener('input', (event) => {
             checkPasswordStrength(event.target.value);
         });
-        // Initial check in case of prefilled password (less common on register)
-        checkPasswordStrength(passwordInputForStrength.value);
+        checkPasswordStrength(passwordInput.value);
     }
     // --- End Şifre Gücü ---
 
