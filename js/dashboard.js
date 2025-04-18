@@ -1765,7 +1765,8 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
     newEmojiPicker.style.display = 'none';
     newEmojiPicker.style.position = 'absolute';
     newEmojiPicker.style.bottom = '80px';
-    newEmojiPicker.style.right = '16px';
+    newEmojiPicker.style.right = '20px'; // Sağa kaydırıldı
+    newEmojiPicker.style.width = '350px'; // Genişlik artırıldı
     newEmojiPicker.style.zIndex = '10000';
     document.body.appendChild(newEmojiPicker);
 
@@ -1782,12 +1783,13 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
 
         // Emoji picker'ı doğru konumlandır
         if (!isVisible) {
-            const buttonRect = emojiButton.getBoundingClientRect();
-            newEmojiPicker.style.bottom = `${window.innerHeight - buttonRect.top + 10}px`;
-            newEmojiPicker.style.right = `${window.innerWidth - buttonRect.right + 10}px`;
-
             // Emoji picker'ı yükle (dinamik olarak)
             loadEmojiPicker(newEmojiPicker, textareaElement);
+
+            // Textarea'ya odaklan (sorun çözümü)
+            setTimeout(() => {
+                textareaElement.focus();
+            }, 100);
         }
     });
 
@@ -1812,11 +1814,17 @@ function loadEmojiPicker(container, textareaElement) {
             onEmojiSelect: (emoji) => {
                 insertEmojiIntoTextarea(textareaElement, emoji.native);
                 container.style.display = 'none';
+
+                // Emoji seçildikten sonra textarea'ya odaklan (sorun çözümü)
+                setTimeout(() => {
+                    textareaElement.focus();
+                }, 100);
             },
             include: ['flags'], // Ülke bayraklarını dahil et
             dynamicWidth: true,
             theme: 'dark',
-            previewPosition: 'none'
+            previewPosition: 'none',
+            set: 'native' // Native emoji kullan
         });
 
         container.innerHTML = '';
@@ -1827,13 +1835,20 @@ function loadEmojiPicker(container, textareaElement) {
 
 // Emojiyi textarea'ya ekleme fonksiyonu
 function insertEmojiIntoTextarea(textarea, emoji) {
-    const cursorPos = textarea.selectionStart;
-    const text = textarea.value;
-    const newText = text.substring(0, cursorPos) + emoji + text.substring(cursorPos);
-    textarea.value = newText;
-    textarea.focus();
-    textarea.setSelectionRange(cursorPos + emoji.length, cursorPos + emoji.length);
-    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    console.log('📝 Emoji ekleniyor:', emoji);
+
+    try {
+        const cursorPos = textarea.selectionStart;
+        const text = textarea.value;
+        const newText = text.substring(0, cursorPos) + emoji + text.substring(cursorPos);
+        textarea.value = newText;
+        textarea.focus();
+        textarea.setSelectionRange(cursorPos + emoji.length, cursorPos + emoji.length);
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        console.log('✅ Emoji başarıyla eklendi');
+    } catch (error) {
+        console.error('❌ Emoji eklenirken hata:', error);
+    }
 }
 
 // Modal gösterme fonksiyonu
