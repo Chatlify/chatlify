@@ -1,5 +1,8 @@
 // Settings page JavaScript
 document.addEventListener('DOMContentLoaded', function () {
+    // Sayfa yüklendiğinde animasyonlar için sınıfları ekle
+    document.body.classList.add('page-loaded');
+
     // Kapatma butonuna tıklama
     const closeButton = document.querySelector('.settings-close-btn');
     if (closeButton) {
@@ -35,38 +38,120 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelector('.settings-category.active').classList.remove('active');
             category.classList.add('active');
 
-            // Tüm bölümleri gizle
+            // Aktif bölümü belirle
+            let activeSection = null;
             settingsSections.forEach(section => {
-                section.classList.add('hidden');
+                if (!section.classList.contains('hidden')) {
+                    activeSection = section;
+                }
             });
 
-            // Data-target özelliğine göre ilgili bölümü göster
-            const targetSection = category.getAttribute('data-target');
-            if (targetSection) {
-                const sectionElement = document.getElementById(targetSection);
-                if (sectionElement) {
-                    sectionElement.classList.remove('hidden');
-                    return;
+            // Tüm bölümleri gizlemeden önce çıkış animasyonu uygula
+            if (activeSection) {
+                activeSection.classList.add('changing');
+                setTimeout(() => {
+                    // Tüm bölümleri gizle
+                    settingsSections.forEach(section => {
+                        section.classList.add('hidden');
+                        section.classList.remove('changing');
+                    });
+
+                    // Data-target özelliğine göre ilgili bölümü göster
+                    const targetSection = category.getAttribute('data-target');
+                    if (targetSection) {
+                        const sectionElement = document.getElementById(targetSection);
+                        if (sectionElement) {
+                            sectionElement.classList.remove('hidden');
+                            sectionElement.classList.add('changing-in');
+                            setTimeout(() => {
+                                sectionElement.classList.remove('changing-in');
+                            }, 300);
+                            return;
+                        }
+                    }
+
+                    // Kategori adına göre bölüm eşleştirme (data-target olmayan durumlar için)
+                    const categoryText = category.querySelector('span').textContent;
+                    let targetSectionElement;
+
+                    switch (categoryText) {
+                        case 'Hesabım':
+                            targetSectionElement = document.getElementById('account-settings');
+                            break;
+                        case 'Görünüm':
+                            targetSectionElement = document.getElementById('appearance-settings');
+                            break;
+                        case 'Dil & Bölge':
+                            targetSectionElement = document.getElementById('language-region-settings');
+                            break;
+                        default:
+                            // Henüz oluşturulmamış bölümler için 
+                            showNotification(`${categoryText} ayarları yakında eklenecek`, 'warning');
+                            targetSectionElement = document.getElementById('account-settings');
+                    }
+
+                    if (targetSectionElement) {
+                        targetSectionElement.classList.remove('hidden');
+                        targetSectionElement.classList.add('changing-in');
+                        setTimeout(() => {
+                            targetSectionElement.classList.remove('changing-in');
+                        }, 300);
+                    }
+                }, 200);
+            } else {
+                // Eğer hiçbir aktif bölüm yoksa, direkt yeni bölümü göster
+                // Data-target özelliğine göre ilgili bölümü göster
+                const targetSection = category.getAttribute('data-target');
+                if (targetSection) {
+                    const sectionElement = document.getElementById(targetSection);
+                    if (sectionElement) {
+                        sectionElement.classList.remove('hidden');
+                        return;
+                    }
+                }
+
+                // Kategori adına göre bölüm eşleştirme (data-target olmayan durumlar için)
+                const categoryText = category.querySelector('span').textContent;
+                switch (categoryText) {
+                    case 'Hesabım':
+                        document.getElementById('account-settings').classList.remove('hidden');
+                        break;
+                    case 'Görünüm':
+                        document.getElementById('appearance-settings').classList.remove('hidden');
+                        break;
+                    case 'Dil & Bölge':
+                        document.getElementById('language-region-settings').classList.remove('hidden');
+                        break;
+                    default:
+                        // Henüz oluşturulmamış bölümler için 
+                        showNotification(`${categoryText} ayarları yakında eklenecek`, 'warning');
+                        document.getElementById('account-settings').classList.remove('hidden');
                 }
             }
+        });
+    });
 
-            // Kategori adına göre bölüm eşleştirme (data-target olmayan durumlar için)
-            const categoryText = category.querySelector('span').textContent;
-            switch (categoryText) {
-                case 'Hesabım':
-                    document.getElementById('account-settings').classList.remove('hidden');
-                    break;
-                case 'Görünüm':
-                    document.getElementById('appearance-settings').classList.remove('hidden');
-                    break;
-                case 'Dil & Bölge':
-                    document.getElementById('language-region-settings').classList.remove('hidden');
-                    break;
-                default:
-                    // Henüz oluşturulmamış bölümler için 
-                    showNotification(`${categoryText} ayarları yakında eklenecek`, 'warning');
-                    document.getElementById('account-settings').classList.remove('hidden');
-            }
+    // Form alanlarına animasyon ekle
+    const formElements = document.querySelectorAll('.settings-form-group input, .settings-form-group textarea, .settings-form-group select');
+    formElements.forEach((element, index) => {
+        element.addEventListener('focus', function () {
+            this.parentElement.classList.add('focused');
+        });
+
+        element.addEventListener('blur', function () {
+            this.parentElement.classList.remove('focused');
+        });
+    });
+
+    // Butonlara hover animasyonları ekle
+    const allButtons = document.querySelectorAll('.settings-btn, .save-button, .cancel-button, .danger-button');
+    allButtons.forEach(button => {
+        button.addEventListener('mouseenter', function () {
+            this.classList.add('hover-effect');
+        });
+
+        button.addEventListener('mouseleave', function () {
+            this.classList.remove('hover-effect');
         });
     });
 
@@ -107,7 +192,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const saveButtons = document.querySelectorAll('.save-button');
     saveButtons.forEach(button => {
         button.addEventListener('click', function () {
-            showNotification('Ayarlarınız başarıyla kaydedildi', 'success');
+            // Kaydetme efekti
+            this.classList.add('saving');
+            setTimeout(() => {
+                this.classList.remove('saving');
+                showNotification('Ayarlarınız başarıyla kaydedildi', 'success');
+            }, 800);
         });
     });
 
@@ -198,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function () {
             notification.classList.add('show');
         }, 10);
 
-        // Remove after delay
+        // Hide and remove after 3 seconds
         setTimeout(() => {
             notification.classList.remove('show');
             setTimeout(() => {

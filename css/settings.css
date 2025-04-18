@@ -50,6 +50,12 @@
     --background: var(--main-bg);
     --bg-dark: var(--dm-bg);
     --bg-light: var(--server-bg);
+
+    /* Animasyon süreleri */
+    --anim-duration-fast: 0.25s;
+    --anim-duration-medium: 0.4s;
+    --anim-duration-slow: 0.6s;
+    --anim-delay-increment: 0.05s;
 }
 
 /* Sayfa Düzeni */
@@ -57,6 +63,17 @@
     color: var(--text-color);
     background: var(--background);
     min-height: 100vh;
+    animation: fade-in var(--anim-duration-medium) ease-out;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .settings-page .dashboard-container {
@@ -100,6 +117,19 @@
     height: 100%;
     position: relative;
     z-index: 2;
+    animation: slide-in-left var(--anim-duration-medium) ease-out;
+}
+
+@keyframes slide-in-left {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 .settings-header {
@@ -178,6 +208,67 @@
     cursor: pointer;
     margin-bottom: 2px;
     transition: all 0.2s ease;
+    animation: fade-up var(--anim-duration-medium) ease-out backwards;
+}
+
+.settings-category:nth-child(1) {
+    animation-delay: calc(var(--anim-delay-increment) * 1);
+}
+
+.settings-category:nth-child(2) {
+    animation-delay: calc(var(--anim-delay-increment) * 2);
+}
+
+.settings-category:nth-child(3) {
+    animation-delay: calc(var(--anim-delay-increment) * 3);
+}
+
+.settings-category:nth-child(4) {
+    animation-delay: calc(var(--anim-delay-increment) * 4);
+}
+
+.settings-category:nth-child(5) {
+    animation-delay: calc(var(--anim-delay-increment) * 5);
+}
+
+.settings-category:nth-child(6) {
+    animation-delay: calc(var(--anim-delay-increment) * 6);
+}
+
+.settings-category:nth-child(7) {
+    animation-delay: calc(var(--anim-delay-increment) * 7);
+}
+
+.settings-category:nth-child(8) {
+    animation-delay: calc(var(--anim-delay-increment) * 8);
+}
+
+.settings-category:nth-child(9) {
+    animation-delay: calc(var(--anim-delay-increment) * 9);
+}
+
+.settings-category:nth-child(10) {
+    animation-delay: calc(var(--anim-delay-increment) * 10);
+}
+
+.settings-category:nth-child(11) {
+    animation-delay: calc(var(--anim-delay-increment) * 11);
+}
+
+.settings-category:nth-child(12) {
+    animation-delay: calc(var(--anim-delay-increment) * 12);
+}
+
+@keyframes fade-up {
+    from {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .settings-category i {
@@ -223,21 +314,44 @@
 
 /* Ayarlar İçerik Alanı */
 .settings-content {
-    background-color: var(--bg-light);
-    backdrop-filter: blur(10px);
-    overflow-y: auto;
-    padding: 24px 40px;
+    background-color: var(--background);
     position: relative;
     z-index: 1;
-    height: 100%;
-    max-height: 100vh;
-    width: 100%;
+    padding: 24px 32px;
+    overflow-y: auto;
+    animation: fade-in-up var(--anim-duration-medium) ease-out;
+}
+
+@keyframes fade-in-up {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .settings-section {
     max-width: 1000px;
     margin: 0 auto;
     width: 100%;
+    animation: fade-in-right var(--anim-duration-medium) ease-out;
+    display: block;
+}
+
+@keyframes fade-in-right {
+    from {
+        transform: translateX(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 .settings-section.hidden {
@@ -262,12 +376,28 @@
 
 /* Profil Kart */
 .settings-profile-card {
-    background-color: var(--bg-dark);
-    border-radius: var(--panel-border-radius);
+    animation: card-in var(--anim-duration-medium) ease-out;
+    margin-bottom: 32px;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-lg);
     overflow: hidden;
-    margin-bottom: 30px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    width: 100%;
+    position: relative;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+}
+
+@keyframes card-in {
+    from {
+        transform: translateY(10px) scale(0.98);
+        opacity: 0;
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    }
+
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+        box-shadow: var(--card-shadow);
+    }
 }
 
 .profile-banner {
@@ -401,8 +531,24 @@
 }
 
 .settings-form-group {
-    margin-bottom: 20px;
-    width: 100%;
+    margin-bottom: 24px;
+    animation: fade-in-up var(--anim-duration-medium) ease-out backwards;
+}
+
+.settings-grid .settings-form-group:nth-child(1) {
+    animation-delay: calc(var(--anim-delay-increment) * 1);
+}
+
+.settings-grid .settings-form-group:nth-child(2) {
+    animation-delay: calc(var(--anim-delay-increment) * 2);
+}
+
+.settings-grid .settings-form-group:nth-child(3) {
+    animation-delay: calc(var(--anim-delay-increment) * 3);
+}
+
+.settings-grid .settings-form-group:nth-child(4) {
+    animation-delay: calc(var(--anim-delay-increment) * 4);
 }
 
 .settings-form-group label {
@@ -1839,4 +1985,133 @@
 
 .input-with-icon.password-input input {
     padding-right: 40px;
+}
+
+/* Buton Hover Efekti */
+.settings-btn.hover-effect,
+.save-button.hover-effect,
+.cancel-button.hover-effect,
+.danger-button.hover-effect {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Form alan animasyonları */
+.input-with-icon.focused {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
+    animation: input-focus 0.3s ease-out;
+}
+
+@keyframes input-focus {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Kaydetme buton animasyonu */
+.save-button.saving {
+    position: relative;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.save-button.saving:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent);
+    animation: loading-shine 1s infinite;
+}
+
+@keyframes loading-shine {
+    100% {
+        left: 100%;
+    }
+}
+
+/* Form animasyonu geliştirmeleri */
+.input-with-icon input:focus+i,
+.input-with-icon textarea:focus+i {
+    color: var(--primary-color);
+    transform: scale(1.1);
+    transition: all 0.2s ease;
+}
+
+/* Toggle switch animasyonu */
+.toggle-slider:before {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.toggle-switch input:checked+.toggle-slider:before {
+    transform: translateX(calc(var(--toggle-width) - var(--toggle-height)));
+}
+
+/* Profil kartı hover animasyonu */
+.settings-profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-hover-shadow);
+}
+
+/* Bildirim animasyonu */
+.notification {
+    animation: slide-in var(--anim-duration-fast) cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slide-in {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Temalar arası geçişler için kullanılacak sayfada genel geçiş */
+.theme-transition {
+    transition: background-color 0.4s ease,
+        color 0.4s ease,
+        border-color 0.4s ease,
+        box-shadow 0.4s ease;
+}
+
+/* Sayfa ilk yüklendiğinde gerçekleşen animasyon */
+.page-loaded .settings-category,
+.page-loaded .settings-form-group,
+.page-loaded .settings-section,
+.page-loaded .settings-profile-card,
+.page-loaded .settings-menu {
+    animation-play-state: running;
+}
+
+/* Sayfa geçiş animasyonu */
+.page-transition {
+    animation: fade-out 0.3s ease-out forwards;
+}
+
+@keyframes fade-out {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
 }
