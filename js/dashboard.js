@@ -1631,7 +1631,7 @@ function setupMessageSending(chatTextarea) {
 
             // Başarılı mesaj gönderildiyse ve veri döndüyse ekranda göster
             if (data && data.length > 0) {
-                console.log('Mesaj başarıyla gönderildi ve eklendi:', data[0]);
+                console.log('Mesaj başarıyla gönderildi:', data[0]);
                 displayMessage(data[0]);
             }
 
@@ -2698,12 +2698,16 @@ async function sendGifMessage(gifUrl) {
             return;
         }
 
-        // GIF mesajı oluştur - sadece GIF URL'ini içeren özel bir mesaj formatı
+        // GIF mesajı oluştur - messageType'ı content içine gömerek
+        const gifMessageContent = JSON.stringify({
+            type: 'gif',
+            url: gifUrl
+        });
+
         const gifMessage = {
-            content: gifUrl,
+            content: gifMessageContent,
             senderId: currentUserId,
-            conversationId: currentConversationId,
-            messageType: 'gif' // Mesaj tipini belirt
+            conversationId: currentConversationId
         };
 
         console.log('GIF Mesaj verisi:', gifMessage);
@@ -2756,51 +2760,76 @@ async function sendGifMessage(gifUrl) {
 
 // Yedek çözüm: GIF'i doğrudan ekranda göster (veritabanına kaydetmeden)
 function fallbackDisplayGif(gifUrl) {
-    console.log('Yedek çözüm: GIF direkt olarak gösteriliyor:', gifUrl);
+    console.log('🎬 Yedek GIF gösterme fonksiyonu çalıştırılıyor:', gifUrl);
 
-    const chatMessagesContainer = document.querySelector('.chat-panel .chat-messages');
-    if (!chatMessagesContainer) {
-        console.error('Chat mesaj konteyneri bulunamadı!');
+    if (!gifUrl) {
+        console.error('❌ fallbackDisplayGif: GIF URL\'i geçersiz.');
         return;
     }
 
-    // Kendi avatarımızı al
-    let displayAvatar = defaultAvatar;
-    const userAvatarElement = document.querySelector('.dm-footer .dm-user-avatar img');
-    if (userAvatarElement) {
-        displayAvatar = userAvatarElement.src;
+    const chatMessagesContainer = document.querySelector('.chat-panel .chat-messages');
+    if (!chatMessagesContainer) {
+        console.error('❌ Sohbet mesajları konteyneri bulunamadı.');
+        return;
     }
 
-    // GIF mesaj öğesini oluştur (kendi mesajımız olarak)
-    const messageElement = document.createElement('div');
-    messageElement.className = 'message-group own-message';
-    messageElement.setAttribute('data-sender-id', currentUserId || 'local-user');
+    try {
+        // Kendi avatarımızı al
+        let displayAvatar = defaultAvatar;
+        const userAvatarElement = document.querySelector('.dm-footer .dm-user-avatar img');
+        if (userAvatarElement) {
+            displayAvatar = userAvatarElement.src;
+        }
 
-    // Geçici mesaj olduğunu belirt
-    messageElement.classList.add('local-message');
+        // JSON formatında gifUrl olabilir - kontrol et
+        let finalGifUrl = gifUrl;
+        try {
+            const contentData = JSON.parse(gifUrl);
+            if (contentData && (contentData.type === 'gif' || contentData.messageType === 'gif') && contentData.url) {
+                console.log('🎯 GIF JSON formatı algılandı:', contentData);
+                finalGifUrl = contentData.url;
+            } else if (contentData && contentData.media && contentData.media.url) {
+                console.log('🎯 Yeni JSON format algılandı:', contentData);
+                finalGifUrl = contentData.media.url;
+            }
+        } catch (e) {
+            // JSON parse hatası - doğrudan URL olarak kullan
+            console.log('ℹ️ JSON parse edilemedi, doğrudan URL kullanılıyor');
+        }
 
-    // Şimdi zamanını formatla
-    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        // GIF mesaj öğesini oluştur
+        const messageElement = document.createElement('div');
+        messageElement.className = 'message-group own-message';
+        messageElement.setAttribute('data-sender-id', currentUserId || 'local-user');
+        messageElement.setAttribute('data-local-message', 'true'); // Yerel olarak oluşturulmuş bir mesaj olduğunu belirt
 
-    // HTML şablonu oluştur
-    messageElement.innerHTML = `
-        <div class="message-group-avatar">
-            <img src="${displayAvatar}" alt="Sen" onerror="this.src='${defaultAvatar}'">
-        </div>
-        <div class="message-group-content">
-            <div class="message-group-header">
-                <span class="message-author">Sen</span>
-                <span class="message-time">${currentTime}</span>
+        // HTML şablonu oluştur
+        messageElement.innerHTML = `
+            <div class="message-group-avatar">
+                <img src="${displayAvatar}" alt="Sen" onerror="this.src='${defaultAvatar}'">
             </div>
-            <div class="message-content gif-message">
-                <img src="${gifUrl}" alt="GIF" class="message-gif" loading="lazy">
-                <small class="message-status">(Yerel olarak gösteriliyor - veritabanına kaydedilemedi)</small>
+            <div class="message-group-content">
+                <div class="message-group-header">
+                    <span class="message-author">Sen</span>
+                    <span class="message-time">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+                <div class="message-content gif-message">
+                    <img src="${finalGifUrl}" alt="GIF" class="message-gif" loading="lazy">
+                </div>
             </div>
-        </div>
-    `;
+        `;
 
-    chatMessagesContainer.appendChild(messageElement);
-    chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+        // Mesaj öğesini chat konteynırına ekle
+        chatMessagesContainer.appendChild(messageElement);
+
+        // Sohbetin en altına kaydır
+        chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+
+        console.log('✅ GIF yerel olarak başarıyla gösterildi. URL:', finalGifUrl);
+    } catch (error) {
+        console.error('❌ Yedek GIF gösterme başarısız:', error);
+        alert('GIF gösterilirken bir hata oluştu.');
+    }
 }
 
 // GIF mesajını ekranda göster
@@ -2812,6 +2841,23 @@ function displayGifMessage(message) {
     if (!senderId) {
         console.warn('displayGifMessage: Gelen mesajda senderId bulunamadı.', message);
         return;
+    }
+
+    // Content'ten GIF URL'ini çıkart
+    let gifUrl = '';
+    try {
+        // Mesaj içeriği JSON formatında mı kontrol et
+        const contentData = JSON.parse(message.content);
+        if (contentData && contentData.type === 'gif' && contentData.url) {
+            gifUrl = contentData.url;
+        } else {
+            // Eğer eski format ise doğrudan content'i kullan
+            gifUrl = message.content;
+        }
+    } catch (e) {
+        // JSON parse hatası - eski format olabilir, doğrudan content'i kullan
+        console.warn('GIF mesaj içeriği JSON olarak ayrıştırılamadı, doğrudan URL olarak kullanılıyor');
+        gifUrl = message.content;
     }
 
     // Kimin mesajı olduğunu ve gösterilecek bilgileri belirle
@@ -2847,7 +2893,7 @@ function displayGifMessage(message) {
                 <span class="message-time">${new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
             <div class="message-content gif-message">
-                <img src="${message.content}" alt="GIF" class="message-gif" loading="lazy">
+                <img src="${gifUrl}" alt="GIF" class="message-gif" loading="lazy">
             </div>
         </div>
     `;
