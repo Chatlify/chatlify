@@ -1751,7 +1751,7 @@ async function findOrCreateConversation(userId1, userId2) {
 
 // Emoji picker'ı kuran fonksiyon
 function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
-    console.log('🔄 Emoji sistemi tamamen yeniden düzenleniyor...');
+    console.log('🔄 Emoji sistemi odak sorunu için yeniden düzenleniyor...');
 
     // Mevcut emoji picker'ları temizle
     const oldContainer = document.getElementById('emoji-picker-container');
@@ -1759,7 +1759,7 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
         oldContainer.remove();
     }
 
-    // Emoji container oluştur
+    // Emoji container oluştur - textareaElement'in yakınına eklenecek
     const emojiContainer = document.createElement('div');
     emojiContainer.id = 'emoji-picker-container';
     emojiContainer.style.position = 'absolute';
@@ -1770,7 +1770,16 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
     emojiContainer.style.border = '1px solid #2d2d3f';
     emojiContainer.style.borderRadius = '8px';
     emojiContainer.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.3)';
-    document.body.appendChild(emojiContainer);
+
+    // Emoji picker'ı textarea'nın bulunduğu konteynere ekle
+    const messageInputContainer = findTextareaContainer(textareaElement);
+    if (messageInputContainer) {
+        messageInputContainer.appendChild(emojiContainer);
+        messageInputContainer.style.position = 'relative';
+    } else {
+        // Alternatif olarak body'ye ekle
+        document.body.appendChild(emojiContainer);
+    }
 
     // Emoji kategorileri oluştur
     const categories = [
@@ -1778,6 +1787,26 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
         { name: 'El Hareketleri', emojis: ['👋', '🤚', '✋', '🖖', '👌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍', '👎', '✊', '👊', '🤛', '🤜', '👏', '🙌', '👐', '🤲', '🤝', '🙏', '✍️', '💅', '🤳', '💪', '🦾', '🦿', '🦵', '🦶', '👂', '🦻', '👃', '🧠', '🦷', '🦴', '👀', '👁️', '👅', '👄', '💋', '🩸'] },
         { name: 'Bayraklar', emojis: ['🇹🇷', '🇺🇸', '🇬🇧', '🇩🇪', '🇫🇷', '🇮🇹', '🇯🇵', '🇰🇷', '🇨🇳', '🇷🇺', '🇨🇦', '🇦🇺', '🇧🇷', '🇪🇸', '🇮🇳', '🇲🇽', '🇦🇷', '🇮🇩', '🇸🇦', '🇿🇦', '🇪🇬', '🇵🇰', '🇳🇿', '🇳🇱', '🇧🇪', '🇮🇷', '🇺🇦', '🇸🇪', '🇳🇴', '🇩🇰', '🇵🇱', '🇭🇺', '🇫🇮', '🇦🇹', '🇨🇭', '🇵🇹', '🇬🇷', '🇮🇱'] }
     ];
+
+    // ÖZEL: Textarea'nın konteynerini bulma
+    function findTextareaContainer(textarea) {
+        if (!textarea) return null;
+
+        // Textarea'nın ebeveyn elementlerini kontrol et
+        let parent = textarea.parentElement;
+        while (parent && parent !== document.body) {
+            // Form, div veya benzer bir konteyner olabilir
+            if (parent.classList.contains('message-input') ||
+                parent.classList.contains('chat-input') ||
+                parent.classList.contains('input-container')) {
+                return parent;
+            }
+            parent = parent.parentElement;
+        }
+
+        // En yakın ebeveyn div'i bul
+        return textarea.closest('div');
+    }
 
     // Emoji klavyesi oluştur
     function createEmojiKeyboard() {
@@ -1801,7 +1830,10 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
             categoryButton.style.margin = '0 4px';
             categoryButton.style.cursor = 'pointer';
 
-            categoryButton.addEventListener('click', () => {
+            categoryButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
                 // Aktif kategoriyi güncelle
                 categorySelector.querySelectorAll('button').forEach(btn => {
                     btn.style.background = 'transparent';
@@ -1810,6 +1842,14 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
 
                 // Emoji grid'i güncelle
                 updateEmojiGrid(category);
+
+                // TEXTAREAYİ ODAKLI TUT
+                const textarea = getMessageTextarea();
+                if (textarea) {
+                    const cursorPos = textarea.selectionStart;
+                    textarea.focus();
+                    textarea.setSelectionRange(cursorPos, cursorPos);
+                }
             });
 
             categorySelector.appendChild(categoryButton);
@@ -1855,10 +1895,26 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
                 emojiButton.style.background = 'transparent';
             });
 
-            emojiButton.addEventListener('click', () => {
+            emojiButton.addEventListener('mousedown', (e) => {
+                // mousedown olayını durdur - textarea'dan odak kaybını önler
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Emoji ekle
                 console.log(`🎯 Emoji seçildi: ${emoji}`);
                 insertEmojiDirectly(emoji);
-                emojiContainer.style.display = 'none';
+
+                // TEXTAREAYİ ODAKLI TUT - TEXTAREAYİ TEKRAR BULMAYA GEREK YOK
+                const textarea = getMessageTextarea();
+                if (textarea) {
+                    // Yeni imleç pozisyonu - emoji uzunluğu kadar ileriye taşı
+                    const newPos = textarea.selectionStart;
+                    textarea.focus();
+                    textarea.setSelectionRange(newPos, newPos);
+                }
+
+                // Picker'ı kapatma (opsiyonel)
+                // emojiContainer.style.display = 'none';
             });
 
             emojiGrid.appendChild(emojiButton);
