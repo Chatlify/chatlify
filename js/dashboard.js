@@ -1927,13 +1927,18 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
             textarea.value = before + emoji + after;
 
             // İmleci emoji sonrasına taşı
-            textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
+            const newPosition = start + emoji.length;
+            textarea.selectionStart = textarea.selectionEnd = newPosition;
 
             // Değişikliği tetiklemek için input event'i gönder
             textarea.dispatchEvent(new Event('input', { bubbles: true }));
 
-            // Textarea'ya odaklan
-            textarea.focus();
+            // ÖNEMLİ: Textarea'ya odaklanmayı garantile
+            setTimeout(() => {
+                textarea.focus();
+                textarea.setSelectionRange(newPosition, newPosition);
+                console.log('✅ Emoji eklendi ve imleç doğru konumda:', newPosition);
+            }, 10);
 
             console.log('✅ Emoji başarıyla eklendi:', emoji);
         } catch (error) {
@@ -1944,6 +1949,11 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
                 textarea.focus();
                 document.execCommand('insertText', false, emoji);
                 console.log('✅ Yedek yöntemle emoji eklendi');
+
+                // Yedek yöntemde de odaklanmayı garantile
+                setTimeout(() => {
+                    textarea.focus();
+                }, 10);
             } catch (backupError) {
                 console.error('❌ Yedek yöntem de başarısız oldu:', backupError);
             }
@@ -1954,6 +1964,17 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
     emojiButton.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
+
+        // Mevcut textarea'yı bul ve referansını sakla
+        const activeTextarea = getMessageTextarea();
+        if (!activeTextarea) {
+            console.error('❌ Aktif textarea bulunamadı!');
+            return;
+        }
+
+        // Textarea içeriğini ve imleç pozisyonunu sakla
+        const cursorPos = activeTextarea.selectionStart;
+        const textContent = activeTextarea.value;
 
         const isVisible = emojiContainer.style.display === 'block';
 
@@ -1974,13 +1995,14 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
 
             // Göster
             emojiContainer.style.display = 'block';
-
-            // Textarea'ya odaklan
-            setTimeout(() => {
-                const textarea = getMessageTextarea();
-                if (textarea) textarea.focus();
-            }, 10);
         }
+
+        // ÖNEMLİ: Textarea'ya odağı geri ver ve imleç pozisyonunu koru
+        setTimeout(() => {
+            activeTextarea.focus();
+            activeTextarea.setSelectionRange(cursorPos, cursorPos);
+            console.log('✅ Textarea odağı korundu, imleç pozisyonu:', cursorPos);
+        }, 10);
     });
 
     // Dışarı tıklandığında emoji paneli kapat
