@@ -1539,12 +1539,12 @@ function displayMessage(message, authorName = null, authorAvatar = null, source 
         console.log(`🖼️ displayMessage: GIF render ediliyor (${source}):`, gifUrl);
         // GIF mesajı
         messageElement.innerHTML = `
-            <div class="message-group-avatar">
-                <img src="${displayAvatar}" alt="${displayName}" onerror="this.src='${defaultAvatar}'">
-            </div>
-            <div class="message-group-content">
-                <div class="message-group-header">
-                    <span class="message-author">${displayName}</span>
+        <div class="message-group-avatar">
+            <img src="${displayAvatar}" alt="${displayName}" onerror="this.src='${defaultAvatar}'">
+        </div>
+        <div class="message-group-content">
+            <div class="message-group-header">
+                <span class="message-author">${displayName}</span>
                     <span class="message-time">${messageTime}</span>
                 </div>
                 <div class="message-content gif-message">
