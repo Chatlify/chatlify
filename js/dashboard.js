@@ -1751,7 +1751,19 @@ async function findOrCreateConversation(userId1, userId2) {
 
 // Emoji picker'ı kuran fonksiyon
 function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
-    // Emoji picker'ı gizle
+    // Debug için başlangıç bilgileri
+    console.log('Emoji Picker kurulumu başlıyor...');
+    console.log('Emoji Button:', emojiButton);
+    console.log('Textarea Element:', textareaElement);
+    console.log('Emoji Picker Element:', emojiPickerElement);
+
+    // Elementleri kontrol et
+    if (!emojiButton || !textareaElement || !emojiPickerElement) {
+        console.error('Emoji Picker kurulumu için gerekli elementlerden biri eksik!');
+        return;
+    }
+
+    // Emoji picker'ı gizle ve stilini ayarla
     if (emojiPickerElement) {
         emojiPickerElement.style.display = 'none';
         emojiPickerElement.style.position = 'absolute';
@@ -1761,11 +1773,17 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
     }
 
     // Emoji butonuna tıklama olayı
-    emojiButton.addEventListener('click', () => {
+    emojiButton.addEventListener('click', (event) => {
+        event.preventDefault(); // Formun gönderilmesini engelle
+        event.stopPropagation(); // Olay yayılımını durdur
+
+        console.log('Emoji butonuna tıklandı');
+
         if (emojiPickerElement) {
             // Toggle emoji picker görünürlüğü
             const isVisible = emojiPickerElement.style.display === 'block';
             emojiPickerElement.style.display = isVisible ? 'none' : 'block';
+            console.log('Emoji Picker görünürlüğü:', !isVisible);
         } else {
             console.error('Emoji picker elementi bulunamadı');
         }
@@ -1773,42 +1791,65 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
 
     // Emoji seçildiğinde textarea'ya ekleme
     if (emojiPickerElement) {
-        emojiPickerElement.addEventListener('emoji-click', event => {
+        emojiPickerElement.addEventListener('emoji-click', (event) => {
+            // Seçilen emoji bilgisini al
             const emoji = event.detail.unicode;
+            console.log('Emoji seçildi:', emoji);
 
-            // Metni güncelle
-            const cursorPos = textareaElement.selectionStart;
-            const text = textareaElement.value;
-            const newText = text.substring(0, cursorPos) + emoji + text.substring(cursorPos);
+            try {
+                // Metni güncelle
+                const cursorPos = textareaElement.selectionStart || 0;
+                const text = textareaElement.value || '';
+                const newText = text.substring(0, cursorPos) + emoji + text.substring(cursorPos);
 
-            // Textarea'yı güncelle ve input olayını tetikle
-            textareaElement.value = newText;
+                console.log('Mevcut text:', text);
+                console.log('Yeni text:', newText);
+                console.log('Cursor pozisyonu:', cursorPos);
 
-            // Cursor pozisyonunu emoji sonrasına ayarla
-            textareaElement.focus();
-            const newCursorPos = cursorPos + emoji.length;
-            textareaElement.setSelectionRange(newCursorPos, newCursorPos);
+                // Textarea'yı güncelle
+                textareaElement.value = newText;
 
-            // Input olayını manuel olarak tetikle ki textarea'daki değişiklik algılansın
-            const inputEvent = new Event('input', { bubbles: true });
-            textareaElement.dispatchEvent(inputEvent);
+                // Cursor pozisyonunu emoji sonrasına ayarla
+                const newCursorPos = cursorPos + emoji.length;
+                textareaElement.focus();
 
-            // Değişikliği tetiklemek için bir klavye olayı da gönder
-            const keyEvent = new KeyboardEvent('keyup', { bubbles: true });
-            textareaElement.dispatchEvent(keyEvent);
+                // selectionRange'i ayarla
+                setTimeout(() => {
+                    textareaElement.setSelectionRange(newCursorPos, newCursorPos);
+
+                    // Input olayını manuel olarak tetikle
+                    textareaElement.dispatchEvent(new Event('input', { bubbles: true }));
+
+                    // Değişikliği algılamayı sağlamak için bir klavye olayı gönder
+                    textareaElement.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true }));
+                    textareaElement.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
+
+                    console.log('Emoji eklendi ve olaylar tetiklendi');
+                }, 0);
+
+            } catch (error) {
+                console.error('Emoji eklenirken hata:', error);
+            }
         });
     }
 
     // Döküman tıklamalarını dinleyerek emoji picker'ı kapat
-    document.addEventListener('click', event => {
+    document.addEventListener('click', (event) => {
+        // Emoji picker açıksa ve tıklama emojiye veya emoji butonuna değilse
         if (emojiPickerElement &&
+            emojiPickerElement.style.display === 'block' &&
             event.target !== emojiButton &&
             event.target !== emojiPickerElement &&
             !emojiButton.contains(event.target) &&
             !emojiPickerElement.contains(event.target)) {
+
+            // Emoji picker'ı kapat
             emojiPickerElement.style.display = 'none';
+            console.log('Emoji Picker doküman tıklaması ile kapatıldı');
         }
     });
+
+    console.log('Emoji Picker kurulumu tamamlandı');
 }
 
 // Modal gösterme fonksiyonu
