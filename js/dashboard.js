@@ -1775,13 +1775,27 @@ function setupEmojiPicker(emojiButton, textareaElement, emojiPickerElement) {
     if (emojiPickerElement) {
         emojiPickerElement.addEventListener('emoji-click', event => {
             const emoji = event.detail.unicode;
+
+            // Metni güncelle
             const cursorPos = textareaElement.selectionStart;
             const text = textareaElement.value;
             const newText = text.substring(0, cursorPos) + emoji + text.substring(cursorPos);
+
+            // Textarea'yı güncelle ve input olayını tetikle
             textareaElement.value = newText;
+
+            // Cursor pozisyonunu emoji sonrasına ayarla
             textareaElement.focus();
-            textareaElement.selectionStart = cursorPos + emoji.length;
-            textareaElement.selectionEnd = cursorPos + emoji.length;
+            const newCursorPos = cursorPos + emoji.length;
+            textareaElement.setSelectionRange(newCursorPos, newCursorPos);
+
+            // Input olayını manuel olarak tetikle ki textarea'daki değişiklik algılansın
+            const inputEvent = new Event('input', { bubbles: true });
+            textareaElement.dispatchEvent(inputEvent);
+
+            // Değişikliği tetiklemek için bir klavye olayı da gönder
+            const keyEvent = new KeyboardEvent('keyup', { bubbles: true });
+            textareaElement.dispatchEvent(keyEvent);
         });
     }
 
