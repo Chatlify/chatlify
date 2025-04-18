@@ -42,7 +42,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const chatGifBtn = document.querySelector('button.chat-attachment-btn');
 
         const chatTextarea = chatPanel?.querySelector('.chat-textbox textarea');
-        const emojiPicker = document.querySelector('emoji-picker');
 
         // Kritik elementlerin varlığını kontrol et
         validateRequiredElements({
@@ -67,9 +66,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Mesaj göndermesi için gerekli dinleyicileri ekle
         setupMessageSending(chatTextarea);
 
-        // Emoji picker dinleyicisini kur
-        if (chatEmojiBtn && chatTextarea && emojiPicker) {
-            setupEmojiPicker(chatEmojiBtn, chatTextarea, emojiPicker);
+        // Emoji Button kütüphanesi ile yeni emoji sistemi
+        if (chatEmojiBtn && chatTextarea && window.EmojiButton) {
+            const picker = new EmojiButton({ position: 'top-end', theme: 'dark' });
+            picker.on('emoji', selection => {
+                const emoji = selection.emoji || selection.unicode;
+                const start = chatTextarea.selectionStart;
+                chatTextarea.setRangeText(emoji, start, start, 'end');
+                chatTextarea.focus();
+                chatTextarea.dispatchEvent(new InputEvent('input', { bubbles: true }));
+            });
+            chatEmojiBtn.addEventListener('click', () => picker.togglePicker(chatEmojiBtn));
         }
 
         // GIF picker dinleyicisini kur
