@@ -29,6 +29,18 @@ document.addEventListener('DOMContentLoaded', () => {
     formMessage.className = 'form-message';
     registerForm.prepend(formMessage);
 
+    // Varsayılan renkli avatar dosya isimleri (images/avatars/defaults/ altında olmalı)
+    const defaultAvatarFiles = [
+        'avatar_blue.png',
+        'avatar_green.png',
+        'avatar_orange.png',
+        'avatar_purple.png',
+        'avatar_red.png',
+        'avatar_teal.png',
+        'avatar_yellow.png'
+        // İhtiyaca göre daha fazla ekleyebilirsiniz
+    ];
+
     // --- Avatar Yükleme ve Önizleme İşlevi ---
     avatarPreview.addEventListener('click', () => {
         avatarInput.click(); // Gizli inputu tetikle
@@ -157,127 +169,85 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- End Terms ---    
 
     // --- Form Gönderme İşlevi ---
-    registerForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-        if (!termsCheckbox.checked) { // Son bir kontrol
-            formMessage.textContent = 'You must accept the Terms of Service.';
-            formMessage.className = 'form-message error';
-            return;
-        }
+        // Hata mesajlarını temizle
+        clearErrors();
 
-        buttonText.style.display = 'none';
-        loadingSpinner.style.display = 'block';
-        submitButton.disabled = true; // Submit sırasında tekrar disable
-        formMessage.textContent = '';
-        formMessage.className = 'form-message';
+        // Alanlardan değerleri al
+        const username = usernameInput.value.trim();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+        const confirmPassword = confirmPasswordInput.value.trim();
 
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const usernameInput = document.getElementById('username');
-        const email = emailInput.value;
-        const password = passwordInput.value;
-        const username = usernameInput.value;
+        // Doğrulama yap
+        let isValid = true;
+        if (!validateUsername(username)) isValid = false;
+        if (!validateEmail(email)) isValid = false;
+        if (!validatePassword(password)) isValid = false;
+        if (!validateConfirmPassword(password, confirmPassword)) isValid = false;
 
-        let avatarUrl = null; // Başlangıçta avatar URL'si null
+        if (!isValid) return;
 
-        // --- Cloudinary Yükleme --- 
-        if (avatarFile) {
-            formMessage.textContent = 'Uploading avatar...'; // Kullanıcıya bilgi ver
-            const formData = new FormData();
-            formData.append('file', avatarFile);
-            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        // Butonu yükleniyor durumuna getir
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Kayıt Olunuyor...';
 
-            try {
-                const response = await fetch(CLOUDINARY_URL, {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await response.json();
-                if (response.ok && data.secure_url) {
-                    avatarUrl = data.secure_url; // Başarılı yükleme, URL'yi al
-                    console.log('Avatar uploaded to Cloudinary:', avatarUrl);
-                    formMessage.textContent = ''; // Upload mesajını temizle
-                } else {
-                    throw new Error(data.error?.message || 'Cloudinary upload failed');
-                }
-            } catch (uploadError) {
-                console.error('Cloudinary Upload Error:', uploadError);
-                formMessage.textContent = `Avatar upload failed: ${uploadError.message}. Continuing without avatar.`;
-                formMessage.classList.add('error');
-                // Hata olsa bile avatrsız devam etmeyi seçebiliriz veya işlemi durdurabiliriz.
-                // Şimdilik devam ediyoruz, ama buton state'ini düzeltelim:
-                buttonText.style.display = 'inline';
-                loadingSpinner.style.display = 'none';
-                // submitButton.disabled = !termsCheckbox.checked; // Butonu tekrar terms durumuna göre ayarla
-                return; // Yükleme hatası durumunda kaydı durdur
-            }
-        }
-        // --- End Cloudinary --- 
-
-        // --- Supabase Kayıt --- 
         try {
-            formMessage.textContent = 'Creating account...'; // Yeni mesaj
-            const userData = {
-                username: username,
-                // Sadece avatarUrl varsa ekle
-                ...(avatarUrl && { avatar_url: avatarUrl })
-            };
+            // Rastgele bir varsayılan avatar seç
+            const randomIndex = Math.floor(Math.random() * defaultAvatarFiles.length);
+            const randomAvatarName = defaultAvatarFiles[randomIndex];
+            const defaultAvatarUrl = `images/avatars/defaults/${randomAvatarName}`;
+            console.log('👤 Rastgele varsayılan avatar seçildi:', defaultAvatarUrl);
 
+            // Supabase'e kayıt isteği gönder
             const { data, error } = await supabase.auth.signUp({
                 email: email,
                 password: password,
                 options: {
-                    data: userData, // username ve avatar_url içerir
-                    emailRedirectTo: `${window.location.origin}/login.html?verified=true`
+                    data: {
+                        username: username, // Kullanıcı adını ek veriye ekle
+                        avatar: defaultAvatarUrl // Seçilen varsayılan avatarı ekle
+                    }
                 }
             });
 
             if (error) {
-                // Rate limit veya diğer hatalar
-                throw error; // Hata bloğunda yakala
-            } else if (data.user && data.user.identities && data.user.identities.length === 0) {
-                // E-posta zaten kullanımda olabilir
-                throw new Error('This email address is already in use.');
-            } else if (data.user) {
-                // Başarılı
-                console.log('Kayıt Başarılı:', data.user);
-                formMessage.textContent = 'Kayıt başarılı! Lütfen e-posta adresinizi kontrol ederek hesabınızı doğrulayın.';
-                formMessage.classList.add('success');
-                registerForm.reset(); // Formu temizle
-                avatarPreviewImg.style.display = 'none'; // Avatar önizlemeyi sıfırla
-                avatarPreviewText.style.display = 'block';
-                avatarUploadIcon.style.display = 'block';
-                avatarFile = null;
-                termsCheckbox.checked = false; // Checkbox'ı sıfırla
-                submitButton.disabled = true; // Butonu tekrar disable yap
-            } else {
-                // E-posta doğrulaması kapalıysa veya beklenmedik durum
-                formMessage.textContent = 'Kayıt işlemi tamamlandı. Giriş yapabilirsiniz.';
-                formMessage.classList.add('success');
-                registerForm.reset();
-                avatarPreviewImg.style.display = 'none';
-                avatarPreviewText.style.display = 'block';
-                avatarUploadIcon.style.display = 'block';
-                avatarFile = null;
-                termsCheckbox.checked = false;
-                submitButton.disabled = true;
+                console.error('Supabase Kayıt Hatası:', error);
+                // Kullanıcıya daha anlaşılır hata mesajları göster
+                if (error.message.includes('already registered')) {
+                    displayError(emailError, 'Bu e-posta adresi zaten kayıtlı.');
+                } else if (error.message.includes('Password should be at least')) {
+                    displayError(passwordError, 'Şifre en az 6 karakter olmalıdır.');
+                } else {
+                    displayError(registerForm.querySelector('.form-error'), `Kayıt sırasında bir hata oluştu: ${error.message}`);
+                }
+                throw error; // Hata oluştuysa işlemi durdur
             }
 
+            // Kayıt başarılı mesajını göster (veya e-posta onayı sayfasına yönlendir)
+            console.log('Kayıt başarılı:', data);
+            registerForm.innerHTML = `
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <h2>Kayıt Başarılı!</h2>
+                    <p>Hesabınızı doğrulamak için lütfen e-posta adresinize gönderilen onay bağlantısına tıklayın.</p>
+                    <p>E-posta gelmediyse spam klasörünüzü kontrol etmeyi unutmayın.</p>
+                </div>
+            `;
+
         } catch (err) {
+            // Hata zaten yukarıda loglandı ve gösterildi.
             console.error('Supabase Kayıt Hatası veya Önceki Hata:', err);
-            formMessage.textContent = `Kayıt başarısız: ${err.message}`;
-            formMessage.classList.add('error');
         } finally {
             // Yükleme spinner'ını ve buton durumunu sadece Supabase işlemi bittiğinde ayarla
-            buttonText.style.display = 'inline';
-            loadingSpinner.style.display = 'none';
-            // Hata durumunda butonu tekrar aktif et, başarıda disable kalmalı (terms'e bağlı)
-            if (!formMessage.classList.contains('success')) {
-                submitButton.disabled = !termsCheckbox.checked;
+            // Başarı durumunda form içeriği değiştiği için butona tekrar erişmeye gerek yok.
+            if (document.contains(submitButton)) {
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Kayıt Ol';
             }
         }
-        // --- End Supabase --- 
     });
     // --- End Form Submit ---
 }); 
