@@ -2665,6 +2665,7 @@ function displayGifs(gifs, container) {
 async function sendGifMessage(gifUrl) {
     if (!currentConversationId) {
         console.warn('GIF göndermek için geçerli bir sohbet ID\'si gerekli.');
+        alert('Aktif bir sohbet bulunamadı. Lütfen önce bir kişi seçin.');
         return;
     }
 
@@ -2677,6 +2678,25 @@ async function sendGifMessage(gifUrl) {
     try {
         console.log(`GIF gönderiliyor: ${gifUrl}`);
         console.log(`Sohbet ID: ${currentConversationId}, Gönderen ID: ${currentUserId}`);
+
+        // Veritabanında conversationId'nin geçerli olup olmadığını kontrol et
+        const { data: convExists, error: convError } = await supabase
+            .from('conversations')
+            .select('id')
+            .eq('id', currentConversationId)
+            .maybeSingle();
+
+        if (convError) {
+            console.error('Sohbet kontrolünde hata:', JSON.stringify(convError));
+            alert('Sohbet kontrolü sırasında bir hata oluştu.');
+            return;
+        }
+
+        if (!convExists) {
+            console.error(`Geçersiz sohbet ID'si: ${currentConversationId}`);
+            alert('Seçilen sohbet artık mevcut değil. Lütfen başka bir kişi seçin.');
+            return;
+        }
 
         // GIF mesajı oluştur - sadece GIF URL'ini içeren özel bir mesaj formatı
         const gifMessage = {
@@ -2695,17 +2715,24 @@ async function sendGifMessage(gifUrl) {
             .select();
 
         if (error) {
-            console.error('GIF mesajı gönderilirken hata:', error);
+            console.error('GIF mesajı gönderilirken hata:', JSON.stringify(error));
 
             if (error.code === '23514') { // Check constraint hatası
                 alert('GIF gönderilemedi. (Kural İhlali: ' + error.message + ')');
-            } else if (error.details && error.details.includes('violates foreign key constraint')) {
-                alert('GIF gönderilemedi. Geçersiz sohbet ID\'si.');
+            } else if (error.message && error.message.includes('violates foreign key constraint')) {
+                alert('GIF gönderilemedi. Geçersiz sohbet veya kullanıcı ID\'si.');
+            } else if (error.code === '42P01') {
+                alert('GIF gönderilemedi. Veritabanı tablosu bulunamadı.');
+            } else if (error.code === '42501') {
+                alert('GIF gönderilemedi. Yetki hatası. Oturumunuz sona ermiş olabilir.');
             } else {
-                alert('GIF gönderilemedi. Lütfen tekrar deneyin.');
+                alert('GIF gönderilemedi. Lütfen tekrar deneyin. Hata: ' + (error.message || 'Bilinmeyen hata'));
             }
 
-            throw error;
+            // Hata durumunda alternatif bir çözüm olarak GIF'i direkt olarak sohbete ekleyelim
+            fallbackDisplayGif(gifUrl);
+
+            return;
         }
 
         // Başarıyla gönderildiyse ekranda göster
@@ -2714,10 +2741,66 @@ async function sendGifMessage(gifUrl) {
             displayGifMessage(data[0]);
         } else {
             console.warn('GIF mesajı gönderildi ancak veri dönmedi.');
+            // Veri dönmediyse, GIF'i ekranda göster
+            fallbackDisplayGif(gifUrl);
         }
     } catch (error) {
-        console.error('GIF gönderilirken hata:', error);
+        // Hata nesnesini doğru şekilde logla
+        console.error('GIF gönderilirken hata:', error ? JSON.stringify(error) : 'Bilinmeyen hata');
+        alert('GIF gönderilirken bir hata oluştu: ' + (error && error.message ? error.message : 'Bilinmeyen hata'));
+
+        // Yedek çözüm: GIF'i direkt olarak sohbete ekle
+        fallbackDisplayGif(gifUrl);
     }
+}
+
+// Yedek çözüm: GIF'i doğrudan ekranda göster (veritabanına kaydetmeden)
+function fallbackDisplayGif(gifUrl) {
+    console.log('Yedek çözüm: GIF direkt olarak gösteriliyor:', gifUrl);
+
+    const chatMessagesContainer = document.querySelector('.chat-panel .chat-messages');
+    if (!chatMessagesContainer) {
+        console.error('Chat mesaj konteyneri bulunamadı!');
+        return;
+    }
+
+    // Kendi avatarımızı al
+    let displayAvatar = defaultAvatar;
+    const userAvatarElement = document.querySelector('.dm-footer .dm-user-avatar img');
+    if (userAvatarElement) {
+        displayAvatar = userAvatarElement.src;
+    }
+
+    // GIF mesaj öğesini oluştur (kendi mesajımız olarak)
+    const messageElement = document.createElement('div');
+    messageElement.className = 'message-group own-message';
+    messageElement.setAttribute('data-sender-id', currentUserId || 'local-user');
+
+    // Geçici mesaj olduğunu belirt
+    messageElement.classList.add('local-message');
+
+    // Şimdi zamanını formatla
+    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    // HTML şablonu oluştur
+    messageElement.innerHTML = `
+        <div class="message-group-avatar">
+            <img src="${displayAvatar}" alt="Sen" onerror="this.src='${defaultAvatar}'">
+        </div>
+        <div class="message-group-content">
+            <div class="message-group-header">
+                <span class="message-author">Sen</span>
+                <span class="message-time">${currentTime}</span>
+            </div>
+            <div class="message-content gif-message">
+                <img src="${gifUrl}" alt="GIF" class="message-gif" loading="lazy">
+                <small class="message-status">(Yerel olarak gösteriliyor - veritabanına kaydedilemedi)</small>
+            </div>
+        </div>
+    `;
+
+    chatMessagesContainer.appendChild(messageElement);
+    chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
 }
 
 // GIF mesajını ekranda göster
