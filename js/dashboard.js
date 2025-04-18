@@ -2668,7 +2668,16 @@ async function sendGifMessage(gifUrl) {
         return;
     }
 
+    if (!currentUserId) {
+        console.error('GIF göndermek için oturum açmanız gerekiyor.');
+        alert('Oturum bilgileriniz eksik. Lütfen sayfayı yenileyip tekrar deneyin.');
+        return;
+    }
+
     try {
+        console.log(`GIF gönderiliyor: ${gifUrl}`);
+        console.log(`Sohbet ID: ${currentConversationId}, Gönderen ID: ${currentUserId}`);
+
         // GIF mesajı oluştur - sadece GIF URL'ini içeren özel bir mesaj formatı
         const gifMessage = {
             content: gifUrl,
@@ -2676,6 +2685,8 @@ async function sendGifMessage(gifUrl) {
             conversationId: currentConversationId,
             messageType: 'gif' // Mesaj tipini belirt
         };
+
+        console.log('GIF Mesaj verisi:', gifMessage);
 
         // Mesajı veritabanına ekle
         const { data, error } = await supabase
@@ -2685,7 +2696,15 @@ async function sendGifMessage(gifUrl) {
 
         if (error) {
             console.error('GIF mesajı gönderilirken hata:', error);
-            alert('GIF gönderilemedi. Lütfen tekrar deneyin.');
+
+            if (error.code === '23514') { // Check constraint hatası
+                alert('GIF gönderilemedi. (Kural İhlali: ' + error.message + ')');
+            } else if (error.details && error.details.includes('violates foreign key constraint')) {
+                alert('GIF gönderilemedi. Geçersiz sohbet ID\'si.');
+            } else {
+                alert('GIF gönderilemedi. Lütfen tekrar deneyin.');
+            }
+
             throw error;
         }
 
@@ -2693,6 +2712,8 @@ async function sendGifMessage(gifUrl) {
         if (data && data.length > 0) {
             console.log('GIF mesajı başarıyla gönderildi:', data[0]);
             displayGifMessage(data[0]);
+        } else {
+            console.warn('GIF mesajı gönderildi ancak veri dönmedi.');
         }
     } catch (error) {
         console.error('GIF gönderilirken hata:', error);
@@ -2743,7 +2764,7 @@ function displayGifMessage(message) {
                 <span class="message-time">${new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
             <div class="message-content gif-message">
-                <img src="${message.content}" alt="GIF" class="message-gif">
+                <img src="${message.content}" alt="GIF" class="message-gif" loading="lazy">
             </div>
         </div>
     `;
