@@ -3,8 +3,16 @@ document.addEventListener('DOMContentLoaded', function () {
     // Kapatma butonuna tıklama
     const closeButton = document.querySelector('.settings-close-btn');
     if (closeButton) {
-        closeButton.addEventListener('click', function () {
-            window.location.href = 'dashboard.html';
+        closeButton.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            // Geçiş animasyonu
+            document.body.classList.add('page-transition');
+
+            // Kısa bir gecikme sonra yönlendirme yap
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 300);
         });
     }
 

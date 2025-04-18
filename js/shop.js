@@ -1,4 +1,20 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Dashboard'a dönüş için animasyon
+    const backButton = document.querySelector('.back-to-dashboard');
+    if (backButton) {
+        backButton.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            // Geçiş animasyonu
+            document.body.classList.add('page-transition');
+
+            // Kısa bir gecikme sonra yönlendirme yap
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 300);
+        });
+    }
+
     // Sayfa ilk açıldığında modalın gösterilmemesi için başlangıçta kontrol ediyoruz
     const modal = document.getElementById('purchaseModal');
     if (modal) {
