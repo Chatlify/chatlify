@@ -267,14 +267,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Kayıt başarılı
             console.log('Kayıt başarılı:', data);
-            registerForm.innerHTML = `
-                <div class="success-message">
-                    <i class="fas fa-check-circle"></i>
-                    <h2>Kayıt Başarılı!</h2>
-                    <p>Hesabınızı doğrulamak için lütfen e-posta adresinize gönderilen onay bağlantısına tıklayın.</p>
-                    <p>E-posta gelmediyse spam klasörünüzü kontrol etmeyi unutmayın.</p>
-                </div>
-            `;
+            // Başarı mesajı göstermek yerine login sayfasına yönlendir
+            alert('Kayıt başarılı! Hesabınızı doğrulamak için e-postanızı kontrol edin ve ardından giriş yapın.'); // Kullanıcıyı bilgilendir
+            window.location.href = 'login.html'; // login.html sayfasına yönlendir
 
         } catch (err) {
             console.error('Genel Kayıt Hatası:', err);
@@ -285,13 +280,94 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitButton.innerHTML = 'Kayıt Ol';
             }
         } finally {
-            // Başarı durumunda form içeriği değiştiği için butona tekrar erişmek gereksiz.
+            // Başarı durumunda yönlendirme yapıldığı için butona tekrar erişmeye gerek yok.
             // Sadece hata durumunda buton eski haline getirilir (yukarıdaki catch bloğunda yapıldı).
         }
     });
     // --- End Form Submit ---    
 
     // --- Yardımcı Fonksiyonlar (Hata Gösterme vb.) ---
-    // ... (clearErrors, displayError, validateUsername, validateEmail, etc.) ...
+    function clearErrors() {
+        console.log('🧹 Hatalar temizleniyor...');
+        const errorElements = registerForm.querySelectorAll('.error-message, .form-error');
+        errorElements.forEach(el => el.textContent = '');
+        // Input kenarlıklarını da sıfırla (varsa)
+        const invalidInputs = registerForm.querySelectorAll('.invalid');
+        invalidInputs.forEach(el => el.classList.remove('invalid'));
+        // Genel form mesajını temizle
+        if (formMessage) {
+            formMessage.textContent = '';
+            formMessage.className = 'form-message'; // Sınıfı da sıfırla
+        }
+    }
+
+    function displayError(element, message) {
+        if (element) {
+            element.textContent = message;
+            // İlgili input alanını bulup stil ekleyebiliriz
+            const input = element.previousElementSibling; // Genellikle input elementin hemen önündedir
+            if (input && (input.tagName === 'INPUT' || input.tagName === 'TEXTAREA')) {
+                input.classList.add('invalid');
+            }
+        } else {
+            console.warn('Hata gösterilecek element bulunamadı:', message);
+        }
+    }
+
+    function validateUsername(username) {
+        const usernameError = document.getElementById('usernameError');
+        if (!username) {
+            displayError(usernameError, 'Kullanıcı adı gerekli.');
+            return false;
+        }
+        if (username.length < 3) {
+            displayError(usernameError, 'Kullanıcı adı en az 3 karakter olmalı.');
+            return false;
+        }
+        // Başka username kuralları eklenebilir
+        return true;
+    }
+
+    function validateEmail(email) {
+        const emailError = document.getElementById('emailError');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email) {
+            displayError(emailError, 'E-posta gerekli.');
+            return false;
+        }
+        if (!emailRegex.test(email)) {
+            displayError(emailError, 'Geçersiz e-posta formatı.');
+            return false;
+        }
+        return true;
+    }
+
+    function validatePassword(password) {
+        const passwordError = document.getElementById('passwordError');
+        if (!password) {
+            displayError(passwordError, 'Şifre gerekli.');
+            return false;
+        }
+        if (password.length < 6) { // Supabase varsayılanı 6
+            displayError(passwordError, 'Şifre en az 6 karakter olmalı.');
+            return false;
+        }
+        // Şifre gücü kontrolü (isteğe bağlı)
+        checkPasswordStrength(password);
+        return true;
+    }
+
+    function validateConfirmPassword(password, confirmPassword) {
+        const confirmPasswordError = document.getElementById('confirmPasswordError');
+        if (!confirmPassword) {
+            displayError(confirmPasswordError, 'Şifre tekrarı gerekli.');
+            return false;
+        }
+        if (password !== confirmPassword) {
+            displayError(confirmPasswordError, 'Şifreler eşleşmiyor.');
+            return false;
+        }
+        return true;
+    }
 
 }); 
