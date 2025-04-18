@@ -72,15 +72,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 switch (productType) {
                     case 'nova':
                         productName = 'Nova Ultimate';
-                        productPrice = isYearly ? '₺2389/yıl' : '₺249/ay';
+                        productPrice = isYearly ? '$224.88/yr' : '$24.99/mo';
                         break;
                     case 'blaze':
                         productName = 'Blaze Premium';
-                        productPrice = isYearly ? '₺1429/yıl' : '₺149/ay';
+                        productPrice = isYearly ? '$134.88/yr' : '$14.99/mo';
                         break;
                     case 'spark':
-                        productName = 'Spark Başlangıç';
-                        productPrice = isYearly ? '₺759/yıl' : '₺79/ay';
+                        productName = 'Spark Starter';
+                        productPrice = isYearly ? '$71.88/yr' : '$7.99/mo';
                         break;
                 }
 
@@ -96,8 +96,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const modalDesc = document.getElementById('modalDesc');
 
         if (modal && modalTitle && modalDesc) {
-            modalTitle.textContent = productName + ' Satın Al';
-            modalDesc.textContent = productName + ' paketi için ' + productPrice + ' ödeme yapacaksınız.';
+            modalTitle.textContent = 'Buy ' + productName;
+            modalDesc.textContent = 'You will be charged ' + productPrice + ' for the ' + productName + ' package.';
 
             modal.style.display = 'flex';
             modal.style.visibility = 'visible';
@@ -186,8 +186,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 <i class="fas fa-check-circle"></i>
             </div>
             <div class="notification-content">
-                <h4>Satın Alma İşlemi Başarılı!</h4>
-                <p>Premium paketiniz hesabınıza tanımlandı. İyi eğlenceler!</p>
+                <h4>Purchase Successful!</h4>
+                <p>Your premium package has been activated. Enjoy the experience!</p>
             </div>
             <button class="notification-close">
                 <i class="fas fa-times"></i>
