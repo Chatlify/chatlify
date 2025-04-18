@@ -1269,7 +1269,7 @@ async function loadConversationMessages(conversationId) {
         const { data: messages, error } = await supabase
             .from('messages')
             .select('*')
-            .eq('conversationId', conversationId) // Sadece bu sohbete ait mesajları al
+            .eq('conversationId', conversationId)
             .order('createdAt', { ascending: true });
 
         if (error) {
@@ -1318,10 +1318,7 @@ async function loadConversationMessages(conversationId) {
         const fragment = document.createDocumentFragment();
 
         messages.forEach(message => {
-            // Doğrudan camelCase kullan
             const senderId = message.senderId;
-
-            // Tarih kontrolü yaparak gerekirse tarih ayırıcısı ekle
             const messageDate = new Date(message.createdAt).toLocaleDateString();
             if (messageDate !== lastMessageDate) {
                 const dateDivider = document.createElement('div');
@@ -1331,50 +1328,26 @@ async function loadConversationMessages(conversationId) {
                 lastMessageDate = messageDate;
             }
 
-            // Avatar URL'ini belirle
             let avatarUrl = defaultAvatar;
             let username = senderId === currentUserId ? 'Sen' : 'Kullanıcı';
-
-            // Kullanıcı profil bilgilerini kontrol et
             if (userMap[senderId]) {
                 avatarUrl = userMap[senderId].avatar || defaultAvatar;
                 username = userMap[senderId].username || username;
             }
 
-            // Mesaj öğesini oluştur
-            const messageElement = document.createElement('div');
-            messageElement.className = `message-group ${senderId === currentUserId ? 'own-message' : ''}`;
-            messageElement.setAttribute('data-sender-id', senderId);
-
-            // HTML şablonu oluştur
-            messageElement.innerHTML = `
-                <div class="message-group-avatar">
-                    <img src="${avatarUrl}" alt="${username}" onerror="this.src='${defaultAvatar}'">
-                 </div>
-                <div class="message-group-content">
-                    <div class="message-group-header">
-                        <span class="message-author">${username}</span>
-                        <span class="message-time">${new Date(message.createdAt).toLocaleTimeString()}</span>
-                     </div>
-                    <div class="message-content">
-                        <p>${message.content}</p>
-                 </div>
-             </div>
-         `;
-
-            fragment.appendChild(messageElement);
+            // Her mesajı displayMessage ile oluştur - DOM fragment'a ekleme displayMessage içinde yapılıyor
+            displayMessage(message, username, avatarUrl, 'history'); // Kaynağı belirt
         });
 
-        // Tek seferde DOM'a ekle
-        chatMessagesContainer.appendChild(fragment);
+        // Not: Artık fragment'ı burada append etmiyoruz, çünkü displayMessage her birini ekliyor.
+        // chatMessagesContainer.appendChild(fragment);
 
-        // Scrollu en alta indir
+        // Scrollu en alta indir (tüm mesajlar eklendikten sonra)
         chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
 
     } catch (error) {
         console.error('Mesajlar yüklenirken hata oluştu:', error);
         chatMessagesContainer.innerHTML = '';
-
         const errorElement = document.createElement('div');
         errorElement.className = 'error-placeholder';
         errorElement.textContent = 'Mesajlar yüklenirken bir hata oluştu.';
@@ -1392,7 +1365,7 @@ async function subscribeToMessages(conversationId) {
     }
 
     try {
-        const channelName = `messages:${conversationId}`; // Kanal adını basitleştir
+        const channelName = `messages:${conversationId}`;
         console.log(`Mesaj kanalına abone olunuyor: ${channelName}`);
 
         messageSubscription = supabase
@@ -1403,13 +1376,18 @@ async function subscribeToMessages(conversationId) {
                 table: 'messages',
                 filter: `conversationId=eq.${conversationId}`
             }, async (payload) => {
+                console.log('🔔 Realtime: Yeni mesaj payload alındı:', JSON.stringify(payload)); // Tüm payload'u logla
+
                 if (payload.new && payload.new.senderId !== currentUserId) {
-                    console.log('Yeni mesaj alındı (realtime):', payload.new);
+                    console.log('➡️ Realtime: Başkasından yeni mesaj alındı:', payload.new);
                     const senderId = payload.new.senderId;
 
                     // Aktif sohbet paneli bu gönderici için açık mı kontrol et
                     const chatPanel = document.querySelector('.chat-panel:not(.hidden)');
-                    const isChatOpenForSender = chatPanel && chatPanel.dataset.activeChatUserId === senderId;
+                    const activeChatUserId = chatPanel?.dataset.activeChatUserId;
+                    const isChatOpenForSender = chatPanel && activeChatUserId === senderId;
+                    console.log(`➡️ Realtime: Sohbet açık mı? Panel ID: ${activeChatUserId}, Gönderen ID: ${senderId} -> ${isChatOpenForSender}`);
+
 
                     // Gönderenin kullanıcı adını ve avatarını çek (displayMessage için)
                     let senderUsername = 'Kullanıcı';
@@ -1426,12 +1404,15 @@ async function subscribeToMessages(conversationId) {
                             senderAvatar = profile.avatar || senderAvatar;
                         }
                     } catch (profileError) {
-                        console.error('Profil alınırken hata (realtime):', profileError);
+                        console.error('❌ Realtime: Profil alınırken hata:', profileError);
                     }
 
                     // Mesajı ekranda göster (sohbet açıksa)
                     if (isChatOpenForSender) {
-                        displayMessage(payload.new, senderUsername, senderAvatar);
+                        console.log(`➡️ Realtime: Sohbet açık, mesaj gösteriliyor...`);
+                        displayMessage(payload.new, senderUsername, senderAvatar, 'realtime'); // Kaynağı belirt
+                    } else {
+                        console.log(`➡️ Realtime: Sohbet kapalı, mesaj gösterilmiyor.`);
                     }
 
                     // Bildirim sesini çal (her durumda, sohbet açık olmasa bile)
@@ -1440,26 +1421,42 @@ async function subscribeToMessages(conversationId) {
                             messageNotificationSound.currentTime = 0;
                             await messageNotificationSound.play();
                         } catch (playError) {
-                            console.warn('Bildirim sesi çalınamadı:', playError);
+                            console.warn('🔊 Bildirim sesi çalınamadı:', playError);
                         }
                     }
 
                     // Eğer sohbet açık değilse okunmamış sayacını artır ve UI'ı güncelle
                     if (!isChatOpenForSender) {
+                        console.log(`➡️ Realtime: Okunmamış sayaç artırılıyor (Kullanıcı: ${senderId})`);
                         unreadCounts[senderId] = (unreadCounts[senderId] || 0) + 1;
                         updateUnreadCountUI(senderId, unreadCounts[senderId]);
+                    }
+                } else if (payload.new && payload.new.senderId === currentUserId) {
+                    console.log('➡️ Realtime: Kendimizden yeni mesaj alındı (muhtemelen başka sekmeden):', payload.new);
+                    // Kendi mesajımızsa ve sohbet açıksa, UI'ı güncelle (duplicate olmaması için kontrol edilebilir)
+                    const chatPanel = document.querySelector('.chat-panel:not(.hidden)');
+                    const activeChatUserId = chatPanel?.dataset.activeChatUserId;
+                    // Conversation ID kontrolü de eklenebilir
+                    if (chatPanel && payload.new.conversationId === currentConversationId) {
+                        // Eğer mesaj zaten ekranda yoksa ekle
+                        if (!document.querySelector(`.message-group[data-message-id='${payload.new.id}']`)) {
+                            console.log('➡️ Realtime: Kendi mesajımız, ekranda yok, ekleniyor...');
+                            displayMessage(payload.new, 'Sen', null, 'realtime-self');
+                        } else {
+                            console.log('➡️ Realtime: Kendi mesajımız, zaten ekranda.');
+                        }
                     }
                 }
             })
             .subscribe((status) => {
                 console.log(`${channelName} abonelik durumu: ${status}`);
                 if (status === 'SUBSCRIBED') {
-                    console.log(`Başarıyla ${channelName} kanalına abone olundu.`);
+                    console.log(`✅ Başarıyla ${channelName} kanalına abone olundu.`);
                 }
             });
 
     } catch (error) {
-        console.error('Mesaj aboneliğinde hata:', error);
+        console.error('❌ Mesaj aboneliğinde hata:', error);
     }
 }
 
@@ -1471,10 +1468,15 @@ function unsubscribeFromMessages() {
     }
 }
 
-// Yeni bir mesajı ekrana görüntüleme (GIF JSON formatını kontrol edecek şekilde güncellendi)
-function displayMessage(message, authorName = null, authorAvatar = null) {
+// Yeni bir mesajı ekrana görüntüleme (Detaylı loglama ve GIF JSON kontrolü)
+function displayMessage(message, authorName = null, authorAvatar = null, source = 'unknown') {
     const chatMessagesContainer = document.querySelector('.chat-panel .chat-messages');
-    if (!chatMessagesContainer || !message) return;
+    if (!chatMessagesContainer || !message) {
+        console.error('displayMessage: Konteyner veya mesaj nesnesi eksik.');
+        return;
+    }
+
+    console.log(`📬 displayMessage çağrıldı (Kaynak: ${source}) - Mesaj:`, JSON.stringify(message));
 
     const senderId = message.senderId;
     if (!senderId) {
@@ -1484,22 +1486,32 @@ function displayMessage(message, authorName = null, authorAvatar = null) {
 
     let isGif = false;
     let gifUrl = '';
-    let messageContent = message.content; // Varsayılan olarak ham içeriği al
+    let messageContent = message.content; // Varsayılan
+
+    // Log the raw content
+    console.log(`📄 displayMessage: Ham içerik (${source}):`, messageContent);
 
     // İçeriğin GIF JSON formatında olup olmadığını kontrol et
-    try {
-        const contentData = JSON.parse(message.content);
-        if (contentData && contentData.type === 'gif' && contentData.url) {
-            isGif = true;
-            gifUrl = contentData.url;
-            console.log('🔄 displayMessage: GIF mesajı algılandı (JSON):', gifUrl);
-        } else {
-            // JSON formatında ama GIF değilse, yine de ham içeriği kullan
-            messageContent = message.content;
+    if (typeof messageContent === 'string' && messageContent.startsWith('{')) {
+        try {
+            const contentData = JSON.parse(messageContent);
+            console.log(`🔍 displayMessage: JSON ayrıştırıldı (${source}):`, contentData);
+            if (contentData && contentData.type === 'gif' && contentData.url) {
+                isGif = true;
+                gifUrl = contentData.url;
+                console.log(`✅ displayMessage: GIF mesajı algılandı (${source}):`, gifUrl);
+            } else {
+                console.log(`ℹ️ displayMessage: JSON formatı, ancak GIF değil (${source}).`);
+                // JSON ama GIF değilse, şimdilik JSON string'i olarak gösterelim
+                // Belki gelecekte başka JSON tipleri de olabilir?
+                // messageContent değişkeni zaten ham JSON string'i içeriyor.
+            }
+        } catch (e) {
+            console.log(`⚠️ displayMessage: JSON ayrıştırma hatası (${source}), düz metin olarak işlenecek:`, e.message);
+            // Hata durumunda messageContent zaten ham içeriği tutuyor.
         }
-    } catch (e) {
-        // JSON parse hatası - normal metin mesajı olarak devam et
-        messageContent = message.content;
+    } else {
+        console.log(`📄 displayMessage: Düz metin mesajı algılandı (${source}).`);
     }
 
     // Kimin mesajı olduğunu ve gösterilecek bilgileri belirle
@@ -1508,11 +1520,9 @@ function displayMessage(message, authorName = null, authorAvatar = null) {
     let displayAvatar = defaultAvatar;
 
     if (isOwnMessage) {
-        // Kendi avatarımızı al
         const userAvatarElement = document.querySelector('.dm-footer .dm-user-avatar img');
         if (userAvatarElement) displayAvatar = userAvatarElement.src;
     } else {
-        // Diğer kullanıcının avatarını al
         displayAvatar = authorAvatar || document.querySelector('.chat-avatar img')?.src || defaultAvatar;
     }
 
@@ -1520,9 +1530,13 @@ function displayMessage(message, authorName = null, authorAvatar = null) {
     const messageElement = document.createElement('div');
     messageElement.className = `message-group ${isOwnMessage ? 'own-message' : ''}`;
     messageElement.setAttribute('data-sender-id', senderId);
+    messageElement.setAttribute('data-message-id', message.id || 'local-' + Date.now()); // Mesaj ID ekle
 
     // HTML şablonu oluştur (GIF veya metin için)
+    const messageTime = message.createdAt ? new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
     if (isGif) {
+        console.log(`🖼️ displayMessage: GIF render ediliyor (${source}):`, gifUrl);
         // GIF mesajı
         messageElement.innerHTML = `
             <div class="message-group-avatar">
@@ -1531,7 +1545,7 @@ function displayMessage(message, authorName = null, authorAvatar = null) {
             <div class="message-group-content">
                 <div class="message-group-header">
                     <span class="message-author">${displayName}</span>
-                    <span class="message-time">${new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span class="message-time">${messageTime}</span>
                 </div>
                 <div class="message-content gif-message">
                     <img src="${gifUrl}" alt="GIF" class="message-gif" loading="lazy">
@@ -1539,6 +1553,7 @@ function displayMessage(message, authorName = null, authorAvatar = null) {
             </div>
         `;
     } else {
+        console.log(`📝 displayMessage: Metin render ediliyor (${source}):`, messageContent);
         // Normal metin mesajı
         messageElement.innerHTML = `
         <div class="message-group-avatar">
@@ -1547,16 +1562,18 @@ function displayMessage(message, authorName = null, authorAvatar = null) {
         <div class="message-group-content">
             <div class="message-group-header">
                 <span class="message-author">${displayName}</span>
-                <span class="message-time">${new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                <span class="message-time">${messageTime}</span>
             </div>
             <div class="message-content">
-                <p>${messageContent}</p> {/* Ham veya ayrıştırılmış metni göster */}
+                <p>${messageContent}</p> {/* Düz metin veya ayrıştırılamayan JSON */}
             </div>
         </div>
     `;
     }
 
     chatMessagesContainer.appendChild(messageElement);
+    // Scroll en alta, ama sadece kullanıcı en altta ise veya kendi mesajıysa?
+    // Şimdilik her zaman scroll yapalım.
     chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
 }
 
@@ -1640,7 +1657,7 @@ function setupMessageSending(chatTextarea) {
             // Başarılı mesaj gönderildiyse ve veri döndüyse ekranda göster
             if (data && data.length > 0) {
                 console.log('Mesaj başarıyla gönderildi:', data[0]);
-                displayMessage(data[0]);
+                displayMessage(data[0]); // displayGifMessage yerine displayMessage çağır
             }
 
         } catch (error) {
