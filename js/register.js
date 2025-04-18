@@ -29,16 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
     formMessage.className = 'form-message';
     registerForm.prepend(formMessage);
 
-    // Varsayılan renkli avatar dosya isimleri (images/avatars/defaults/ altında olmalı)
+    // Varsayılan avatar dosya isimleri (images/ altında olmalı)
     const defaultAvatarFiles = [
-        'avatar_blue.png',
-        'avatar_green.png',
-        'avatar_orange.png',
-        'avatar_purple.png',
-        'avatar_red.png',
-        'avatar_teal.png',
-        'avatar_yellow.png'
-        // İhtiyaca göre daha fazla ekleyebilirsiniz
+        'chatlifyprofile1.png',
+        'chatlifyprofile2.png',
+        'chatlifyprofile3.png'
     ];
 
     // --- Avatar Yükleme ve Önizleme İşlevi ---
@@ -52,14 +47,22 @@ document.addEventListener('DOMContentLoaded', () => {
             // Dosya tipi ve boyut kontrolü (isteğe bağlı)
             const allowedTypes = ['image/png', 'image/jpeg', 'image/gif'];
             if (!allowedTypes.includes(file.type)) {
-                displayAvatarError('Invalid file type. Please select PNG, JPG, or GIF.');
+                displayAvatarError('Geçersiz dosya türü. Lütfen PNG, JPG veya GIF seçin.');
                 avatarFile = null;
+                // Önizlemeyi sıfırla
+                avatarPreviewImg.style.display = 'none';
+                avatarPreviewText.style.display = 'block';
+                avatarUploadIcon.style.display = 'block';
                 return;
             }
             const maxSize = 5 * 1024 * 1024; // 5MB limit
             if (file.size > maxSize) {
-                displayAvatarError('File size exceeds 5MB limit.');
+                displayAvatarError('Dosya boyutu 5MB sınırını aşıyor.');
                 avatarFile = null;
+                // Önizlemeyi sıfırla
+                avatarPreviewImg.style.display = 'none';
+                avatarPreviewText.style.display = 'block';
+                avatarUploadIcon.style.display = 'block';
                 return;
             }
 
@@ -171,22 +174,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Form Gönderme İşlevi ---
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        clearErrors(); // Önceki hataları temizle
 
-        // Hata mesajlarını temizle
-        clearErrors();
-
-        // Alanlardan değerleri al
+        // Alanlardan değerleri al ve doğrula
         const username = usernameInput.value.trim();
         const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
         const confirmPassword = confirmPasswordInput.value.trim();
-
-        // Doğrulama yap
         let isValid = true;
         if (!validateUsername(username)) isValid = false;
         if (!validateEmail(email)) isValid = false;
         if (!validatePassword(password)) isValid = false;
         if (!validateConfirmPassword(password, confirmPassword)) isValid = false;
+
+        if (!termsCheckbox.checked) { // Terms kontrolü
+            displayError(registerForm.querySelector('.form-error'), 'Kullanım koşullarını kabul etmelisiniz.');
+            isValid = false;
+        }
 
         if (!isValid) return;
 
@@ -194,28 +198,63 @@ document.addEventListener('DOMContentLoaded', () => {
         submitButton.disabled = true;
         submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Kayıt Olunuyor...';
 
-        try {
-            // Rastgele bir varsayılan avatar seç
-            const randomIndex = Math.floor(Math.random() * defaultAvatarFiles.length);
-            const randomAvatarName = defaultAvatarFiles[randomIndex];
-            const defaultAvatarUrl = `images/avatars/defaults/${randomAvatarName}`;
-            console.log('👤 Rastgele varsayılan avatar seçildi:', defaultAvatarUrl);
+        let finalAvatarUrl = null; // Kaydedilecek son avatar URL'si
 
-            // Supabase'e kayıt isteği gönder
+        try {
+            // 1. Adım: Kullanıcı kendi avatarını yükledi mi?
+            if (avatarFile) {
+                console.log(' Kendi avatarı yükleniyor...');
+                // *** BURAYA MEVCUT AVATAR YÜKLEME KODUNUZ GELMELİ ***
+                // Örneğin Cloudinary'ye yükleme yapılıyorsa:
+                formMessage.textContent = 'Avatar yükleniyor...';
+                const formData = new FormData();
+                formData.append('file', avatarFile);
+                formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+                try {
+                    const response = await fetch(CLOUDINARY_URL, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const uploadData = await response.json();
+                    if (response.ok && uploadData.secure_url) {
+                        finalAvatarUrl = uploadData.secure_url; // Başarılı yükleme
+                        console.log(' Kendi avatarı başarıyla yüklendi:', finalAvatarUrl);
+                        formMessage.textContent = ''; // Mesajı temizle
+                    } else {
+                        throw new Error(uploadData.error?.message || 'Cloudinary yüklemesi başarısız');
+                    }
+                } catch (uploadError) {
+                    console.error('Avatar Yükleme Hatası:', uploadError);
+                    displayError(registerForm.querySelector('.form-error'), `Avatar yüklenemedi: ${uploadError.message}. Varsayılan avatar kullanılacak.`);
+                    // Yükleme başarısız olursa finalAvatarUrl null kalacak ve aşağıda varsayılan atanacak
+                }
+            }
+
+            // 2. Adım: Eğer kullanıcı avatar yüklemediyse VEYA yükleme başarısız olduysa, rastgele varsayılan ata
+            if (!finalAvatarUrl) {
+                const randomIndex = Math.floor(Math.random() * defaultAvatarFiles.length);
+                const randomAvatarName = defaultAvatarFiles[randomIndex];
+                finalAvatarUrl = `images/${randomAvatarName}`; // Doğru yolu kullan: images/
+                console.log(' Varsayılan avatar atandı:', finalAvatarUrl);
+            }
+
+            // 3. Adım: Supabase'e kayıt ol (username ve belirlenen avatar URL'si ile)
+            formMessage.textContent = 'Hesap oluşturuluyor...';
             const { data, error } = await supabase.auth.signUp({
                 email: email,
                 password: password,
                 options: {
                     data: {
-                        username: username, // Kullanıcı adını ek veriye ekle
-                        avatar: defaultAvatarUrl // Seçilen varsayılan avatarı ekle
+                        username: username,
+                        avatar: finalAvatarUrl // Kendi yüklediği veya varsayılan avatar
                     }
+                    // emailRedirectTo: `${window.location.origin}/login.html?verified=true` // Gerekliyse ekle
                 }
             });
 
             if (error) {
                 console.error('Supabase Kayıt Hatası:', error);
-                // Kullanıcıya daha anlaşılır hata mesajları göster
                 if (error.message.includes('already registered')) {
                     displayError(emailError, 'Bu e-posta adresi zaten kayıtlı.');
                 } else if (error.message.includes('Password should be at least')) {
@@ -223,10 +262,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     displayError(registerForm.querySelector('.form-error'), `Kayıt sırasında bir hata oluştu: ${error.message}`);
                 }
-                throw error; // Hata oluştuysa işlemi durdur
+                throw error;
             }
 
-            // Kayıt başarılı mesajını göster (veya e-posta onayı sayfasına yönlendir)
+            // Kayıt başarılı
             console.log('Kayıt başarılı:', data);
             registerForm.innerHTML = `
                 <div class="success-message">
@@ -238,16 +277,21 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
 
         } catch (err) {
-            // Hata zaten yukarıda loglandı ve gösterildi.
-            console.error('Supabase Kayıt Hatası veya Önceki Hata:', err);
-        } finally {
-            // Yükleme spinner'ını ve buton durumunu sadece Supabase işlemi bittiğinde ayarla
-            // Başarı durumunda form içeriği değiştiği için butona tekrar erişmeye gerek yok.
+            console.error('Genel Kayıt Hatası:', err);
+            // Hata mesajı zaten displayError ile gösterilmiş olmalı
+            // Butonu tekrar eski haline getir
             if (document.contains(submitButton)) {
-                submitButton.disabled = false;
+                submitButton.disabled = !termsCheckbox.checked; // Terms durumuna göre ayarla
                 submitButton.innerHTML = 'Kayıt Ol';
             }
+        } finally {
+            // Başarı durumunda form içeriği değiştiği için butona tekrar erişmek gereksiz.
+            // Sadece hata durumunda buton eski haline getirilir (yukarıdaki catch bloğunda yapıldı).
         }
     });
-    // --- End Form Submit ---
+    // --- End Form Submit ---    
+
+    // --- Yardımcı Fonksiyonlar (Hata Gösterme vb.) ---
+    // ... (clearErrors, displayError, validateUsername, validateEmail, etc.) ...
+
 }); 
