@@ -239,8 +239,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!finalAvatarUrl) {
                 const randomIndex = Math.floor(Math.random() * defaultAvatarFiles.length);
                 const randomAvatarName = defaultAvatarFiles[randomIndex];
-                finalAvatarUrl = `images/${randomAvatarName}`; // Doğru yolu kullan: images/
-                console.log(' Varsayılan avatar atandı:', finalAvatarUrl);
+                // *** Tam URL oluştur ***
+                finalAvatarUrl = `${window.location.origin}/images/${randomAvatarName}`;
+                console.log(' Varsayılan avatar atandı (Tam URL):', finalAvatarUrl);
             }
 
             // 3. Adım: Supabase'e kayıt ol (username ve belirlenen avatar URL'si ile)
@@ -251,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 options: {
                     data: {
                         username: username,
-                        avatar: finalAvatarUrl // Kendi yüklediği veya varsayılan avatar
+                        avatar: finalAvatarUrl // Kendi yüklediği veya varsayılan avatar (Tam URL)
                     }
                     // emailRedirectTo: `${window.location.origin}/login.html?verified=true` // Gerekliyse ekle
                 }
