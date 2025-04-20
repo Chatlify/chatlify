@@ -38,7 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const defaultAvatarFiles = [
         'chatlifyprofile1.png',
         'chatlifyprofile2.png',
-        'chatlifyprofile3.png'
+        'chatlifyprofile3.png',
+        'chatlifyprofile4.png'
     ];
 
     // --- Avatar Yükleme ve Önizleme İşlevi ---
