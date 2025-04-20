@@ -7,7 +7,7 @@ let presenceChannel = null;
 let currentConversationId = null; // Aktif sohbet için ID
 let messageSubscription = null; // Realtime mesaj aboneliği
 let sampleColumnFormat = 'camelCase'; // Varsayılan olarak camelCase formatını kullan
-const defaultAvatar = 'images/chatlifyprofile1.png';
+const defaultAvatar = 'images/DefaultAvatar.png';
 let messageNotificationSound = null; // Ses nesnesi için global değişken
 let unreadCounts = {}; // Okunmamış mesaj sayaçları { userId: count }
 const TENOR_API_KEY = 'AIzaSyCjseHq-Gn4cii_fVDtSX3whyY94orNWPM'; // Tenor API anahtarı
@@ -164,42 +164,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 
         tabs.forEach(tab => {
-            tab.addEventListener('click', async () => {
-                console.log(`Tab tıklandı: ${tab.textContent.trim()}`);
-
+            tab.addEventListener('click', () => {
                 // Tüm sekmeleri sıfırla
                 tabs.forEach(t => t.classList.remove('active'));
 
                 // Tıklanan sekmeyi aktif yap
                 tab.classList.add('active');
 
-                // Tabın adını al
-                const tabName = tab.textContent.trim();
-
                 // İçeriği göster/gizle
+                const tabName = tab.textContent.trim();
                 showSection(tabName, tabContents);
 
-                // Eğer "Bekleyen" sekmesine tıklandıysa özel işlemler yap
+                // Eğer "Bekleyen" sekmesine tıklandıysa bekleyen istekleri yükle
                 if (tabName === 'Bekleyen') {
-                    // Bildirim noktasını kaldır (eğer varsa)
-                    const notificationDot = tab.querySelector('.notification-dot');
-                    if (notificationDot) {
-                        notificationDot.remove();
-                    }
-
-                    // showSection içinde de çağrılıyor, ama güvenlik için burada da çağıralım
-                    console.log('Tab tıklama olayında loadPendingFriendRequests doğrudan çağrılıyor');
-                    try {
-                        await loadPendingFriendRequests();
-                    } catch (error) {
-                        console.error('Tab tıklama olayında bekleyen istekler yüklenirken hata:', error);
-                    }
-
-                    // Bölümün görünür olduğundan emin ol
-                    const pendingSection = document.querySelector('.pending-requests-section');
-                    if (pendingSection) {
-                        pendingSection.style.display = 'block';
-                    }
+                    loadPendingFriendRequests();
                 }
             });
         });
@@ -207,8 +185,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Bekleyen arkadaşlık isteklerini yükle ve görüntüle
     async function loadPendingFriendRequests() {
-        console.log('loadPendingFriendRequests çağrıldı - Bekleyen istekler yükleniyor');
-
         // Bekleyen istekler konteynerini seç
         const pendingContainer = document.querySelector('.pending-requests-container');
         if (!pendingContainer) {
@@ -303,8 +279,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.querySelectorAll('.pending-count').forEach(badge => {
                 badge.textContent = pendingRequests.length;
             });
-
-            console.log(`${pendingRequests.length} adet bekleyen istek başarıyla yüklendi ve görüntülendi`);
         } catch (error) {
             console.error('Bekleyen istekler yüklenirken hata:', error);
             pendingContainer.innerHTML = `<div class="error-placeholder">Bekleyen istekler yüklenirken bir hata oluştu: ${error.message}</div>`;
@@ -485,31 +459,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }
 
-            // Eğer bekleyen istekler bölümüyse özel işlemleri yap
-            if (sectionName === 'Bekleyen') {
-                // Eğer bölüm yoksa oluştur
-                if (!document.querySelector('.pending-requests-section')) {
-                    createPendingSection();
-
-                    // Oluşturulduktan sonra bölümü tekrar seç ve görünür yap
-                    const pendingSection = document.querySelector('.pending-requests-section');
-                    if (pendingSection) {
-                        pendingSection.style.display = 'block';
-                    }
-                }
-
-                // Bekleyen isteklerin hemen yüklenmesini sağla
-                // NOT: Burada async/await kullanamıyoruz çünkü showSection async değil
-                loadPendingFriendRequests().catch(err => {
-                    console.error('Bekleyen istekleri yüklerken hata:', err);
-                });
-
-                // Ekstra kontrol - bölümün gerçekten görünür olduğundan emin ol
-                const pendingSection = document.querySelector('.pending-requests-section');
-                if (pendingSection) {
-                    pendingSection.style.display = 'block';
-                    console.log('Bekleyen istekler bölümü görünür hale getirildi:', pendingSection);
-                }
+            // Eğer bekleyen istekler bölümüyse ve daha önce oluşturulmadıysa oluştur
+            if (sectionName === 'Bekleyen' && !document.querySelector('.pending-requests-section')) {
+                createPendingSection();
             }
         } else {
             // Eski davranış - sections parametresi yoksa
@@ -571,9 +523,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         console.log('Bekleyen arkadaşlık istekleri için realtime aboneliği başlatılıyor...');
 
-        // Gelen arkadaşlık istekleri için kanal
-        const incomingFriendChannel = supabase
-            .channel('incoming-friend-requests')
+        const pendingFriendChannel = supabase
+            .channel('pending-friend-requests')
             .on('postgres_changes', {
                 event: 'INSERT',
                 schema: 'public',
@@ -581,9 +532,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 filter: `user_id_2=eq.${currentUserId},status=eq.pending`
             }, async (payload) => {
                 console.log('Yeni bekleyen arkadaşlık isteği alındı (realtime):', payload);
-
-                // Yeni arkadaşlık isteği için görsel bildirim göster
-                showFriendRequestNotification(payload);
 
                 // Bildirim sesi çal (eğer varsa)
                 if (messageNotificationSound) {
@@ -602,119 +550,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const activeTab = document.querySelector('.dashboard-header .tab.active');
                 if (activeTab && activeTab.textContent.trim() === 'Bekleyen') {
                     loadPendingFriendRequests();
-                } else {
-                    // Bekleyen istekler sekmesi açık olmasa bile yeni istek geldiğini göster
-                    const pendingTab = Array.from(document.querySelectorAll('.dashboard-header .tab'))
-                        .find(tab => tab.textContent.trim() === 'Bekleyen');
-
-                    if (pendingTab) {
-                        // Bekleyen sekmesinde bildirim göster
-                        let notificationIndicator = pendingTab.querySelector('.notification-dot');
-                        if (!notificationIndicator) {
-                            notificationIndicator = document.createElement('span');
-                            notificationIndicator.className = 'notification-dot';
-                            pendingTab.appendChild(notificationIndicator);
-                        }
-                    }
                 }
             })
             .subscribe((status) => {
                 console.log(`Bekleyen arkadaşlık istekleri abonelik durumu: ${status}`);
-            });
-
-        // Gönderilen arkadaşlık isteklerinin durumunu izle
-        const outgoingFriendChannel = supabase
-            .channel('outgoing-friend-requests')
-            .on('postgres_changes', {
-                event: 'UPDATE',
-                schema: 'public',
-                table: 'friendships',
-                filter: `user_id_1=eq.${currentUserId},status=eq.accepted`
-            }, async (payload) => {
-                console.log('Gönderilen arkadaşlık isteği kabul edildi (realtime):', payload);
-
-                // Arkadaş listesini güncelle
-                const onlineList = document.querySelector('.online-friends');
-                const offlineList = document.querySelector('.offline-friends');
-                const dmList = document.querySelector('#friends-group .dm-items');
-                const onlineSection = document.querySelector('.online-section-title');
-                const offlineSection = document.querySelector('.offline-section-title');
-
-                if (onlineList && offlineList && dmList) {
-                    await loadAllFriends({
-                        onlineList,
-                        offlineList,
-                        dmList,
-                        onlineSection,
-                        offlineSection
-                    });
-                }
-            })
-            .subscribe((status) => {
-                console.log(`Gönderilen arkadaşlık istekleri abonelik durumu: ${status}`);
-            });
-    }
-
-    // Arkadaşlık isteği bildirimi göster
-    function showFriendRequestNotification(payload) {
-        // Bildirim konteynerini kontrol et veya oluştur
-        let notificationContainer = document.querySelector('.notification-container');
-        if (!notificationContainer) {
-            notificationContainer = document.createElement('div');
-            notificationContainer.className = 'notification-container';
-            document.body.appendChild(notificationContainer);
-        }
-
-        // Kullanıcı bilgilerini al
-        supabase
-            .from('users')
-            .select('username, avatar')
-            .eq('id', payload.new.user_id_1)
-            .single()
-            .then(({ data, error }) => {
-                if (error) {
-                    console.error('Bildirim için kullanıcı bilgileri alınamadı:', error);
-                    return;
-                }
-
-                const username = data.username || 'Bilinmeyen Kullanıcı';
-
-                // Bildirim elementi oluştur
-                const notification = document.createElement('div');
-                notification.className = 'notification info show';
-                notification.innerHTML = `
-                    <div class="notification-icon">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
-                    <div class="notification-content">
-                        <strong>${username}</strong> sana arkadaşlık isteği gönderdi.
-                    </div>
-                    <button class="notification-close">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
-
-                // Kapatma butonu olayı
-                const closeBtn = notification.querySelector('.notification-close');
-                closeBtn.addEventListener('click', () => {
-                    notification.classList.replace('show', 'hide');
-                    setTimeout(() => {
-                        if (notification.parentNode) {
-                            notification.parentNode.removeChild(notification);
-                        }
-                    }, 300);
-                });
-
-                // Otomatik kaldırma
-                notificationContainer.appendChild(notification);
-                setTimeout(() => {
-                    notification.classList.replace('show', 'hide');
-                    setTimeout(() => {
-                        if (notification.parentNode) {
-                            notification.parentNode.removeChild(notification);
-                        }
-                    }, 300);
-                }, 5000);
             });
     }
 });
@@ -1297,9 +1136,6 @@ async function openChatPanel(userId, username, avatar) {
     const chatMessagesContainer = chatPanel?.querySelector('.chat-messages');
     const friendsPanelContainer = document.querySelector('.friends-panel-container');
     const sponsorSidebar = document.querySelector('.sponsor-sidebar');
-    const settingsButtonContainer = document.querySelector('.server-sidebar .server-item:has(.server-settings-icon)');
-    const chatCloseBtn = chatPanel?.querySelector('.chat-close-btn');
-    const chatEmojiBtn = chatPanel?.querySelector('.emoji-btn');
 
     // Elementlerin varlığını kontrol et
     if (!chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer) {
@@ -1328,21 +1164,7 @@ async function openChatPanel(userId, username, avatar) {
     const chatStatusTextElement = chatHeaderUser.querySelector('.chat-user-info .chat-status');
 
     if (chatUsernameElement) chatUsernameElement.textContent = username;
-    if (chatAvatarElement) {
-        // Avatar kontrolünü güçlendir - avatar null, undefined veya boş string olabilir
-        if (!avatar || avatar.trim() === "") {
-            chatAvatarElement.src = defaultAvatar;
-            console.log("Kullanıcının avatarı bulunamadı, varsayılan avatar kullanılıyor");
-        } else {
-            chatAvatarElement.src = avatar;
-        }
-
-        // Yükleme hatası durumunda varsayılan avatara geri dön
-        chatAvatarElement.onerror = function () {
-            console.warn("Avatar yüklenemedi:", avatar);
-            this.src = defaultAvatar;
-        };
-    }
+    if (chatAvatarElement) chatAvatarElement.src = avatar || defaultAvatar;
 
     // Çevrimiçi durumunu kontrol et
     const isFriendOnline = onlineFriends.has(userId);
@@ -1743,7 +1565,7 @@ function displayMessage(message, authorName = null, authorAvatar = null, source 
                 <span class="message-time">${messageTime}</span>
             </div>
             <div class="message-content">
-                <p>${messageContent}</p>
+                <p>${messageContent}</p> {/* Düz metin veya ayrıştırılamayan JSON */}
             </div>
         </div>
     `;
@@ -3080,10 +2902,17 @@ async function openProfilePanel(userId, username, avatar) {
                         
                         <div class="profile-info-item">
                             <div class="profile-info-label">
-                                <i class="fas fa-clock"></i>
-                                Son Görülme
+                                <i class="fas fa-award"></i>
+                                Rozetler
                             </div>
-                            <div class="profile-info-value">Yükleniyor...</div>
+                            <div class="profile-info-value">
+                                <div class="profile-badges-container">
+                                    <div class="profile-badge" title="Kurucu Üye">
+                                        <i class="fas fa-crown"></i>
+                                        <span>Kurucu</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -3157,18 +2986,17 @@ async function openProfilePanel(userId, username, avatar) {
         }
     }
 
-    // Kullanıcı bilgilerini güncelle (gerektiğinde API'den yükle)
+    // Kullanıcı bilgilerini güncelle
     try {
-        // Katılma tarihi ve son görülme gibi bilgileri API'den al
+        // Katılma tarihi bilgisini API'den al
         const { data: userData, error } = await supabase
             .from('users')
-            .select('created_at, last_seen, status')
+            .select('created_at')
             .eq('id', userId)
             .maybeSingle();
 
         if (!error && userData) {
             const joinDateElement = profileContent.querySelector('#user-info-section .profile-info-item:nth-child(1) .profile-info-value');
-            const lastSeenElement = profileContent.querySelector('#user-info-section .profile-info-item:nth-child(2) .profile-info-value');
 
             if (joinDateElement && userData.created_at) {
                 const joinDate = new Date(userData.created_at);
@@ -3177,26 +3005,9 @@ async function openProfilePanel(userId, username, avatar) {
                     month: 'long',
                     year: 'numeric'
                 });
-            }
-
-            if (lastSeenElement && userData.last_seen) {
-                const lastSeen = new Date(userData.last_seen);
-                const now = new Date();
-                const diffMinutes = Math.floor((now - lastSeen) / (1000 * 60));
-
-                if (diffMinutes < 1) {
-                    lastSeenElement.textContent = 'Şimdi';
-                } else if (diffMinutes < 60) {
-                    lastSeenElement.textContent = `${diffMinutes} dakika önce`;
-                } else if (diffMinutes < 1440) {
-                    const hours = Math.floor(diffMinutes / 60);
-                    lastSeenElement.textContent = `${hours} saat önce`;
-                } else {
-                    lastSeenElement.textContent = lastSeen.toLocaleDateString('tr-TR', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                    });
+            } else {
+                if (joinDateElement) {
+                    joinDateElement.textContent = 'Kayıt tarihi bilinmiyor';
                 }
             }
         }
