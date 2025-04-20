@@ -2986,6 +2986,8 @@ async function openProfilePanel(userId, username, avatar) {
 
     // Kullanıcı bilgilerini güncelle (gerektiğinde API'den yükle)
     try {
+        console.log(`Profil bilgileri yükleniyor: ${userId}`);
+
         // Katılma tarihi ve son görülme gibi bilgileri API'den al
         const { data: userData, error } = await supabase
             .from('users')
@@ -2993,23 +2995,50 @@ async function openProfilePanel(userId, username, avatar) {
             .eq('id', userId)
             .maybeSingle();
 
-        if (!error && userData) {
+        console.log('Supabase yanıtı:', userData, error);
+
+        if (error) {
+            console.error('Kullanıcı bilgileri alınırken hata:', error);
+            return;
+        }
+
+        if (userData) {
             const joinDateElement = profileContent.querySelector('#user-info-section .profile-info-item:nth-child(1) .profile-info-value');
+            console.log('DOM Element bulundu:', joinDateElement, 'created_at değeri:', userData.created_at);
 
             if (joinDateElement && userData.created_at) {
                 const joinDate = new Date(userData.created_at);
+                console.log('Tarih nesnesi oluşturuldu:', joinDate);
+
                 joinDateElement.textContent = joinDate.toLocaleDateString('tr-TR', {
                     day: 'numeric',
                     month: 'long',
                     year: 'numeric'
                 });
+                console.log('Tarih metni ayarlandı:', joinDateElement.textContent);
+            } else {
+                // Fallback olarak geçici tarih göster
+                if (joinDateElement) {
+                    joinDateElement.textContent = "Bilinmiyor";
+                    console.log('Tarih bilgisi bulunamadı, varsayılan değer kullanılıyor');
+                }
             }
 
             // Rozetler kısmını ekleyecek kod buraya gelecek (İleri aşamalarda implement edilecek)
             // Şimdilik sadece "Yeni Üye" rozetini gösteriyoruz
+        } else {
+            console.warn(`${userId} için kullanıcı verisi bulunamadı`);
+            const joinDateElement = profileContent.querySelector('#user-info-section .profile-info-item:nth-child(1) .profile-info-value');
+            if (joinDateElement) {
+                joinDateElement.textContent = "Bilinmiyor";
+            }
         }
     } catch (error) {
         console.error('Kullanıcı bilgileri yüklenirken hata:', error);
+        const joinDateElement = profileContent.querySelector('#user-info-section .profile-info-item:nth-child(1) .profile-info-value');
+        if (joinDateElement) {
+            joinDateElement.textContent = "Bilinmiyor";
+        }
     }
 
     // Profil panelinin kapatma butonuna tıklama eventi ekle
