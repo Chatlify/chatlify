@@ -2905,12 +2905,10 @@ async function openProfilePanel(userId, username, avatar) {
                                 <i class="fas fa-award"></i>
                                 Rozetler
                             </div>
-                            <div class="profile-info-value">
-                                <div class="profile-badges-container">
-                                    <div class="profile-badge" title="Kurucu Üye">
-                                        <i class="fas fa-crown"></i>
-                                        <span>Kurucu</span>
-                                    </div>
+                            <div class="profile-badges-container">
+                                <div class="profile-badge">
+                                    <i class="fas fa-user-alt"></i>
+                                    <span>Yeni Üye</span>
                                 </div>
                             </div>
                         </div>
@@ -2986,12 +2984,12 @@ async function openProfilePanel(userId, username, avatar) {
         }
     }
 
-    // Kullanıcı bilgilerini güncelle
+    // Kullanıcı bilgilerini güncelle (gerektiğinde API'den yükle)
     try {
-        // Katılma tarihi bilgisini API'den al
+        // Katılma tarihi ve son görülme gibi bilgileri API'den al
         const { data: userData, error } = await supabase
             .from('users')
-            .select('created_at')
+            .select('created_at, last_seen, status')
             .eq('id', userId)
             .maybeSingle();
 
@@ -3005,11 +3003,10 @@ async function openProfilePanel(userId, username, avatar) {
                     month: 'long',
                     year: 'numeric'
                 });
-            } else {
-                if (joinDateElement) {
-                    joinDateElement.textContent = 'Kayıt tarihi bilinmiyor';
-                }
             }
+
+            // Rozetler kısmını ekleyecek kod buraya gelecek (İleri aşamalarda implement edilecek)
+            // Şimdilik sadece "Yeni Üye" rozetini gösteriyoruz
         }
     } catch (error) {
         console.error('Kullanıcı bilgileri yüklenirken hata:', error);
