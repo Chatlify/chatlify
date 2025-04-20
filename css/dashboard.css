@@ -849,14 +849,11 @@
 /* ----- YENİ HEADER TASARIM ----- */
 .dashboard-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    padding: 0 16px;
-    height: 60px;
-    background: rgba(19, 23, 42, 0.8);
-    border-bottom: 1px solid rgba(100, 114, 224, 0.15);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(8px);
-    width: 100%;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--divider-color);
+    background-color: var(--main-bg);
 }
 
 .header-left,
@@ -7378,5 +7375,693 @@ emoji-picker {
     border: 1px dashed var(--text-muted);
 }
 
+/* Arama paneli stilleri */
+.search-container {
+    position: relative;
+    width: 40%;
+    margin: 0 auto;
+}
 
-</rewritten_file>
+.search-input-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: var(--input-bg);
+    border-radius: 8px;
+    padding: 0 12px;
+    height: 36px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.search-input-wrapper:focus-within {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.3);
+}
+
+.search-icon {
+    color: var(--text-muted);
+    margin-right: 8px;
+    font-size: 14px;
+}
+
+#global-search {
+    background: transparent;
+    border: none;
+    color: var(--text-normal);
+    flex: 1;
+    font-size: 14px;
+    outline: none;
+}
+
+#global-search::placeholder {
+    color: var(--text-muted);
+}
+
+.clear-search-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0;
+    display: none;
+}
+
+.clear-search-btn:hover {
+    color: var(--text-normal);
+}
+
+.search-results-dropdown {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    right: 0;
+    background-color: var(--background-secondary);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    max-height: 350px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.search-results-dropdown.show {
+    display: block;
+}
+
+.search-category {
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.search-result-item:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.search-result-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--background-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.search-result-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.search-result-avatar .avatar-placeholder {
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.search-result-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.search-result-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-normal);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-detail {
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-match {
+    color: var(--accent-color);
+    font-weight: 500;
+}
+
+.search-empty-state {
+    padding: 16px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+/* Tab stilleri güncelleme */
+.tab-controls {
+    display: flex;
+    margin-right: 15px;
+}
+
+.tab-controls .tab {
+    padding: 8px 16px;
+    margin: 0 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+
+.tab-controls .tab:hover {
+    background-color: var(--background-modifier-hover);
+    color: var(--text-normal);
+}
+
+.tab-controls .tab.active {
+    background-color: var(--background-modifier-active);
+    color: var(--text-normal);
+}
+
+/* Logo container */
+.logo-container {
+    display: flex;
+    align-items: center;
+    margin-left: 15px;
+}
+
+.logo-container img {
+    height: 32px;
+    width: auto;
+}
+
+/* Dashboard header güncelleme */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--divider-color);
+    background-color: var(--main-bg);
+}
+
+/* ... existing code ... */
+
+/* Arama Paneli Stilleri */
+.search-panel {
+    position: relative;
+    margin-left: auto;
+    width: 250px;
+    margin-right: 10px;
+}
+
+.search-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    width: 100%;
+    padding: 8px 35px 8px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
+}
+
+.search-icon {
+    position: absolute;
+    right: 10px;
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+.search-clear {
+    position: absolute;
+    right: 10px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.search-clear:hover {
+    color: var(--text-primary);
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 350px;
+    overflow-y: auto;
+    background-color: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    margin-top: 5px;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s ease;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background-color: var(--hover-bg);
+}
+
+.search-result-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 10px;
+}
+
+.search-result-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.search-result-info {
+    flex-grow: 1;
+}
+
+.search-result-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+}
+
+.search-result-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.search-action-btn {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    border-radius: 4px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.search-action-btn:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.search-loading,
+.search-error,
+.search-empty {
+    padding: 15px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+/* Mobil uyumlu CSS */
+@media (max-width: 768px) {
+    .search-panel {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    .dm-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+/* ... existing code ... */
+
+/* Geliştirilmiş Global Arama Paneli Stilleri */
+.search-container {
+    position: relative;
+    width: 300px;
+    margin: 0 20px;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+    border-radius: 20px;
+    background-color: var(--card-bg);
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.search-input-wrapper:focus-within {
+    box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.3);
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 2;
+    transition: all 0.2s ease;
+}
+
+#global-search {
+    width: 100%;
+    height: 36px;
+    background-color: var(--dm-bg);
+    border: 1px solid transparent;
+    border-radius: 20px;
+    padding: 8px 35px 8px 38px;
+    font-size: 14px;
+    color: var(--text-color);
+    transition: all 0.2s ease;
+}
+
+#global-search:focus {
+    outline: none;
+    background-color: var(--card-bg);
+    border-color: var(--primary-color);
+}
+
+#global-search::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.clear-search-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+    display: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    z-index: 2;
+}
+
+.clear-search-btn:hover {
+    opacity: 1;
+    color: var(--text-color);
+}
+
+/* Geliştirilmiş Arama Sonuçları Dropdown */
+.search-results-dropdown {
+    position: absolute;
+    top: 45px;
+    left: 0;
+    width: 400px;
+    max-height: 500px;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    border: 1px solid var(--divider-color);
+    box-shadow: var(--card-shadow);
+    z-index: 1000;
+    display: none;
+    overflow: hidden;
+    animation: fadeScale 0.2s ease;
+}
+
+.search-results-inner {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 8px 0;
+}
+
+/* Yükleniyor Bileşeni */
+.search-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.search-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(var(--primary-color-rgb), 0.1);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 10px;
+}
+
+.search-empty,
+.search-error {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+/* Arama Kategorileri */
+.search-category {
+    margin-bottom: 8px;
+}
+
+.search-category:last-child {
+    margin-bottom: 0;
+}
+
+.search-category-header {
+    padding: 10px 15px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    background-color: rgba(var(--primary-color-rgb), 0.05);
+    border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.1);
+}
+
+.search-category-header i {
+    margin-right: 8px;
+    font-size: 14px;
+}
+
+.search-category-items {
+    padding: 5px 0;
+}
+
+/* Arama Sonucu Öğesi */
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    position: relative;
+}
+
+.search-result-item:hover {
+    background-color: var(--item-hover);
+}
+
+.search-result-item.is-friend {
+    background-color: rgba(var(--primary-color-rgb), 0.03);
+}
+
+.search-result-avatar {
+    position: relative;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.search-result-avatar img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.search-result-info {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.search-result-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-message-preview {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-width: 280px;
+}
+
+.message-date {
+    font-size: 11px;
+    color: var(--text-secondary);
+    opacity: 0.7;
+    margin-left: 5px;
+}
+
+/* Arama Sonucu Aksiyonları */
+.search-result-actions {
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+    flex-shrink: 0;
+}
+
+.search-action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: transparent;
+    border: none;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-left: 2px;
+    transition: all 0.2s;
+    opacity: 0;
+}
+
+.search-result-item:hover .search-action-btn {
+    opacity: 1;
+}
+
+.search-action-btn:hover {
+    background-color: var(--item-hover);
+    color: var(--primary-color);
+}
+
+.search-action-btn.message-btn:hover {
+    color: var(--primary-color);
+}
+
+.search-action-btn.add-friend-btn:hover {
+    color: var(--status-online);
+}
+
+.search-action-btn.profile-btn:hover {
+    color: var(--primary-color);
+}
+
+.search-action-btn.goto-message-btn:hover {
+    color: var(--primary-color);
+}
+
+/* Vurgulama */
+.highlight {
+    background-color: rgba(var(--primary-color-rgb), 0.2);
+    color: var(--primary-color);
+    font-weight: 600;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+/* Mesaj Vurgusu */
+.highlight-message {
+    animation: highlightBg 2s ease;
+}
+
+@keyframes highlightBg {
+    0% {
+        background-color: rgba(var(--primary-color-rgb), 0.3);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+/* Durum Noktası */
+.search-result-avatar .status-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--card-bg);
+}
+
+/* Ufak Ekranlarda Responsif Tasarım */
+@media (max-width: 768px) {
+    .search-container {
+        width: 200px;
+    }
+
+    .search-results-dropdown {
+        width: 300px;
+        left: -50px;
+    }
+
+    .search-result-message-preview {
+        max-width: 180px;
+    }
+}
+
+/* ... existing code ... */
