@@ -88,6 +88,19 @@
     }
 }
 
+/* Bildirim noktası animasyonu */
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 0.8;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
 /* Ayarlar butonu dönme animasyonu */
 @keyframes spin {
     from {
@@ -108,6 +121,18 @@
     100% {
         transform: rotate(90deg);
     }
+}
+
+/* Bildirim Noktası */
+.notification-dot {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--danger-color);
+    animation: blink 1.5s infinite ease-in-out;
 }
 
 /* Tüm scrollbar'ları gizle */

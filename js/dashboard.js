@@ -523,8 +523,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         console.log('Bekleyen arkadaşlık istekleri için realtime aboneliği başlatılıyor...');
 
-        const pendingFriendChannel = supabase
-            .channel('pending-friend-requests')
+        // Gelen arkadaşlık istekleri için kanal
+        const incomingFriendChannel = supabase
+            .channel('incoming-friend-requests')
             .on('postgres_changes', {
                 event: 'INSERT',
                 schema: 'public',
@@ -532,6 +533,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 filter: `user_id_2=eq.${currentUserId},status=eq.pending`
             }, async (payload) => {
                 console.log('Yeni bekleyen arkadaşlık isteği alındı (realtime):', payload);
+
+                // Yeni arkadaşlık isteği için görsel bildirim göster
+                showFriendRequestNotification(payload);
 
                 // Bildirim sesi çal (eğer varsa)
                 if (messageNotificationSound) {
@@ -550,10 +554,119 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const activeTab = document.querySelector('.dashboard-header .tab.active');
                 if (activeTab && activeTab.textContent.trim() === 'Bekleyen') {
                     loadPendingFriendRequests();
+                } else {
+                    // Bekleyen istekler sekmesi açık olmasa bile yeni istek geldiğini göster
+                    const pendingTab = Array.from(document.querySelectorAll('.dashboard-header .tab'))
+                        .find(tab => tab.textContent.trim() === 'Bekleyen');
+
+                    if (pendingTab) {
+                        // Bekleyen sekmesinde bildirim göster
+                        let notificationIndicator = pendingTab.querySelector('.notification-dot');
+                        if (!notificationIndicator) {
+                            notificationIndicator = document.createElement('span');
+                            notificationIndicator.className = 'notification-dot';
+                            pendingTab.appendChild(notificationIndicator);
+                        }
+                    }
                 }
             })
             .subscribe((status) => {
                 console.log(`Bekleyen arkadaşlık istekleri abonelik durumu: ${status}`);
+            });
+
+        // Gönderilen arkadaşlık isteklerinin durumunu izle
+        const outgoingFriendChannel = supabase
+            .channel('outgoing-friend-requests')
+            .on('postgres_changes', {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'friendships',
+                filter: `user_id_1=eq.${currentUserId},status=eq.accepted`
+            }, async (payload) => {
+                console.log('Gönderilen arkadaşlık isteği kabul edildi (realtime):', payload);
+
+                // Arkadaş listesini güncelle
+                const onlineList = document.querySelector('.online-friends');
+                const offlineList = document.querySelector('.offline-friends');
+                const dmList = document.querySelector('#friends-group .dm-items');
+                const onlineSection = document.querySelector('.online-section-title');
+                const offlineSection = document.querySelector('.offline-section-title');
+
+                if (onlineList && offlineList && dmList) {
+                    await loadAllFriends({
+                        onlineList,
+                        offlineList,
+                        dmList,
+                        onlineSection,
+                        offlineSection
+                    });
+                }
+            })
+            .subscribe((status) => {
+                console.log(`Gönderilen arkadaşlık istekleri abonelik durumu: ${status}`);
+            });
+    }
+
+    // Arkadaşlık isteği bildirimi göster
+    function showFriendRequestNotification(payload) {
+        // Bildirim konteynerini kontrol et veya oluştur
+        let notificationContainer = document.querySelector('.notification-container');
+        if (!notificationContainer) {
+            notificationContainer = document.createElement('div');
+            notificationContainer.className = 'notification-container';
+            document.body.appendChild(notificationContainer);
+        }
+
+        // Kullanıcı bilgilerini al
+        supabase
+            .from('users')
+            .select('username, avatar')
+            .eq('id', payload.new.user_id_1)
+            .single()
+            .then(({ data, error }) => {
+                if (error) {
+                    console.error('Bildirim için kullanıcı bilgileri alınamadı:', error);
+                    return;
+                }
+
+                const username = data.username || 'Bilinmeyen Kullanıcı';
+
+                // Bildirim elementi oluştur
+                const notification = document.createElement('div');
+                notification.className = 'notification info show';
+                notification.innerHTML = `
+                    <div class="notification-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="notification-content">
+                        <strong>${username}</strong> sana arkadaşlık isteği gönderdi.
+                    </div>
+                    <button class="notification-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+
+                // Kapatma butonu olayı
+                const closeBtn = notification.querySelector('.notification-close');
+                closeBtn.addEventListener('click', () => {
+                    notification.classList.replace('show', 'hide');
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                });
+
+                // Otomatik kaldırma
+                notificationContainer.appendChild(notification);
+                setTimeout(() => {
+                    notification.classList.replace('show', 'hide');
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }, 5000);
             });
     }
 });
