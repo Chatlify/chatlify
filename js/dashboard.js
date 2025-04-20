@@ -1469,6 +1469,8 @@ function unsubscribeFromMessages() {
 }
 
 // Yeni bir mesajı ekrana görüntüleme (Detaylı loglama ve GIF JSON kontrolü)
+// !!! DİKKAT: Template literal içinde HTML yorumları ({/* ... */}) KULLANMAYIN !!!
+// !!! Bu tür yorumlar HTML olarak render edilir ve mesaj içeriğinde görünür hale gelir !!!
 function displayMessage(message, authorName = null, authorAvatar = null, source = 'unknown') {
     const chatMessagesContainer = document.querySelector('.chat-panel .chat-messages');
     if (!chatMessagesContainer || !message) {
@@ -1565,7 +1567,7 @@ function displayMessage(message, authorName = null, authorAvatar = null, source 
                 <span class="message-time">${messageTime}</span>
             </div>
             <div class="message-content">
-                <p>${messageContent}</p> {/* Düz metin veya ayrıştırılamayan JSON */}
+                <p>${messageContent}</p>
             </div>
         </div>
     `;
