@@ -2991,7 +2991,7 @@ async function openProfilePanel(userId, username, avatar) {
         // Katılma tarihi ve son görülme gibi bilgileri API'den al
         const { data: userData, error } = await supabase
             .from('users')
-            .select('created_at, last_seen, status')
+            .select('createdAt, lastSeen, status') // created_at -> createdAt, last_seen -> lastSeen olarak düzeltildi
             .eq('id', userId)
             .maybeSingle();
 
@@ -3004,10 +3004,10 @@ async function openProfilePanel(userId, username, avatar) {
 
         if (userData) {
             const joinDateElement = profileContent.querySelector('#user-info-section .profile-info-item:nth-child(1) .profile-info-value');
-            console.log('DOM Element bulundu:', joinDateElement, 'created_at değeri:', userData.created_at);
+            console.log('DOM Element bulundu:', joinDateElement, 'createdAt değeri:', userData.createdAt);
 
-            if (joinDateElement && userData.created_at) {
-                const joinDate = new Date(userData.created_at);
+            if (joinDateElement && userData.createdAt) {
+                const joinDate = new Date(userData.createdAt);
                 console.log('Tarih nesnesi oluşturuldu:', joinDate);
 
                 joinDateElement.textContent = joinDate.toLocaleDateString('tr-TR', {
