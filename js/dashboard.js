@@ -164,25 +164,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 
         tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
+            tab.addEventListener('click', async () => {
+                console.log(`Tab tıklandı: ${tab.textContent.trim()}`);
+
                 // Tüm sekmeleri sıfırla
                 tabs.forEach(t => t.classList.remove('active'));
 
                 // Tıklanan sekmeyi aktif yap
                 tab.classList.add('active');
 
-                // İçeriği göster/gizle
+                // Tabın adını al
                 const tabName = tab.textContent.trim();
+
+                // İçeriği göster/gizle
                 showSection(tabName, tabContents);
 
-                // Bekleyen isteği için loadPendingFriendRequests çağrısını kaldırdım
-                // Bu işlem artık showSection içinde yapılıyor
-                // Eğer "Bekleyen" sekmesine tıklandıysa bildirimi temizle
+                // Eğer "Bekleyen" sekmesine tıklandıysa özel işlemler yap
                 if (tabName === 'Bekleyen') {
                     // Bildirim noktasını kaldır (eğer varsa)
                     const notificationDot = tab.querySelector('.notification-dot');
                     if (notificationDot) {
                         notificationDot.remove();
+                    }
+
+                    // showSection içinde de çağrılıyor, ama güvenlik için burada da çağıralım
+                    console.log('Tab tıklama olayında loadPendingFriendRequests doğrudan çağrılıyor');
+                    try {
+                        await loadPendingFriendRequests();
+                    } catch (error) {
+                        console.error('Tab tıklama olayında bekleyen istekler yüklenirken hata:', error);
+                    }
+
+                    // Bölümün görünür olduğundan emin ol
+                    const pendingSection = document.querySelector('.pending-requests-section');
+                    if (pendingSection) {
+                        pendingSection.style.display = 'block';
                     }
                 }
             });
@@ -191,6 +207,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Bekleyen arkadaşlık isteklerini yükle ve görüntüle
     async function loadPendingFriendRequests() {
+        console.log('loadPendingFriendRequests çağrıldı - Bekleyen istekler yükleniyor');
+
         // Bekleyen istekler konteynerini seç
         const pendingContainer = document.querySelector('.pending-requests-container');
         if (!pendingContainer) {
@@ -285,6 +303,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.querySelectorAll('.pending-count').forEach(badge => {
                 badge.textContent = pendingRequests.length;
             });
+
+            console.log(`${pendingRequests.length} adet bekleyen istek başarıyla yüklendi ve görüntülendi`);
         } catch (error) {
             console.error('Bekleyen istekler yüklenirken hata:', error);
             pendingContainer.innerHTML = `<div class="error-placeholder">Bekleyen istekler yüklenirken bir hata oluştu: ${error.message}</div>`;
@@ -465,19 +485,31 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }
 
-            // Eğer bekleyen istekler bölümüyse ve daha önce oluşturulmadıysa oluştur
+            // Eğer bekleyen istekler bölümüyse özel işlemleri yap
             if (sectionName === 'Bekleyen') {
                 // Eğer bölüm yoksa oluştur
                 if (!document.querySelector('.pending-requests-section')) {
                     createPendingSection();
+
+                    // Oluşturulduktan sonra bölümü tekrar seç ve görünür yap
+                    const pendingSection = document.querySelector('.pending-requests-section');
+                    if (pendingSection) {
+                        pendingSection.style.display = 'block';
+                    }
                 }
 
-                // Bekleyen istekleri yükle - BU SATIRLARI EKLEDİM
-                // Bu çağrı, tab tıklama olayı dışında buradan da yapılmalı
-                // Böylece ilk tıklamada da istekler yüklenecek
-                setTimeout(() => {
-                    loadPendingFriendRequests();
-                }, 100);
+                // Bekleyen isteklerin hemen yüklenmesini sağla
+                // NOT: Burada async/await kullanamıyoruz çünkü showSection async değil
+                loadPendingFriendRequests().catch(err => {
+                    console.error('Bekleyen istekleri yüklerken hata:', err);
+                });
+
+                // Ekstra kontrol - bölümün gerçekten görünür olduğundan emin ol
+                const pendingSection = document.querySelector('.pending-requests-section');
+                if (pendingSection) {
+                    pendingSection.style.display = 'block';
+                    console.log('Bekleyen istekler bölümü görünür hale getirildi:', pendingSection);
+                }
             }
         } else {
             // Eski davranış - sections parametresi yoksa
