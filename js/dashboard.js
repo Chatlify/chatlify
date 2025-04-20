@@ -2988,10 +2988,10 @@ async function openProfilePanel(userId, username, avatar) {
     try {
         console.log(`Profil bilgileri yükleniyor: ${userId}`);
 
-        // Katılma tarihi ve son görülme gibi bilgileri API'den al
+        // Katılma tarihini API'den al - sadece createdAt sütununu sorguluyoruz
         const { data: userData, error } = await supabase
             .from('users')
-            .select('createdAt, lastSeen, status') // created_at -> createdAt, last_seen -> lastSeen olarak düzeltildi
+            .select('createdAt') // Sadece createdAt sütununu sorgula
             .eq('id', userId)
             .maybeSingle();
 
