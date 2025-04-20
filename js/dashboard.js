@@ -1200,33 +1200,29 @@ async function openChatPanel(userId, username, avatar) {
 
 // Sohbet paneli header butonlarını ayarlama
 function setupChatHeaderActions(userId, username, avatar) {
-    const chatHeader = document.querySelector('.chat-header');
-    if (!chatHeader) {
-        console.error('Chat header not found!');
-        return;
-    }
+    // Chat header butonlarını ayarla
+    const chatHeader = document.querySelector('.chat-panel .chat-header');
+    const closeBtn = chatHeader?.querySelector('.chat-close-btn');
+    const profileBtn = chatHeader?.querySelector('.profile-btn');
 
-    // Kapatma butonu
-    const closeChatBtn = chatHeader.querySelector('.chat-close-btn');
-    if (closeChatBtn) {
-        // Eski listener'ları temizlemek için klon oluştur
-        const newCloseChatBtn = closeChatBtn.cloneNode(true);
-        closeChatBtn.parentNode.replaceChild(newCloseChatBtn, closeChatBtn);
+    // Sohbeti kapatma butonu
+    if (closeBtn) {
+        // Eski event listener'ları temizle
+        const newCloseBtn = closeBtn.cloneNode(true);
+        closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
 
-        // Yeni listener ekle
-        newCloseChatBtn.addEventListener('click', () => {
-            closeChatPanel();
-        });
+        // Yeni event listener ekle
+        newCloseBtn.addEventListener('click', closeChatPanel);
     }
 
     // Profil butonu
-    const profileBtn = chatHeader.querySelector('button[title="Profili Görüntüle"]');
     if (profileBtn) {
+        // Eski event listener'ları temizle
         const newProfileBtn = profileBtn.cloneNode(true);
         profileBtn.parentNode.replaceChild(newProfileBtn, profileBtn);
 
-        newProfileBtn.addEventListener('click', () => {
-            // Profil görüntüleme işlevi 
+        // Profil butonuna tıklayınca profil panelini aç
+        newProfileBtn.addEventListener('click', function () {
             openProfilePanel(userId, username, avatar);
         });
     }
@@ -3134,3 +3130,28 @@ function setupProfileTabControls(profileContent) {
         });
     });
 }
+
+// Uygulamanın başlatıldığı ana fonksiyon (DOMContentLoaded'da çağrılıyor)
+document.addEventListener('DOMContentLoaded', function () {
+    // ... existing code ...
+
+    // Sohbet panelindeki profil butonuna tıklanınca profil panelini açma
+    const chatHeaderProfileBtn = document.querySelector('.chat-panel .chat-header .profile-btn');
+    if (chatHeaderProfileBtn) {
+        chatHeaderProfileBtn.addEventListener('click', function () {
+            // Aktif sohbet kullanıcısının bilgilerini al
+            const userId = currentConversationId; // DM sisteminde conversationId genellikle karşı kullanıcının ID'si
+
+            // Chat header'dan kullanıcı bilgilerini al
+            const chatHeader = document.querySelector('.chat-panel .chat-header');
+            const username = chatHeader?.querySelector('.chat-username')?.textContent || 'Kullanıcı';
+            const avatarImg = chatHeader?.querySelector('.chat-avatar img');
+            const avatar = avatarImg ? avatarImg.src : defaultAvatar;
+
+            // Profil panelini aç
+            openProfilePanel(userId, username, avatar);
+        });
+    }
+
+    // ... existing code ...
+});
