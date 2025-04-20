@@ -1297,6 +1297,9 @@ async function openChatPanel(userId, username, avatar) {
     const chatMessagesContainer = chatPanel?.querySelector('.chat-messages');
     const friendsPanelContainer = document.querySelector('.friends-panel-container');
     const sponsorSidebar = document.querySelector('.sponsor-sidebar');
+    const settingsButtonContainer = document.querySelector('.server-sidebar .server-item:has(.server-settings-icon)');
+    const chatCloseBtn = chatPanel?.querySelector('.chat-close-btn');
+    const chatEmojiBtn = chatPanel?.querySelector('.emoji-btn');
 
     // Elementlerin varlığını kontrol et
     if (!chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer) {
@@ -1325,7 +1328,21 @@ async function openChatPanel(userId, username, avatar) {
     const chatStatusTextElement = chatHeaderUser.querySelector('.chat-user-info .chat-status');
 
     if (chatUsernameElement) chatUsernameElement.textContent = username;
-    if (chatAvatarElement) chatAvatarElement.src = avatar || defaultAvatar;
+    if (chatAvatarElement) {
+        // Avatar kontrolünü güçlendir - avatar null, undefined veya boş string olabilir
+        if (!avatar || avatar.trim() === "") {
+            chatAvatarElement.src = defaultAvatar;
+            console.log("Kullanıcının avatarı bulunamadı, varsayılan avatar kullanılıyor");
+        } else {
+            chatAvatarElement.src = avatar;
+        }
+
+        // Yükleme hatası durumunda varsayılan avatara geri dön
+        chatAvatarElement.onerror = function () {
+            console.warn("Avatar yüklenemedi:", avatar);
+            this.src = defaultAvatar;
+        };
+    }
 
     // Çevrimiçi durumunu kontrol et
     const isFriendOnline = onlineFriends.has(userId);
@@ -1726,7 +1743,7 @@ function displayMessage(message, authorName = null, authorAvatar = null, source 
                 <span class="message-time">${messageTime}</span>
             </div>
             <div class="message-content">
-                <p>${messageContent}</p> {/* Düz metin veya ayrıştırılamayan JSON */}
+                <p>${messageContent}</p>
             </div>
         </div>
     `;
