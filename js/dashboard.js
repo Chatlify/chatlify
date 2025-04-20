@@ -175,9 +175,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const tabName = tab.textContent.trim();
                 showSection(tabName, tabContents);
 
-                // Eğer "Bekleyen" sekmesine tıklandıysa bekleyen istekleri yükle
+                // Bekleyen isteği için loadPendingFriendRequests çağrısını kaldırdım
+                // Bu işlem artık showSection içinde yapılıyor
+                // Eğer "Bekleyen" sekmesine tıklandıysa bildirimi temizle
                 if (tabName === 'Bekleyen') {
-                    loadPendingFriendRequests();
+                    // Bildirim noktasını kaldır (eğer varsa)
+                    const notificationDot = tab.querySelector('.notification-dot');
+                    if (notificationDot) {
+                        notificationDot.remove();
+                    }
                 }
             });
         });
@@ -460,8 +466,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             // Eğer bekleyen istekler bölümüyse ve daha önce oluşturulmadıysa oluştur
-            if (sectionName === 'Bekleyen' && !document.querySelector('.pending-requests-section')) {
-                createPendingSection();
+            if (sectionName === 'Bekleyen') {
+                // Eğer bölüm yoksa oluştur
+                if (!document.querySelector('.pending-requests-section')) {
+                    createPendingSection();
+                }
+
+                // Bekleyen istekleri yükle - BU SATIRLARI EKLEDİM
+                // Bu çağrı, tab tıklama olayı dışında buradan da yapılmalı
+                // Böylece ilk tıklamada da istekler yüklenecek
+                setTimeout(() => {
+                    loadPendingFriendRequests();
+                }, 100);
             }
         } else {
             // Eski davranış - sections parametresi yoksa
