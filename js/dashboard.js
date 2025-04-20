@@ -1205,7 +1205,7 @@ function buildContextMenuContent(menu, userId, username, avatar) {
 
     // Menü Öğeleri
     const items = [
-        { label: 'Profil', icon: 'fa-user', action: () => console.log(`Profil görüntüle: ${username} (${userId})`) },
+        { label: 'Profil', icon: 'fa-user', action: () => openProfilePanel(userId, username, avatar) },
         {
             label: 'Mesaj Gönder', icon: 'fa-comment', action: () => {
                 // DM listesindeki avatarı bulup openChatPanel'e göndermek daha doğru olabilir
@@ -1404,8 +1404,8 @@ function setupChatHeaderActions(userId, username, avatar) {
         profileBtn.parentNode.replaceChild(newProfileBtn, profileBtn);
 
         newProfileBtn.addEventListener('click', () => {
-            // Profil görüntüleme işlevi (eğer varsa)
-            console.log(`${username} profilini görüntüle`);
+            // Profil görüntüleme işlevi 
+            openProfilePanel(userId, username, avatar);
         });
     }
 }
@@ -3017,3 +3017,281 @@ function displayGifMessage(message) {
     // Bu fonksiyonun içeriği artık displayMessage içinde
 }
 */
+
+// Profil görüntüleme işlevi
+async function openProfilePanel(userId, username, avatar) {
+    console.log(`Profil paneli açılıyor: ${username} (${userId})`);
+
+    // Profile panel elementlerini al
+    const profilePanel = document.querySelector('.profile-panel');
+    const profileContent = profilePanel?.querySelector('.profile-panel-content');
+
+    // Profil paneli yoksa erken çık
+    if (!profilePanel || !profileContent) {
+        console.error('Profil paneli elementleri bulunamadı');
+        return;
+    }
+
+    // Profil panelini temizle ve yeni içeriği oluştur
+    if (!profileContent.querySelector('.profile-left-section')) {
+        profileContent.innerHTML = `
+            <button class="profile-close-btn">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="profile-left-section">
+                <div class="profile-cover"></div>
+                <div class="profile-overlay"></div>
+                <div class="profile-left-content">
+                    <div class="profile-avatar-large">
+                        <img src="${avatar || defaultAvatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
+                        <div class="profile-status-indicator ${onlineFriends && onlineFriends.has(userId) ? 'online' : 'offline'}"></div>
+                    </div>
+                    <h2 class="profile-username">${username}</h2>
+                    <div class="profile-discord-tag">@${username.toLowerCase().replace(/\s+/g, '')}</div>
+                    <div class="profile-status-text">
+                        <i class="fas fa-circle ${onlineFriends && onlineFriends.has(userId) ? 'online' : 'offline'}"></i>
+                        ${onlineFriends && onlineFriends.has(userId) ? 'Çevrimiçi' : 'Çevrimdışı'}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-right-section">
+                <div class="profile-tabs">
+                    <div class="profile-tab active" data-tab="user-info">Kullanıcı Bilgileri</div>
+                    <div class="profile-tab" data-tab="mutual-servers">Ortak Sunucular</div>
+                    <div class="profile-tab" data-tab="mutual-friends">Ortak Arkadaşlar</div>
+                </div>
+                
+                <div class="profile-section active" id="user-info-section">
+                    <div class="profile-section-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h3 class="profile-section-title">Kullanıcı Bilgileri</h3>
+                    </div>
+                    
+                    <div class="profile-info-grid">
+                        <div class="profile-info-item">
+                            <div class="profile-info-label">
+                                <i class="fas fa-calendar-alt"></i>
+                                Katılma Tarihi
+                            </div>
+                            <div class="profile-info-value">Yükleniyor...</div>
+                        </div>
+                        
+                        <div class="profile-info-item">
+                            <div class="profile-info-label">
+                                <i class="fas fa-clock"></i>
+                                Son Görülme
+                            </div>
+                            <div class="profile-info-value">Yükleniyor...</div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-note-container">
+                        <textarea class="profile-note-textarea" placeholder="Bu kullanıcı hakkında kişisel not ekle..."></textarea>
+                    </div>
+                    
+                    <div class="profile-action-buttons">
+                        <button class="profile-action-btn message-btn">
+                            <i class="fas fa-comment"></i>
+                            Mesaj Gönder
+                        </button>
+                        
+                        <button class="profile-action-btn block-btn">
+                            <i class="fas fa-ban"></i>
+                            Engelle
+                        </button>
+                        
+                        <button class="profile-action-btn remove-btn">
+                            <i class="fas fa-user-times"></i>
+                            Arkadaşlıktan Çıkar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="profile-section" id="mutual-servers-section">
+                    <div class="profile-section-header">
+                        <i class="fas fa-server"></i>
+                        <h3 class="profile-section-title">Ortak Sunucular</h3>
+                    </div>
+                    <div class="profile-info-value">Henüz ortak sunucu bulunmamaktadır.</div>
+                </div>
+                
+                <div class="profile-section" id="mutual-friends-section">
+                    <div class="profile-section-header">
+                        <i class="fas fa-users"></i>
+                        <h3 class="profile-section-title">Ortak Arkadaşlar</h3>
+                    </div>
+                    <div class="profile-info-value">Henüz ortak arkadaş bulunmamaktadır.</div>
+                </div>
+            </div>
+        `;
+
+        // Profil sekmeleri için event listener'ları ekle
+        setupProfileTabControls(profileContent);
+    } else {
+        // Eğer panel zaten oluşturulmuşsa, sadece içeriği güncelle
+        const profileUsernameElement = profileContent.querySelector('.profile-username');
+        const profileAvatarElement = profileContent.querySelector('.profile-avatar-large img');
+        const profileStatusIndicator = profileContent.querySelector('.profile-status-indicator');
+        const profileStatusText = profileContent.querySelector('.profile-status-text');
+
+        if (profileUsernameElement) profileUsernameElement.textContent = username;
+        if (profileAvatarElement) {
+            profileAvatarElement.src = avatar || defaultAvatar;
+            profileAvatarElement.onerror = () => {
+                profileAvatarElement.src = defaultAvatar;
+            };
+        }
+
+        // Çevrimiçi durumu güncelle
+        const isOnline = onlineFriends && onlineFriends.has(userId);
+        if (profileStatusIndicator) {
+            profileStatusIndicator.className = `profile-status-indicator ${isOnline ? 'online' : 'offline'}`;
+        }
+        if (profileStatusText) {
+            profileStatusText.innerHTML = `
+                <i class="fas fa-circle ${isOnline ? 'online' : 'offline'}"></i>
+                ${isOnline ? 'Çevrimiçi' : 'Çevrimdışı'}
+            `;
+        }
+    }
+
+    // Kullanıcı bilgilerini güncelle (gerektiğinde API'den yükle)
+    try {
+        // Katılma tarihi ve son görülme gibi bilgileri API'den al
+        const { data: userData, error } = await supabase
+            .from('users')
+            .select('created_at, last_seen, status')
+            .eq('id', userId)
+            .maybeSingle();
+
+        if (!error && userData) {
+            const joinDateElement = profileContent.querySelector('#user-info-section .profile-info-item:nth-child(1) .profile-info-value');
+            const lastSeenElement = profileContent.querySelector('#user-info-section .profile-info-item:nth-child(2) .profile-info-value');
+
+            if (joinDateElement && userData.created_at) {
+                const joinDate = new Date(userData.created_at);
+                joinDateElement.textContent = joinDate.toLocaleDateString('tr-TR', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+            }
+
+            if (lastSeenElement && userData.last_seen) {
+                const lastSeen = new Date(userData.last_seen);
+                const now = new Date();
+                const diffMinutes = Math.floor((now - lastSeen) / (1000 * 60));
+
+                if (diffMinutes < 1) {
+                    lastSeenElement.textContent = 'Şimdi';
+                } else if (diffMinutes < 60) {
+                    lastSeenElement.textContent = `${diffMinutes} dakika önce`;
+                } else if (diffMinutes < 1440) {
+                    const hours = Math.floor(diffMinutes / 60);
+                    lastSeenElement.textContent = `${hours} saat önce`;
+                } else {
+                    lastSeenElement.textContent = lastSeen.toLocaleDateString('tr-TR', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Kullanıcı bilgileri yüklenirken hata:', error);
+    }
+
+    // Profil panelinin kapatma butonuna tıklama eventi ekle
+    const closeBtn = profileContent.querySelector('.profile-close-btn');
+    if (closeBtn) {
+        // Eski event listener'ları temizle
+        const newCloseBtn = closeBtn.cloneNode(true);
+        closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+
+        // Yeni event listener ekle
+        newCloseBtn.addEventListener('click', () => {
+            closeProfilePanel();
+        });
+    }
+
+    // Mesaj gönder butonuna tıklama eventi ekle
+    const messageBtn = profileContent.querySelector('.profile-action-btn.message-btn');
+    if (messageBtn) {
+        // Eski event listener'ları temizle
+        const newMessageBtn = messageBtn.cloneNode(true);
+        messageBtn.parentNode.replaceChild(newMessageBtn, messageBtn);
+
+        // Yeni event listener ekle
+        newMessageBtn.addEventListener('click', () => {
+            closeProfilePanel();
+            openChatPanel(userId, username, avatar);
+        });
+    }
+
+    // Arkadaşlıktan çıkar butonuna tıklama eventi ekle
+    const removeBtn = profileContent.querySelector('.profile-action-btn.remove-btn');
+    if (removeBtn) {
+        // Eski event listener'ları temizle
+        const newRemoveBtn = removeBtn.cloneNode(true);
+        removeBtn.parentNode.replaceChild(newRemoveBtn, removeBtn);
+
+        // Yeni event listener ekle
+        newRemoveBtn.addEventListener('click', () => {
+            closeProfilePanel();
+            showRemoveFriendConfirmation(userId, username, avatar);
+        });
+    }
+
+    // Click dışındaki alana tıklandığında profil panelini kapat
+    profilePanel.addEventListener('click', (e) => {
+        if (e.target === profilePanel) {
+            closeProfilePanel();
+        }
+    });
+
+    // Profil panelini göster
+    profilePanel.classList.add('show');
+
+    // ESC tuşuna basıldığında profil panelini kapat
+    const handleEscKey = (e) => {
+        if (e.key === 'Escape') {
+            closeProfilePanel();
+            document.removeEventListener('keydown', handleEscKey);
+        }
+    };
+    document.addEventListener('keydown', handleEscKey);
+}
+
+// Profil panelini kapatma
+function closeProfilePanel() {
+    const profilePanel = document.querySelector('.profile-panel');
+    if (profilePanel) {
+        profilePanel.classList.remove('show');
+    }
+}
+
+// Profil paneli sekme kontrollerini ayarla
+function setupProfileTabControls(profileContent) {
+    const tabs = profileContent.querySelectorAll('.profile-tab');
+    const sections = profileContent.querySelectorAll('.profile-section');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Aktif sekmeyi değiştir
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            // İlgili içerik bölümünü göster
+            const targetTab = tab.dataset.tab;
+            sections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === `${targetTab}-section`) {
+                    section.classList.add('active');
+                }
+            });
+        });
+    });
+}
