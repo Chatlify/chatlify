@@ -10,7 +10,14 @@ let sampleColumnFormat = 'camelCase'; // Varsayılan olarak camelCase formatın�
 const defaultAvatar = 'images/DefaultAvatar.png';
 let messageNotificationSound = null; // Ses nesnesi için global değişken
 let unreadCounts = {}; // Okunmamış mesaj sayaçları { userId: count }
-const TENOR_API_KEY = 'AIzaSyCjseHq-Gn4cii_fVDtSX3whyY94orNWPM'; // Tenor API anahtarı
+
+// Tenor API anahtarını environment variables'dan al
+const TENOR_API_KEY = process.env.TENOR_API_KEY || null;
+
+// API anahtarı kontrolü
+if (!TENOR_API_KEY) {
+    console.error('Tenor API anahtarı bulunamadı! Environment variables kontrol edin.');
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Dashboard JS başlatılıyor...');
