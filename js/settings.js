@@ -1,5 +1,362 @@
+import { supabase } from './auth_config.js';
+
 // Settings page JavaScript
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async () => {
+    // CSRF token oluştur ve sakla
+    const csrfToken = generateCSRFToken();
+    sessionStorage.setItem('csrfToken', csrfToken);
+
+    // Form elementlerini seç
+    const userSettingsForm = document.getElementById('userSettingsForm');
+    const securitySettingsForm = document.getElementById('securitySettingsForm');
+    const notificationSettingsForm = document.getElementById('notificationSettingsForm');
+    const usernameInput = document.getElementById('username');
+    const emailInput = document.getElementById('email');
+    const currentPasswordInput = document.getElementById('currentPassword');
+    const newPasswordInput = document.getElementById('newPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+
+    // CSRF token gizli alanlarını formlara ekle
+    addCSRFTokenToForms();
+
+    // Kullanıcı oturumunu kontrol et
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Mevcut kullanıcı bilgilerini yükle
+    await loadUserProfile();
+
+    // Form dinleyicileri ekle
+    if (userSettingsForm) {
+        userSettingsForm.addEventListener('submit', handleUserSettingsSubmit);
+    }
+
+    if (securitySettingsForm) {
+        securitySettingsForm.addEventListener('submit', handleSecuritySettingsSubmit);
+    }
+
+    if (notificationSettingsForm) {
+        notificationSettingsForm.addEventListener('submit', handleNotificationSettingsSubmit);
+    }
+
+    // CSRF token oluşturma fonksiyonu
+    function generateCSRFToken() {
+        const randomBytes = new Uint8Array(16);
+        window.crypto.getRandomValues(randomBytes);
+        return Array.from(randomBytes)
+            .map(byte => byte.toString(16).padStart(2, '0'))
+            .join('');
+    }
+
+    // Formlara CSRF token ekle
+    function addCSRFTokenToForms() {
+        const forms = [userSettingsForm, securitySettingsForm, notificationSettingsForm];
+
+        forms.forEach(form => {
+            if (!form) return;
+
+            const existingTokenField = form.querySelector('input[name="_csrf"]');
+            if (existingTokenField) {
+                existingTokenField.value = csrfToken;
+                return;
+            }
+
+            const csrfField = document.createElement('input');
+            csrfField.type = 'hidden';
+            csrfField.name = '_csrf';
+            csrfField.value = csrfToken;
+            form.appendChild(csrfField);
+        });
+    }
+
+    // CSRF token doğrulama
+    function validateCSRFToken(formToken) {
+        const storedToken = sessionStorage.getItem('csrfToken');
+        return formToken === storedToken;
+    }
+
+    // Kullanıcı profil bilgilerini yükle
+    async function loadUserProfile() {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user) {
+                throw new Error('Kullanıcı bulunamadı');
+            }
+
+            // Profil detaylarını veritabanından çek
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            if (error) throw error;
+
+            // Form alanlarını doldur
+            if (usernameInput) {
+                usernameInput.value = profile.username || user.user_metadata?.username || '';
+            }
+
+            if (emailInput) {
+                emailInput.value = user.email || '';
+            }
+
+            // Bildirim ayarlarını doldur
+            if (notificationSettingsForm) {
+                const emailNotifs = document.getElementById('emailNotifications');
+                const pushNotifs = document.getElementById('pushNotifications');
+
+                if (emailNotifs) {
+                    emailNotifs.checked = profile.email_notifications || false;
+                }
+
+                if (pushNotifs) {
+                    pushNotifs.checked = profile.push_notifications || false;
+                }
+            }
+
+        } catch (error) {
+            console.error('Profil yükleme hatası:', error);
+            showErrorMessage('Profil bilgileri yüklenemedi. Lütfen daha sonra tekrar deneyin.');
+        }
+    }
+
+    // Kullanıcı ayarları formu işleme
+    async function handleUserSettingsSubmit(e) {
+        e.preventDefault();
+
+        // CSRF token doğrula
+        const formData = new FormData(userSettingsForm);
+        const formToken = formData.get('_csrf');
+
+        if (!validateCSRFToken(formToken)) {
+            showErrorMessage('Güvenlik hatası: Oturumunuz doğrulanamadı. Lütfen sayfayı yenileyip tekrar deneyin.');
+            return;
+        }
+
+        const username = sanitizeInput(usernameInput.value.trim());
+
+        // Form doğrulama
+        if (username.length < 3) {
+            showInputError(usernameInput, 'Kullanıcı adı en az 3 karakter olmalıdır.');
+            return;
+        }
+
+        try {
+            // Yükleme durumunu göster
+            showLoading(userSettingsForm, true);
+
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user) {
+                throw new Error('Kullanıcı bulunamadı');
+            }
+
+            // Kullanıcı metadatasını güncelle
+            const { error: metadataError } = await supabase.auth.updateUser({
+                data: { username }
+            });
+
+            if (metadataError) throw metadataError;
+
+            // Profil tablosunu güncelle
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .update({ username })
+                .eq('id', user.id);
+
+            if (profileError) throw profileError;
+
+            showSuccessMessage('Kullanıcı bilgileri başarıyla güncellendi.');
+
+        } catch (error) {
+            console.error('Kullanıcı ayarları güncelleme hatası:', error);
+            showErrorMessage(`Ayarlar güncellenirken bir hata oluştu: ${error.message}`);
+        } finally {
+            showLoading(userSettingsForm, false);
+        }
+    }
+
+    // Güvenlik ayarları formu işleme
+    async function handleSecuritySettingsSubmit(e) {
+        e.preventDefault();
+
+        // CSRF token doğrula
+        const formData = new FormData(securitySettingsForm);
+        const formToken = formData.get('_csrf');
+
+        if (!validateCSRFToken(formToken)) {
+            showErrorMessage('Güvenlik hatası: Oturumunuz doğrulanamadı. Lütfen sayfayı yenileyip tekrar deneyin.');
+            return;
+        }
+
+        const currentPassword = currentPasswordInput.value;
+        const newPassword = newPasswordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+
+        // Form doğrulama
+        if (!currentPassword) {
+            showInputError(currentPasswordInput, 'Mevcut şifrenizi girmelisiniz.');
+            return;
+        }
+
+        if (newPassword.length < 8) {
+            showInputError(newPasswordInput, 'Yeni şifre en az 8 karakter olmalıdır.');
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            showInputError(confirmPasswordInput, 'Şifreler eşleşmiyor.');
+            return;
+        }
+
+        try {
+            // Yükleme durumunu göster
+            showLoading(securitySettingsForm, true);
+
+            // Mevcut şifreyi doğrula
+            const { data: { user }, error: signInError } = await supabase.auth.signInWithPassword({
+                email: emailInput.value,
+                password: currentPassword
+            });
+
+            if (signInError) {
+                showInputError(currentPasswordInput, 'Mevcut şifre yanlış.');
+                throw signInError;
+            }
+
+            // Şifreyi güncelle
+            const { error: updateError } = await supabase.auth.updateUser({
+                password: newPassword
+            });
+
+            if (updateError) throw updateError;
+
+            // Formu temizle
+            securitySettingsForm.reset();
+
+            showSuccessMessage('Şifreniz başarıyla güncellendi.');
+
+        } catch (error) {
+            console.error('Şifre güncelleme hatası:', error);
+            if (!error.message.includes('password')) {
+                showErrorMessage(`Şifre güncellenirken bir hata oluştu: ${error.message}`);
+            }
+        } finally {
+            showLoading(securitySettingsForm, false);
+        }
+    }
+
+    // Bildirim ayarları formu işleme
+    async function handleNotificationSettingsSubmit(e) {
+        e.preventDefault();
+
+        // CSRF token doğrula
+        const formData = new FormData(notificationSettingsForm);
+        const formToken = formData.get('_csrf');
+
+        if (!validateCSRFToken(formToken)) {
+            showErrorMessage('Güvenlik hatası: Oturumunuz doğrulanamadı. Lütfen sayfayı yenileyip tekrar deneyin.');
+            return;
+        }
+
+        const emailNotifs = document.getElementById('emailNotifications').checked;
+        const pushNotifs = document.getElementById('pushNotifications').checked;
+
+        try {
+            // Yükleme durumunu göster
+            showLoading(notificationSettingsForm, true);
+
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user) {
+                throw new Error('Kullanıcı bulunamadı');
+            }
+
+            // Bildirim ayarlarını güncelle
+            const { error } = await supabase
+                .from('profiles')
+                .update({
+                    email_notifications: emailNotifs,
+                    push_notifications: pushNotifs
+                })
+                .eq('id', user.id);
+
+            if (error) throw error;
+
+            showSuccessMessage('Bildirim ayarları başarıyla güncellendi.');
+
+        } catch (error) {
+            console.error('Bildirim ayarları güncelleme hatası:', error);
+            showErrorMessage(`Bildirim ayarları güncellenirken bir hata oluştu: ${error.message}`);
+        } finally {
+            showLoading(notificationSettingsForm, false);
+        }
+    }
+
+    // Yardımcı fonksiyonlar
+    function showLoading(form, isLoading) {
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        if (isLoading) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İşleniyor...';
+        } else {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Kaydet';
+        }
+    }
+
+    function showSuccessMessage(message) {
+        const messageContainer = document.getElementById('settingsMessages') || createMessageContainer();
+        messageContainer.innerHTML = `<div class="alert alert-success">${sanitizeInput(message)}</div>`;
+        messageContainer.style.display = 'block';
+
+        // 5 saniye sonra mesajı gizle
+        setTimeout(() => {
+            messageContainer.style.display = 'none';
+        }, 5000);
+    }
+
+    function showErrorMessage(message) {
+        const messageContainer = document.getElementById('settingsMessages') || createMessageContainer();
+        messageContainer.innerHTML = `<div class="alert alert-danger">${sanitizeInput(message)}</div>`;
+        messageContainer.style.display = 'block';
+    }
+
+    function createMessageContainer() {
+        const container = document.createElement('div');
+        container.id = 'settingsMessages';
+        container.className = 'message-container';
+        document.querySelector('.settings-container').prepend(container);
+        return container;
+    }
+
+    function showInputError(input, message) {
+        const formGroup = input.closest('.form-group');
+        const errorElement = formGroup.querySelector('.error-message') || document.createElement('div');
+
+        if (!errorElement.classList.contains('error-message')) {
+            errorElement.className = 'error-message';
+            formGroup.appendChild(errorElement);
+        }
+
+        errorElement.textContent = message;
+        input.classList.add('error');
+    }
+
+    function sanitizeInput(input) {
+        if (!input) return '';
+
+        const element = document.createElement('div');
+        element.textContent = input;
+        return element.innerHTML;
+    }
+
     // Sayfa yüklendiğinde animasyonlar için sınıfları ekle
     document.body.classList.add('page-loaded');
 

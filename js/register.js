@@ -1,8 +1,13 @@
 import { supabase } from './auth_config.js';
 
-// *** Cloudinary Ayarları (Kendi Bilgilerinizle Değiştirin) ***
-const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dabcbpznc/image/upload'; // Cloud Name güncellendi
-const CLOUDINARY_UPLOAD_PRESET = 'chatlify_unsigned'; // İmzasız (unsigned) bir upload preset oluşturup adını buraya yazın
+// *** Cloudinary Ayarları (Environment Variables'dan) ***
+const CLOUDINARY_URL = process.env.CLOUDINARY_URL || null;
+const CLOUDINARY_UPLOAD_PRESET = process.env.CLOUDINARY_UPLOAD_PRESET || null;
+
+// API anahtarlarının kontrolü
+if (!CLOUDINARY_URL || !CLOUDINARY_UPLOAD_PRESET) {
+    console.error('Cloudinary ayarları bulunamadı! Environment variables kontrol edin.');
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('registerForm');

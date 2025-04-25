@@ -12,53 +12,72 @@
 
 /* ========== CSS Değişkenleri ========== */
 :root {
-    /* Renkler */
+    /* Ana Renkler - Koyu Mod */
     --primary-color: #6a11cb;
+    --primary-light: #8458D9;
     --secondary-color: #2575fc;
-    --accent-color: #ff7e5f;
-    --success-color: #0cce6b;
-    --warning-color: #ffbe0b;
-    --error-color: #ff4d4d;
-    --info-color: #3abff8;
+    --secondary-light: #5C9CFF;
 
-    /* Arkaplan Renkleri */
-    --dark-primary: #0f0f13;
-    --dark-secondary: #16161e;
-    --dark-tertiary: #1e1e28;
-    --dark-quaternary: #23232f;
+    /* Arka Plan ve Renk Geçişleri */
+    --dark-bg: #151521;
+    --dark-secondary: #1e1e2e;
+    --dark-tertiary: #242435;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
 
     /* Metin Renkleri */
-    --text-primary: #ffffff;
-    --text-secondary: rgba(255, 255, 255, 0.7);
-    --text-tertiary: rgba(255, 255, 255, 0.5);
-    --text-disabled: rgba(255, 255, 255, 0.3);
+    --text-color: #e9e9ea;
+    --text-muted: #9b9ca7;
+    --text-dark: #7f808c;
+    --border-color: #31324191;
 
     /* Gölgeler */
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.3);
-    --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.3);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+    --shadow-focus: 0 0 0 3px rgba(155, 89, 182, 0.25);
 
-    /* Geçişler */
+    /* Transitions */
     --transition-fast: 0.15s ease;
-    --transition-normal: 0.3s ease;
-    --transition-slow: 0.5s ease;
+    --transition-normal: 0.25s ease;
+    --transition-slow: 0.35s ease;
 
-    /* Köşe Yuvarlaklığı */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
-    --radius-full: 9999px;
+    /* Animasyon Hızları - Optimize Edilmiş */
+    --animation-main: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --animation-bounce: 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+    --animation-fade: 0.4s ease;
 
-    /* Z-index Katmanları */
-    --z-base: 1;
-    --z-dropdown: 10;
-    --z-sticky: 20;
-    --z-fixed: 30;
-    --z-modal: 40;
-    --z-popover: 50;
-    --z-tooltip: 60;
+    /* Güvenli transform-origin değerleri */
+    --transform-origin-center: center center;
+    --transform-origin-top: top center;
+    --transform-origin-bottom: bottom center;
+
+    /* Button shine property */
+    --btn-shine-color: rgba(255, 255, 255, 0.2);
+    --btn-shine-transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    /* Güvenli varsayılan değerler */
+    --animation-duration: 0.3s;
+    --animation-timing: ease;
+    --transition-duration: 0.3s;
+    --transition-timing: ease;
+    --box-shadow-color: rgba(0, 0, 0, 0.3);
+    --gradient-overlay: rgba(14, 14, 24, 0.95);
+    --backdrop-blur: 10px;
+    --border-radius: 40px;
+    --border-width: 1px;
+
+    /* Güvenli animasyon parametreleri */
+    --float-duration: 4s;
+    --float-distance: 10px;
+    --pulse-duration: 2s;
+    --fade-duration: 0.5s;
+
+    /* Ekrandan taşma kontrolü */
+    --max-overflow: hidden;
+    --transform-limit: translateY(30px);
 }
 
 /* ========== Temel Stiller ========== */
@@ -77,24 +96,35 @@ html {
     scroll-behavior: smooth;
 }
 
+html {
+    scroll-behavior: smooth;
+    height: 100%;
+}
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    background-color: var(--dark-primary);
-    color: var(--text-primary);
-    line-height: 1.5;
+    background-color: var(--dark-bg);
+    color: var(--text-color);
+    line-height: 1.6;
     min-height: 100vh;
+    font-size: 16px;
     overflow-x: hidden;
-    transition: background-color var(--transition-slow);
+    position: relative;
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(106, 17, 203, 0.05) 0%, transparent 25%),
+        radial-gradient(circle at 90% 80%, rgba(37, 117, 252, 0.05) 0%, transparent 25%),
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 45%);
+    animation: fadeIn var(--fade-duration) var(--animation-timing) forwards;
 }
 
 a {
+    color: var(--primary-light);
     text-decoration: none;
-    color: var(--text-primary);
     transition: color var(--transition-fast);
 }
 
 a:hover {
-    color: var(--secondary-color);
+    color: var(--primary-color);
 }
 
 button {
@@ -179,22 +209,14 @@ img {
 
 /* ========== Header & Navigasyon ========== */
 header {
-    position: fixed;
+    background-color: var(--dark-bg);
+    position: sticky;
     top: 0;
-    left: 0;
-    width: 100%;
-    padding: 1rem 5%;
-    z-index: var(--z-fixed);
-    backdrop-filter: blur(10px);
-    transition: all var(--transition-normal);
-}
-
-header.scrolled {
-    background-color: rgba(15, 15, 19, 0.8);
+    z-index: 100;
     box-shadow: var(--shadow-md);
 }
 
-nav {
+.nav-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -205,61 +227,67 @@ nav {
 .logo {
     display: flex;
     align-items: center;
-    font-weight: 800;
+    font-weight: 700;
     font-size: 1.5rem;
-    color: var(--text-primary);
-    transition: all var(--transition-normal);
+    color: var(--text-color);
 }
 
-.header-logo-img {
-    width: 40px;
-    height: 40px;
-    margin-right: 0.75rem;
-    animation: pulse 3s infinite;
+.logo img {
+    height: 36px;
+    margin-right: 0.5rem;
 }
 
-.logo span {
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    transition: all var(--transition-normal);
-}
-
-.logo-svg {
-    fill: url(#logo-gradient);
-    transition: all var(--transition-normal);
-}
-
-.logo:hover .logo-svg {
-    transform: rotate(15deg) scale(1.1);
-    filter: drop-shadow(0 0 8px rgba(106, 17, 203, 0.5));
-}
-
-.nav-links {
+.nav-items {
     display: flex;
-    gap: 2rem;
+    gap: 1.5rem;
+    align-items: center;
 }
 
-.nav-links a {
-    position: relative;
+.nav-link {
+    color: var(--text-muted);
     font-weight: 500;
+    transition: color var(--transition-fast);
+    position: relative;
 }
 
-.nav-links a::after {
+.nav-link:hover {
+    color: var(--text-color);
+}
+
+.nav-link.active {
+    color: var(--primary-light);
+}
+
+.nav-link.active::after {
     content: '';
     position: absolute;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
     bottom: -5px;
     left: 0;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    transition: width var(--transition-normal);
+    border-radius: 2px;
+    transform-origin: var(--transform-origin-center);
+    transform: scaleX(1);
+    transition: transform var(--animation-main);
 }
 
-.nav-links a:hover::after,
-.nav-links a.active::after {
+.nav-link:not(.active)::after {
+    content: '';
+    position: absolute;
     width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    bottom: -5px;
+    left: 0;
+    border-radius: 2px;
+    transform-origin: var(--transform-origin-center);
+    transform: scaleX(0);
+    transition: transform var(--animation-main);
+}
+
+.nav-link:hover::after {
+    transform: scaleX(1);
 }
 
 /* Navigasyon Butonları */
@@ -297,57 +325,72 @@ nav {
 }
 
 /* Mobil Menü */
-.mobile-menu-btn {
+.mobile-toggle {
     display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 21px;
+    background: transparent;
+    border: none;
     cursor: pointer;
-    font-size: 1.5rem;
-    transition: all var(--transition-normal);
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    padding: 0;
+    z-index: 110;
 }
 
-.mobile-menu-btn.active {
-    transform: rotate(90deg);
+.mobile-toggle span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: var(--text-color);
+    border-radius: 3px;
+    transition: all var(--transition-normal);
 }
 
 .mobile-menu {
     position: fixed;
     top: 0;
-    left: -100%;
-    width: 80%;
-    height: 100%;
+    right: 0;
+    width: 280px;
+    height: 100vh;
     background-color: var(--dark-secondary);
-    z-index: var(--z-modal);
-    padding: 6rem 2rem 2rem;
-    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
+    z-index: 100;
+    padding: 4rem 2rem 2rem;
+    transform: translateX(100%);
+    transition: transform var(--transition-normal);
+    box-shadow: var(--shadow-lg);
 }
 
 .mobile-menu.active {
-    left: 0;
+    transform: translateX(0);
 }
 
-.mobile-menu .nav-links {
+.mobile-menu .nav-items {
     flex-direction: column;
-    margin-bottom: 2rem;
+    align-items: flex-start;
+    gap: 1.5rem;
 }
 
-.mobile-menu .nav-links a {
-    padding: 1rem 0;
+.mobile-menu .nav-link {
     font-size: 1.2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.mobile-menu .nav-buttons {
-    flex-direction: column;
+.mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 95;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-normal);
 }
 
-.mobile-menu .nav-buttons a {
-    text-align: center;
-    margin-bottom: 1rem;
+.mobile-overlay.active {
+    opacity: 1;
+    visibility: visible;
 }
 
 /* ========== Ana İçerik ========== */
@@ -461,9 +504,8 @@ main.loaded {
     flex: 1;
     max-width: 600px;
     position: relative;
-    display: flex;
-    justify-content: center;
-    animation: fadeInUp 1s ease 0.2s forwards;
+    animation: fadeIn 1.2s ease 0.3s forwards, float 6s infinite alternate ease-in-out;
+    opacity: 0;
 }
 
 .mockup-img {
