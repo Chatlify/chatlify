@@ -1,1 +1,200 @@
-// Supabase client\'ın js/main.js içinde \'supabase\' adıyla tanımlandığını varsayıyoruz.\n// Eğer değilse, bu satırları Supabase\'i başlatmak için güncellemeniz gerekir:\n// import { createClient } from \'@supabase/supabase-js\';\n// const supabaseUrl = \'YOUR_SUPABASE_URL\'; // register.html\'deki ile aynı olmalı\n// const supabaseKey = \'YOUR_SUPABASE_ANON_KEY\'; // register.html\'deki ile aynı olmalı\n// const supabase = createClient(supabaseUrl, supabaseKey);\n\nconst registerForm = document.getElementById(\'registerForm\');\nconst usernameInput = document.getElementById(\'username\');\nconst emailInput = document.getElementById(\'email\');\nconst passwordInput = document.getElementById(\'password\');\nconst confirmPasswordInput = document.getElementById(\'confirm-password\');\nconst submitButton = registerForm.querySelector(\'.submit-btn\');\nconst loadingSpinner = submitButton.querySelector(\'.loading-spinner\');\nconst buttonText = submitButton.querySelector(\'.btn-text\');\n\n// Hata mesajı elementleri (opsiyonel ama kullanıcı deneyimi için iyi)\nconst usernameError = document.getElementById(\'usernameError\');\nconst emailError = document.getElementById(\'emailError\');\nconst passwordError = document.getElementById(\'passwordError\');\nconst confirmPasswordError = document.getElementById(\'confirmPasswordError\');\nconst termsError = document.getElementById(\'termsError\'); // Terms checkbox için\n\nfunction showLoading(show) {\n    if (show) {\n        buttonText.style.display = \'none\';\n        loadingSpinner.style.display = \'block\';\n        submitButton.disabled = true;\n    } else {\n        buttonText.style.display = \'inline\';\n        loadingSpinner.style.display = \'none\';\n        submitButton.disabled = false;\n    }\n}\n\nfunction displayError(element, message) {\n    if (element) {\n        element.textContent = message;\n        element.style.display = \'block\';\n        // İlgili input\'a da hata stili eklenebilir\n        const input = element.previousElementSibling?.querySelector(\'input\');\n        if (input) input.classList.add(\'input-error\');\n    } else {\n        // Genel bir hata mesajı alanı yoksa konsola yazdırabiliriz\n        console.error("Error display element not found for message:", message);\n        alert(`Error: ${message}`); // Fallback\n    }\n}\n\nfunction clearErrors() {\n    const errorMessages = registerForm.querySelectorAll(\'.error-message\');\n    errorMessages.forEach(msg => {\n        msg.style.display = \'none\';\n        msg.textContent = \'\'; // İçeriği temizle\n    });\n     const inputs = registerForm.querySelectorAll(\'input\');\n     inputs.forEach(input => input.classList.remove(\'input-error\'));\n}\n\nif (registerForm) {\n    registerForm.addEventListener(\'submit\', async (event) => {\n        event.preventDefault(); // Sayfanın yeniden yüklenmesini engelle\n        clearErrors(); // Önceki hataları temizle\n        showLoading(true); // Yükleme animasyonunu göster\n\n        const username = usernameInput.value.trim();\n        const email = emailInput.value.trim();\n        const password = passwordInput.value;\n        const confirmPassword = confirmPasswordInput.value;\n        const termsCheckbox = document.getElementById(\'terms\');\n\n        // --- Basit Doğrulamalar ---\n        let isValid = true;\n        if (username.length < 3) {\n            displayError(usernameError, \'Username must be at least 3 characters\');\n            isValid = false;\n        }\n        // Basit email format kontrolü (daha kapsamlı regex kullanılabilir)\n        if (!/^[^\s@]+@[^\s@]+\\.[^\s@]+$/.test(email)) {\n             displayError(emailError, \'Please enter a valid email address\');\n             isValid = false;\n        }\n        if (password.length < 8) { // Supabase\'in varsayılanı 6 olabilir, ama 8 daha güvenli\n            displayError(passwordError, \'Password must be at least 8 characters\');\n            isValid = false;\n        }\n        if (password !== confirmPassword) {\n            displayError(confirmPasswordError, \'Passwords do not match\');\n            isValid = false;\n        }\n         if (!termsCheckbox || !termsCheckbox.checked) {\n            displayError(termsError, \'You must accept the Terms of Service\');\n            isValid = false;\n        }\n\n        if (!isValid) {\n             showLoading(false); // Hata varsa yüklemeyi durdur\n             return; // Doğrulama başarısızsa fonksiyondan çık\n        }\n        // --- Doğrulamalar Bitti ---\n\n\n        try {\n            // Supabase\'e kayıt isteği gönder\n            const { data, error } = await supabase.auth.signUp({\n                email: email,\n                password: password,\n                options: {\n                    data: {\n                        username: username // Kullanıcı adını data objesi içinde gönder\n                    }\n                }\n            });\n\n            if (error) {\n                console.error(\'Error signing up:\', error.message);\n                // Hata mesajını kullanıcıya göster (daha spesifik olabilir)\n                // Örneğin: "User already registered" veya "Password should be longer"\n                let userFriendlyError = `Error signing up: ${error.message}`;\n                if (error.message.includes("User already registered")) {\n                    userFriendlyError = "This email is already registered. Please try logging in.";\n                    displayError(emailError, userFriendlyError);\n                } else if (error.message.includes("Password should be")) {\n                     userFriendlyError = "Password is too weak. Please choose a stronger one.";\n                     displayError(passwordError, userFriendlyError);\n                } else {\n                    // Diğer genel hatalar için\n                     const generalErrorElement = document.createElement(\'div\');\n                     generalErrorElement.className = \'error-message general-error\';\n                     generalErrorElement.style.display = \'block\';\n                     generalErrorElement.style.marginTop = \'10px\';\n                     generalErrorElement.textContent = userFriendlyError;\n                     registerForm.appendChild(generalErrorElement); // Formun sonuna ekle\n                }\n\n            } else {\n                console.log(\'Sign up successful:\', data);\n\n                // Kayıt başarılı mesajı\n                 alert(\'Sign up successful! Please check your email to confirm your account (if enabled). You will be redirected to the login page.\'); // Email onayını kapattığımız için bu mesajı düzenleyebiliriz\n\n                // İsteğe bağlı: Kullanıcıyı login sayfasına yönlendir\n                 window.location.href = \'login.html\';\n            }\n\n        } catch (catchError) {\n            console.error(\'Unexpected error during sign up:\', catchError);\n            alert(\'An unexpected error occurred. Please try again.\');\n        } finally {\n            showLoading(false); // İşlem bitince yükleme animasyonunu gizle\n        }\n    });\n} else {\n    console.error(\'Register form not found!\');\n}\n\n// Şifre gösterme/gizleme fonksiyonelliği (register.html\'deki ilgili ikonlar için)\nconst togglePasswordIcons = document.querySelectorAll(\'.toggle-password\');\ntogglePasswordIcons.forEach(icon => {\n    icon.addEventListener(\'click\', () => {\n        const passwordField = icon.previousElementSibling; // password input\'u\n        if (passwordField.type === \'password\') {\n            passwordField.type = \'text\';\n            icon.classList.remove(\'fa-eye\');\n            icon.classList.add(\'fa-eye-slash\');\n        } else {\n            passwordField.type = \'password\';\n            icon.classList.remove(\'fa-eye-slash\');\n            icon.classList.add(\'fa-eye\');\n        }\n    });\n});\n\n// Şifre gücü göstergesi (basit örnek)\nif (passwordInput) {\n    const strengthMeter = document.querySelector(\'.strength-meter\');\n    const strengthText = document.getElementById(\'strengthValue\');\n\n    passwordInput.addEventListener(\'input\', () => {\n        const password = passwordInput.value;\n        let strength = 0;\n        if (password.length >= 8) strength++; // Uzunluk\n        if (/[A-Z]/.test(password)) strength++; // Büyük harf\n        if (/[0-9]/.test(password)) strength++; // Rakam\n        if (/[^A-Za-z0-9]/.test(password)) strength++; // Özel karakter\n\n        // Segmentleri güncelle\n        const segments = strengthMeter.querySelectorAll(\'.strength-segment\');\n        segments.forEach((segment, index) => {\n            if (index < strength) {\n                segment.style.backgroundColor = `hsl(${(strength * 30)}, 100%, 50%)`; // Renk değiştir\n            } else {\n                segment.style.backgroundColor = \'#333\'; // Varsayılan renk\n            }\n        });\n\n        // Metni güncelle\n        let strengthDesc = \'Very Weak\';\n        if (strength === 1) strengthDesc = \'Weak\';\n        else if (strength === 2) strengthDesc = \'Medium\';\n        else if (strength === 3) strengthDesc = \'Strong\';\n        else if (strength === 4) strengthDesc = \'Very Strong\';\n        strengthText.textContent = strengthDesc;\n        strengthText.className = `strength-${strengthDesc.toLowerCase().replace(\' \', \'-\')}`; // Stil için sınıf ekle\n    });\n}\n
+import { supabase } from './auth_config.js';
+
+// Oturum süresini ve token güvenliğini güçlendirecek sabitler
+const SESSION_EXPIRY = 3600 * 24; // 24 saat (saniye cinsinden)
+const LOGIN_ATTEMPTS_KEY = 'login_attempts';
+const LOGIN_ATTEMPTS_RESET_KEY = 'login_attempts_reset';
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOGIN_LOCKOUT_TIME = 15 * 60 * 1000; // 15 dakika (milisaniye cinsinden)
+
+// Geçerli oturumu kontrol et
+export async function checkSession() {
+    try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+
+        if (error) {
+            console.error('Oturum kontrolü sırasında hata:', error.message);
+            return false;
+        }
+
+        if (!session) {
+            console.log('Aktif oturum bulunamadı');
+            return false;
+        }
+
+        // Oturum süresi kontrolü
+        const expiresAt = new Date(session.expires_at);
+        const now = new Date();
+
+        if (expiresAt <= now) {
+            console.log('Oturum süresi dolmuş');
+            await supabase.auth.signOut();
+            return false;
+        }
+
+        console.log('Geçerli oturum bulundu');
+        return true;
+    } catch (error) {
+        console.error('Oturum kontrolü sırasında beklenmeyen hata:', error);
+        return false;
+    }
+}
+
+// Güvenli giriş işlemi 
+export async function login(email, password) {
+    try {
+        // Giriş denemelerini kontrol et
+        if (isLoginLocked()) {
+            throw new Error('Çok fazla başarısız giriş denemesi. Lütfen daha sonra tekrar deneyin.');
+        }
+
+        // Giriş işlemi
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+
+        // Hata durumunda giriş denemesini kaydet
+        if (error) {
+            incrementLoginAttempts();
+            throw error;
+        }
+
+        // Başarılı giriş: giriş denemelerini sıfırla
+        resetLoginAttempts();
+
+        // Token'ı güvenli bir şekilde sakla (httpOnly cookie)
+        // Not: Bu front-end'de değil, back-end'de yapılmalıdır.
+
+        return data;
+    } catch (error) {
+        console.error('Giriş sırasında hata:', error.message);
+        throw error;
+    }
+}
+
+// Giriş denemelerini sınırla
+function incrementLoginAttempts() {
+    let attempts = parseInt(localStorage.getItem(LOGIN_ATTEMPTS_KEY) || '0');
+    attempts += 1;
+    localStorage.setItem(LOGIN_ATTEMPTS_KEY, attempts.toString());
+
+    if (attempts >= MAX_LOGIN_ATTEMPTS) {
+        // Kilit zamanını ayarla
+        localStorage.setItem(LOGIN_ATTEMPTS_RESET_KEY, (Date.now() + LOGIN_LOCKOUT_TIME).toString());
+    }
+}
+
+// Giriş denemelerini sıfırla
+function resetLoginAttempts() {
+    localStorage.removeItem(LOGIN_ATTEMPTS_KEY);
+    localStorage.removeItem(LOGIN_ATTEMPTS_RESET_KEY);
+}
+
+// Giriş kilitli mi kontrol et
+function isLoginLocked() {
+    const resetTime = parseInt(localStorage.getItem(LOGIN_ATTEMPTS_RESET_KEY) || '0');
+
+    if (resetTime > Date.now()) {
+        return true; // Hala kilitli
+    }
+
+    // Kilit süresi geçtiyse giriş denemelerini sıfırla
+    if (resetTime > 0 && resetTime <= Date.now()) {
+        resetLoginAttempts();
+    }
+
+    const attempts = parseInt(localStorage.getItem(LOGIN_ATTEMPTS_KEY) || '0');
+    return attempts >= MAX_LOGIN_ATTEMPTS;
+}
+
+// Güvenli çıkış işlemi
+export async function logout() {
+    try {
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+            console.error('Çıkış sırasında hata:', error.message);
+            throw error;
+        }
+
+        // Yerel depolamaları temizle (güvenlik için)
+        localStorage.removeItem('supabase.auth.token');
+        sessionStorage.removeItem('supabase.auth.token');
+
+        return true;
+    } catch (error) {
+        console.error('Çıkış sırasında beklenmeyen hata:', error);
+        throw error;
+    }
+}
+
+// Şifre sıfırlama bağlantısı gönder
+export async function resetPassword(email) {
+    try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/reset-password.html`,
+        });
+
+        if (error) {
+            throw error;
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Şifre sıfırlama isteği sırasında hata:', error.message);
+        throw error;
+    }
+}
+
+// Tüm API isteklerini otantike etmek için interceptor
+export function setupAuthInterceptor() {
+    // JWT token'ı alıp her istekte otomatik olarak gönder
+    document.addEventListener('DOMContentLoaded', async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (session) {
+            // Tüm fetch isteklerini yakala ve JWT token'ı ekle
+            const originalFetch = window.fetch;
+            window.fetch = async function (url, options = {}) {
+                // Auth istekleri hariç tüm isteklere token ekle
+                if (!url.includes('supabase.co/auth')) {
+                    options.headers = options.headers || {};
+                    options.headers['Authorization'] = `Bearer ${session.access_token}`;
+                }
+
+                return originalFetch(url, options);
+            };
+        }
+    });
+}
+
+// Kullanıcı profili bilgilerini getir
+export async function getUserProfile() {
+    try {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            throw userError || new Error('Kullanıcı bilgileri alınamadı');
+        }
+
+        // Ek profil bilgilerini veritabanından al
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+        if (profileError) {
+            throw profileError;
+        }
+
+        return { ...user, profile };
+    } catch (error) {
+        console.error('Kullanıcı profili getirme hatası:', error.message);
+        throw error;
+    }
+}
+
+// Auth module'ünü başlat
+setupAuthInterceptor(); 

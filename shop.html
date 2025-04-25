@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatlify - Shop</title>
+    <title>Chatlify - Premium</title>
     <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/bg-animation.css">
     <link rel="stylesheet" href="css/shop.css">
     <script src="js/main.js" defer></script>
     <script src="js/dashboard.js" defer></script>
@@ -18,452 +19,602 @@
 </head>
 
 <body class="shop-page">
-    <!-- Animated Background -->
+    <!-- Animasyonlu Arkaplan -->
     <div class="bg-animation">
         <div class="stars"></div>
         <div class="twinkling"></div>
         <div class="clouds"></div>
     </div>
 
-    <div class="shop-wrapper">
-        <!-- Header -->
-        <header class="shop-header">
-            <div class="shop-nav">
-                <a href="dashboard.html" class="back-to-dashboard">
-                    <i class="fas fa-arrow-left"></i>
-                </a>
-                <div class="logo">
-                    <img src="images/BGChatlifyLogo.png" alt="Chatlify">
-                    <span>Shop</span>
+    <div class="dashboard-container">
+        <!-- Sunucu Kenar Çubuğu -->
+        <div class="server-sidebar">
+            <div class="server-sidebar-inner">
+                <div class="server-item">
+                    <a href="dashboard.html" class="server-link">
+                        <div class="server-icon">
+                            <img src="images/BGChatlifyLogo.png" alt="Chatlify Home" class="home-logo-img">
+                        </div>
+                    </a>
+                    <div class="server-tooltip">Ana Sayfa</div>
+                </div>
+
+                <div class="server-divider"></div>
+
+                <div class="server-item">
+                    <div class="server-icon">
+                        <img src="https://via.placeholder.com/100/0672ac/ffffff?text=G" alt="Gamir">
+                    </div>
+                    <div class="server-tooltip">Gamir</div>
+                </div>
+
+                <div class="server-item">
+                    <div class="server-icon">
+                        <img src="https://via.placeholder.com/100/5a2d82/ffffff?text=C" alt="Code">
+                    </div>
+                    <div class="server-tooltip">Code</div>
+                </div>
+
+                <div class="server-divider"></div>
+
+                <div class="server-item shop active">
+                    <div class="server-shop-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="server-pill"></div>
+                    <div class="server-tooltip">Premium</div>
+                </div>
+
+                <div class="server-item">
+                    <div class="server-settings-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="server-tooltip">Ayarlar</div>
                 </div>
             </div>
-            <div class="header-actions">
-                <a href="#support" class="support-btn">
-                    <i class="fas fa-headset"></i>
-                    <span>Support</span>
-                </a>
-            </div>
-        </header>
+        </div>
 
-        <!-- Hero Section -->
-        <section class="hero-section">
-            <div class="hero-content">
-                <h1>Go Beyond Limits with <span class="gradient-text">Chatlify Premium</span></h1>
-                <p>Experience exclusive privileges, customizable themes, and advanced features to take your
-                    communication to the next level.</p>
-                <div class="hero-buttons">
-                    <a href="#pricing" class="primary-btn">Explore Plans</a>
-                    <a href="#features" class="secondary-btn">View Features</a>
-                </div>
-            </div>
-            <div class="hero-image">
-                <img src="images/premium-hero.svg" alt="Premium Features" class="float-animation">
-                <div class="glow-effect"></div>
-            </div>
-        </section>
-
-        <!-- Features Section -->
-        <section id="features" class="features-section">
-            <div class="section-header">
-                <h2>Premium <span class="gradient-text">Features</span></h2>
-                <p>Discover the amazing benefits of Chatlify Premium</p>
-            </div>
-
-            <div class="features-grid">
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="feature-icon">
+        <!-- Ana İçerik Alanı -->
+        <div class="main-content">
+            <div class="dashboard-header">
+                <div class="header-left">
+                    <div class="main-title">
                         <i class="fas fa-crown"></i>
-                    </div>
-                    <h3>Exclusive Profile Badge</h3>
-                    <p>Stand out with a special badge that shows your premium status</p>
-                </div>
-
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
-                    <div class="feature-icon">
-                        <i class="fas fa-palette"></i>
-                    </div>
-                    <h3>Theme Customization</h3>
-                    <p>Personalize your interface with unique themes and colors</p>
-                </div>
-
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
-                    <div class="feature-icon">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                    </div>
-                    <h3>Advanced File Sharing</h3>
-                    <p>Share larger files faster and more easily</p>
-                </div>
-
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
-                    <div class="feature-icon">
-                        <i class="fas fa-video"></i>
-                    </div>
-                    <h3>HD Video Calls</h3>
-                    <p>Stay connected with high-quality, uninterrupted video calls</p>
-                </div>
-
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
-                    <div class="feature-icon">
-                        <i class="fas fa-smile-beam"></i>
-                    </div>
-                    <h3>Custom Emojis</h3>
-                    <p>Add color to your chats with personalized emojis and reactions</p>
-                </div>
-
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="600">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3>Enhanced Security</h3>
-                    <p>Better protect your account with additional security layers</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Pricing Section -->
-        <section id="pricing" class="pricing-section">
-            <div class="section-header">
-                <h2>Premium <span class="gradient-text">Plans</span></h2>
-                <p>Choose the plan that fits your needs</p>
-            </div>
-
-            <div class="pricing-toggle">
-                <span class="toggle-label active">Monthly</span>
-                <label class="switch">
-                    <input type="checkbox" id="billingToggle">
-                    <span class="slider round"></span>
-                </label>
-                <span class="toggle-label">Annual</span>
-                <div class="save-badge">Save 25%</div>
-            </div>
-
-            <div class="pricing-cards">
-                <div class="pricing-card starter" data-aos="fade-up" data-aos-delay="100">
-                    <div class="card-header">
-                        <div class="plan-name">
-                            <h3>Spark</h3>
-                            <span class="plan-badge">Starter</span>
-                        </div>
-                        <div class="plan-price">
-                            <div class="price monthly">$7.99<span>/mo</span></div>
-                            <div class="price yearly">$71.88<span>/yr</span></div>
-                        </div>
-                        <p class="price-description">Discover basic premium features</p>
-                    </div>
-                    <div class="card-body">
-                        <ul class="feature-list">
-                            <li><i class="fas fa-check"></i> 720p HD Video Calls</li>
-                            <li><i class="fas fa-check"></i> 30 Days Message History</li>
-                            <li><i class="fas fa-check"></i> 20MB File Sharing</li>
-                            <li><i class="fas fa-check"></i> 15 Custom Emojis</li>
-                            <li><i class="fas fa-check"></i> Starter Level Badge</li>
-                            <li class="unavailable"><i class="fas fa-times"></i> Theme Customization</li>
-                            <li class="unavailable"><i class="fas fa-times"></i> Ad-Free Experience</li>
-                            <li class="unavailable"><i class="fas fa-times"></i> Priority Support</li>
-                        </ul>
-                    </div>
-                    <div class="card-footer">
-                        <button class="buy-btn starter-btn" data-product="spark">Get Started</button>
+                        <span>Chatlify Premium</span>
                     </div>
                 </div>
-
-                <div class="pricing-card premium" data-aos="fade-up" data-aos-delay="200">
-                    <div class="popular-badge">Most Popular</div>
-                    <div class="card-header">
-                        <div class="plan-name">
-                            <h3>Blaze</h3>
-                            <span class="plan-badge">Premium</span>
-                        </div>
-                        <div class="plan-price">
-                            <div class="price monthly">$14.99<span>/mo</span></div>
-                            <div class="price yearly">$134.88<span>/yr</span></div>
-                        </div>
-                        <p class="price-description">Experience the full premium package</p>
+                <div class="header-right">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Premium özelliklerde ara...">
                     </div>
-                    <div class="card-body">
-                        <ul class="feature-list">
-                            <li><i class="fas fa-check"></i> 1080p Full HD Video Calls</li>
-                            <li><i class="fas fa-check"></i> 90 Days Message History</li>
-                            <li><i class="fas fa-check"></i> 50MB File Sharing</li>
-                            <li><i class="fas fa-check"></i> 50 Custom Emojis</li>
-                            <li><i class="fas fa-check"></i> Premium Level Badge</li>
-                            <li><i class="fas fa-check"></i> 5 Theme Templates</li>
-                            <li><i class="fas fa-check"></i> Ad-Free Experience</li>
-                            <li class="unavailable"><i class="fas fa-times"></i> Priority Support</li>
-                        </ul>
-                    </div>
-                    <div class="card-footer">
-                        <button class="buy-btn premium-btn" data-product="blaze">Get Started</button>
-                    </div>
-                </div>
-
-                <div class="pricing-card ultimate" data-aos="fade-up" data-aos-delay="300"
-                    style="transform: scale(1.05); box-shadow: 0 15px 50px rgba(140, 82, 255, 0.3); border: 2px solid #8c52ff;">
-                    <div class="card-header">
-                        <div class="plan-name">
-                            <h3>Nova</h3>
-                            <span class="plan-badge"
-                                style="background: linear-gradient(to right, #8c52ff, #5ce6a1);">Ultimate</span>
-                        </div>
-                        <div class="plan-price">
-                            <div class="price monthly">$24.99<span>/mo</span></div>
-                            <div class="price yearly">$224.88<span>/yr</span></div>
-                        </div>
-                        <p class="price-description">The most advanced premium experience</p>
-                    </div>
-                    <div class="card-body">
-                        <ul class="feature-list">
-                            <li><i class="fas fa-check"></i> 4K Ultra HD Video Calls</li>
-                            <li><i class="fas fa-check"></i> Unlimited Message History</li>
-                            <li><i class="fas fa-check"></i> 100MB File Sharing</li>
-                            <li><i class="fas fa-check"></i> Unlimited Custom Emojis</li>
-                            <li><i class="fas fa-check"></i> Elite Level Badge</li>
-                            <li><i class="fas fa-check"></i> Full Theme Customization</li>
-                            <li><i class="fas fa-check"></i> Ad-Free Experience</li>
-                            <li><i class="fas fa-check"></i> 24/7 Priority Support</li>
-                        </ul>
-                    </div>
-                    <div class="card-footer">
-                        <button class="buy-btn ultimate-btn" data-product="nova"
-                            style="background: linear-gradient(to right, #8c52ff, #5ce6a1); box-shadow: 0 10px 20px rgba(140, 82, 255, 0.4);">Join
-                            Elite</button>
+                    <div class="header-actions">
+                        <a href="#contact" class="add-friend-btn">
+                            <i class="fas fa-headset"></i>
+                            <span>Destek</span>
+                        </a>
                     </div>
                 </div>
             </div>
-        </section>
 
-        <!-- Testimonials -->
-        <section class="testimonials-section">
-            <div class="section-header">
-                <h2>What Our Users <span class="gradient-text">Are Saying</span></h2>
-                <p>Feedback from users who are experiencing premium benefits</p>
-            </div>
-
-            <div class="testimonials-carousel">
-                <div class="testimonial-card" data-aos="fade-up">
-                    <div class="testimonial-avatar">
-                        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sophia M.">
-                    </div>
-                    <div class="testimonial-content">
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
+            <div class="main-container">
+                <!-- Premium Hero Bölümü -->
+                <div class="premium-hero">
+                    <div class="premium-hero-content">
+                        <h1>İletişimde <span class="premium-gradient-text">Sınırları Aşın</span></h1>
+                        <p>Chatlify Premium ile iletişiminizi bir üst seviyeye taşıyın. HD görüntülü görüşmeler, özel
+                            temalar ve çok daha fazlası...</p>
+                        <div class="premium-stats">
+                            <div class="premium-stat">
+                                <div class="stat-value">500K+</div>
+                                <div class="stat-label">Premium Kullanıcı</div>
+                            </div>
+                            <div class="premium-stat">
+                                <div class="stat-value">%99.9</div>
+                                <div class="stat-label">Memnuniyet</div>
+                            </div>
+                            <div class="premium-stat">
+                                <div class="stat-value">+12</div>
+                                <div class="stat-label">Ekstra Özellik</div>
+                            </div>
                         </div>
-                        <p>"Communicating with my friends through Chatlify Premium is so much more enjoyable!
-                            Conversations are more fun with custom emojis, and the video quality is amazing!"</p>
-                        <div class="testimonial-author">
-                            <h4>Sophia M.</h4>
-                            <span>Blaze Premium Member</span>
+                    </div>
+                    <div class="premium-hero-image">
+                        <img src="images/premium-hero.svg" alt="Premium">
+                        <div class="premium-hero-glow"></div>
+                    </div>
+                </div>
+
+                <!-- Fiyatlandırma Geçiş Kontrolü -->
+                <div class="premium-toggle-container">
+                    <div class="premium-toggle">
+                        <span class="premium-toggle-label active">Aylık</span>
+                        <label class="premium-switch">
+                            <input type="checkbox" id="billingToggle">
+                            <span class="premium-slider"></span>
+                        </label>
+                        <span class="premium-toggle-label">Yıllık</span>
+                        <div class="premium-save-badge">%25 Tasarruf</div>
+                    </div>
+                </div>
+
+                <!-- Premium Planlar -->
+                <div class="premium-plans">
+                    <!-- Spark Plan -->
+                    <div class="premium-plan-card spark-card">
+                        <div class="plan-header">
+                            <div class="plan-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="plan-title">
+                                <h3>Spark</h3>
+                                <span class="plan-type">Başlangıç</span>
+                            </div>
+                            <div class="plan-pricing">
+                                <div class="price monthly">199₺<span>/ay</span></div>
+                                <div class="price yearly">1.788₺<span>/yıl</span></div>
+                            </div>
+                        </div>
+                        <div class="plan-features">
+                            <ul>
+                                <li class="feature-item"><i class="fas fa-check"></i> 720p HD Video Görüşmeleri</li>
+                                <li class="feature-item"><i class="fas fa-check"></i> 30 Günlük Mesaj Geçmişi</li>
+                                <li class="feature-item"><i class="fas fa-check"></i> 20MB Dosya Paylaşımı</li>
+                                <li class="feature-item"><i class="fas fa-check"></i> 15 Özel Emoji</li>
+                                <li class="feature-item"><i class="fas fa-check"></i> Başlangıç Seviyesi Rozet</li>
+                                <li class="feature-item unavailable"><i class="fas fa-times"></i> Tema Özelleştirme</li>
+                                <li class="feature-item unavailable"><i class="fas fa-times"></i> Reklamsız Deneyim</li>
+                                <li class="feature-item unavailable"><i class="fas fa-times"></i> Öncelikli Destek</li>
+                            </ul>
+                        </div>
+                        <div class="plan-action">
+                            <button class="plan-button spark-button" data-product="spark">
+                                <span>Şimdi Başla</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Blaze Plan -->
+                    <div class="premium-plan-card blaze-card featured">
+                        <div class="popular-tag">En Popüler</div>
+                        <div class="plan-header">
+                            <div class="plan-icon">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <div class="plan-title">
+                                <h3>Blaze</h3>
+                                <span class="plan-type">Premium</span>
+                            </div>
+                            <div class="plan-pricing">
+                                <div class="price monthly">349₺<span>/ay</span></div>
+                                <div class="price yearly">3.141₺<span>/yıl</span></div>
+                            </div>
+                        </div>
+                        <div class="plan-features">
+                            <ul>
+                                <li class="feature-item"><i class="fas fa-check"></i> 1080p Full HD Video Görüşmeleri
+                                </li>
+                                <li class="feature-item"><i class="fas fa-check"></i> 90 Günlük Mesaj Geçmişi</li>
+                                <li class="feature-item"><i class="fas fa-check"></i> 50MB Dosya Paylaşımı</li>
+                                <li class="feature-item"><i class="fas fa-check"></i> 50 Özel Emoji</li>
+                                <li class="feature-item"><i class="fas fa-check"></i> Premium Seviyesi Rozet</li>
+                                <li class="feature-item"><i class="fas fa-check"></i> 5 Tema Şablonu</li>
+                                <li class="feature-item"><i class="fas fa-check"></i> Reklamsız Deneyim</li>
+                                <li class="feature-item unavailable"><i class="fas fa-times"></i> Öncelikli Destek</li>
+                            </ul>
+                        </div>
+                        <div class="plan-action">
+                            <button class="plan-button blaze-button" data-product="blaze">
+                                <span>Şimdi Başla</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Nova Plan -->
+                    <div class="premium-plan-card nova-card">
+                        <div class="plan-header">
+                            <div class="plan-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="plan-title">
+                                <h3>Nova</h3>
+                                <span class="plan-type">Ultimate</span>
+                            </div>
+                            <div class="plan-pricing">
+                                <div class="price monthly">599₺<span>/ay</span></div>
+                                <div class="price yearly">5.391₺<span>/yıl</span></div>
+                            </div>
+                        </div>
+                        <div class="plan-features">
+                            <ul>
+                                <li class="feature-item"><i class="fas fa-check"></i> 4K Ultra HD Video Görüşmeleri</li>
+                                <li class="feature-item"><i class="fas fa-check"></i> Sınırsız Mesaj Geçmişi</li>
+                                <li class="feature-item"><i class="fas fa-check"></i> 100MB Dosya Paylaşımı</li>
+                                <li class="feature-item"><i class="fas fa-check"></i> Sınırsız Özel Emoji</li>
+                                <li class="feature-item"><i class="fas fa-check"></i> Elite Seviyesi Rozet</li>
+                                <li class="feature-item"><i class="fas fa-check"></i> Tam Tema Özelleştirme</li>
+                                <li class="feature-item"><i class="fas fa-check"></i> Reklamsız Deneyim</li>
+                                <li class="feature-item"><i class="fas fa-check"></i> 7/24 Öncelikli Destek</li>
+                            </ul>
+                        </div>
+                        <div class="plan-action">
+                            <button class="plan-button nova-button" data-product="nova">
+                                <span>Elite'e Katıl</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="testimonial-avatar">
-                        <img src="https://randomuser.me/api/portraits/men/44.jpg" alt="Michael T.">
+                <!-- Özellikler Karşılaştırma Tablosu -->
+                <div class="premium-comparison">
+                    <h2 class="comparison-title">Premium Planları Karşılaştırın</h2>
+                    <div class="premium-table-container">
+                        <table class="premium-table">
+                            <thead>
+                                <tr>
+                                    <th class="feature-column">Özellikler</th>
+                                    <th class="spark-column">
+                                        <div class="plan-icon small">
+                                            <i class="fas fa-bolt"></i>
+                                        </div>
+                                        Spark
+                                    </th>
+                                    <th class="blaze-column">
+                                        <div class="plan-icon small">
+                                            <i class="fas fa-fire"></i>
+                                        </div>
+                                        Blaze
+                                    </th>
+                                    <th class="nova-column">
+                                        <div class="plan-icon small">
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                        Nova
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Video Görüşme Kalitesi</td>
+                                    <td>720p HD</td>
+                                    <td>1080p Full HD</td>
+                                    <td>4K Ultra HD</td>
+                                </tr>
+                                <tr>
+                                    <td>Mesaj Geçmişi</td>
+                                    <td>30 Gün</td>
+                                    <td>90 Gün</td>
+                                    <td>Sınırsız</td>
+                                </tr>
+                                <tr>
+                                    <td>Dosya Paylaşımı Limiti</td>
+                                    <td>20MB</td>
+                                    <td>50MB</td>
+                                    <td>100MB</td>
+                                </tr>
+                                <tr>
+                                    <td>Özel Emoji Sayısı</td>
+                                    <td>15</td>
+                                    <td>50</td>
+                                    <td>Sınırsız</td>
+                                </tr>
+                                <tr>
+                                    <td>Profil Rozeti</td>
+                                    <td>Başlangıç</td>
+                                    <td>Premium</td>
+                                    <td>Elite</td>
+                                </tr>
+                                <tr>
+                                    <td>Tema Özelleştirme</td>
+                                    <td><i class="fas fa-times decline"></i></td>
+                                    <td>5 Tema</td>
+                                    <td>Tam Özelleştirme</td>
+                                </tr>
+                                <tr>
+                                    <td>Reklamsız Deneyim</td>
+                                    <td><i class="fas fa-times decline"></i></td>
+                                    <td><i class="fas fa-check accept"></i></td>
+                                    <td><i class="fas fa-check accept"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Öncelikli Destek</td>
+                                    <td><i class="fas fa-times decline"></i></td>
+                                    <td><i class="fas fa-times decline"></i></td>
+                                    <td><i class="fas fa-check accept"></i></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="testimonial-content">
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
+                </div>
+
+                <!-- Premium Özellikler Bölümü -->
+                <div class="premium-features">
+                    <div class="features-header">
+                        <h2>Premium'un <span class="premium-gradient-text">Avantajları</span></h2>
+                        <p>Chatlify Premium ile iletişim deneyiminizi nasıl zenginleştirebileceğinizi keşfedin</p>
+                    </div>
+                    <div class="features-grid">
+                        <div class="feature-item">
+                            <div class="feature-icon-wrapper">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h3>Yüksek Kaliteli Görüntülü Görüşmeler</h3>
+                                <p>4K'ya kadar görüntü kalitesiyle kristal netliğinde görüşmeler yapın. Kesinti ve
+                                    gecikme olmadan bağlantıda kalın.</p>
+                            </div>
                         </div>
-                        <p>"After upgrading to the Nova package, communication with my work group became much more
-                            efficient. The large file sharing feature has made my job so much easier."</p>
-                        <div class="testimonial-author">
-                            <h4>Michael T.</h4>
-                            <span>Nova Ultimate Member</span>
+                        <div class="feature-item">
+                            <div class="feature-icon-wrapper">
+                                <i class="fas fa-paint-brush"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h3>Özelleştirilebilir Temalar</h3>
+                                <p>Arayüzünüzü istediğiniz gibi kişiselleştirin. Renk şemaları, arka planlar ve görsel
+                                    öğeler tamamen sizin kontrolünüzde.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon-wrapper">
+                                <i class="fas fa-history"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h3>Gelişmiş Mesaj Geçmişi</h3>
+                                <p>Sınırsıza kadar uzayan mesaj geçmişiyle önemli konuşmalarınızı asla kaybetmeyin.
+                                    Geçmiş mesajlara anında erişin.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon-wrapper">
+                                <i class="fas fa-file-upload"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h3>Genişletilmiş Dosya Paylaşımı</h3>
+                                <p>Daha büyük dosyaları daha hızlı paylaşın. Premium kullanıcılar için daha yüksek
+                                    limitler ve daha hızlı yükleme süreleri.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon-wrapper">
+                                <i class="fas fa-medal"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h3>Prestijli Profil Rozetleri</h3>
+                                <p>Özel profil rozetleriyle statünüzü gösterin. İlk bakışta fark edilin ve premium
+                                    kullanıcı olduğunuzu herkese gösterin.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon-wrapper">
+                                <i class="fas fa-headset"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h3>Öncelikli Destek</h3>
+                                <p>Nova paketinde bulunan öncelikli destek ile sorularınıza anında yanıt alın. Uzman
+                                    ekibimiz 7/24 sizin için hazır.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
-                    <div class="testimonial-avatar">
-                        <img src="https://randomuser.me/api/portraits/women/66.jpg" alt="Emma R.">
+                <!-- Kullanıcı Yorumları -->
+                <div class="premium-testimonials">
+                    <div class="testimonials-header">
+                        <h2>Kullanıcılarımızın <span class="premium-gradient-text">Deneyimleri</span></h2>
                     </div>
-                    <div class="testimonial-content">
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
+                    <div class="testimonials-container">
+                        <div class="testimonial-card">
+                            <div class="testimonial-avatar">
+                                <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Ayşe Y.">
+                                <div class="avatar-badge blaze"></div>
+                            </div>
+                            <div class="testimonial-content">
+                                <div class="testimonial-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <p class="testimonial-text">"Blaze paketine geçtikten sonra arkadaşlarımla iletişimim
+                                    tamamen değişti. HD görüşmeler ve özel temalar deneyimimi çok iyileştirdi."</p>
+                                <div class="testimonial-author">
+                                    <span class="author-name">Ayşe Y.</span>
+                                    <span class="author-title">Blaze Kullanıcısı, 6 ay</span>
+                                </div>
+                            </div>
                         </div>
-                        <p>"Thanks to the theme customization feature, I was able to completely style the app to my own
-                            taste. The premium badge is also a nice touch!"</p>
-                        <div class="testimonial-author">
-                            <h4>Emma R.</h4>
-                            <span>Spark Premium Member</span>
+                        <div class="testimonial-card">
+                            <div class="testimonial-avatar">
+                                <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Mehmet K.">
+                                <div class="avatar-badge nova"></div>
+                            </div>
+                            <div class="testimonial-content">
+                                <div class="testimonial-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <p class="testimonial-text">"Nova paketi iş toplantılarımız için mükemmel. 4K görüntü
+                                    kalitesi ve öncelikli destek sayesinde sorunsuz toplantılar yapabiliyoruz."</p>
+                                <div class="testimonial-author">
+                                    <span class="author-name">Mehmet K.</span>
+                                    <span class="author-title">Nova Kullanıcısı, 1 yıl</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="testimonial-card">
+                            <div class="testimonial-avatar">
+                                <img src="https://randomuser.me/api/portraits/women/67.jpg" alt="Zeynep A.">
+                                <div class="avatar-badge spark"></div>
+                            </div>
+                            <div class="testimonial-content">
+                                <div class="testimonial-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <p class="testimonial-text">"Spark paketi bile standart kullanıcılara göre inanılmaz
+                                    ayrıcalıklar sunuyor. HD görüşmeler ve dosya paylaşımı limiti yeterli oluyor."</p>
+                                <div class="testimonial-author">
+                                    <span class="author-name">Zeynep A.</span>
+                                    <span class="author-title">Spark Kullanıcısı, 3 ay</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- FAQ Section -->
-        <section id="faq" class="faq-section">
-            <div class="section-header">
-                <h2>Frequently Asked <span class="gradient-text">Questions</span></h2>
-                <p>Common questions about Premium</p>
-            </div>
-
-            <div class="faq-container">
-                <div class="faq-item" data-aos="fade-up">
-                    <div class="faq-question">
-                        <h3>Can I cancel my premium subscription at any time?</h3>
-                        <i class="fas fa-chevron-down"></i>
+                <!-- CTA Bölümü -->
+                <div class="premium-cta">
+                    <div class="cta-content">
+                        <h2>Hemen Premium Avantajlarını <span class="premium-gradient-text">Keşfet</span></h2>
+                        <p>İletişim deneyimini geliştirmek için şimdi premium'a yükselt!</p>
+                        <a href="#pricing" class="cta-button">Premium'a Yükselt</a>
                     </div>
-                    <div class="faq-answer">
-                        <p>Yes, you can cancel your premium subscription at any time. Cancellation takes effect
-                            immediately and you will continue to enjoy premium features for the remainder of your paid
-                            period.</p>
+                    <div class="cta-decoration">
+                        <div class="cta-circle"></div>
+                        <div class="cta-circle"></div>
+                        <div class="cta-circle"></div>
                     </div>
                 </div>
 
-                <div class="faq-item" data-aos="fade-up" data-aos-delay="100">
-                    <div class="faq-question">
-                        <h3>Can I switch between plans?</h3>
-                        <i class="fas fa-chevron-down"></i>
+                <!-- SSS Bölümü -->
+                <div class="premium-faq">
+                    <div class="faq-header">
+                        <h2>Sık Sorulan <span class="premium-gradient-text">Sorular</span></h2>
                     </div>
-                    <div class="faq-answer">
-                        <p>Yes, you can upgrade or downgrade between plans at any time. When upgrading, you'll be
-                            charged the price difference; when downgrading, the new plan rate will be applied at your
-                            next billing cycle.</p>
+                    <div class="faq-container">
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <span>Premium abonelik nasıl çalışır?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Premium aboneliğiniz seçtiğiniz plana göre aylık veya yıllık olarak otomatik
+                                    yenilenir. İstediğiniz zaman aboneliğinizi değiştirebilir veya iptal edebilirsiniz.
+                                    Ödeme yaptıktan hemen sonra premium özellikler hesabınıza tanımlanır.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <span>Planlar arasında geçiş yapabilir miyim?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Evet, dilediğiniz zaman planınızı yükseltebilir veya düşürebilirsiniz. Yükseltme
+                                    durumunda, ödediğiniz tutardan kalan süreye karşılık gelen miktar düşülür. Düşürme
+                                    durumunda ise, yeni plan bir sonraki faturalandırma döneminde devreye girer.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <span>Ödeme yöntemleri nelerdir?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Kredi kartı, banka kartı, PayPal ve bölgenize bağlı olarak mobil ödeme seçeneklerini
+                                    destekliyoruz. Tüm ödemeler güvenli şekilde işlenir ve bilgileriniz şifrelenir.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <span>İptal ettikten sonra özelliklerim ne olacak?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Aboneliğinizi iptal ettiğinizde, ödediğiniz dönemin sonuna kadar premium
+                                    özelliklerden yararlanmaya devam edersiniz. Dönem sonunda hesabınız otomatik olarak
+                                    ücretsiz versiyona geçiş yapar.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <span>İade politikanız nedir?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>İlk 14 gün içinde iptal ederseniz tam ücret iadesi alabilirsiniz. Daha sonraki
+                                    iptallerde kalan süre için ücret iadesi yapılmaz, ancak abonelik süresi sonuna kadar
+                                    premium özelliklerden yararlanmaya devam edebilirsiniz.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="faq-item" data-aos="fade-up" data-aos-delay="200">
-                    <div class="faq-question">
-                        <h3>Can I use premium features on all my devices?</h3>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Yes, your premium subscription is tied to your account. You can enjoy premium features on all
-                            your devices (computer, tablet, phone) where you use Chatlify.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item" data-aos="fade-up" data-aos-delay="300">
-                    <div class="faq-question">
-                        <h3>What payment methods are available?</h3>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>We support various payment methods including credit cards, debit cards, PayPal, and mobile
-                            payments. Cryptocurrency payment is also available in certain regions.</p>
-                    </div>
-                </div>
             </div>
-        </section>
-
-        <!-- CTA Section -->
-        <section class="cta-section">
-            <div class="cta-content">
-                <h2>Time to Rise with <span class="gradient-text">Chatlify Premium</span></h2>
-                <p>Subscribe to premium now for better communication, more features, and a higher quality experience!
-                </p>
-                <a href="#pricing" class="cta-btn">Upgrade to Premium</a>
-            </div>
-            <div class="cta-image">
-                <img src="images/premium-cta.svg" alt="Premium" class="float-animation">
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="shop-footer">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <img src="images/BGChatlifyLogo.png" alt="Chatlify">
-                    <p>Next generation communication platform</p>
-                </div>
-                <div class="footer-links">
-                    <div class="footer-column">
-                        <h4>Company</h4>
-                        <ul>
-                            <li><a href="#">About Us</a></li>
-                            <li><a href="#">Careers</a></li>
-                            <li><a href="#">Press</a></li>
-                            <li><a href="#">Blog</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-column">
-                        <h4>Product</h4>
-                        <ul>
-                            <li><a href="#">Features</a></li>
-                            <li><a href="#">Premium</a></li>
-                            <li><a href="#">Security</a></li>
-                            <li><a href="#">For Business</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-column">
-                        <h4>Resources</h4>
-                        <ul>
-                            <li><a href="#">Help Center</a></li>
-                            <li><a href="#">Community</a></li>
-                            <li><a href="#">Developer API</a></li>
-                            <li><a href="#">Status</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-column">
-                        <h4>Legal</h4>
-                        <ul>
-                            <li><a href="#">Privacy Policy</a></li>
-                            <li><a href="#">Terms of Service</a></li>
-                            <li><a href="#">Data Protection</a></li>
-                            <li><a href="#">Cookie Policy</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>© 2023 Chatlify. All rights reserved.</p>
-                <div class="social-icons">
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-discord"></i></a>
-                </div>
-            </div>
-        </footer>
+        </div>
     </div>
 
-    <!-- Purchase Modal -->
-    <div id="purchaseModal" class="modal-overlay" style="display: none; opacity: 0; visibility: hidden;">
+    <!-- Satın Alma Modalı -->
+    <div id="purchaseModal" class="modal-overlay">
         <div class="modal-container">
             <button class="close-modal-btn"><i class="fas fa-times"></i></button>
-            <h3 id="modalTitle">Buy Premium</h3>
-            <p id="modalDesc">Confirm your selection and choose a payment method.</p>
-
-            <div class="payment-options">
-                <div class="payment-option">
-                    <input type="radio" name="payment" id="credit-card" checked>
-                    <label for="credit-card">
-                        <i class="fas fa-credit-card"></i>
-                        <span>Credit Card</span>
-                    </label>
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-crown"></i>
                 </div>
-                <div class="payment-option">
-                    <input type="radio" name="payment" id="paypal">
-                    <label for="paypal">
-                        <i class="fab fa-paypal"></i>
-                        <span>PayPal</span>
-                    </label>
-                </div>
-                <div class="payment-option">
-                    <input type="radio" name="payment" id="mobile-payment">
-                    <label for="mobile-payment">
-                        <i class="fas fa-mobile-alt"></i>
-                        <span>Mobile Payment</span>
-                    </label>
+                <div class="modal-header-content">
+                    <h3>Premium'a Hoş Geldiniz</h3>
                 </div>
             </div>
+            <div class="modal-content">
+                <div class="purchase-details">
+                    <div class="purchase-plan-icon">
+                        <i id="planIcon" class="fas fa-fire"></i>
+                    </div>
+                    <div class="purchase-info">
+                        <h4 id="productTitle">Blaze Premium</h4>
+                        <div class="purchase-price" id="productPrice">349₺/ay</div>
+                    </div>
+                </div>
 
-            <button id="confirmPurchase" class="confirm-btn">Proceed to Payment</button>
+                <div class="purchase-options">
+                    <h4>Ödeme Yöntemi</h4>
+                    <div class="payment-methods">
+                        <div class="payment-method">
+                            <input type="radio" id="creditCard" name="payment" checked>
+                            <label for="creditCard">
+                                <i class="fas fa-credit-card"></i>
+                                <span>Kredi/Banka Kartı</span>
+                            </label>
+                        </div>
+                        <div class="payment-method">
+                            <input type="radio" id="paypal" name="payment">
+                            <label for="paypal">
+                                <i class="fab fa-paypal"></i>
+                                <span>PayPal</span>
+                            </label>
+                        </div>
+                        <div class="payment-method">
+                            <input type="radio" id="mobilePayment" name="payment">
+                            <label for="mobilePayment">
+                                <i class="fas fa-mobile-alt"></i>
+                                <span>Mobil Ödeme</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" id="productIdInput" value="">
+                <button id="confirmPurchase" class="modal-submit-button">
+                    <span>Ödemeyi Tamamla</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+
+                <div class="modal-note">
+                    <i class="fas fa-shield-alt"></i>
+                    <p>Tüm ödemeler güvenli bağlantı üzerinden işlenir. İptal etmek isterseniz 14 gün içinde iade
+                        garantisi.</p>
+                </div>
+            </div>
         </div>
     </div>
 </body>

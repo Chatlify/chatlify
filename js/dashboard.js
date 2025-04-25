@@ -7,10 +7,17 @@ let presenceChannel = null;
 let currentConversationId = null; // Aktif sohbet için ID
 let messageSubscription = null; // Realtime mesaj aboneliği
 let sampleColumnFormat = 'camelCase'; // Varsayılan olarak camelCase formatını kullan
-const defaultAvatar = 'images/chatlifyprofile1.png';
+const defaultAvatar = 'images/DefaultAvatar.png';
 let messageNotificationSound = null; // Ses nesnesi için global değişken
 let unreadCounts = {}; // Okunmamış mesaj sayaçları { userId: count }
-const TENOR_API_KEY = 'AIzaSyCjseHq-Gn4cii_fVDtSX3whyY94orNWPM'; // Tenor API anahtarı
+
+// Tenor API anahtarını environment variables'dan al
+const TENOR_API_KEY = process.env.TENOR_API_KEY || null;
+
+// API anahtarı kontrolü
+if (!TENOR_API_KEY) {
+    console.error('Tenor API anahtarı bulunamadı! Environment variables kontrol edin.');
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Dashboard JS başlatılıyor...');
@@ -164,42 +171,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 
         tabs.forEach(tab => {
-            tab.addEventListener('click', async () => {
-                console.log(`Tab tıklandı: ${tab.textContent.trim()}`);
-
+            tab.addEventListener('click', () => {
                 // Tüm sekmeleri sıfırla
                 tabs.forEach(t => t.classList.remove('active'));
 
                 // Tıklanan sekmeyi aktif yap
                 tab.classList.add('active');
 
-                // Tabın adını al
-                const tabName = tab.textContent.trim();
-
                 // İçeriği göster/gizle
+                const tabName = tab.textContent.trim();
                 showSection(tabName, tabContents);
 
-                // Eğer "Bekleyen" sekmesine tıklandıysa özel işlemler yap
+                // Eğer "Bekleyen" sekmesine tıklandıysa bekleyen istekleri yükle
                 if (tabName === 'Bekleyen') {
-                    // Bildirim noktasını kaldır (eğer varsa)
-                    const notificationDot = tab.querySelector('.notification-dot');
-                    if (notificationDot) {
-                        notificationDot.remove();
-                    }
-
-                    // showSection içinde de çağrılıyor, ama güvenlik için burada da çağıralım
-                    console.log('Tab tıklama olayında loadPendingFriendRequests doğrudan çağrılıyor');
-                    try {
-                        await loadPendingFriendRequests();
-                    } catch (error) {
-                        console.error('Tab tıklama olayında bekleyen istekler yüklenirken hata:', error);
-                    }
-
-                    // Bölümün görünür olduğundan emin ol
-                    const pendingSection = document.querySelector('.pending-requests-section');
-                    if (pendingSection) {
-                        pendingSection.style.display = 'block';
-                    }
+                    loadPendingFriendRequests();
                 }
             });
         });
@@ -207,8 +192,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Bekleyen arkadaşlık isteklerini yükle ve görüntüle
     async function loadPendingFriendRequests() {
-        console.log('loadPendingFriendRequests çağrıldı - Bekleyen istekler yükleniyor');
-
         // Bekleyen istekler konteynerini seç
         const pendingContainer = document.querySelector('.pending-requests-container');
         if (!pendingContainer) {
@@ -303,8 +286,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.querySelectorAll('.pending-count').forEach(badge => {
                 badge.textContent = pendingRequests.length;
             });
-
-            console.log(`${pendingRequests.length} adet bekleyen istek başarıyla yüklendi ve görüntülendi`);
         } catch (error) {
             console.error('Bekleyen istekler yüklenirken hata:', error);
             pendingContainer.innerHTML = `<div class="error-placeholder">Bekleyen istekler yüklenirken bir hata oluştu: ${error.message}</div>`;
@@ -485,31 +466,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }
 
-            // Eğer bekleyen istekler bölümüyse özel işlemleri yap
-            if (sectionName === 'Bekleyen') {
-                // Eğer bölüm yoksa oluştur
-                if (!document.querySelector('.pending-requests-section')) {
-                    createPendingSection();
-
-                    // Oluşturulduktan sonra bölümü tekrar seç ve görünür yap
-                    const pendingSection = document.querySelector('.pending-requests-section');
-                    if (pendingSection) {
-                        pendingSection.style.display = 'block';
-                    }
-                }
-
-                // Bekleyen isteklerin hemen yüklenmesini sağla
-                // NOT: Burada async/await kullanamıyoruz çünkü showSection async değil
-                loadPendingFriendRequests().catch(err => {
-                    console.error('Bekleyen istekleri yüklerken hata:', err);
-                });
-
-                // Ekstra kontrol - bölümün gerçekten görünür olduğundan emin ol
-                const pendingSection = document.querySelector('.pending-requests-section');
-                if (pendingSection) {
-                    pendingSection.style.display = 'block';
-                    console.log('Bekleyen istekler bölümü görünür hale getirildi:', pendingSection);
-                }
+            // Eğer bekleyen istekler bölümüyse ve daha önce oluşturulmadıysa oluştur
+            if (sectionName === 'Bekleyen' && !document.querySelector('.pending-requests-section')) {
+                createPendingSection();
             }
         } else {
             // Eski davranış - sections parametresi yoksa
@@ -571,9 +530,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         console.log('Bekleyen arkadaşlık istekleri için realtime aboneliği başlatılıyor...');
 
-        // Gelen arkadaşlık istekleri için kanal
-        const incomingFriendChannel = supabase
-            .channel('incoming-friend-requests')
+        const pendingFriendChannel = supabase
+            .channel('pending-friend-requests')
             .on('postgres_changes', {
                 event: 'INSERT',
                 schema: 'public',
@@ -581,9 +539,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 filter: `user_id_2=eq.${currentUserId},status=eq.pending`
             }, async (payload) => {
                 console.log('Yeni bekleyen arkadaşlık isteği alındı (realtime):', payload);
-
-                // Yeni arkadaşlık isteği için görsel bildirim göster
-                showFriendRequestNotification(payload);
 
                 // Bildirim sesi çal (eğer varsa)
                 if (messageNotificationSound) {
@@ -602,119 +557,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const activeTab = document.querySelector('.dashboard-header .tab.active');
                 if (activeTab && activeTab.textContent.trim() === 'Bekleyen') {
                     loadPendingFriendRequests();
-                } else {
-                    // Bekleyen istekler sekmesi açık olmasa bile yeni istek geldiğini göster
-                    const pendingTab = Array.from(document.querySelectorAll('.dashboard-header .tab'))
-                        .find(tab => tab.textContent.trim() === 'Bekleyen');
-
-                    if (pendingTab) {
-                        // Bekleyen sekmesinde bildirim göster
-                        let notificationIndicator = pendingTab.querySelector('.notification-dot');
-                        if (!notificationIndicator) {
-                            notificationIndicator = document.createElement('span');
-                            notificationIndicator.className = 'notification-dot';
-                            pendingTab.appendChild(notificationIndicator);
-                        }
-                    }
                 }
             })
             .subscribe((status) => {
                 console.log(`Bekleyen arkadaşlık istekleri abonelik durumu: ${status}`);
-            });
-
-        // Gönderilen arkadaşlık isteklerinin durumunu izle
-        const outgoingFriendChannel = supabase
-            .channel('outgoing-friend-requests')
-            .on('postgres_changes', {
-                event: 'UPDATE',
-                schema: 'public',
-                table: 'friendships',
-                filter: `user_id_1=eq.${currentUserId},status=eq.accepted`
-            }, async (payload) => {
-                console.log('Gönderilen arkadaşlık isteği kabul edildi (realtime):', payload);
-
-                // Arkadaş listesini güncelle
-                const onlineList = document.querySelector('.online-friends');
-                const offlineList = document.querySelector('.offline-friends');
-                const dmList = document.querySelector('#friends-group .dm-items');
-                const onlineSection = document.querySelector('.online-section-title');
-                const offlineSection = document.querySelector('.offline-section-title');
-
-                if (onlineList && offlineList && dmList) {
-                    await loadAllFriends({
-                        onlineList,
-                        offlineList,
-                        dmList,
-                        onlineSection,
-                        offlineSection
-                    });
-                }
-            })
-            .subscribe((status) => {
-                console.log(`Gönderilen arkadaşlık istekleri abonelik durumu: ${status}`);
-            });
-    }
-
-    // Arkadaşlık isteği bildirimi göster
-    function showFriendRequestNotification(payload) {
-        // Bildirim konteynerini kontrol et veya oluştur
-        let notificationContainer = document.querySelector('.notification-container');
-        if (!notificationContainer) {
-            notificationContainer = document.createElement('div');
-            notificationContainer.className = 'notification-container';
-            document.body.appendChild(notificationContainer);
-        }
-
-        // Kullanıcı bilgilerini al
-        supabase
-            .from('users')
-            .select('username, avatar')
-            .eq('id', payload.new.user_id_1)
-            .single()
-            .then(({ data, error }) => {
-                if (error) {
-                    console.error('Bildirim için kullanıcı bilgileri alınamadı:', error);
-                    return;
-                }
-
-                const username = data.username || 'Bilinmeyen Kullanıcı';
-
-                // Bildirim elementi oluştur
-                const notification = document.createElement('div');
-                notification.className = 'notification info show';
-                notification.innerHTML = `
-                    <div class="notification-icon">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
-                    <div class="notification-content">
-                        <strong>${username}</strong> sana arkadaşlık isteği gönderdi.
-                    </div>
-                    <button class="notification-close">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
-
-                // Kapatma butonu olayı
-                const closeBtn = notification.querySelector('.notification-close');
-                closeBtn.addEventListener('click', () => {
-                    notification.classList.replace('show', 'hide');
-                    setTimeout(() => {
-                        if (notification.parentNode) {
-                            notification.parentNode.removeChild(notification);
-                        }
-                    }, 300);
-                });
-
-                // Otomatik kaldırma
-                notificationContainer.appendChild(notification);
-                setTimeout(() => {
-                    notification.classList.replace('show', 'hide');
-                    setTimeout(() => {
-                        if (notification.parentNode) {
-                            notification.parentNode.removeChild(notification);
-                        }
-                    }, 300);
-                }, 5000);
             });
     }
 });
@@ -1205,7 +1051,7 @@ function buildContextMenuContent(menu, userId, username, avatar) {
 
     // Menü Öğeleri
     const items = [
-        { label: 'Profil', icon: 'fa-user', action: () => console.log(`Profil görüntüle: ${username} (${userId})`) },
+        { label: 'Profil', icon: 'fa-user', action: () => openProfilePanel(userId, username, avatar) },
         {
             label: 'Mesaj Gönder', icon: 'fa-comment', action: () => {
                 // DM listesindeki avatarı bulup openChatPanel'e göndermek daha doğru olabilir
@@ -1297,9 +1143,6 @@ async function openChatPanel(userId, username, avatar) {
     const chatMessagesContainer = chatPanel?.querySelector('.chat-messages');
     const friendsPanelContainer = document.querySelector('.friends-panel-container');
     const sponsorSidebar = document.querySelector('.sponsor-sidebar');
-    const settingsButtonContainer = document.querySelector('.server-sidebar .server-item:has(.server-settings-icon)');
-    const chatCloseBtn = chatPanel?.querySelector('.chat-close-btn');
-    const chatEmojiBtn = chatPanel?.querySelector('.emoji-btn');
 
     // Elementlerin varlığını kontrol et
     if (!chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer) {
@@ -1328,21 +1171,7 @@ async function openChatPanel(userId, username, avatar) {
     const chatStatusTextElement = chatHeaderUser.querySelector('.chat-user-info .chat-status');
 
     if (chatUsernameElement) chatUsernameElement.textContent = username;
-    if (chatAvatarElement) {
-        // Avatar kontrolünü güçlendir - avatar null, undefined veya boş string olabilir
-        if (!avatar || avatar.trim() === "") {
-            chatAvatarElement.src = defaultAvatar;
-            console.log("Kullanıcının avatarı bulunamadı, varsayılan avatar kullanılıyor");
-        } else {
-            chatAvatarElement.src = avatar;
-        }
-
-        // Yükleme hatası durumunda varsayılan avatara geri dön
-        chatAvatarElement.onerror = function () {
-            console.warn("Avatar yüklenemedi:", avatar);
-            this.src = defaultAvatar;
-        };
-    }
+    if (chatAvatarElement) chatAvatarElement.src = avatar || defaultAvatar;
 
     // Çevrimiçi durumunu kontrol et
     const isFriendOnline = onlineFriends.has(userId);
@@ -1378,34 +1207,30 @@ async function openChatPanel(userId, username, avatar) {
 
 // Sohbet paneli header butonlarını ayarlama
 function setupChatHeaderActions(userId, username, avatar) {
-    const chatHeader = document.querySelector('.chat-header');
-    if (!chatHeader) {
-        console.error('Chat header not found!');
-        return;
-    }
+    // Chat header butonlarını ayarla
+    const chatHeader = document.querySelector('.chat-panel .chat-header');
+    const closeBtn = chatHeader?.querySelector('.chat-close-btn');
+    const profileBtn = chatHeader?.querySelector('.profile-btn');
 
-    // Kapatma butonu
-    const closeChatBtn = chatHeader.querySelector('.chat-close-btn');
-    if (closeChatBtn) {
-        // Eski listener'ları temizlemek için klon oluştur
-        const newCloseChatBtn = closeChatBtn.cloneNode(true);
-        closeChatBtn.parentNode.replaceChild(newCloseChatBtn, closeChatBtn);
+    // Sohbeti kapatma butonu
+    if (closeBtn) {
+        // Eski event listener'ları temizle
+        const newCloseBtn = closeBtn.cloneNode(true);
+        closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
 
-        // Yeni listener ekle
-        newCloseChatBtn.addEventListener('click', () => {
-            closeChatPanel();
-        });
+        // Yeni event listener ekle
+        newCloseBtn.addEventListener('click', closeChatPanel);
     }
 
     // Profil butonu
-    const profileBtn = chatHeader.querySelector('button[title="Profili Görüntüle"]');
     if (profileBtn) {
+        // Eski event listener'ları temizle
         const newProfileBtn = profileBtn.cloneNode(true);
         profileBtn.parentNode.replaceChild(newProfileBtn, profileBtn);
 
-        newProfileBtn.addEventListener('click', () => {
-            // Profil görüntüleme işlevi (eğer varsa)
-            console.log(`${username} profilini görüntüle`);
+        // Profil butonuna tıklayınca profil panelini aç
+        newProfileBtn.addEventListener('click', function () {
+            openProfilePanel(userId, username, avatar);
         });
     }
 }
@@ -1647,6 +1472,8 @@ function unsubscribeFromMessages() {
 }
 
 // Yeni bir mesajı ekrana görüntüleme (Detaylı loglama ve GIF JSON kontrolü)
+// !!! DİKKAT: Template literal içinde HTML yorumları ({/* ... */}) KULLANMAYIN !!!
+// !!! Bu tür yorumlar HTML olarak render edilir ve mesaj içeriğinde görünür hale gelir !!!
 function displayMessage(message, authorName = null, authorAvatar = null, source = 'unknown') {
     const chatMessagesContainer = document.querySelector('.chat-panel .chat-messages');
     if (!chatMessagesContainer || !message) {
@@ -3017,3 +2844,321 @@ function displayGifMessage(message) {
     // Bu fonksiyonun içeriği artık displayMessage içinde
 }
 */
+
+// Profil görüntüleme işlevi
+async function openProfilePanel(userId, username, avatar) {
+    console.log(`Profil paneli açılıyor: ${username} (${userId})`);
+
+    // Profile panel elementlerini al
+    const profilePanel = document.querySelector('.profile-panel');
+    const profileContent = profilePanel?.querySelector('.profile-panel-content');
+
+    // Profil paneli yoksa erken çık
+    if (!profilePanel || !profileContent) {
+        console.error('Profil paneli elementleri bulunamadı');
+        return;
+    }
+
+    // Profil panelini temizle ve yeni içeriği oluştur
+    if (!profileContent.querySelector('.profile-left-section')) {
+        profileContent.innerHTML = `
+            <button class="profile-close-btn">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="profile-left-section">
+                <div class="profile-cover"></div>
+                <div class="profile-overlay"></div>
+                <div class="profile-left-content">
+                    <div class="profile-avatar-large">
+                        <img src="${avatar || defaultAvatar}" alt="${username}" onerror="this.src='${defaultAvatar}'">
+                        <div class="profile-status-indicator ${onlineFriends && onlineFriends.has(userId) ? 'online' : 'offline'}"></div>
+                    </div>
+                    <h2 class="profile-username">${username}</h2>
+                    <div class="profile-discord-tag">@${username.toLowerCase().replace(/\s+/g, '')}</div>
+                    <div class="profile-status-text">
+                        <i class="fas fa-circle ${onlineFriends && onlineFriends.has(userId) ? 'online' : 'offline'}"></i>
+                        ${onlineFriends && onlineFriends.has(userId) ? 'Çevrimiçi' : 'Çevrimdışı'}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-right-section">
+                <div class="profile-tabs">
+                    <div class="profile-tab active" data-tab="user-info">Kullanıcı Bilgileri</div>
+                    <div class="profile-tab" data-tab="mutual-servers">Ortak Sunucular</div>
+                    <div class="profile-tab" data-tab="mutual-friends">Ortak Arkadaşlar</div>
+                </div>
+                
+                <div class="profile-section active" id="user-info-section">
+                    <div class="profile-section-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h3 class="profile-section-title">Kullanıcı Bilgileri</h3>
+                    </div>
+                    
+                    <div class="profile-info-grid">
+                        <div class="profile-info-item">
+                            <div class="profile-info-label">
+                                <i class="fas fa-calendar-alt"></i>
+                                Katılma Tarihi
+                            </div>
+                            <div class="profile-info-value">Yükleniyor...</div>
+                        </div>
+                        
+                        <div class="profile-info-item">
+                            <div class="profile-info-label">
+                                <i class="fas fa-award"></i>
+                                Rozetler
+                            </div>
+                            <div class="profile-badges-container">
+                                <div class="profile-badge">
+                                    <i class="fas fa-user-alt"></i>
+                                    <span>Yeni Üye</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-note-container">
+                        <textarea class="profile-note-textarea" placeholder="Bu kullanıcı hakkında kişisel not ekle..."></textarea>
+                    </div>
+                    
+                    <div class="profile-action-buttons">
+                        <button class="profile-action-btn message-btn">
+                            <i class="fas fa-comment"></i>
+                            Mesaj Gönder
+                        </button>
+                        
+                        <button class="profile-action-btn block-btn">
+                            <i class="fas fa-ban"></i>
+                            Engelle
+                        </button>
+                        
+                        <button class="profile-action-btn remove-btn">
+                            <i class="fas fa-user-times"></i>
+                            Arkadaşlıktan Çıkar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="profile-section" id="mutual-servers-section">
+                    <div class="profile-section-header">
+                        <i class="fas fa-server"></i>
+                        <h3 class="profile-section-title">Ortak Sunucular</h3>
+                    </div>
+                    <div class="profile-info-value">Henüz ortak sunucu bulunmamaktadır.</div>
+                </div>
+                
+                <div class="profile-section" id="mutual-friends-section">
+                    <div class="profile-section-header">
+                        <i class="fas fa-users"></i>
+                        <h3 class="profile-section-title">Ortak Arkadaşlar</h3>
+                    </div>
+                    <div class="profile-info-value">Henüz ortak arkadaş bulunmamaktadır.</div>
+                </div>
+            </div>
+        `;
+
+        // Profil sekmeleri için event listener'ları ekle
+        setupProfileTabControls(profileContent);
+    } else {
+        // Eğer panel zaten oluşturulmuşsa, sadece içeriği güncelle
+        const profileUsernameElement = profileContent.querySelector('.profile-username');
+        const profileAvatarElement = profileContent.querySelector('.profile-avatar-large img');
+        const profileStatusIndicator = profileContent.querySelector('.profile-status-indicator');
+        const profileStatusText = profileContent.querySelector('.profile-status-text');
+
+        if (profileUsernameElement) profileUsernameElement.textContent = username;
+        if (profileAvatarElement) {
+            profileAvatarElement.src = avatar || defaultAvatar;
+            profileAvatarElement.onerror = () => {
+                profileAvatarElement.src = defaultAvatar;
+            };
+        }
+
+        // Çevrimiçi durumu güncelle
+        const isOnline = onlineFriends && onlineFriends.has(userId);
+        if (profileStatusIndicator) {
+            profileStatusIndicator.className = `profile-status-indicator ${isOnline ? 'online' : 'offline'}`;
+        }
+        if (profileStatusText) {
+            profileStatusText.innerHTML = `
+                <i class="fas fa-circle ${isOnline ? 'online' : 'offline'}"></i>
+                ${isOnline ? 'Çevrimiçi' : 'Çevrimdışı'}
+            `;
+        }
+    }
+
+    // Kullanıcı bilgilerini güncelle (gerektiğinde API'den yükle)
+    try {
+        console.log(`Profil bilgileri yükleniyor: ${userId}`);
+
+        // Katılma tarihini API'den al - sadece createdAt sütununu sorguluyoruz
+        const { data: userData, error } = await supabase
+            .from('users')
+            .select('createdAt') // Sadece createdAt sütununu sorgula
+            .eq('id', userId)
+            .maybeSingle();
+
+        console.log('Supabase yanıtı:', userData, error);
+
+        if (error) {
+            console.error('Kullanıcı bilgileri alınırken hata:', error);
+            return;
+        }
+
+        if (userData) {
+            const joinDateElement = profileContent.querySelector('#user-info-section .profile-info-item:nth-child(1) .profile-info-value');
+            console.log('DOM Element bulundu:', joinDateElement, 'createdAt değeri:', userData.createdAt);
+
+            if (joinDateElement && userData.createdAt) {
+                const joinDate = new Date(userData.createdAt);
+                console.log('Tarih nesnesi oluşturuldu:', joinDate);
+
+                joinDateElement.textContent = joinDate.toLocaleDateString('tr-TR', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+                console.log('Tarih metni ayarlandı:', joinDateElement.textContent);
+            } else {
+                // Fallback olarak geçici tarih göster
+                if (joinDateElement) {
+                    joinDateElement.textContent = "Bilinmiyor";
+                    console.log('Tarih bilgisi bulunamadı, varsayılan değer kullanılıyor');
+                }
+            }
+
+            // Rozetler kısmını ekleyecek kod buraya gelecek (İleri aşamalarda implement edilecek)
+            // Şimdilik sadece "Yeni Üye" rozetini gösteriyoruz
+        } else {
+            console.warn(`${userId} için kullanıcı verisi bulunamadı`);
+            const joinDateElement = profileContent.querySelector('#user-info-section .profile-info-item:nth-child(1) .profile-info-value');
+            if (joinDateElement) {
+                joinDateElement.textContent = "Bilinmiyor";
+            }
+        }
+    } catch (error) {
+        console.error('Kullanıcı bilgileri yüklenirken hata:', error);
+        const joinDateElement = profileContent.querySelector('#user-info-section .profile-info-item:nth-child(1) .profile-info-value');
+        if (joinDateElement) {
+            joinDateElement.textContent = "Bilinmiyor";
+        }
+    }
+
+    // Profil panelinin kapatma butonuna tıklama eventi ekle
+    const closeBtn = profileContent.querySelector('.profile-close-btn');
+    if (closeBtn) {
+        // Eski event listener'ları temizle
+        const newCloseBtn = closeBtn.cloneNode(true);
+        closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+
+        // Yeni event listener ekle
+        newCloseBtn.addEventListener('click', () => {
+            closeProfilePanel();
+        });
+    }
+
+    // Mesaj gönder butonuna tıklama eventi ekle
+    const messageBtn = profileContent.querySelector('.profile-action-btn.message-btn');
+    if (messageBtn) {
+        // Eski event listener'ları temizle
+        const newMessageBtn = messageBtn.cloneNode(true);
+        messageBtn.parentNode.replaceChild(newMessageBtn, messageBtn);
+
+        // Yeni event listener ekle
+        newMessageBtn.addEventListener('click', () => {
+            closeProfilePanel();
+            openChatPanel(userId, username, avatar);
+        });
+    }
+
+    // Arkadaşlıktan çıkar butonuna tıklama eventi ekle
+    const removeBtn = profileContent.querySelector('.profile-action-btn.remove-btn');
+    if (removeBtn) {
+        // Eski event listener'ları temizle
+        const newRemoveBtn = removeBtn.cloneNode(true);
+        removeBtn.parentNode.replaceChild(newRemoveBtn, removeBtn);
+
+        // Yeni event listener ekle
+        newRemoveBtn.addEventListener('click', () => {
+            closeProfilePanel();
+            showRemoveFriendConfirmation(userId, username, avatar);
+        });
+    }
+
+    // Click dışındaki alana tıklandığında profil panelini kapat
+    profilePanel.addEventListener('click', (e) => {
+        if (e.target === profilePanel) {
+            closeProfilePanel();
+        }
+    });
+
+    // Profil panelini göster
+    profilePanel.classList.add('show');
+
+    // ESC tuşuna basıldığında profil panelini kapat
+    const handleEscKey = (e) => {
+        if (e.key === 'Escape') {
+            closeProfilePanel();
+            document.removeEventListener('keydown', handleEscKey);
+        }
+    };
+    document.addEventListener('keydown', handleEscKey);
+}
+
+// Profil panelini kapatma
+function closeProfilePanel() {
+    const profilePanel = document.querySelector('.profile-panel');
+    if (profilePanel) {
+        profilePanel.classList.remove('show');
+    }
+}
+
+// Profil paneli sekme kontrollerini ayarla
+function setupProfileTabControls(profileContent) {
+    const tabs = profileContent.querySelectorAll('.profile-tab');
+    const sections = profileContent.querySelectorAll('.profile-section');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Aktif sekmeyi değiştir
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            // İlgili içerik bölümünü göster
+            const targetTab = tab.dataset.tab;
+            sections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === `${targetTab}-section`) {
+                    section.classList.add('active');
+                }
+            });
+        });
+    });
+}
+
+// Uygulamanın başlatıldığı ana fonksiyon (DOMContentLoaded'da çağrılıyor)
+document.addEventListener('DOMContentLoaded', function () {
+    // ... existing code ...
+
+    // Sohbet panelindeki profil butonuna tıklanınca profil panelini açma
+    const chatHeaderProfileBtn = document.querySelector('.chat-panel .chat-header .profile-btn');
+    if (chatHeaderProfileBtn) {
+        chatHeaderProfileBtn.addEventListener('click', function () {
+            // Aktif sohbet kullanıcısının bilgilerini al
+            const userId = currentConversationId; // DM sisteminde conversationId genellikle karşı kullanıcının ID'si
+
+            // Chat header'dan kullanıcı bilgilerini al
+            const chatHeader = document.querySelector('.chat-panel .chat-header');
+            const username = chatHeader?.querySelector('.chat-username')?.textContent || 'Kullanıcı';
+            const avatarImg = chatHeader?.querySelector('.chat-avatar img');
+            const avatar = avatarImg ? avatarImg.src : defaultAvatar;
+
+            // Profil panelini aç
+            openProfilePanel(userId, username, avatar);
+        });
+    }
+
+    // ... existing code ...
+});

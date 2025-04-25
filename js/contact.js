@@ -1,252 +1,167 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Form elements
+import { supabase } from './auth_config.js';
+
+document.addEventListener('DOMContentLoaded', async () => {
+    // Form elementlerini seç
     const contactForm = document.getElementById('contactForm');
-    const successMessage = document.querySelector('.success-message');
-    const newMessageBtn = document.getElementById('newMessageBtn');
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const messageInput = document.getElementById('message');
+    const submitButton = document.getElementById('submitBtn');
 
-    // Form submission
-    contactForm.addEventListener('submit', function (e) {
-        e.preventDefault();
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        // Form validation
-        if (!validateForm()) {
-            return;
-        }
+            // Yükleme durumunu göster
+            showLoading(true);
 
-        // Form submission simulation
-        const formData = new FormData(contactForm);
+            // Form verilerini al ve doğrula
+            const name = sanitizeInput(nameInput.value.trim());
+            const email = sanitizeInput(emailInput.value.trim());
+            const message = sanitizeInput(messageInput.value.trim());
 
-        // Show loading animation
-        showLoadingState();
+            // Form doğrulama
+            if (!validateForm(name, email, message)) {
+                showLoading(false);
+                return;
+            }
 
-        // API submission simulation (1.5 seconds)
-        setTimeout(() => {
-            // Show success message
-            showSuccessMessage();
+            try {
+                // Mesajı veritabanına kaydet
+                const { data, error } = await supabase
+                    .from('contact_messages')
+                    .insert([
+                        { name, email, message, created_at: new Date().toISOString() }
+                    ]);
 
-            // Reset form
-            contactForm.reset();
+                if (error) throw error;
 
-            // Reset any expanded textareas
-            document.querySelectorAll('textarea').forEach(textarea => {
-                textarea.style.height = 'auto';
-            });
-        }, 1500);
-    });
+                // Başarılı mesaj
+                showSuccessMessage('Mesajınız başarıyla gönderildi. En kısa sürede size dönüş yapacağız.');
 
-    // When new message button is clicked
-    newMessageBtn.addEventListener('click', function () {
-        // Hide success message
-        hideSuccessMessage();
-    });
+                // Formu temizle
+                contactForm.reset();
 
-    // Form validation function
-    function validateForm() {
+            } catch (error) {
+                console.error('Mesaj gönderme hatası:', error);
+                showErrorMessage('Mesaj gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+            } finally {
+                showLoading(false);
+            }
+        });
+    }
+
+    // HTML özel karakterlerini escape ederek XSS'i önle
+    function sanitizeInput(input) {
+        if (!input) return '';
+
+        const element = document.createElement('div');
+        element.textContent = input;
+        return element.innerHTML;
+    }
+
+    // Girişleri doğrula
+    function validateForm(name, email, message) {
         let isValid = true;
 
-        // Reset all error messages first
-        document.querySelectorAll('.error-message').forEach(msg => {
-            msg.style.display = 'none';
-        });
-
-        // Check name field
-        const nameField = document.getElementById('name');
-        if (!nameField.value.trim()) {
+        // İsim kontrolü
+        if (!name || name.length < 2) {
+            showInputError(nameInput, 'Lütfen geçerli bir isim girin.');
             isValid = false;
-            document.getElementById('nameError').style.display = 'block';
-            highlightErrorField(nameField);
+        } else {
+            clearInputError(nameInput);
         }
 
-        // Check email field
-        const emailField = document.getElementById('email');
-        if (!emailField.value.trim()) {
+        // E-posta kontrolü
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailRegex.test(email)) {
+            showInputError(emailInput, 'Lütfen geçerli bir e-posta adresi girin.');
             isValid = false;
-            document.getElementById('emailError').style.display = 'block';
-            highlightErrorField(emailField);
-        } else if (!isValidEmail(emailField.value)) {
-            isValid = false;
-            document.getElementById('emailError').style.display = 'block';
-            highlightErrorField(emailField);
+        } else {
+            clearInputError(emailInput);
         }
 
-        // Check subject field
-        const subjectField = document.getElementById('subject');
-        if (!subjectField.value) {
+        // Mesaj kontrolü
+        if (!message || message.length < 10) {
+            showInputError(messageInput, 'Mesajınız en az 10 karakter olmalıdır.');
             isValid = false;
-            document.getElementById('subjectError').style.display = 'block';
-            highlightErrorField(subjectField);
-        }
-
-        // Check message field
-        const messageField = document.getElementById('message');
-        if (!messageField.value.trim()) {
-            isValid = false;
-            document.getElementById('messageError').style.display = 'block';
-            highlightErrorField(messageField);
-        }
-
-        // Check privacy checkbox
-        const privacyCheckbox = document.getElementById('privacy');
-        if (!privacyCheckbox.checked) {
-            isValid = false;
-            document.getElementById('privacyError').style.display = 'block';
-            highlightErrorField(privacyCheckbox);
+        } else {
+            clearInputError(messageInput);
         }
 
         return isValid;
     }
 
-    // Email validation function
-    function isValidEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
+    // Hata mesajını göster
+    function showInputError(input, message) {
+        const formGroup = input.closest('.form-group');
+        const errorElement = formGroup.querySelector('.error-message') || document.createElement('div');
 
-    // Highlight error field
-    function highlightErrorField(field) {
-        field.classList.add('error');
-
-        // Remove error highlight after 3 seconds
-        setTimeout(() => {
-            removeErrorHighlight(field);
-        }, 3000);
-    }
-
-    // Remove error highlight
-    function removeErrorHighlight(field) {
-        field.classList.remove('error');
-    }
-
-    // Show loading state
-    function showLoadingState() {
-        const submitBtn = contactForm.querySelector('.submit-btn');
-        submitBtn.disabled = true;
-        submitBtn.querySelector('.btn-text').style.display = 'none';
-        submitBtn.querySelector('.loading-spinner').style.display = 'block';
-    }
-
-    // Show success message
-    function showSuccessMessage() {
-        contactForm.style.display = 'none';
-        successMessage.style.display = 'flex';
-
-        // Smooth scroll to center the message
-        const formContainer = document.querySelector('.contact-form-container');
-        formContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    // Hide success message
-    function hideSuccessMessage() {
-        contactForm.style.display = 'block';
-        successMessage.style.display = 'none';
-
-        // Reset submit button
-        const submitBtn = contactForm.querySelector('.submit-btn');
-        submitBtn.disabled = false;
-        submitBtn.querySelector('.btn-text').style.display = 'block';
-        submitBtn.querySelector('.loading-spinner').style.display = 'none';
-    }
-
-    // Auto height adjustment for textareas
-    const textareas = document.querySelectorAll('textarea');
-    textareas.forEach(textarea => {
-        textarea.addEventListener('input', function () {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-
-            // Hide error message when typing
-            const errorMsg = document.getElementById('messageError');
-            if (errorMsg) errorMsg.style.display = 'none';
-        });
-    });
-
-    // Add input event listeners to hide error messages when user types
-    document.getElementById('name').addEventListener('input', function () {
-        document.getElementById('nameError').style.display = 'none';
-        this.classList.remove('error');
-    });
-
-    document.getElementById('email').addEventListener('input', function () {
-        document.getElementById('emailError').style.display = 'none';
-        this.classList.remove('error');
-    });
-
-    document.getElementById('subject').addEventListener('change', function () {
-        document.getElementById('subjectError').style.display = 'none';
-        this.classList.remove('error');
-    });
-
-    document.getElementById('privacy').addEventListener('change', function () {
-        document.getElementById('privacyError').style.display = 'none';
-        this.classList.remove('error');
-    });
-
-    // Fix subject dropdown text color
-    const subjectSelect = document.getElementById('subject');
-    subjectSelect.style.color = '#ffffff';
-    subjectSelect.addEventListener('change', function () {
-        if (this.value) {
-            this.style.color = '#ffffff';
+        if (!errorElement.classList.contains('error-message')) {
+            errorElement.className = 'error-message';
+            formGroup.appendChild(errorElement);
         }
-    });
 
-    // Initial animations when page first loads
-    function initAnimations() {
-        // Fade-in animation for hero section
-        document.querySelector('.contact-hero').classList.add('loaded');
-
-        // Animation for info cards
-        const infoCards = document.querySelectorAll('.info-card');
-        infoCards.forEach((card, index) => {
-            setTimeout(() => {
-                card.classList.add('appear');
-            }, 300 + (index * 100));
-        });
-
-        // Animation for form elements
-        const formElements = document.querySelectorAll('.form-group');
-        formElements.forEach((element, index) => {
-            setTimeout(() => {
-                element.classList.add('appear');
-            }, 500 + (index * 100));
-        });
+        errorElement.textContent = message;
+        input.classList.add('error');
     }
 
-    // Scroll animations
-    function setupScrollAnimations() {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('scrolled');
-                    // Stop observing once scrolled into view
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, {
-            threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
-        });
+    // Hata mesajını temizle
+    function clearInputError(input) {
+        const formGroup = input.closest('.form-group');
+        const errorElement = formGroup.querySelector('.error-message');
 
-        // Elements to observe
-        const sections = document.querySelectorAll('.map-section, .faq-preview');
-        sections.forEach(section => {
-            observer.observe(section);
-        });
+        if (errorElement) {
+            errorElement.textContent = '';
+        }
+
+        input.classList.remove('error');
     }
 
-    // Header scroll effect
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            document.querySelector('header').classList.add('scrolled');
+    // Yükleme durumunu göster/gizle
+    function showLoading(isLoading) {
+        if (isLoading) {
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
         } else {
-            document.querySelector('header').classList.remove('scrolled');
+            submitButton.disabled = false;
+            submitButton.innerHTML = 'Gönder';
+        }
+    }
+
+    // Başarı mesajını göster
+    function showSuccessMessage(message) {
+        const messageContainer = document.getElementById('formMessages') || createMessageContainer();
+        messageContainer.innerHTML = `<div class="alert alert-success">${sanitizeInput(message)}</div>`;
+        messageContainer.style.display = 'block';
+
+        // 5 saniye sonra mesajı gizle
+        setTimeout(() => {
+            messageContainer.style.display = 'none';
+        }, 5000);
+    }
+
+    // Hata mesajını göster
+    function showErrorMessage(message) {
+        const messageContainer = document.getElementById('formMessages') || createMessageContainer();
+        messageContainer.innerHTML = `<div class="alert alert-danger">${sanitizeInput(message)}</div>`;
+        messageContainer.style.display = 'block';
+    }
+
+    // Mesaj konteynerini oluştur
+    function createMessageContainer() {
+        const container = document.createElement('div');
+        container.id = 'formMessages';
+        container.className = 'message-container';
+        contactForm.prepend(container);
+        return container;
+    }
+
+    // Sayfadan ayrılırken form verilerini doğrula
+    window.addEventListener('beforeunload', (event) => {
+        if (nameInput.value || emailInput.value || messageInput.value) {
+            event.preventDefault();
+            return event.returnValue = 'Formu tamamlamadan sayfadan ayrılmak istediğinize emin misiniz?';
         }
     });
-
-    // Start animations
-    initAnimations();
-    setupScrollAnimations();
-
-    // Hide success message initially
-    successMessage.style.display = 'none';
 }); 
