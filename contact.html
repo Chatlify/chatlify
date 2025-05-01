@@ -16,6 +16,7 @@
 </head>
 
 <body>
+    <!-- Header Bölümü - Site Navigasyonu -->
     <header>
         <nav>
             <div class="logo">
@@ -33,14 +34,14 @@
                             <circle cx="100" cy="100" r="85" />
                         </clipPath>
                     </defs>
-                    <!-- Main Logo Circle -->
+                    <!-- Ana Logo Dairesi -->
                     <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#gradient)" stroke-width="5"
                         opacity="0.7" />
-                    <!-- Logo Path -->
+                    <!-- Logo Yolu -->
                     <path class="logo-path"
                         d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
                         stroke="url(#gradient)" stroke-width="10" stroke-linecap="round" filter="url(#glow)" />
-                    <!-- C Letter -->
+                    <!-- C Harfi -->
                     <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
                         font-weight="bold" filter="url(#glow)">C</text>
                 </svg>
@@ -60,6 +61,7 @@
     </header>
 
     <main>
+        <!-- İletişim Sayfası Başlık Bölümü -->
         <section class="contact-hero">
             <div class="contact-hero-content">
                 <h1>CONTACT <span class="highlight">US</span></h1>
@@ -68,8 +70,11 @@
             </div>
         </section>
 
+        <!-- İletişim Bilgileri ve İletişim Formu Bölümü -->
         <section class="contact-container">
+            <!-- İletişim Bilgileri Kartları (Telefon, E-posta, Sosyal Medya) -->
             <div class="contact-info">
+                <!-- Telefon Bilgisi Kartı -->
                 <div class="info-card phone">
                     <div class="info-icon">
                         <i class="fas fa-phone-alt"></i>
@@ -79,6 +84,7 @@
                     <p>Mon-Fri, 9:00 AM - 6:00 PM</p>
                 </div>
 
+                <!-- E-posta Bilgisi Kartı -->
                 <div class="info-card email">
                     <div class="info-icon">
                         <i class="fas fa-envelope"></i>
@@ -88,6 +94,7 @@
                     <p>info@chatlify.com</p>
                 </div>
 
+                <!-- Sosyal Medya Bilgisi Kartı -->
                 <div class="info-card social">
                     <div class="info-icon">
                         <i class="fas fa-share-alt"></i>
@@ -106,21 +113,25 @@
                 </div>
             </div>
 
+            <!-- İletişim Formu Alanı -->
             <div class="contact-form-container">
                 <h2>Send us a message</h2>
                 <form id="contactForm" class="contact-form">
+                    <!-- Ad Soyad Formu Alanı -->
                     <div class="form-group">
                         <label for="name">Full Name</label>
                         <input type="text" id="name" name="name" placeholder="Enter your full name">
                         <div class="error-message" id="nameError">Please enter your name</div>
                     </div>
 
+                    <!-- E-posta Formu Alanı -->
                     <div class="form-group">
                         <label for="email">Email Address</label>
                         <input type="email" id="email" name="email" placeholder="Enter your email address">
                         <div class="error-message" id="emailError">Please enter a valid email address</div>
                     </div>
 
+                    <!-- Konu Seçimi Formu Alanı -->
                     <div class="form-group">
                         <label for="subject">Subject</label>
                         <select id="subject" name="subject">
@@ -134,18 +145,21 @@
                         <div class="error-message" id="subjectError">Please select a subject</div>
                     </div>
 
+                    <!-- Mesaj İçeriği Formu Alanı -->
                     <div class="form-group">
                         <label for="message">Message</label>
                         <textarea id="message" name="message" placeholder="Type your message here..."></textarea>
                         <div class="error-message" id="messageError">Please enter your message</div>
                     </div>
 
+                    <!-- Gizlilik Politikası Onay Kutusu -->
                     <div class="form-group checkbox-group">
                         <input type="checkbox" id="privacy" name="privacy">
                         <label for="privacy">I agree to the privacy policy and terms of service</label>
                         <div class="error-message" id="privacyError">You must agree to the privacy policy</div>
                     </div>
 
+                    <!-- Gönder Butonu -->
                     <button type="submit" class="submit-btn">
                         <span class="btn-text">Send</span>
                         <div class="loading-spinner">
@@ -154,6 +168,7 @@
                     </button>
                 </form>
 
+                <!-- Başarılı Mesaj Gönderimi Bildirimi -->
                 <div class="success-message">
                     <div class="success-icon">
                         <i class="fas fa-check-circle"></i>
@@ -165,6 +180,7 @@
             </div>
         </section>
 
+        <!-- SSS Bölümüne Yönlendirme Alanı -->
         <section class="faq-preview">
             <div class="faq-preview-content">
                 <h2>FREQUENTLY ASKED QUESTIONS</h2>
@@ -174,6 +190,7 @@
         </section>
     </main>
 
+    <!-- Site Alt Bilgi Bölümü -->
     <footer>
         <div class="footer-content">
             <div class="footer-logo">
@@ -191,20 +208,21 @@
                             <circle cx="100" cy="100" r="85" />
                         </clipPath>
                     </defs>
-                    <!-- Main Logo Circle -->
+                    <!-- Ana Logo Dairesi -->
                     <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#footer-gradient)" stroke-width="5"
                         opacity="0.7" />
-                    <!-- Logo Path -->
+                    <!-- Logo Yolu -->
                     <path class="logo-path"
                         d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
                         stroke="url(#footer-gradient)" stroke-width="10" stroke-linecap="round"
                         filter="url(#footer-glow)" />
-                    <!-- C Letter -->
+                    <!-- C Harfi -->
                     <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
                         font-weight="bold" filter="url(#footer-glow)">C</text>
                 </svg>
                 <span>CHATLIFY</span>
             </div>
+            <!-- Alt Bilgi Bağlantıları -->
             <div class="footer-links">
                 <div class="footer-column">
                     <h3>Features</h3>
@@ -244,6 +262,7 @@
                 </div>
             </div>
         </div>
+        <!-- Alt Bilgi Alt Kısmı - Sosyal Medya ve Telif Hakkı -->
         <div class="footer-bottom">
             <div class="social-links">
                 <a href="https://x.com/Chatlifyapp" target="_blank" rel="noopener noreferrer"><i

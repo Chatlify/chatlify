@@ -53,8 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 formMessage.classList.add('error');
             } else if (data.user) {
                 console.log('Giriş Başarılı:', data.user);
-                // Başarılı girişte dashboard'a yönlendir
-                window.location.href = 'dashboard.html';
+                // Başarılı girişte loading ekranına yönlendir
+                window.location.href = 'loading.html';
             } else {
                 formMessage.textContent = 'Giriş sırasında bir hata oluştu.';
                 formMessage.classList.add('error');
