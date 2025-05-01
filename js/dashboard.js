@@ -11,16 +11,34 @@ const defaultAvatar = 'images/DefaultAvatar.png';
 let messageNotificationSound = null; // Ses nesnesi için global değişken
 let unreadCounts = {}; // Okunmamış mesaj sayaçları { userId: count }
 
-// Tenor API anahtarını environment variables'dan al
-const TENOR_API_KEY = process.env.TENOR_API_KEY || null;
+// Tenor API anahtarını doğrudan tanımla
+// DİKKAT: API anahtarını doğrudan istemci koduna yazmak güvenlik riski taşır.
+// İdealde bu anahtar backend üzerinden veya güvenli bir yapılandırma ile yönetilmelidir.
+const TENOR_API_KEY = "YOUR_TENOR_API_KEY"; // BURAYI KENDİ TENOR API KEY'İNİZ İLE DEĞİŞTİRİN
 
 // API anahtarı kontrolü
-if (!TENOR_API_KEY) {
-    console.error('Tenor API anahtarı bulunamadı! Environment variables kontrol edin.');
+if (!TENOR_API_KEY || TENOR_API_KEY === "YOUR_TENOR_API_KEY") {
+    console.error('Tenor API anahtarı bulunamadı veya güncellenmemiş! GIF özellikleri çalışmayabilir. Lütfen js/dashboard.js dosyasını kontrol edin.');
+    // alert("Tenor API anahtarı eksik. GIF özellikleri kullanılamayacak.");
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Dashboard JS başlatılıyor...');
+
+    // Loading Screen'i göster ve 6 saniye sonra kaldır
+    const loadingScreen = document.getElementById('loadingScreen');
+
+    // Loading screen'i başlangıçta göster (zaten HTML'de gösteriliyor)
+    if (loadingScreen) {
+        // 6 saniye bekleyip loading screen'i kaldır
+        setTimeout(() => {
+            loadingScreen.classList.add('fade-out');
+            // Tamamen gizlendikten sonra DOM'dan kaldır
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 500); // transition süresi kadar bekle
+        }, 6000); // 6 saniye bekle
+    }
 
     try {
         // Element tanımlamaları
@@ -79,7 +97,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             setupEmojiPicker(chatEmojiBtn, chatTextarea, emojiPicker);
         }
 
-        // GIF picker dinleyicisini kur
+        // GIF picker dinleyicisini kur (Geçici olarak devre dışı bırakıldı)
+        /*
         if (chatGifBtn) {
             console.log('GIF butonu bulundu, hazırlanıyor:', chatGifBtn);
             setupGifPicker(chatGifBtn, chatTextarea);
@@ -100,6 +119,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }, 2000);
         }
+        */
 
         // Varsayılan sekmeyi göster
         const defaultTabContents = {
@@ -140,28 +160,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
         console.error('Dashboard başlatma hatası:', error);
         alert('Sayfa başlatılırken bir hata oluştu. Lütfen sayfayı yenileyiniz.');
-    }
-
-    // Video yükleme ekranını 6 saniye sonra gizle
-    const loadingScreen = document.getElementById('loading-screen');
-    const loadingVideo = document.getElementById('loading-video');
-
-    if (loadingScreen && loadingVideo) {
-        console.log('Video yükleme ekranı bulundu. 6 saniye sonra gizlenecek...');
-
-        // Video süresini 6 saniye olarak ayarla (video kısa ise döngüye alır)
-        loadingVideo.loop = true;
-
-        setTimeout(() => {
-            console.log('Video yükleme ekranı gizleniyor...');
-            loadingScreen.classList.add('hidden');
-
-            // Gizlendikten 500ms sonra video oynatmayı durdur (performans için)
-            setTimeout(() => {
-                loadingVideo.pause();
-                console.log('Video durduruldu');
-            }, 500);
-        }, 6000); // 6 saniye bekle
     }
 
     // Zorunlu elementlerin varlığını kontrol eden yardımcı fonksiyon
