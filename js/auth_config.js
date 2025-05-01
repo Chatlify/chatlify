@@ -1,8 +1,15 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
 // Supabase Proje Bilgileri
-const supabaseUrl = 'https://omyoobepjyyyvemovyim.supabase.co'
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9teW9vYmVwanl5eXZlbW92eWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUxNjIyNDksImV4cCI6MjA1MDczODI0OX0.-aNn51tjlgKLE9GssA0H4WvuCTYS3SMWIsJ4pz-PxqQ'
+// API anahtarları environment variables'dan alınır veya fallback değerleri kullanır
+const supabaseUrl = process.env.SUPABASE_URL || null;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || null;
+
+// Eğer API anahtarları bulunamazsa ve development ortamı değilse hata ver
+if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('Supabase ayarları bulunamadı! Lütfen .env dosyanızı kontrol edin.');
+    throw new Error('Supabase API anahtarları eksik. Uygulama başlatılamıyor.');
+}
 
 // Supabase istemcisini oluştur ve dışa aktar
 export const supabase = createClient(supabaseUrl, supabaseAnonKey) 
