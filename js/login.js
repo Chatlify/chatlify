@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         lastLogin: new Date().toISOString()
                     };
 
-                    // Kullanıcıyı dashboard'a yönlendir
+                    // Kullanıcıyı loading ekranına yönlendir
                     setTimeout(() => {
                         window.location.href = 'loading.html';
                     }, 1000);

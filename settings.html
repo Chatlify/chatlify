@@ -19,7 +19,7 @@
 </head>
 
 <body class="settings-page">
-    <!-- Animasyonlu Arkaplan -->
+    <!-- ARKA PLAN ANİMASYONU: Yıldızlı gökyüzü, hareketli bulutlar ve parıltılar içeren animasyon -->
     <div class="bg-animation">
         <div class="stars"></div>
         <div class="twinkling"></div>
@@ -27,12 +27,12 @@
     </div>
 
     <div class="dashboard-container">
-        <!-- Sunucu Kenar Çubuğu -->
+        <!-- Sunucu Kenar Çubuğu: Normalde sunucu listesini gösterir, ancak ayarlar sayfasında gizlidir -->
         <!-- <div class="server-sidebar"> ... sidebar içeriği ... </div> -->
 
-        <!-- Ayarlar Menüsü - Sol Kenar Çubuğu -->
+        <!-- AYARLAR MENÜSÜ: Sol taraftaki kategori menüsü -->
         <div class="settings-menu">
-            <!-- Ayarlar Başlık Kısmı -->
+            <!-- Ayarlar Başlığı -->
             <div class="settings-header">
                 <div class="settings-header-title">
                     Kullanıcı Ayarları
@@ -42,13 +42,13 @@
                 </div>
             </div>
 
-            <!-- Ayarlar Arama Kutusu -->
+            <!-- Ayarlarda Arama Kutusu -->
             <div class="settings-search">
                 <i class="fas fa-search"></i>
                 <input type="text" placeholder="Ayarlarda Ara">
             </div>
 
-            <!-- Ayarlar Kategori Menüsü -->
+            <!-- Ayar Kategorileri Listesi -->
             <div class="settings-categories">
                 <!-- Hesap Ayarları Kategorisi -->
                 <div class="settings-category active" data-target="account-settings">
@@ -103,7 +103,7 @@
 
                 <div class="settings-divider"></div>
 
-                <!-- Çıkış Yapma Butonu -->
+                <!-- Çıkış Butonu -->
                 <div class="settings-category danger">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Çıkış Yap</span>
@@ -111,22 +111,25 @@
             </div>
         </div>
 
-        <!-- Ana Ayarlar İçeriği - Sağ Bölüm -->
+        <!-- ANA İÇERİK ALANI: Sağ taraftaki ayar içeriği -->
         <div class="settings-content">
-            <!-- Hesap Ayarları Sayfası -->
+            <!-- HESAP AYARLARI BÖLÜMÜ: Profil bilgileri, şifre ayarları vb. -->
             <div class="settings-section" id="account-settings">
+                <!-- Bölüm Başlığı -->
                 <div class="settings-section-header">
                     <h2>Hesabım</h2>
                     <p>Profil bilgilerinizi ve hesap ayarlarınızı yönetin</p>
                 </div>
 
-                <!-- Profil Kart Bilgisi -->
+                <!-- Profil Kartı: Kullanıcı banner ve avatar gösterimi -->
                 <div class="settings-profile-card">
+                    <!-- Profil Banner Görüntüsü -->
                     <div class="profile-banner">
                         <div class="banner-overlay">
                             <button class="banner-change-btn"><i class="fas fa-camera"></i> Banner Değiştir</button>
                         </div>
                     </div>
+                    <!-- Profil Bilgileri -->
                     <div class="profile-info">
                         <div class="profile-avatar">
                             <img src="https://via.placeholder.com/200/3498db/ffffff?text=U" alt="Kullanıcı">
@@ -143,8 +146,9 @@
                     </div>
                 </div>
 
-                <!-- Kullanıcı Bilgileri Formu -->
+                <!-- Ayarlar Formu -->
                 <div class="settings-form">
+                    <!-- Kullanıcı Bilgileri Bölümü -->
                     <div class="settings-form-heading">
                         <h3>Kullanıcı Bilgileri</h3>
                     </div>
@@ -183,7 +187,7 @@
                         </div>
                     </div>
 
-                    <!-- Biyografi Alanı -->
+                    <!-- Hakkımda Alanı -->
                     <div class="settings-form-group">
                         <label for="bio">Hakkımda</label>
                         <div class="input-with-icon textarea">
@@ -216,7 +220,7 @@
                                 <button type="button" class="toggle-password"><i class="fas fa-eye"></i></button>
                             </div>
                         </div>
-                        <!-- Şifre Tekrar Alanı -->
+                        <!-- Şifre Tekrarlama Alanı -->
                         <div class="settings-form-group">
                             <label for="confirm-password">Şifreyi Tekrarla</label>
                             <div class="input-with-icon">

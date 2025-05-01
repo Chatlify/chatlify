@@ -16,11 +16,12 @@
 </head>
 
 <body>
-    <!-- Header Bölümü - Site Navigasyonu -->
+    <!-- HEADER BÖLÜMÜ: Logo, navigasyon linkleri ve hesap butonlarını içerir -->
     <header>
         <nav>
             <div class="logo">
                 <svg class="logo-svg" width="40" height="40" viewBox="0 0 200 200">
+                    <!-- Logo SVG kodları -->
                     <defs>
                         <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stop-color="#6a11cb" />
@@ -47,12 +48,14 @@
                 </svg>
                 <span>CHATLIFY</span>
             </div>
+            <!-- Navigasyon Menüsü -->
             <div class="nav-links">
                 <a href="index.html">Home</a>
                 <a href="community.html">Community</a>
                 <a href="support.html">Support</a>
                 <a href="download.html">Download</a>
             </div>
+            <!-- Giriş ve İndirme Butonları -->
             <div class="nav-buttons">
                 <a href="login.html" class="login-btn">Sign In</a>
                 <a href="download.html" class="download-btn">Download Now</a>
@@ -61,7 +64,7 @@
     </header>
 
     <main>
-        <!-- İletişim Sayfası Başlık Bölümü -->
+        <!-- HERO BÖLÜMÜ: İletişim sayfasının başlığı ve açıklaması -->
         <section class="contact-hero">
             <div class="contact-hero-content">
                 <h1>CONTACT <span class="highlight">US</span></h1>
@@ -70,9 +73,9 @@
             </div>
         </section>
 
-        <!-- İletişim Bilgileri ve İletişim Formu Bölümü -->
+        <!-- İLETİŞİM BİLGİLERİ VE FORM BÖLÜMÜ -->
         <section class="contact-container">
-            <!-- İletişim Bilgileri Kartları (Telefon, E-posta, Sosyal Medya) -->
+            <!-- İletişim Bilgileri Kartları (Telefon, Email, Sosyal Medya) -->
             <div class="contact-info">
                 <!-- Telefon Bilgisi Kartı -->
                 <div class="info-card phone">
@@ -84,7 +87,7 @@
                     <p>Mon-Fri, 9:00 AM - 6:00 PM</p>
                 </div>
 
-                <!-- E-posta Bilgisi Kartı -->
+                <!-- Email Bilgisi Kartı -->
                 <div class="info-card email">
                     <div class="info-icon">
                         <i class="fas fa-envelope"></i>
@@ -113,25 +116,25 @@
                 </div>
             </div>
 
-            <!-- İletişim Formu Alanı -->
+            <!-- İLETİŞİM FORMU: Kullanıcıların mesaj göndermesi için -->
             <div class="contact-form-container">
                 <h2>Send us a message</h2>
                 <form id="contactForm" class="contact-form">
-                    <!-- Ad Soyad Formu Alanı -->
+                    <!-- Ad-Soyad Alanı -->
                     <div class="form-group">
                         <label for="name">Full Name</label>
                         <input type="text" id="name" name="name" placeholder="Enter your full name">
                         <div class="error-message" id="nameError">Please enter your name</div>
                     </div>
 
-                    <!-- E-posta Formu Alanı -->
+                    <!-- E-posta Alanı -->
                     <div class="form-group">
                         <label for="email">Email Address</label>
                         <input type="email" id="email" name="email" placeholder="Enter your email address">
                         <div class="error-message" id="emailError">Please enter a valid email address</div>
                     </div>
 
-                    <!-- Konu Seçimi Formu Alanı -->
+                    <!-- Konu Seçimi -->
                     <div class="form-group">
                         <label for="subject">Subject</label>
                         <select id="subject" name="subject">
@@ -145,7 +148,7 @@
                         <div class="error-message" id="subjectError">Please select a subject</div>
                     </div>
 
-                    <!-- Mesaj İçeriği Formu Alanı -->
+                    <!-- Mesaj Alanı -->
                     <div class="form-group">
                         <label for="message">Message</label>
                         <textarea id="message" name="message" placeholder="Type your message here..."></textarea>
@@ -159,7 +162,7 @@
                         <div class="error-message" id="privacyError">You must agree to the privacy policy</div>
                     </div>
 
-                    <!-- Gönder Butonu -->
+                    <!-- Gönder Butonu (Yükleme Animasyonu Dahil) -->
                     <button type="submit" class="submit-btn">
                         <span class="btn-text">Send</span>
                         <div class="loading-spinner">
@@ -180,7 +183,7 @@
             </div>
         </section>
 
-        <!-- SSS Bölümüne Yönlendirme Alanı -->
+        <!-- SSS (FAQ) BÖLÜMÜ: Destek sayfasına yönlendirme -->
         <section class="faq-preview">
             <div class="faq-preview-content">
                 <h2>FREQUENTLY ASKED QUESTIONS</h2>
@@ -190,9 +193,10 @@
         </section>
     </main>
 
-    <!-- Site Alt Bilgi Bölümü -->
+    <!-- FOOTER BÖLÜMÜ: Site haritası, sosyal medya ve telif hakkı bilgileri -->
     <footer>
         <div class="footer-content">
+            <!-- Footer Logo -->
             <div class="footer-logo">
                 <svg class="logo-svg" width="40" height="40" viewBox="0 0 200 200">
                     <defs>
@@ -208,21 +212,21 @@
                             <circle cx="100" cy="100" r="85" />
                         </clipPath>
                     </defs>
-                    <!-- Ana Logo Dairesi -->
+                    <!-- Main Logo Circle -->
                     <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#footer-gradient)" stroke-width="5"
                         opacity="0.7" />
-                    <!-- Logo Yolu -->
+                    <!-- Logo Path -->
                     <path class="logo-path"
                         d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
                         stroke="url(#footer-gradient)" stroke-width="10" stroke-linecap="round"
                         filter="url(#footer-glow)" />
-                    <!-- C Harfi -->
+                    <!-- C Letter -->
                     <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
                         font-weight="bold" filter="url(#footer-glow)">C</text>
                 </svg>
                 <span>CHATLIFY</span>
             </div>
-            <!-- Alt Bilgi Bağlantıları -->
+            <!-- Footer Linkleri - Site Haritası -->
             <div class="footer-links">
                 <div class="footer-column">
                     <h3>Features</h3>
@@ -262,7 +266,7 @@
                 </div>
             </div>
         </div>
-        <!-- Alt Bilgi Alt Kısmı - Sosyal Medya ve Telif Hakkı -->
+        <!-- Alt Footer - Sosyal Medya ve Telif Hakkı -->
         <div class="footer-bottom">
             <div class="social-links">
                 <a href="https://x.com/Chatlifyapp" target="_blank" rel="noopener noreferrer"><i

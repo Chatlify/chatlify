@@ -213,4 +213,106 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(loadingTextInterval);
         }, 3500);
     }
+
+    // Loading ekranı elementleri
+    const loadingVideo = document.getElementById('loadingVideo');
+    const progressFill = document.getElementById('progressFill');
+    const progressPercentage = document.getElementById('progressPercentage');
+    const loadingMessage = document.getElementById('loadingMessage');
+
+    // Toplam yükleme süresi (6 saniye)
+    const totalLoadingTime = 6000;
+
+    // Yükleme mesajları dizisi
+    const loadingMessages = [
+        'Bağlanılıyor...',
+        'Sohbet verileri yükleniyor...',
+        'Sunucuyla iletişim kuruluyor...',
+        'Profil bilgileri alınıyor...',
+        'Neredeyse hazır...'
+    ];
+
+    // Başlangıç zamanı
+    const startTime = new Date().getTime();
+
+    // Video kontrolleri
+    if (loadingVideo) {
+        loadingVideo.play().catch(error => {
+            console.error('Video oynatma hatası:', error);
+            // Video oynatılamazsa arkaplan rengini ayarla
+            document.querySelector('.video-container').style.backgroundColor = '#0a0c1b';
+        });
+    }
+
+    // Yükleme ilerleme animasyonunu başlat
+    function startLoadingAnimation() {
+        let interval = 50; // Her 50ms'de bir güncelle
+        let currentProgress = 0;
+        let messageIndex = 0;
+
+        // İlerleme animasyonu için interval
+        const loadingInterval = setInterval(function () {
+            // Geçen süre (ms cinsinden)
+            const elapsedTime = new Date().getTime() - startTime;
+
+            // İlerleme yüzdesini hesapla (0-100 arası)
+            currentProgress = Math.min(100, Math.floor((elapsedTime / totalLoadingTime) * 100));
+
+            // İlerleme çubuğunu ve metni güncelle
+            progressFill.style.width = currentProgress + '%';
+            progressPercentage.textContent = currentProgress + '%';
+
+            // Belirli yüzdelerde mesajları değiştir
+            if (currentProgress >= 20 && messageIndex === 0) {
+                updateLoadingMessage(1);
+                messageIndex = 1;
+            } else if (currentProgress >= 40 && messageIndex === 1) {
+                updateLoadingMessage(2);
+                messageIndex = 2;
+            } else if (currentProgress >= 60 && messageIndex === 2) {
+                updateLoadingMessage(3);
+                messageIndex = 3;
+            } else if (currentProgress >= 80 && messageIndex === 3) {
+                updateLoadingMessage(4);
+                messageIndex = 4;
+            }
+
+            // Yükleme tamamlandığında
+            if (currentProgress >= 100) {
+                clearInterval(loadingInterval);
+                loadingComplete();
+            }
+        }, interval);
+    }
+
+    // Yükleme mesajını güncelle
+    function updateLoadingMessage(index) {
+        if (loadingMessage && loadingMessages[index]) {
+            // Mesajın kaybolması için class ekle
+            loadingMessage.classList.add('fade-out');
+
+            // Kısa bir gecikme sonrası yeni mesajı göster
+            setTimeout(() => {
+                loadingMessage.textContent = loadingMessages[index];
+                loadingMessage.classList.remove('fade-out');
+                loadingMessage.classList.add('fade-in');
+
+                // Fade-in animasyonunu temizle
+                setTimeout(() => {
+                    loadingMessage.classList.remove('fade-in');
+                }, 300);
+            }, 300);
+        }
+    }
+
+    // Yükleme tamamlandığında
+    function loadingComplete() {
+        // Kullanıcıyı dashboard'a yönlendir
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 500); // Yarım saniye beklet
+    }
+
+    // Yükleme işlemini başlat
+    startLoadingAnimation();
 });
