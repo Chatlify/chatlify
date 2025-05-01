@@ -82,7 +82,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             setupEmojiPicker(chatEmojiBtn, chatTextarea, emojiPicker);
         }
 
-        // GIF picker dinleyicisini kur
+        // GIF picker dinleyicisini kur (Geçici olarak devre dışı bırakıldı)
+        /*
         if (chatGifBtn) {
             console.log('GIF butonu bulundu, hazırlanıyor:', chatGifBtn);
             setupGifPicker(chatGifBtn, chatTextarea);
@@ -103,6 +104,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }, 2000);
         }
+        */
 
         // Varsayılan sekmeyi göster
         const defaultTabContents = {
