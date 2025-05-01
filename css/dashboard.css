@@ -6247,3 +6247,120 @@ emoji-picker {
         transform: scale(1.05);
     }
 }
+
+/* Mağaza butonunun iyileştirilmiş tasarımı */
+.server-shop-icon {
+    background: linear-gradient(135deg, #ffb347, #ffcc33);
+    border-radius: 15px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(255, 179, 71, 0.3);
+    overflow: hidden;
+}
+
+.server-shop-icon::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.server-shop-icon i {
+    color: #fff;
+    font-size: 20px;
+    transition: all 0.3s ease;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+.server-item:hover .server-shop-icon {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 179, 71, 0.5);
+}
+
+.server-item:hover .server-shop-icon::before {
+    opacity: 1;
+}
+
+.server-item:hover .server-shop-icon i {
+    transform: scale(1.1);
+}
+
+/* Mağaza Butonu Yeni Tasarım */
+.sidebar .store-btn {
+    margin: 8px 10px;
+    padding: 10px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #8a2be2 0%, #4c6ef5 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebar .store-btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar .store-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(138, 43, 226, 0.3);
+}
+
+.sidebar .store-btn:hover:before {
+    opacity: 1;
+}
+
+.sidebar .store-btn i {
+    font-size: 18px;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.sidebar .store-btn:hover i {
+    transform: scale(1.1);
+}
+
+/* + Sunucu Butonunu Güncelleme */
+.add-server-btn {
+    background: #4CAF50;
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(76, 175, 80, 0.2);
+}
+
+.add-server-btn:hover {
+    background: #3e8e41;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(76, 175, 80, 0.3);
+}
+
+.add-server-btn i {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+}
+
+.add-server-btn:hover i {
+    transform: rotate(90deg);
+}

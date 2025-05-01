@@ -3182,3 +3182,233 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ... existing code ...
 });
+
+// Sunucu Ekleme Modalı İşlevselliği
+document.addEventListener('DOMContentLoaded', function () {
+    // DOM Elementleri
+    const addServerBtn = document.querySelector('.add-server-btn');
+    const serverAddModal = document.getElementById('serverAddModal');
+    const serverAddModalClose = document.querySelector('#serverAddModal .close');
+    const serverOptionScreen = document.getElementById('serverOptionScreen');
+    const createServerBtn = document.getElementById('createServerBtn');
+    const joinServerBtn = document.getElementById('joinServerBtn');
+    const createServerSteps = document.querySelectorAll('.create-server-step');
+    const joinServerScreen = document.getElementById('joinServerScreen');
+    const backBtns = document.querySelectorAll('.step-back-btn');
+    const stepNextBtns = document.querySelectorAll('.step-next-btn');
+    const stepIndicators = document.querySelectorAll('.step-indicator');
+    const serverNameInput = document.getElementById('serverName');
+    const serverDescInput = document.getElementById('serverDescription');
+    const serverAvatarInput = document.getElementById('serverAvatar');
+    const serverAvatarPreview = document.getElementById('avatarPreview');
+    const mainOptionBackBtn = document.getElementById('mainOptionBackBtn');
+    const joinServerBackBtn = document.getElementById('joinServerBackBtn');
+
+    // Modal Açma/Kapama
+    if (addServerBtn) {
+        addServerBtn.addEventListener('click', function () {
+            if (serverAddModal) {
+                serverAddModal.style.display = 'flex';
+                resetModalState();
+            }
+        });
+    }
+
+    if (serverAddModalClose) {
+        serverAddModalClose.addEventListener('click', function () {
+            serverAddModal.style.display = 'none';
+        });
+    }
+
+    // Modal dışına tıklayınca kapatma
+    window.addEventListener('click', function (event) {
+        if (event.target === serverAddModal) {
+            serverAddModal.style.display = 'none';
+        }
+    });
+
+    // Sunucu Oluştur seçeneği
+    if (createServerBtn) {
+        createServerBtn.addEventListener('click', function () {
+            serverOptionScreen.style.display = 'none';
+            document.getElementById('createServerStep1').style.display = 'block';
+            updateStepIndicators(1);
+        });
+    }
+
+    // Sunucuya Katıl seçeneği
+    if (joinServerBtn) {
+        joinServerBtn.addEventListener('click', function () {
+            serverOptionScreen.style.display = 'none';
+            joinServerScreen.style.display = 'block';
+        });
+    }
+
+    // Geri butonları
+    backBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+            const currentStep = btn.closest('.create-server-step');
+            const currentStepNum = parseInt(currentStep.dataset.step);
+
+            if (currentStepNum === 1) {
+                currentStep.style.display = 'none';
+                serverOptionScreen.style.display = 'flex';
+            } else {
+                currentStep.style.display = 'none';
+                document.getElementById(`createServerStep${currentStepNum - 1}`).style.display = 'block';
+                updateStepIndicators(currentStepNum - 1);
+            }
+        });
+    });
+
+    // Ana seçeneklere dön butonları
+    if (mainOptionBackBtn) {
+        mainOptionBackBtn.addEventListener('click', function () {
+            joinServerScreen.style.display = 'none';
+            serverOptionScreen.style.display = 'flex';
+        });
+    }
+
+    if (joinServerBackBtn) {
+        joinServerBackBtn.addEventListener('click', function () {
+            joinServerScreen.style.display = 'none';
+            serverOptionScreen.style.display = 'flex';
+        });
+    }
+
+    // İleri butonları
+    stepNextBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+            const currentStep = btn.closest('.create-server-step');
+            const currentStepNum = parseInt(currentStep.dataset.step);
+            const nextStepNum = currentStepNum + 1;
+
+            // Form doğrulama
+            if (currentStepNum === 1) {
+                if (!validateServerName()) return;
+            } else if (currentStepNum === 2) {
+                if (!validateServerDescription()) return;
+            }
+
+            // Sonraki adıma geç
+            if (document.getElementById(`createServerStep${nextStepNum}`)) {
+                currentStep.style.display = 'none';
+                document.getElementById(`createServerStep${nextStepNum}`).style.display = 'block';
+                updateStepIndicators(nextStepNum);
+            } else {
+                // Son adım - sunucu oluştur
+                submitServerCreation();
+            }
+        });
+    });
+
+    // Adım göstergelerini güncelle
+    function updateStepIndicators(activeStep) {
+        stepIndicators.forEach((indicator, index) => {
+            const stepNum = index + 1;
+
+            if (stepNum < activeStep) {
+                indicator.classList.remove('active');
+                indicator.classList.add('completed');
+            } else if (stepNum === activeStep) {
+                indicator.classList.add('active');
+                indicator.classList.remove('completed');
+            } else {
+                indicator.classList.remove('active', 'completed');
+            }
+        });
+    }
+
+    // Avatar önizleme
+    if (serverAvatarInput) {
+        serverAvatarInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    serverAvatarPreview.style.backgroundImage = `url(${e.target.result})`;
+                    serverAvatarPreview.classList.add('has-image');
+                    serverAvatarPreview.querySelector('.upload-icon').style.display = 'none';
+                    serverAvatarPreview.querySelector('.upload-text').style.display = 'none';
+                };
+
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    }
+
+    // Sunucu adı doğrulama
+    function validateServerName() {
+        const serverName = serverNameInput.value.trim();
+        const errorElement = document.getElementById('serverNameError');
+
+        if (serverName.length < 3 || serverName.length > 30) {
+            errorElement.textContent = 'Sunucu adı 3-30 karakter arasında olmalıdır.';
+            errorElement.style.display = 'block';
+            return false;
+        }
+
+        errorElement.style.display = 'none';
+        return true;
+    }
+
+    // Sunucu açıklaması doğrulama
+    function validateServerDescription() {
+        const serverDesc = serverDescInput.value.trim();
+        const errorElement = document.getElementById('serverDescError');
+
+        if (serverDesc.length > 200) {
+            errorElement.textContent = 'Açıklama en fazla 200 karakter olabilir.';
+            errorElement.style.display = 'block';
+            return false;
+        }
+
+        errorElement.style.display = 'none';
+        return true;
+    }
+
+    // Sunucu oluşturmayı gönder
+    function submitServerCreation() {
+        // Burada sunucu oluşturma API isteği yapılacak
+        console.log('Sunucu oluşturuldu:', {
+            name: serverNameInput.value,
+            description: serverDescInput.value,
+            hasAvatar: serverAvatarInput.files && serverAvatarInput.files.length > 0
+        });
+
+        // Başarılı mesajı gösterip modalı kapat
+        alert('Sunucu başarıyla oluşturuldu!');
+        serverAddModal.style.display = 'none';
+    }
+
+    // Modal durumunu sıfırla
+    function resetModalState() {
+        // Tüm ekranları gizle ve ana ekranı göster
+        createServerSteps.forEach(step => step.style.display = 'none');
+        joinServerScreen.style.display = 'none';
+        serverOptionScreen.style.display = 'flex';
+
+        // Form alanlarını temizle
+        serverNameInput.value = '';
+        serverDescInput.value = '';
+        serverAvatarInput.value = '';
+
+        // Avatar önizlemeyi sıfırla
+        serverAvatarPreview.style.backgroundImage = '';
+        serverAvatarPreview.classList.remove('has-image');
+        if (serverAvatarPreview.querySelector('.upload-icon')) {
+            serverAvatarPreview.querySelector('.upload-icon').style.display = 'flex';
+        }
+        if (serverAvatarPreview.querySelector('.upload-text')) {
+            serverAvatarPreview.querySelector('.upload-text').style.display = 'block';
+        }
+
+        // Adım göstergelerini sıfırla
+        updateStepIndicators(0);
+
+        // Hata mesajlarını gizle
+        document.querySelectorAll('.error-message').forEach(err => {
+            err.style.display = 'none';
+        });
+    }
+});
