@@ -11,15 +11,12 @@ const defaultAvatar = 'images/DefaultAvatar.png';
 let messageNotificationSound = null; // Ses nesnesi için global değişken
 let unreadCounts = {}; // Okunmamış mesaj sayaçları { userId: count }
 
-// Tenor API anahtarını doğrudan tanımla
-// DİKKAT: API anahtarını doğrudan istemci koduna yazmak güvenlik riski taşır.
-// İdealde bu anahtar backend üzerinden veya güvenli bir yapılandırma ile yönetilmelidir.
-const TENOR_API_KEY = "YOUR_TENOR_API_KEY"; // BURAYI KENDİ TENOR API KEY'İNİZ İLE DEĞİŞTİRİN
+// Tenor API anahtarını environment variables'dan al
+const TENOR_API_KEY = process.env.TENOR_API_KEY || null;
 
 // API anahtarı kontrolü
-if (!TENOR_API_KEY || TENOR_API_KEY === "YOUR_TENOR_API_KEY") {
-    console.error('Tenor API anahtarı bulunamadı veya güncellenmemiş! GIF özellikleri çalışmayabilir. Lütfen js/dashboard.js dosyasını kontrol edin.');
-    // alert("Tenor API anahtarı eksik. GIF özellikleri kullanılamayacak.");
+if (!TENOR_API_KEY) {
+    console.error('Tenor API anahtarı bulunamadı! Environment variables kontrol edin.');
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -82,8 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             setupEmojiPicker(chatEmojiBtn, chatTextarea, emojiPicker);
         }
 
-        // GIF picker dinleyicisini kur (Geçici olarak devre dışı bırakıldı)
-        /*
+        // GIF picker dinleyicisini kur
         if (chatGifBtn) {
             console.log('GIF butonu bulundu, hazırlanıyor:', chatGifBtn);
             setupGifPicker(chatGifBtn, chatTextarea);
@@ -104,7 +100,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }, 2000);
         }
-        */
 
         // Varsayılan sekmeyi göster
         const defaultTabContents = {
