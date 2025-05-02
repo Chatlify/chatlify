@@ -10,6 +10,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const errorMessageElement = document.getElementById('error-message');
     const registerButton = document.getElementById('register-button');
 
+    // Şifre gücü kontrolü için elementler
+    const strengthMeter = document.querySelector('.strength-meter');
+    const strengthValue = document.getElementById('strength-value');
+
+    // Şifre gücünü kontrol et
+    if (passwordInput) {
+        passwordInput.addEventListener('input', function () {
+            checkPasswordStrength(this.value);
+        });
+    }
+
     // Hata mesajlarını görüntüleme fonksiyonu
     function showError(message) {
         errorMessageElement.textContent = message;
@@ -94,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Yardımcı fonksiyonlar ve olay dinleyiciler
+    // Şifre göster/gizle butonları
     const togglePasswordButtons = document.querySelectorAll('.toggle-password');
     togglePasswordButtons.forEach(button => {
         button.addEventListener('click', function () {
@@ -105,4 +116,64 @@ document.addEventListener('DOMContentLoaded', function () {
             this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
         });
     });
+
+    // Şifre gücünü ölç
+    function checkPasswordStrength(password) {
+        if (!strengthMeter || !strengthValue) return;
+
+        let strength = 0;
+
+        // Şifre boş ise
+        if (password.length === 0) {
+            updateStrengthMeter(0);
+            return;
+        }
+
+        // Şifre uzunluğu kontrolü
+        if (password.length >= 8) strength++;
+
+        // Karakter çeşitliliği kontrolü
+        if (/[A-Z]/.test(password)) strength++; // Büyük harf
+        if (/[0-9]/.test(password)) strength++; // Rakam
+        if (/[^A-Za-z0-9]/.test(password)) strength++; // Özel karakter
+
+        updateStrengthMeter(strength);
+    }
+
+    // Şifre gücü göstergesini güncelle
+    function updateStrengthMeter(strength) {
+        // Şifre gücü metni
+        let text = '';
+        switch (strength) {
+            case 0:
+                text = 'Zayıf';
+                break;
+            case 1:
+                text = 'Zayıf';
+                break;
+            case 2:
+                text = 'Orta';
+                break;
+            case 3:
+                text = 'İyi';
+                break;
+            case 4:
+                text = 'Mükemmel';
+                break;
+        }
+        strengthValue.textContent = text;
+
+        // Şifre gücü sınıfını ayarla
+        strengthMeter.className = 'strength-meter strength-' + strength;
+
+        // Her segment için doldurma durumunu ayarla
+        const segments = strengthMeter.querySelectorAll('.strength-segment');
+        segments.forEach((segment, index) => {
+            if (index < strength) {
+                segment.classList.add('filled');
+            } else {
+                segment.classList.remove('filled');
+            }
+        });
+    }
 });
