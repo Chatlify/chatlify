@@ -852,14 +852,16 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 20px;
+    height: var(--header-height);
+    padding: 0 16px;
+    background-color: var(--main-bg);
+    /* Arka plan rengi ana içerikle aynı olabilir veya hafif farklı */
     border-bottom: 1px solid var(--divider-color);
-    background-color: rgba(26, 32, 54, 0.6);
-    backdrop-filter: blur(10px);
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    gap: 10px;
+    flex-shrink: 0;
+    position: relative;
+    /* z-index için eklendi */
+    z-index: 40;
+    /* Chat panelinden düşük olmalı */
 }
 
 .header-left,
@@ -3127,34 +3129,33 @@
 
 /* Mesajlaşma Paneli Stilleri */
 .chat-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* Başlangıçta solda gizli */
+    width: calc(100% - var(--dm-sidebar-width));
+    /* DM sidebar hariç genişlik */
+    height: 100%;
+    background-color: var(--main-bg);
+    /* Ana içerikle aynı arka plan */
     display: flex;
     flex-direction: column;
-    position: fixed;
-    top: 0;
-    left: calc(var(--server-sidebar-width) + var(--dm-sidebar-width));
-    right: 0;
-    bottom: 0;
-    width: calc(100% - var(--server-sidebar-width) - var(--dm-sidebar-width));
-    height: 100vh;
-    z-index: 9999;
-    background-color: var(--main-bg);
-    animation: fadeIn 0.3s ease;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    border-left: 1px solid var(--divider-color);
+    transform: translateX(-100%);
+    /* Başlangıçta sola kaydırılmış */
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.3s ease, opacity 0.3s ease, visibility 0s 0.3s;
+    z-index: 50;
+    /* Header'dan yüksek olmalı */
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.chat-panel.hidden {
-    display: none !important;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+.chat-panel:not(.hidden) {
+    transform: translateX(0);
+    /* Görünür olduğunda yerine gelsin */
+    opacity: 1;
+    visibility: visible;
+    transition: transform 0.3s ease, opacity 0.3s ease, visibility 0s 0s;
 }
 
 .chat-header {
