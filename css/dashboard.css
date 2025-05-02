@@ -3136,8 +3136,8 @@
     bottom: 0;
     width: calc(100% - var(--server-sidebar-width) - var(--dm-sidebar-width));
     height: 100vh;
-    z-index: 10000;
-    /* z-index değeri artırıldı, dashboard-header'dan daha üstte görüntülenmesi için */
+    z-index: 999999;
+    /* z-index değeri 999999 olarak artırıldı, profile-panel'den daha üstte görüntülenmesi için */
     background-color: var(--main-bg);
     animation: fadeIn 0.3s ease;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
@@ -3814,6 +3814,7 @@
     align-items: center;
     justify-content: center;
     z-index: 99999;
+    /* z-index değeri 99999 olarak düşürüldü, chat-panel'in altında kalması için */
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
