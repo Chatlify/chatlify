@@ -1163,10 +1163,11 @@ async function openChatPanel(userId, username, avatar) {
     const chatMessagesContainer = chatPanel?.querySelector('.chat-messages');
     const friendsPanelContainer = document.querySelector('.friends-panel-container');
     const sponsorSidebar = document.querySelector('.sponsor-sidebar');
+    const directMessagesPanel = document.querySelector('.direct-messages'); // DM panelini seç
 
     // Elementlerin varlığını kontrol et
-    if (!chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer) {
-        console.error('Chat panel elements not found, cannot open chat.');
+    if (!chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer || !directMessagesPanel) { // DM panelini de kontrol et
+        console.error('Chat panel or related elements not found, cannot open chat.');
         return;
     }
     console.log(`Sohbet paneli açılıyor (kullanıcı): ${username} (ID: ${userId})`);
@@ -1209,6 +1210,7 @@ async function openChatPanel(userId, username, avatar) {
 
     // Panelleri göster/gizle
     friendsPanelContainer.classList.add('hidden');
+    directMessagesPanel.classList.add('hidden'); // DM panelini gizle
     if (sponsorSidebar) sponsorSidebar.style.display = 'none';
     chatPanel.classList.remove('hidden');
 
@@ -1261,12 +1263,14 @@ function handleCloseChatPanel() {
     const chatPanel = document.querySelector('.chat-panel');
     const friendsPanelContainer = document.querySelector('.friends-panel-container');
     const sponsorSidebar = document.querySelector('.sponsor-sidebar');
+    const directMessagesPanel = document.querySelector('.direct-messages'); // DM panelini seç
 
-    if (!chatPanel || !friendsPanelContainer) return;
+    if (!chatPanel || !friendsPanelContainer || !directMessagesPanel) return; // DM panelini de kontrol et
 
     // Paneli gizle
     chatPanel.classList.add('hidden');
     friendsPanelContainer.classList.remove('hidden');
+    directMessagesPanel.classList.remove('hidden'); // DM panelini göster
 
     // Sponsor sidebar'ı göster (eğer varsa)
     if (sponsorSidebar) sponsorSidebar.style.display = '';
