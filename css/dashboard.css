@@ -858,14 +858,21 @@
     backdrop-filter: blur(10px);
     position: sticky;
     top: 0;
-    z-index: 5;
+    z-index: 10000;
+    /* Header z-index değeri artırıldı - diğer elementlerin üzerinde görünecek */
     gap: 10px;
 }
 
+/* Header sağ ve sol bölümleri için z-index değerleri eklendi */
 .header-left,
-.header-right {
-    display: flex;
-    align-items: center;
+.header-right,
+.tabs-wrapper,
+.tabs-container,
+.tab,
+.add-friend-btn {
+    position: relative;
+    z-index: 10001;
+    /* Header içindeki elementlerin z-index değerleri artırıldı */
 }
 
 .header-left {
@@ -3136,8 +3143,8 @@
     bottom: 0;
     width: calc(100% - var(--server-sidebar-width) - var(--dm-sidebar-width));
     height: 100vh;
-    z-index: 999999;
-    /* z-index değeri 999999 olarak artırıldı, profile-panel'den daha üstte görüntülenmesi için */
+    z-index: 10000000;
+    /* z-index değeri maksimum yapıldı - tüm elementlerin üzerinde görüntülenmesi için */
     background-color: var(--main-bg);
     animation: fadeIn 0.3s ease;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
@@ -3813,8 +3820,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 99999;
-    /* z-index değeri 99999 olarak düşürüldü, chat-panel'in altında kalması için */
+    z-index: 9999;
+    /* z-index değeri chat-panel'den düşük yapıldı */
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
