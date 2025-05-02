@@ -7222,3 +7222,10 @@ emoji-picker {
 }
 
 /* ... existing code ... */
+
+/* Genel Yardımcı Sınıflar */
+.hidden {
+    display: none !important;
+}
+
+/* Filtre bölümünü kaldırdığımız için ilgili stili siliyoruz */
