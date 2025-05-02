@@ -1164,10 +1164,11 @@ async function openChatPanel(userId, username, avatar) {
     const friendsPanelContainer = document.querySelector('.friends-panel-container');
     const sponsorSidebar = document.querySelector('.sponsor-sidebar');
     const directMessagesPanel = document.querySelector('.direct-messages'); // DM panelini seç
+    const mainContentHeader = document.querySelector('.main-content .dashboard-header'); // Ana içerik başlığını seç
 
     // Elementlerin varlığını kontrol et
-    if (!chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer || !directMessagesPanel) { // DM panelini de kontrol et
-        console.error('Chat panel or related elements not found, cannot open chat.');
+    if (!chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer || !directMessagesPanel || !mainContentHeader) { // Header'ı da kontrol et
+        console.error('Chat panel, DM panel, main header, or related elements not found, cannot open chat.');
         return;
     }
     console.log(`Sohbet paneli açılıyor (kullanıcı): ${username} (ID: ${userId})`);
@@ -1211,6 +1212,7 @@ async function openChatPanel(userId, username, avatar) {
     // Panelleri göster/gizle
     friendsPanelContainer.classList.add('hidden');
     directMessagesPanel.classList.add('hidden'); // DM panelini gizle
+    mainContentHeader.classList.add('hidden'); // Ana içerik başlığını gizle
     if (sponsorSidebar) sponsorSidebar.style.display = 'none';
     chatPanel.classList.remove('hidden');
 
@@ -1264,13 +1266,15 @@ function handleCloseChatPanel() {
     const friendsPanelContainer = document.querySelector('.friends-panel-container');
     const sponsorSidebar = document.querySelector('.sponsor-sidebar');
     const directMessagesPanel = document.querySelector('.direct-messages'); // DM panelini seç
+    const mainContentHeader = document.querySelector('.main-content .dashboard-header'); // Ana içerik başlığını seç
 
-    if (!chatPanel || !friendsPanelContainer || !directMessagesPanel) return; // DM panelini de kontrol et
+    if (!chatPanel || !friendsPanelContainer || !directMessagesPanel || !mainContentHeader) return; // Header'ı da kontrol et
 
     // Paneli gizle
     chatPanel.classList.add('hidden');
     friendsPanelContainer.classList.remove('hidden');
     directMessagesPanel.classList.remove('hidden'); // DM panelini göster
+    mainContentHeader.classList.remove('hidden'); // Ana içerik başlığını göster
 
     // Sponsor sidebar'ı göster (eğer varsa)
     if (sponsorSidebar) sponsorSidebar.style.display = '';
