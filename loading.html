@@ -12,18 +12,198 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/loading.css">
     <script src="js/loading.js" defer></script>
+    <style>
+        /* Dahili stil sayfası - animasyonlu arkaplan için */
+        .loading-page {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0e0e18 0%, #161b2e 50%, #1a2036 100%);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .particles-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .loading-overlay {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .loading-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .loading-logo img {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            animation: logoFloat 3s infinite alternate ease-in-out;
+        }
+
+        .loading-logo span {
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 10px;
+            background: linear-gradient(to right, #3d68e7, #6a11cb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+
+        @keyframes logoFloat {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-10px) rotate(5deg);
+            }
+
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+        }
+
+        .loading-animation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            position: relative;
+        }
+
+        .spinner {
+            width: 100%;
+            height: 100%;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #3d68e7;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+        }
+
+        .dots {
+            display: inline-block;
+        }
+
+        .dot {
+            opacity: 0;
+            animation: dotFade 1.5s infinite;
+            animation-delay: calc(var(--i) * 0.5s);
+        }
+
+        .dot:nth-child(1) {
+            --i: 0;
+        }
+
+        .dot:nth-child(2) {
+            --i: 1;
+        }
+
+        .dot:nth-child(3) {
+            --i: 2;
+        }
+
+        @keyframes dotFade {
+
+            0%,
+            100% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .loading-progress {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 300px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #3d68e7, #6a11cb);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
 </head>
 
 <body class="loading-page">
-    <!-- LOADING ARKAPLAN VİDEOSU: MP4 video arkaplanı -->
-    <div class="video-container">
-        <video id="loadingVideo" autoplay muted>
-            <source src="videos/loadingscreen.mp4" type="video/mp4">
-            Tarayıcınız video etiketini desteklemiyor.
-        </video>
+    <!-- Animasyonlu arkaplan için container -->
+    <div class="particles-background">
+        <!-- Parçacıklar JavaScript ile eklenecek -->
     </div>
 
-    <!-- LOADING OVERLAY: Video üzerindeki yükleme animasyonu ve metin -->
+    <!-- LOADING OVERLAY: Yükleme animasyonu ve metin -->
     <div class="loading-overlay">
         <div class="loading-content">
             <div class="loading-logo">

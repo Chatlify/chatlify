@@ -1,201 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatlify - Login</title>
-    <meta name="description" content="Login to Chatlify and connect with your friends, communities, and the world.">
-    <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <title>Chatlify - Giriş Yap</title>
     <link rel="stylesheet" href="css/auth.css">
-    <script src="js/main.js" defer></script>
-    <!-- Supabase Client -->
-    <script type="module" src="js/auth_config.js"></script>
-    <script type="module" src="js/login.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
 </head>
 
 <body>
-    <div class="bg-particles">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
+    <div class="container">
+        <div class="auth-container login-container">
+            <div class="auth-header">
+                <img src="assets/logo.png" alt="Chatlify Logo" class="logo">
+                <h1>Chatlify'a Hoş Geldiniz</h1>
+                <p>Hesabınıza giriş yaparak sohbete başlayın</p>
+            </div>
+
+            <form id="login-form" class="auth-form">
+                <div class="form-group">
+                    <label for="email">E-posta Adresi</label>
+                    <div class="input-container">
+                        <i class="fas fa-envelope icon"></i>
+                        <input type="email" id="email" name="email" required placeholder="E-posta adresiniz">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Şifre</label>
+                    <div class="input-container">
+                        <i class="fas fa-lock icon"></i>
+                        <input type="password" id="password" name="password" required placeholder="Şifreniz">
+                        <i class="fas fa-eye toggle-password" id="toggle-password"></i>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember-me" name="remember-me">
+                        <label for="remember-me">Beni Hatırla</label>
+                    </div>
+                    <a href="#" class="forgot-password">Şifremi Unuttum</a>
+                </div>
+
+                <div id="error-message" class="error-message"></div>
+
+                <button type="submit" id="login-button" class="auth-button">Giriş Yap</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Henüz bir hesabınız yok mu? <a href="register.html">Kayıt Ol</a></p>
+            </div>
+        </div>
+
+        <div class="auth-info">
+            <div class="info-content">
+                <h2>Chatlify'la Bağlantıda Kalın</h2>
+                <p>Arkadaşlarınızla sohbet edin, topluluklar keşfedin, oyun oynayın ve çok daha fazlasını yapın.</p>
+
+                <div class="features">
+                    <div class="feature">
+                        <i class="fas fa-users"></i>
+                        <div>
+                            <h3>Topluluklar</h3>
+                            <p>İlgi alanlarınıza göre topluluklar bulun ve katılın</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-comment-alt"></i>
+                        <div>
+                            <h3>Özel Sohbetler</h3>
+                            <p>Arkadaşlarınızla güvenli ve özel sohbetler yapın</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-gamepad"></i>
+                        <div>
+                            <h3>Oyun Entegrasyonu</h3>
+                            <p>Oyun oynayın ve arkadaşlarınızla paylaşın</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auth-footer-info">
+                <p>&copy; 2023 Chatlify. Tüm hakları saklıdır.</p>
+            </div>
+        </div>
     </div>
 
-    <header>
-        <nav>
-            <div class="logo">
-                <img src="images/BGChatlifyLogo.png" alt="Chatlify Logo" class="header-logo-img">
-            </div>
-            <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="community.html">Community</a>
-                <a href="support.html">Support</a>
-                <a href="download.html">Download</a>
-            </div>
-            <div class="nav-buttons">
-                <a href="register.html" class="login-btn">Sign Up</a>
-                <a href="download.html" class="download-btn">Download Now</a>
-            </div>
-        </nav>
-    </header>
-
-    <main>
-        <div class="auth-container">
-            <div class="auth-card">
-                <div class="auth-header">
-                    <div class="auth-logo">
-                        <img src="images/BGChatlifyLogo.png" alt="Chatlify Logo" class="auth-logo-img">
-                    </div>
-                    <h1>Sign <span class="highlight">In</span></h1>
-                    <p>Log in to your account and join our community</p>
-                </div>
-
-                <form id="loginForm" class="auth-form">
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-envelope"></i>
-                            <input type="email" id="email" name="email" placeholder="Enter your email address" required>
-                        </div>
-                        <div class="error-message" id="emailError">Please enter a valid email address</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-lock"></i>
-                            <input type="password" id="password" name="password" placeholder="Enter your password"
-                                required>
-                            <i class="fas fa-eye toggle-password"></i>
-                        </div>
-                        <div class="error-message" id="passwordError">Your password must be at least 8 characters</div>
-                    </div>
-
-                    <div class="form-options">
-                        <div class="remember-me">
-                            <input type="checkbox" id="remember" name="remember">
-                            <label for="remember">Remember me</label>
-                        </div>
-                        <a href="#" class="forgot-password">Forgot Password</a>
-                    </div>
-
-                    <button type="submit" class="submit-btn">
-                        <span class="btn-text">Sign In</span>
-                        <div class="loading-spinner">
-                            <div class="spinner"></div>
-                        </div>
-                    </button>
-                </form>
-
-                <div class="auth-footer">
-                    <p>Don't have an account? <a href="register.html">Create Account</a></p>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-logo">
-                <svg class="logo-svg" width="40" height="40" viewBox="0 0 200 200">
-                    <defs>
-                        <linearGradient id="footer-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#6a11cb" />
-                            <stop offset="100%" stop-color="#2575fc" />
-                        </linearGradient>
-                        <filter id="footer-glow">
-                            <feGaussianBlur stdDeviation="5" result="blur" />
-                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                        </filter>
-                        <clipPath id="footer-circle-clip">
-                            <circle cx="100" cy="100" r="85" />
-                        </clipPath>
-                    </defs>
-                    <!-- Main Logo Circle -->
-                    <circle cx="100" cy="100" r="85" fill="#16213e" stroke="url(#footer-gradient)" stroke-width="5"
-                        opacity="0.7" />
-                    <!-- Logo Path -->
-                    <path class="logo-path"
-                        d="M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100" fill="none"
-                        stroke="url(#footer-gradient)" stroke-width="10" stroke-linecap="round"
-                        filter="url(#footer-glow)" />
-                    <!-- C Letter -->
-                    <text x="75" y="125" class="logo-text" fill="white" font-size="80" font-family="Poppins, sans-serif"
-                        font-weight="bold" filter="url(#footer-glow)">C</text>
-                </svg>
-                <span>CHATLIFY</span>
-            </div>
-            <div class="footer-links">
-                <div class="footer-column">
-                    <h3>Features</h3>
-                    <ul>
-                        <li><a href="#">Voice Chat</a></li>
-                        <li><a href="#">Chatlify Premium</a></li>
-                        <li><a href="#">Communities</a></li>
-                        <li><a href="#">Integrations</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Company</h3>
-                    <ul>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Press Room</a></li>
-                        <li><a href="#">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Resources</h3>
-                    <ul>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Community Guidelines</a></li>
-                        <li><a href="#">Announcements</a></li>
-                        <li><a href="#">Developer API</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Legal</h3>
-                    <ul>
-                        <li><a href="legal/terms-of-service.html">Terms of Service</a></li>
-                        <li><a href="legal/privacy-policy.html">Privacy Policy</a></li>
-                        <li><a href="legal/security.html">Security</a></li>
-                        <li><a href="legal/data-protection.html">Data Protection</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <div class="social-links">
-                <a href="https://x.com/Chatlifyapp" target="_blank" rel="noopener noreferrer"><i
-                        class="fab fa-twitter"></i></a>
-                <a href="https://www.instagram.com/chatlifyapp/" target="_blank" rel="noopener noreferrer"><i
-                        class="fab fa-instagram"></i></a>
-                <a href="https://www.youtube.com/@Chatlify" target="_blank" rel="noopener noreferrer"><i
-                        class="fab fa-youtube"></i></a>
-                <a href="https://www.tiktok.com/@chatlifyapp" target="_blank" rel="noopener noreferrer"><i
-                        class="fab fa-tiktok"></i></a>
-            </div>
-            <div class="copyright">
-                <p>&copy; 2025 Chatlify Inc. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+    <script type="module" src="js/login.js"></script>
 </body>
 
 </html>

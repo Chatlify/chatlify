@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Partikül arkaplan efekti için canvas oluştur
-    const body = document.querySelector('body');
     const particlesBackground = document.querySelector('.particles-background');
     const canvas = document.createElement('canvas');
 
@@ -139,83 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Animasyonu başlat
     animate();
 
-    // SVG logoyu etkileyecek 3D efekti
-    const logo = document.querySelector('.logo');
-
-    if (logo) {
-        document.addEventListener('mousemove', (e) => {
-            // İmleç pozisyonuna göre perspektif efekti
-            const mouseX = e.clientX;
-            const mouseY = e.clientY;
-
-            const centerX = window.innerWidth / 2;
-            const centerY = window.innerHeight / 2;
-
-            const percentX = (mouseX - centerX) / centerX;
-            const percentY = (mouseY - centerY) / centerY;
-
-            const maxRotate = 10; // Maksimum dönüş açısı (derece)
-
-            logo.style.transform = `perspective(1000px) rotateY(${percentX * maxRotate}deg) rotateX(${-percentY * maxRotate}deg)`;
-        });
-
-        // İmleç çıkınca normal pozisyona dön
-        document.addEventListener('mouseleave', () => {
-            logo.style.transform = 'perspective(1000px) rotateY(0) rotateX(0)';
-            logo.style.transition = 'transform 0.5s ease';
-        });
-    }
-
-    // Animasyonlu parçacıklar için rastgele konum değişimi
-    const logoParticles = document.querySelectorAll('.particle');
-
-    if (logoParticles.length > 0) {
-        logoParticles.forEach((particle, index) => {
-            // SVG içindeki parçacıklar için özel animasyon
-            setInterval(() => {
-                const randomX = (Math.random() * 10 - 5) * (index % 3 + 1);
-                const randomY = (Math.random() * 10 - 5) * ((index + 1) % 3 + 1);
-
-                particle.style.transform = `translate(${randomX}px, ${randomY}px)`;
-                particle.style.transition = 'transform 3s ease-in-out';
-            }, 3000 + index * 500);
-        });
-    }
-
-    // Dinamik loading metni
-    const loadingInfo = document.querySelector('.loading-info');
-    if (loadingInfo) {
-        const loadingTexts = [
-            'Yeni nesil iletişim platformu yükleniyor...',
-            'Topluluğa bağlanılıyor...',
-            'Güvenli bağlantı kuruluyor...',
-            'Neredeyse hazır...'
-        ];
-
-        let textIndex = 0;
-
-        // Belirli aralıklarla metni değiştir
-        const loadingTextInterval = setInterval(() => {
-            textIndex = (textIndex + 1) % loadingTexts.length;
-
-            // Metni değiştirirken fade efekti
-            loadingInfo.style.opacity = '0';
-
-            setTimeout(() => {
-                loadingInfo.textContent = loadingTexts[textIndex];
-                loadingInfo.style.opacity = '1';
-            }, 500);
-
-        }, 1500);
-
-        // Ana sayfaya yönlendirirken interval'i temizle
-        setTimeout(() => {
-            clearInterval(loadingTextInterval);
-        }, 3500);
-    }
-
     // Loading ekranı elementleri
-    const loadingVideo = document.getElementById('loadingVideo');
     const progressFill = document.getElementById('progressFill');
     const progressPercentage = document.getElementById('progressPercentage');
     const loadingMessage = document.getElementById('loadingMessage');
@@ -235,84 +158,67 @@ document.addEventListener('DOMContentLoaded', () => {
     // Başlangıç zamanı
     const startTime = new Date().getTime();
 
-    // Video kontrolleri
-    if (loadingVideo) {
-        loadingVideo.play().catch(error => {
-            console.error('Video oynatma hatası:', error);
-            // Video oynatılamazsa arkaplan rengini ayarla
-            document.querySelector('.video-container').style.backgroundColor = '#0a0c1b';
-        });
-    }
-
     // Yükleme ilerleme animasyonunu başlat
     function startLoadingAnimation() {
         let interval = 50; // Her 50ms'de bir güncelle
         let currentProgress = 0;
-        let messageIndex = 0;
 
-        // İlerleme animasyonu için interval
-        const loadingInterval = setInterval(function () {
-            // Geçen süre (ms cinsinden)
-            const elapsedTime = new Date().getTime() - startTime;
+        // İlerleme çubuğunu güncellemek için timer
+        const progressTimer = setInterval(() => {
+            const currentTime = new Date().getTime();
+            const elapsedTime = currentTime - startTime;
 
-            // İlerleme yüzdesini hesapla (0-100 arası)
+            // İlerleme yüzdesini hesapla (0-100)
             currentProgress = Math.min(100, Math.floor((elapsedTime / totalLoadingTime) * 100));
 
-            // İlerleme çubuğunu ve metni güncelle
-            progressFill.style.width = currentProgress + '%';
-            progressPercentage.textContent = currentProgress + '%';
-
-            // Belirli yüzdelerde mesajları değiştir
-            if (currentProgress >= 20 && messageIndex === 0) {
-                updateLoadingMessage(1);
-                messageIndex = 1;
-            } else if (currentProgress >= 40 && messageIndex === 1) {
-                updateLoadingMessage(2);
-                messageIndex = 2;
-            } else if (currentProgress >= 60 && messageIndex === 2) {
-                updateLoadingMessage(3);
-                messageIndex = 3;
-            } else if (currentProgress >= 80 && messageIndex === 3) {
-                updateLoadingMessage(4);
-                messageIndex = 4;
+            // İlerleme çubuğunu güncelle
+            if (progressFill) {
+                progressFill.style.width = `${currentProgress}%`;
             }
 
-            // Yükleme tamamlandığında
+            // Yüzde metnini güncelle
+            if (progressPercentage) {
+                progressPercentage.textContent = `${currentProgress}%`;
+            }
+
+            // Yükleme mesajını güncelle (her %20'lik ilerleme için)
+            const messageIndex = Math.min(Math.floor(currentProgress / 20), loadingMessages.length - 1);
+            updateLoadingMessage(messageIndex);
+
+            // Yükleme tamamlandı mı?
             if (currentProgress >= 100) {
-                clearInterval(loadingInterval);
+                clearInterval(progressTimer);
                 loadingComplete();
             }
         }, interval);
     }
 
-    // Yükleme mesajını güncelle
+    // Yükleme mesajını güncelleme fonksiyonu
     function updateLoadingMessage(index) {
         if (loadingMessage && loadingMessages[index]) {
-            // Mesajın kaybolması için class ekle
-            loadingMessage.classList.add('fade-out');
+            // Mevcut mesaj zaten gösteriliyorsa güncelleme yapma
+            if (loadingMessage.textContent === loadingMessages[index]) {
+                return;
+            }
 
-            // Kısa bir gecikme sonrası yeni mesajı göster
+            // Mesajı güncelle
+            loadingMessage.style.opacity = '0';
+
             setTimeout(() => {
                 loadingMessage.textContent = loadingMessages[index];
-                loadingMessage.classList.remove('fade-out');
-                loadingMessage.classList.add('fade-in');
-
-                // Fade-in animasyonunu temizle
-                setTimeout(() => {
-                    loadingMessage.classList.remove('fade-in');
-                }, 300);
+                loadingMessage.style.opacity = '1';
             }, 300);
         }
     }
 
-    // Yükleme tamamlandığında
+    // Yükleme tamamlandı fonksiyonu
     function loadingComplete() {
-        // Kullanıcıyı dashboard'a yönlendir
+        // Dashboard sayfasına yönlendir
         setTimeout(() => {
             window.location.href = 'dashboard.html';
-        }, 500); // Yarım saniye beklet
+        }, 500);
     }
 
-    // Yükleme işlemini başlat
+    // Yükleme animasyonunu başlat
     startLoadingAnimation();
 });
