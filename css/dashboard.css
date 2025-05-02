@@ -6248,119 +6248,550 @@ emoji-picker {
     }
 }
 
-/* Mağaza butonunun iyileştirilmiş tasarımı */
+/* Mağaza Butonu İyileştirmeleri - Diğer butonlarla uyumlu hale getiriyorum */
 .server-shop-icon {
-    background: linear-gradient(135deg, #ffb347, #ffcc33);
-    border-radius: 15px;
     width: 48px;
     height: 48px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.06);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
-    position: relative;
-    box-shadow: 0 2px 8px rgba(255, 179, 71, 0.3);
-    overflow: hidden;
-}
-
-.server-shop-icon::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: all 0.2s ease;
+    color: var(--text-secondary);
 }
 
 .server-shop-icon i {
-    color: #fff;
-    font-size: 20px;
-    transition: all 0.3s ease;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    z-index: 1;
+    font-size: 18px;
+    transition: all 0.2s ease;
 }
 
 .server-item:hover .server-shop-icon {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 179, 71, 0.5);
-}
-
-.server-item:hover .server-shop-icon::before {
-    opacity: 1;
+    border-radius: 16px;
+    background-color: var(--primary-color);
+    color: white;
 }
 
 .server-item:hover .server-shop-icon i {
     transform: scale(1.1);
 }
 
-/* Mağaza Butonu Yeni Tasarım */
-.sidebar .store-btn {
-    margin: 8px 10px;
-    padding: 10px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #8a2be2 0%, #4c6ef5 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.2);
-    position: relative;
-    overflow: hidden;
-}
-
-.sidebar .store-btn:before {
-    content: '';
-    position: absolute;
+/* Sunucu Ekle Panel - Yeni Panel Tasarımı */
+.server-add-panel-overlay {
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s, backdrop-filter 0.3s ease;
 }
 
-.sidebar .store-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(138, 43, 226, 0.3);
-}
-
-.sidebar .store-btn:hover:before {
+.server-add-panel-overlay.active {
     opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
 }
 
-.sidebar .store-btn i {
-    font-size: 18px;
-    color: white;
-    transition: all 0.3s ease;
+.server-add-panel {
+    background: linear-gradient(145deg, #1f2642, #2b3254);
+    border-radius: 16px;
+    border: 1px solid rgba(94, 114, 228, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(94, 114, 228, 0.2);
+    width: 490px;
+    max-width: 95%;
+    color: var(--text-color);
+    transform: scale(0.95) translateY(20px);
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    overflow: hidden;
 }
 
-.sidebar .store-btn:hover i {
-    transform: scale(1.1);
+.server-add-panel-overlay.active .server-add-panel {
+    transform: scale(1) translateY(0);
 }
 
-/* + Sunucu Butonunu Güncelleme */
-.add-server-btn {
-    background: #4CAF50;
-    color: white;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(76, 175, 80, 0.2);
+.server-add-panel-header {
+    padding: 24px 28px 20px;
+    text-align: center;
+    position: relative;
 }
 
-.add-server-btn:hover {
-    background: #3e8e41;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 10px rgba(76, 175, 80, 0.3);
+.server-add-panel-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.add-server-btn i {
-    font-size: 20px;
-    transition: transform 0.3s ease;
+.server-add-panel-subtitle {
+    font-size: 15px;
+    color: var(--text-secondary);
+    max-width: 400px;
+    margin: 0 auto;
+    line-height: 1.5;
 }
 
-.add-server-btn:hover i {
+.server-add-panel-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #dde1f0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.server-add-panel-close i {
+    font-size: 14px;
+}
+
+.server-add-panel-close:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
     transform: rotate(90deg);
+}
+
+.server-add-panel-content {
+    padding: 20px 30px 30px;
+    background-color: rgba(26, 32, 54, 0.6);
+}
+
+.server-add-options {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.server-add-option {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 25px 15px;
+    background: rgba(15, 19, 33, 0.5);
+    border: 1px solid rgba(94, 114, 228, 0.2);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.server-add-option:hover {
+    transform: translateY(-5px);
+    background: rgba(15, 19, 33, 0.7);
+    border-color: rgba(94, 114, 228, 0.4);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.server-add-option.active {
+    border-color: var(--primary-color);
+    background: rgba(61, 104, 231, 0.15);
+}
+
+.server-add-icon-wrapper {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3d68e7, #6a11cb);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    box-shadow: 0 8px 15px rgba(61, 104, 231, 0.3);
+}
+
+.server-add-icon-wrapper i {
+    font-size: 28px;
+    color: white;
+}
+
+.server-add-option-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.server-add-option-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Sunucu Oluştur Formları */
+.server-create-container,
+.server-join-container {
+    display: none;
+}
+
+.server-create-container.active,
+.server-join-container.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+.server-create-step {
+    display: none;
+}
+
+.server-create-step.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+.server-form-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.server-form-group {
+    margin-bottom: 20px;
+}
+
+.server-form-label {
+    display: block;
+    font-size: 14px;
+    color: #fff;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.server-form-input {
+    width: 100%;
+    padding: 14px 16px;
+    background-color: rgba(15, 19, 34, 0.4);
+    border: 2px solid rgba(94, 114, 228, 0.2);
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+.server-form-input:focus {
+    outline: none;
+    border-color: #5e72e4;
+    box-shadow: 0 0 0 3px rgba(94, 114, 228, 0.25);
+    background-color: rgba(15, 19, 34, 0.6);
+}
+
+.server-form-textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.server-avatar-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.server-avatar-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: rgba(15, 19, 34, 0.6);
+    border: 2px dashed rgba(94, 114, 228, 0.3);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.server-avatar-preview:hover {
+    border-color: rgba(94, 114, 228, 0.5);
+    background-color: rgba(15, 19, 34, 0.8);
+}
+
+.server-avatar-preview i {
+    font-size: 30px;
+}
+
+.server-avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+}
+
+.server-avatar-preview.has-image img {
+    display: block;
+}
+
+.server-avatar-preview.has-image i {
+    display: none;
+}
+
+.server-upload-btn {
+    background: linear-gradient(135deg, #3d68e7, #6a11cb);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(61, 104, 231, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.server-upload-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(61, 104, 231, 0.4);
+}
+
+.server-upload-btn i {
+    font-size: 14px;
+}
+
+.server-input-file {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* Sunucuya Katıl Formu */
+.server-join-form {
+    padding: 10px 0;
+}
+
+.server-invite-link {
+    position: relative;
+}
+
+.server-invite-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.server-invite-input {
+    width: 100%;
+    padding: 16px 16px 16px 42px;
+    background-color: rgba(15, 19, 34, 0.4);
+    border: 2px solid rgba(94, 114, 228, 0.2);
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+.server-invite-input:focus {
+    outline: none;
+    border-color: #5e72e4;
+    box-shadow: 0 0 0 3px rgba(94, 114, 228, 0.25);
+    background-color: rgba(15, 19, 34, 0.6);
+}
+
+.server-invite-help {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    background-color: rgba(94, 114, 228, 0.08);
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-top: 15px;
+    border: 1px solid rgba(94, 114, 228, 0.15);
+}
+
+.server-invite-help i {
+    color: #5e72e4;
+    font-size: 14px;
+}
+
+/* İlerleme Adımları */
+.server-steps-progress {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    position: relative;
+    padding: 0 10px;
+}
+
+.server-steps-progress:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 40px;
+    right: 40px;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-50%);
+}
+
+.server-step-item {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(15, 19, 34, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    position: relative;
+    z-index: 1;
+}
+
+.server-step-item.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.server-step-item.completed {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+}
+
+.server-step-item.completed i {
+    font-size: 12px;
+}
+
+/* Butonlar */
+.server-form-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.server-btn {
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.server-btn-back {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.server-btn-back:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.server-btn-next,
+.server-btn-submit {
+    background: linear-gradient(135deg, #3d68e7, #6a11cb);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 10px rgba(61, 104, 231, 0.3);
+}
+
+.server-btn-next:hover,
+.server-btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(61, 104, 231, 0.4);
+}
+
+.server-btn i {
+    font-size: 14px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .server-add-panel {
+        width: 95%;
+        max-width: 420px;
+    }
+
+    .server-add-options {
+        flex-direction: column;
+    }
+
+    .server-add-panel-header {
+        padding: 20px 20px 15px;
+    }
+
+    .server-add-panel-title {
+        font-size: 20px;
+    }
+
+    .server-add-panel-content {
+        padding: 15px 20px 25px;
+    }
+}
+
+@media (max-width: 480px) {
+    .server-add-panel-header {
+        padding: 15px 15px 10px;
+    }
+
+    .server-add-panel-title {
+        font-size: 18px;
+    }
+
+    .server-add-panel-subtitle {
+        font-size: 13px;
+    }
+
+    .server-add-panel-content {
+        padding: 10px 15px 20px;
+    }
+
+    .server-form-buttons {
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+
+    .server-btn {
+        width: 100%;
+        justify-content: center;
+    }
 }
