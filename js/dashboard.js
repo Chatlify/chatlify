@@ -1149,109 +1149,101 @@ function initializePresence() {
     // console.log("Presence sistemi başlatılıyor...");
 }
 
+// Chat panelini açma fonksiyonu
 async function openChatPanel(userId, username, avatar) {
-    // Okunmamış mesaj sayacını sıfırla ve UI'ı güncelle
-    if (unreadCounts[userId] && unreadCounts[userId] > 0) {
-        console.log(`Sohbet açıldı, ${username} için okunmamışlar sıfırlanıyor.`);
-        unreadCounts[userId] = 0;
+    console.log('Mesajlaşma paneli açılıyor:', userId, username);
+    try {
+        const chatPanel = document.getElementById('chatPanel');
+        if (!chatPanel) {
+            console.error('Chat paneli bulunamadı');
+            return;
+        }
+
+        // Önceki mesajları temizle
+        const chatMessagesContainer = chatPanel.querySelector('.chat-messages');
+        if (chatMessagesContainer) {
+            chatMessagesContainer.innerHTML = '';
+        }
+
+        // Yeni kullanıcı bilgilerini güncelle
+        updateChatHeader(userId, username, avatar);
+
+        // Mesajlaşma panelini göster - hidden sınıfını kaldır
+        chatPanel.classList.remove('hidden');
+
+        // Conversation ID'yi bul veya oluştur
+        const conversationId = await findOrCreateConversation(currentUserId, userId);
+        if (!conversationId) {
+            console.error('Konuşma ID alınamadı');
+            return;
+        }
+        currentConversationId = conversationId;
+
+        // Mesajları yükle
+        await loadConversationMessages(conversationId);
+
+        // Realtime message subscription
+        subscribeToMessages(conversationId);
+
+        // Okunmadı sayısını sıfırla
         updateUnreadCountUI(userId, 0);
+        unreadCounts[userId] = 0;
+
+        // Chat giriş alanına focus
+        const textarea = chatPanel.querySelector('.chat-textbox textarea');
+        if (textarea) {
+            textarea.focus();
+        }
+
+        // Chat header butonlarını ayarla
+        setupChatHeaderActions(userId, username, avatar);
+
+        console.log('Mesajlaşma paneli başarıyla açıldı');
+    } catch (error) {
+        console.error('Mesajlaşma paneli açılırken hata:', error);
     }
-
-    // Panel elementlerini al
-    const chatPanel = document.querySelector('.chat-panel');
-    const chatHeaderUser = chatPanel?.querySelector('.chat-header-user');
-    const chatMessagesContainer = chatPanel?.querySelector('.chat-messages');
-    const friendsPanelContainer = document.querySelector('.friends-panel-container');
-    const sponsorSidebar = document.querySelector('.sponsor-sidebar');
-
-    // Elementlerin varlığını kontrol et
-    if (!chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer) {
-        console.error('Chat panel elements not found, cannot open chat.');
-        return;
-    }
-    console.log(`Sohbet paneli açılıyor (kullanıcı): ${username} (ID: ${userId})`);
-
-    // Önce gerçek sohbet ID'sini bul/oluştur
-    const actualConversationId = await findOrCreateConversation(currentUserId, userId);
-
-    if (!actualConversationId) {
-        console.error("Sohbet ID'si alınamadı veya oluşturulamadı.");
-        alert("Sohbet başlatılamadı. Lütfen tekrar deneyin.");
-        return; // Sohbet ID'si yoksa devam etme
-    }
-
-    // Global değişkeni GERÇEK sohbet ID'si ile güncelle
-    currentConversationId = actualConversationId;
-    console.log("Aktif sohbet ID'si (gerçek):", currentConversationId);
-
-    // Sohbet başlığını güncelle
-    const chatUsernameElement = chatHeaderUser.querySelector('.chat-username');
-    const chatAvatarElement = chatHeaderUser.querySelector('.chat-avatar img');
-    const chatStatusDot = chatHeaderUser.querySelector('.chat-avatar .status-dot');
-    const chatStatusTextElement = chatHeaderUser.querySelector('.chat-user-info .chat-status');
-
-    if (chatUsernameElement) chatUsernameElement.textContent = username;
-    if (chatAvatarElement) chatAvatarElement.src = avatar || defaultAvatar;
-
-    // Çevrimiçi durumunu kontrol et
-    const isFriendOnline = onlineFriends.has(userId);
-    const statusText = isFriendOnline ? 'Çevrimiçi' : 'Çevrimdışı';
-    const statusClass = isFriendOnline ? 'online' : 'offline';
-    if (chatStatusDot) chatStatusDot.className = `status-dot ${statusClass}`;
-    if (chatStatusTextElement) chatStatusTextElement.textContent = statusText;
-
-    // Mesajlar alanını temizle ve yükleniyor göster
-    chatMessagesContainer.innerHTML = '';
-    const loadingElement = document.createElement('div');
-    loadingElement.className = 'loading-placeholder';
-    loadingElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mesajlar yükleniyor...';
-    chatMessagesContainer.appendChild(loadingElement);
-
-    // Panelleri göster/gizle
-    friendsPanelContainer.classList.add('hidden');
-    if (sponsorSidebar) sponsorSidebar.style.display = 'none';
-    chatPanel.classList.remove('hidden');
-
-    // Aktif sohbetin user ID'sini panele ekle (durum güncellemesi için)
-    chatPanel.dataset.activeChatUserId = userId;
-
-    // Header butonlarının işlevselliğini ayarla
-    setupChatHeaderActions(userId, username, avatar);
-
-    // Mesajları GERÇEK sohbet ID'si ile yükle
-    loadConversationMessages(currentConversationId);
-
-    // Realtime aboneliği GERÇEK sohbet ID'si ile başlat
-    subscribeToMessages(currentConversationId);
 }
 
-// Sohbet paneli header butonlarını ayarlama
-function setupChatHeaderActions(userId, username, avatar) {
-    // Chat header butonlarını ayarla
-    const chatHeader = document.querySelector('.chat-panel .chat-header');
-    const closeBtn = chatHeader?.querySelector('.chat-close-btn');
-    const profileBtn = chatHeader?.querySelector('.profile-btn');
+// Chat paneli header'ını güncelle
+function updateChatHeader(userId, username, avatar) {
+    const chatPanel = document.getElementById('chatPanel');
+    if (!chatPanel) return;
 
-    // Sohbeti kapatma butonu
-    if (closeBtn) {
-        // Eski event listener'ları temizle
-        const newCloseBtn = closeBtn.cloneNode(true);
-        closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+    const headerUser = chatPanel.querySelector('.chat-header-user');
+    if (!headerUser) return;
 
-        // Yeni event listener ekle
-        newCloseBtn.addEventListener('click', closeChatPanel);
+    const usernameElement = headerUser.querySelector('.chat-username');
+    const avatarElement = headerUser.querySelector('.chat-avatar img');
+
+    if (usernameElement) usernameElement.textContent = username;
+    if (avatarElement) {
+        avatarElement.src = avatar || defaultAvatar;
+        avatarElement.alt = username;
     }
 
-    // Profil butonu
-    if (profileBtn) {
-        // Eski event listener'ları temizle
-        const newProfileBtn = profileBtn.cloneNode(true);
-        profileBtn.parentNode.replaceChild(newProfileBtn, profileBtn);
+    // Kullanıcı ID'sini panele data-attribute olarak ekle
+    chatPanel.dataset.userId = userId;
+}
 
-        // Profil butonuna tıklayınca profil panelini aç
-        newProfileBtn.addEventListener('click', function () {
-            openProfilePanel(userId, username, avatar);
-        });
+// Chat panelini kapatma fonksiyonu
+function closeChatPanel() {
+    console.log('Mesajlaşma paneli kapatılıyor');
+    try {
+        const chatPanel = document.getElementById('chatPanel');
+        if (!chatPanel) return;
+
+        // Mesajlaşma panelini gizle
+        chatPanel.classList.add('hidden');
+
+        // Mesaj aboneliğini temizle
+        unsubscribeFromMessages();
+
+        // Aktif konuşma ID'sini temizle
+        currentConversationId = null;
+
+        console.log('Mesajlaşma paneli kapatıldı');
+    } catch (error) {
+        console.error('Mesajlaşma paneli kapatılırken hata:', error);
     }
 }
 
@@ -3182,3 +3174,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ... existing code ...
 });
+
+// Chat header butonlarını ayarlama fonksiyonu
+function setupChatHeaderActions(userId, username, avatar) {
+    const chatPanel = document.getElementById('chatPanel');
+    if (!chatPanel) return;
+
+    // Chat header butonlarını bul
+    const closeBtn = chatPanel.querySelector('.chat-close-btn');
+    const profileBtn = chatPanel.querySelector('.profile-btn');
+
+    // Sohbeti kapatma butonu
+    if (closeBtn) {
+        // Eski event listener'ları temizle
+        const newCloseBtn = closeBtn.cloneNode(true);
+        closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+
+        // Yeni event listener ekle
+        newCloseBtn.addEventListener('click', closeChatPanel);
+    }
+
+    // Profil butonu
+    if (profileBtn) {
+        // Eski event listener'ları temizle
+        const newProfileBtn = profileBtn.cloneNode(true);
+        profileBtn.parentNode.replaceChild(newProfileBtn, profileBtn);
+
+        // Profil butonuna tıklayınca profil panelini aç
+        newProfileBtn.addEventListener('click', function () {
+            openProfilePanel(userId, username, avatar);
+        });
+    }
+}

@@ -3136,15 +3136,16 @@
 .chat-panel {
     display: flex;
     flex-direction: column;
-    position: fixed;
+    position: absolute;
+    /* fixed yerine absolute kullanarak, parent element içinde konumlandırıyoruz */
     top: 0;
-    left: calc(var(--server-sidebar-width) + var(--dm-sidebar-width));
+    left: 0;
     right: 0;
     bottom: 0;
-    width: calc(100% - var(--server-sidebar-width) - var(--dm-sidebar-width));
-    height: 100vh;
-    z-index: 10000000;
-    /* z-index değeri maksimum yapıldı - tüm elementlerin üzerinde görüntülenmesi için */
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    /* Z-index değerini düşürüyoruz çünkü artık absolute positioned */
     background-color: var(--main-bg);
     animation: fadeIn 0.3s ease;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
