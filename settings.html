@@ -37,7 +37,7 @@
                 <div class="settings-header-title">
                     Kullanıcı Ayarları
                 </div>
-                <div class="settings-close-btn">
+                <div class="settings-close-btn" id="settingsCloseBtn">
                     <i class="fas fa-times"></i>
                 </div>
             </div>
@@ -295,6 +295,23 @@
 
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Ayarlar sayfasını kapatma işlemi
+            const closeBtn = document.getElementById('settingsCloseBtn');
+
+            closeBtn.addEventListener('click', function () {
+                // Sayfa geçiş animasyonu
+                document.body.classList.add('settings-exit');
+
+                // Animasyon bitince dashboard'a yönlendir
+                setTimeout(function () {
+                    window.location.href = 'dashboard.html';
+                }, 500); // 500ms animasyon süresi
+            });
+        });
+    </script>
 </body>
 
 </html>

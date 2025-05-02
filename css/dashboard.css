@@ -6161,6 +6161,66 @@ emoji-picker {
     align-items: center;
     z-index: 9999;
     transition: opacity 0.5s ease-in-out, visibility 0.5s;
+    overflow: hidden;
+    position: relative;
+}
+
+.loading-screen::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(circle at 20% 35%, rgba(61, 104, 231, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 75% 25%, rgba(94, 114, 228, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 85% 85%, rgba(118, 75, 162, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 15% 85%, rgba(41, 128, 185, 0.1) 0%, transparent 50%);
+    animation: gradient-shift 8s ease infinite alternate;
+}
+
+.loading-screen::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: transparent;
+    opacity: 0.4;
+    background-image:
+        linear-gradient(0deg, transparent 24%, rgba(61, 104, 231, 0.05) 25%, rgba(61, 104, 231, 0.05) 26%, transparent 27%, transparent 74%, rgba(61, 104, 231, 0.05) 75%, rgba(61, 104, 231, 0.05) 76%, transparent 77%, transparent),
+        linear-gradient(90deg, transparent 24%, rgba(61, 104, 231, 0.05) 25%, rgba(61, 104, 231, 0.05) 26%, transparent 27%, transparent 74%, rgba(61, 104, 231, 0.05) 75%, rgba(61, 104, 231, 0.05) 76%, transparent 77%, transparent);
+    background-size: 60px 60px;
+    animation: grid-animation 40s linear infinite;
+    z-index: 1;
+}
+
+@keyframes gradient-shift {
+    0% {
+        background-position: 0% 0%;
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+
+    100% {
+        background-position: 100% 100%;
+        opacity: 0.5;
+    }
+}
+
+@keyframes grid-animation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .loading-screen.fade-out {
@@ -6174,6 +6234,8 @@ emoji-picker {
     align-items: center;
     justify-content: center;
     animation: pulse-gentle 2s infinite alternate;
+    position: relative;
+    z-index: 2;
 }
 
 .loading-logo {
