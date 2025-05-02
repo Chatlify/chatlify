@@ -1167,8 +1167,9 @@ async function openChatPanel(userId, username, avatar) {
     const dashboardHeader = document.querySelector('.dashboard-header'); // Dashboard header'ı seç
 
     // Elementlerin varlığını kontrol et
-    if (!chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer || !directMessagesPanel || !dashboardHeader) { // Dashboard header'ı da kontrol et
-        console.error('Chat panel or related elements (incl. header) not found, cannot open chat.');
+    const dashboardContainer = document.querySelector('.dashboard-container'); // Ana konteyneri seç
+    if (!chatPanel || !chatHeaderUser || !chatMessagesContainer || !friendsPanelContainer || !directMessagesPanel || !dashboardHeader || !dashboardContainer) { // Konteyneri de kontrol et
+        console.error('Chat panel or related elements (incl. header, container) not found, cannot open chat.');
         return;
     }
     console.log(`Sohbet paneli açılıyor (kullanıcı): ${username} (ID: ${userId})`);
@@ -1209,10 +1210,11 @@ async function openChatPanel(userId, username, avatar) {
     loadingElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mesajlar yükleniyor...';
     chatMessagesContainer.appendChild(loadingElement);
 
-    // Panelleri göster/gizle
-    friendsPanelContainer.classList.add('hidden');
-    directMessagesPanel.classList.add('hidden'); // DM panelini gizle
-    dashboardHeader.classList.add('hidden'); // Dashboard header'ı gizle
+    // Panelleri göster/gizle - Ana konteynıra sınıf ekle
+    // friendsPanelContainer.classList.add('hidden');
+    // directMessagesPanel.classList.add('hidden'); // DM panelini gizle
+    // dashboardHeader.classList.add('hidden'); // Dashboard header'ı gizle
+    dashboardContainer.classList.add('chat-open'); // Yeni sınıfı ekle
     if (sponsorSidebar) sponsorSidebar.style.display = 'none';
     chatPanel.classList.remove('hidden');
 
@@ -1267,14 +1269,16 @@ function handleCloseChatPanel() {
     const sponsorSidebar = document.querySelector('.sponsor-sidebar');
     const directMessagesPanel = document.querySelector('.direct-messages'); // DM panelini seç
     const dashboardHeader = document.querySelector('.dashboard-header'); // Dashboard header'ı seç
+    const dashboardContainer = document.querySelector('.dashboard-container'); // Ana konteyneri seç
 
-    if (!chatPanel || !friendsPanelContainer || !directMessagesPanel || !dashboardHeader) return; // Dashboard header'ı da kontrol et
+    if (!chatPanel || !friendsPanelContainer || !directMessagesPanel || !dashboardHeader || !dashboardContainer) return; // Konteyneri de kontrol et
 
     // Paneli gizle
     chatPanel.classList.add('hidden');
-    friendsPanelContainer.classList.remove('hidden');
-    directMessagesPanel.classList.remove('hidden'); // DM panelini göster
-    dashboardHeader.classList.remove('hidden'); // Dashboard header'ı göster
+    // friendsPanelContainer.classList.remove('hidden');
+    // directMessagesPanel.classList.remove('hidden'); // DM panelini göster
+    // dashboardHeader.classList.remove('hidden'); // Dashboard header'ı göster
+    dashboardContainer.classList.remove('chat-open'); // Sınıfı kaldır
 
     // Sponsor sidebar'ı göster (eğer varsa)
     if (sponsorSidebar) sponsorSidebar.style.display = '';

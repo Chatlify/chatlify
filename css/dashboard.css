@@ -845,6 +845,8 @@
     display: flex;
     flex-direction: column;
     position: relative;
+    transition: margin-left 0.3s ease;
+    /* Geçiş efekti eklendi */
 }
 
 /* ----- YENİ HEADER TASARIM ----- */
@@ -3150,6 +3152,8 @@
     border-left: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     overflow: hidden;
+    transition: left 0.3s ease, width 0.3s ease;
+    /* Geçiş efekti eklendi */
 }
 
 .chat-panel.hidden {
@@ -7223,9 +7227,62 @@ emoji-picker {
 
 /* ... existing code ... */
 
-/* Genel Yardımcı Sınıflar */
-.hidden {
+/* ----- Sohbet Açık Durumu ----- */
+.dashboard-container.chat-open .direct-messages,
+.dashboard-container.chat-open .main-content .dashboard-header {
+    display: none;
+    /* DM panelini ve ana içeriğin header'ını gizle */
+}
+
+.dashboard-container.chat-open .main-content {
+    /* Sohbet açıkken main-content sola yaslanmalı (DM paneli gidince) */
+    margin-left: 0;
+}
+
+.dashboard-container.chat-open .chat-panel {
+    left: var(--server-sidebar-width);
+    /* Sadece sunucu kenar çubuğu kadar boşluk bırak */
+    width: calc(100% - var(--server-sidebar-width));
+    /* Genişliği ayarla */
+    /* .chat-panel zaten fixed olduğu için main-content içindeki pozisyonu önemli değil */
+}
+
+/* Mevcut .chat-panel stilini güncelleyelim */
+.chat-panel {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    /* left ve width değerleri .chat-open sınıfı ile dinamik olarak ayarlanacak */
+    right: 0;
+    bottom: 0;
+    /* Başlangıçta DM paneli açıkkenki değerler */
+    left: calc(var(--server-sidebar-width) + var(--dm-sidebar-width));
+    width: calc(100% - var(--server-sidebar-width) - var(--dm-sidebar-width));
+    height: 100vh;
+    z-index: 10000000;
+    background-color: var(--main-bg);
+    animation: slideInRight 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+    transition: left 0.3s ease, width 0.3s ease;
+    /* Geçiş efekti eklendi */
+}
+
+.chat-panel.hidden {
     display: none !important;
 }
 
-/* Filtre bölümünü kaldırdığımız için ilgili stili siliyoruz */
+/* Orijinal .main-content stilini bulup ekleyelim (varsa) */
+.main-content {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: margin-left 0.3s ease;
+    /* Geçiş efekti eklendi */
+}
