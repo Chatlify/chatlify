@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Giriş başarılı
                 localStorage.setItem('userLoggedIn', 'true');
-                window.location.href = 'loading.html?redirect=dashboard';
+                window.location.href = 'dashboard.html';
 
             } catch (error) {
                 console.error('Giriş hatası:', error);
