@@ -4,9 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatlify - The New Dimension of Communication</title>
-    <meta name="description"
-        content="Chatlify is a next generation communication platform for connecting with friends, communities, and the world. Chat, voice chat, and video calls - all in one platform!">
+    <title>Chatlify - Home</title>
     <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
@@ -16,6 +14,13 @@
 </head>
 
 <body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="stars"></div>
+        <div class="twinkling"></div>
+        <div class="clouds"></div>
+    </div>
+
     <header>
         <nav>
             <div class="logo">
@@ -26,11 +31,15 @@
                 <a href="index.html" class="active">Home</a>
                 <a href="community.html">Community</a>
                 <a href="support.html">Support</a>
+                <a href="contact.html">Contact</a>
                 <a href="download.html">Download</a>
             </div>
             <div class="nav-buttons">
                 <a href="login.html" class="login-btn">Sign In</a>
                 <a href="download.html" class="download-btn">Download Now</a>
+            </div>
+            <div class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
             </div>
         </nav>
     </header>
@@ -38,120 +47,59 @@
     <main>
         <section class="hero">
             <div class="hero-content">
-                <h1>NEXT GENERATION <span class="highlight">COMMUNICATION</span> PLATFORM</h1>
-                <p>The easiest way to connect with friends, communities, and the world. Chat, voice chat, and video
-                    calls - all in one platform!</p>
+                <h1>Connect. Share. <span class="gradient-text">Chat.</span></h1>
+                <p>Chatlify brings people together with a modern communication platform that's secure, fast, and easy to
+                    use.</p>
                 <div class="hero-buttons">
-                    <a href="download.html" class="download-btn"><i class="fas fa-download"></i> Download for
-                        Windows</a>
-                    <a href="#" class="browser-btn"><i class="fas fa-globe"></i> Open in Browser</a>
+                    <a href="download.html" class="primary-btn">Get Started</a>
+                    <a href="#features" class="secondary-btn">Learn More</a>
                 </div>
             </div>
             <div class="hero-image">
-                <img src="images/dashboard-screenshot.svg" alt="Chatlify Dashboard" class="mockup-img">
-                <div class="floating-elements">
-                    <div class="floating-element msg-1"><i class="fas fa-comment-alt"></i></div>
-                    <div class="floating-element msg-2"><i class="fas fa-users"></i></div>
-                    <div class="floating-element msg-3"><i class="fas fa-video"></i></div>
-                    <div class="floating-element msg-4"><i class="fas fa-headset"></i></div>
-                </div>
+                <img src="images/hero-mockup.svg" alt="Chatlify Interface Mockup">
             </div>
         </section>
 
-        <section class="features">
-            <div class="feature-item">
-                <div class="feature-image">
-                    <i class="fas fa-users feature-icon"></i>
-                </div>
-                <div class="feature-content">
-                    <h2>JOIN COMMUNITIES</h2>
-                    <p>Choose from thousands of communities based on your interests, make new friends, and meet people
-                        with the same passions.</p>
-                </div>
-            </div>
-
-            <div class="feature-item reversed">
-                <div class="feature-content">
-                    <h2>HIGH QUALITY AUDIO</h2>
-                    <p>Low latency, crystal-clear audio quality for perfect communication while gaming, listening to
-                        music, or just chatting.</p>
-                </div>
-                <div class="feature-image">
-                    <i class="fas fa-headset feature-icon"></i>
-                </div>
-            </div>
-
-            <div class="feature-item">
-                <div class="feature-image">
-                    <i class="fas fa-shield-alt feature-icon"></i>
-                </div>
-                <div class="feature-content">
-                    <h2>SECURITY AND PRIVACY</h2>
-                    <p>End-to-end encryption and strong privacy controls ensure your conversations are secure. Your
-                        safety is our priority.</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="community">
-            <h2>MILLIONS OF USERS WORLDWIDE</h2>
-            <div class="stats">
-                <div class="stat-item">
-                    <span class="stat-number">40M+</span>
-                    <span class="stat-text">Monthly Active Users</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">150K+</span>
-                    <span class="stat-text">Communities</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">99.9%</span>
-                    <span class="stat-text">Uptime</span>
-                </div>
-            </div>
-            <div class="testimonials">
-                <div class="testimonial">
-                    <p>"Thanks to Chatlify, I connect with people from all over the world. Definitely the best social
-                        platform!"</p>
-                    <div class="user">
-                        <span class="user-name">Alex Y.</span>
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
+        <section id="features" class="features">
+            <h2>Why Choose Chatlify?</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
                     </div>
+                    <h3>Secure Communication</h3>
+                    <p>End-to-end encryption keeps your conversations private and secure at all times.</p>
                 </div>
-                <div class="testimonial">
-                    <p>"Perfect platform for our gaming community. The sound quality, ease of use, and customization
-                        options are unrivaled."</p>
-                    <div class="user">
-                        <span class="user-name">Sarah K.</span>
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
                     </div>
+                    <h3>Lightning Fast</h3>
+                    <p>Our optimized platform ensures messages are delivered instantly, even on slow connections.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Community Building</h3>
+                    <p>Create and join communities around your interests, hobbies, or work.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>High-Quality Voice Chat</h3>
+                    <p>Crystal clear voice communication with noise cancellation technology.</p>
                 </div>
             </div>
         </section>
 
         <section class="cta">
             <div class="cta-content">
-                <h2>Join Us Today</h2>
-                <p>Discover a new dimension of communication with Chatlify. Stay connected with friends and colleagues,
-                    meet new people and build meaningful connections.</p>
-                <a href="#" class="btn btn-primary">JOIN NOW</a>
-            </div>
-            <div class="cta-image">
-                <div class="devices">
-                    <div class="device desktop"></div>
-                </div>
+                <h2>Ready to Join the Conversation?</h2>
+                <p>Create your account now and start connecting with friends, family, and communities around the world.
+                </p>
+                <a href="register.html" class="primary-btn">Create Account</a>
             </div>
         </section>
     </main>
@@ -177,7 +125,7 @@
                     <ul>
                         <li><a href="#">About Us</a></li>
                         <li><a href="#">Careers</a></li>
-                        <li><a href="#">Press Room</a></li>
+                        <li><a href="#">Press</a></li>
                         <li><a href="contact.html">Contact</a></li>
                     </ul>
                 </div>

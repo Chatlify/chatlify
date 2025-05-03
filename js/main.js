@@ -276,4 +276,118 @@ document.addEventListener('DOMContentLoaded', () => {
     if (content) {
         content.classList.add('loaded');
     }
+
+    // Mobile menu toggle
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const siteBody = document.body;
+
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', () => {
+            siteBody.classList.toggle('mobile-menu-open');
+        });
+    }
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (siteBody.classList.contains('mobile-menu-open') &&
+            !e.target.closest('.mobile-menu-toggle') &&
+            !e.target.closest('.nav-links') &&
+            !e.target.closest('.nav-buttons')) {
+            siteBody.classList.remove('mobile-menu-open');
+        }
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+
+            if (targetId === '#') return;
+
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                // Close mobile menu if open
+                siteBody.classList.remove('mobile-menu-open');
+
+                // Scroll to target with offset for fixed header
+                const headerHeight = document.querySelector('header').offsetHeight;
+                const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                const offsetPosition = targetPosition - headerHeight;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Header scroll effect
+    const siteHeader = document.querySelector('header');
+    let lastScrollTop = 0;
+
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        // Add background when scrolled
+        if (scrollTop > 50) {
+            siteHeader.classList.add('scrolled');
+        } else {
+            siteHeader.classList.remove('scrolled');
+        }
+
+        // Hide on scroll down, show on scroll up
+        if (scrollTop > lastScrollTop && scrollTop > 500) {
+            siteHeader.style.transform = 'translateY(-100%)';
+        } else {
+            siteHeader.style.transform = 'translateY(0)';
+        }
+
+        lastScrollTop = scrollTop;
+    });
+
+    // Animate elements on scroll
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    // Elements to animate
+    const animateElements = document.querySelectorAll('.feature-card, .hero-content, .hero-image, .cta-content');
+    animateElements.forEach(element => {
+        element.classList.add('animate-element');
+        observer.observe(element);
+    });
+
+    // Add CSS to handle animations
+    const style = document.createElement('style');
+    style.textContent = `
+        .animate-element {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .header.scrolled {
+            background-color: rgba(15, 15, 26, 0.95);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+    `;
+    document.head.appendChild(style);
 });
