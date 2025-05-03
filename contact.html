@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatlify - İletişim</title>
+    <title>Chatlify - Contact</title>
     <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
@@ -16,7 +16,7 @@
 </head>
 
 <body>
-    <!-- Animasyonlu Arkaplan -->
+    <!-- Animated Background -->
     <div class="bg-animation">
         <div class="stars"></div>
         <div class="twinkling"></div>
@@ -30,15 +30,15 @@
                 <span>CHATLIFY</span>
             </div>
             <div class="nav-links">
-                <a href="index.html">Ana Sayfa</a>
-                <a href="community.html">Topluluk</a>
-                <a href="support.html">Destek</a>
-                <a href="contact.html" class="active">İletişim</a>
-                <a href="download.html">İndir</a>
+                <a href="index.html">Home</a>
+                <a href="community.html">Community</a>
+                <a href="support.html">Support</a>
+                <a href="contact.html" class="active">Contact</a>
+                <a href="download.html">Download</a>
             </div>
             <div class="nav-buttons">
-                <a href="login.html" class="login-btn">Giriş Yap</a>
-                <a href="download.html" class="download-btn">Hemen İndir</a>
+                <a href="login.html" class="login-btn">Sign In</a>
+                <a href="download.html" class="download-btn">Download Now</a>
             </div>
             <div class="mobile-menu-toggle">
                 <i class="fas fa-bars"></i>
@@ -49,8 +49,8 @@
     <main>
         <section class="contact-hero">
             <div class="contact-hero-content">
-                <h1>BİZE <span class="gradient-text" data-text="ULAŞIN">ULAŞIN</span></h1>
-                <p>Sorularınız, önerileriniz veya geri bildirimleriniz için bizimle iletişime geçin.</p>
+                <h1>CONTACT <span class="gradient-text" data-text="US">US</span></h1>
+                <p>Have questions, suggestions, or feedback? Get in touch with our team.</p>
             </div>
         </section>
 
@@ -58,33 +58,25 @@
             <div class="contact-info">
                 <div class="info-card">
                     <div class="info-icon">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </div>
-                    <h3>Adres</h3>
-                    <p>Chatlify Merkez Ofisi<br>İstanbul, Türkiye</p>
-                </div>
-
-                <div class="info-card">
-                    <div class="info-icon">
                         <i class="fas fa-envelope"></i>
                     </div>
-                    <h3>E-posta</h3>
-                    <p>info@chatlify.com<br>destek@chatlify.com</p>
+                    <h3>Email</h3>
+                    <p>info@chatlify.com<br>support@chatlify.com</p>
                 </div>
 
                 <div class="info-card">
                     <div class="info-icon">
                         <i class="fas fa-phone-alt"></i>
                     </div>
-                    <h3>Telefon</h3>
-                    <p>+90 212 123 4567<br>Pazartesi-Cuma 09:00-18:00</p>
+                    <h3>Phone</h3>
+                    <p>+1 (555) 123-4567<br>Monday-Friday 9am-6pm</p>
                 </div>
 
                 <div class="info-card">
                     <div class="info-icon">
                         <i class="fas fa-comments"></i>
                     </div>
-                    <h3>Sosyal Medya</h3>
+                    <h3>Social Media</h3>
                     <div class="social-icons">
                         <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
                         <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
@@ -96,106 +88,46 @@
 
             <div class="contact-form-container">
                 <div class="form-header">
-                    <h2>İletişim Formu</h2>
-                    <p>Size nasıl yardımcı olabiliriz?</p>
+                    <h2>Contact Form</h2>
+                    <p>How can we help you?</p>
                 </div>
 
                 <form id="contactForm" class="contact-form">
                     <div class="form-group">
-                        <label for="name">Adınız</label>
-                        <input type="text" id="name" name="name" placeholder="Adınız ve soyadınız" required>
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" name="name" placeholder="Your full name" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="email">E-posta Adresiniz</label>
-                        <input type="email" id="email" name="email" placeholder="ornek@email.com" required>
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="example@email.com" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="subject">Konu</label>
+                        <label for="subject">Subject</label>
                         <select id="subject" name="subject" required>
-                            <option value="" disabled selected>Konu seçin</option>
-                            <option value="general">Genel Bilgi</option>
-                            <option value="technical">Teknik Destek</option>
-                            <option value="billing">Faturalandırma</option>
-                            <option value="partnership">İş Ortaklığı</option>
-                            <option value="other">Diğer</option>
+                            <option value="" disabled selected>Select a subject</option>
+                            <option value="general">General Information</option>
+                            <option value="technical">Technical Support</option>
+                            <option value="billing">Billing</option>
+                            <option value="partnership">Partnership</option>
+                            <option value="other">Other</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="message">Mesajınız</label>
-                        <textarea id="message" name="message" rows="5" placeholder="Lütfen mesajınızı buraya yazın..."
+                        <label for="message">Your Message</label>
+                        <textarea id="message" name="message" rows="5" placeholder="Please type your message here..."
                             required></textarea>
                     </div>
 
                     <div class="form-group checkbox-group">
                         <input type="checkbox" id="privacy" name="privacy" required>
-                        <label for="privacy">Gizlilik politikasını okudum ve kabul ediyorum</label>
+                        <label for="privacy">I have read and agree to the privacy policy</label>
                     </div>
 
-                    <button type="submit" class="submit-btn">Gönder</button>
+                    <button type="submit" class="submit-btn">Submit</button>
                 </form>
-            </div>
-        </section>
-
-        <section class="faq-section">
-            <h2>Sık Sorulan Sorular</h2>
-            <div class="faq-container">
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <h3>Chatlify nedir?</h3>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Chatlify, modern ve kullanıcı dostu bir iletişim platformudur. Topluluklar oluşturabilir,
-                            arkadaşlarınızla sohbet edebilir ve sesli/görüntülü görüşmeler yapabilirsiniz.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <h3>Chatlify'ı nasıl indirebilirim?</h3>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Chatlify'ı Windows, Mac, iOS ve Android platformları için web sitemizin İndir sayfasından
-                            ücretsiz olarak indirebilirsiniz.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <h3>Hesabımla ilgili sorunları nasıl çözebilirim?</h3>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Hesap sorunları için destek@chatlify.com adresine e-posta gönderebilir veya destek
-                            portalımızı kullanarak bir bilet oluşturabilirsiniz.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <h3>Chatlify Premium nedir ve nasıl satın alabilirim?</h3>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Chatlify Premium, yüksek kaliteli görüntü aktarımı, daha fazla özelleştirme seçeneği ve
-                            gelişmiş güvenlik özellikleri sunan ücretli aboneliğimizdir. Uygulama içinden veya web
-                            sitemizden satın alabilirsiniz.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="map-section">
-            <h2>Bizi Ziyaret Edin</h2>
-            <div class="map-container">
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d192697.79327595377!2d28.85788757317782!3d41.005495883048905!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14caa7040068086b%3A0xe1ccfe98bc01b0d0!2zxLBzdGFuYnVs!5e0!3m2!1str!2str!4v1725168945372!5m2!1str!2str"
-                    width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </section>
     </main>
@@ -208,39 +140,39 @@
             </div>
             <div class="footer-links">
                 <div class="footer-column">
-                    <h3>Özellikler</h3>
+                    <h3>Features</h3>
                     <ul>
-                        <li><a href="#">Sesli Sohbet</a></li>
+                        <li><a href="#">Voice Chat</a></li>
                         <li><a href="#">Chatlify Premium</a></li>
-                        <li><a href="#">Topluluklar</a></li>
-                        <li><a href="#">Entegrasyonlar</a></li>
+                        <li><a href="#">Communities</a></li>
+                        <li><a href="#">Integrations</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Şirket</h3>
+                    <h3>Company</h3>
                     <ul>
-                        <li><a href="#">Hakkımızda</a></li>
-                        <li><a href="#">Kariyer</a></li>
-                        <li><a href="#">Basın</a></li>
-                        <li><a href="contact.html">İletişim</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="contact.html">Contact</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Kaynaklar</h3>
+                    <h3>Resources</h3>
                     <ul>
-                        <li><a href="#">Yardım Merkezi</a></li>
-                        <li><a href="#">Topluluk Kuralları</a></li>
-                        <li><a href="#">Duyurular</a></li>
-                        <li><a href="#">Geliştirici API</a></li>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Community Guidelines</a></li>
+                        <li><a href="#">Announcements</a></li>
+                        <li><a href="#">Developer API</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Yasal</h3>
+                    <h3>Legal</h3>
                     <ul>
-                        <li><a href="legal/terms-of-service.html">Kullanım Şartları</a></li>
-                        <li><a href="legal/privacy-policy.html">Gizlilik Politikası</a></li>
-                        <li><a href="legal/security.html">Güvenlik</a></li>
-                        <li><a href="legal/data-protection.html">Veri Koruma</a></li>
+                        <li><a href="legal/terms-of-service.html">Terms of Service</a></li>
+                        <li><a href="legal/privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="legal/security.html">Security</a></li>
+                        <li><a href="legal/data-protection.html">Data Protection</a></li>
                     </ul>
                 </div>
             </div>
@@ -257,18 +189,18 @@
                         class="fab fa-tiktok"></i></a>
             </div>
             <div class="copyright">
-                <p>&copy; 2025 Chatlify Inc. Tüm hakları saklıdır.</p>
+                <p>&copy; 2025 Chatlify Inc. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <!-- Bildirim Toast'u -->
+    <!-- Notification Toast -->
     <div class="notification-toast" id="notificationToast">
         <div class="notification-icon">
             <i class="fas fa-check-circle"></i>
         </div>
         <div class="notification-content">
-            <p class="notification-message">Mesajınız başarıyla gönderildi!</p>
+            <p class="notification-message">Your message has been sent successfully!</p>
         </div>
         <div class="notification-close">
             <i class="fas fa-times"></i>
