@@ -1,167 +1,270 @@
 import { supabase } from './auth_config.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Form elementlerini seç
-    const contactForm = document.getElementById('contactForm');
-    const nameInput = document.getElementById('name');
-    const emailInput = document.getElementById('email');
-    const messageInput = document.getElementById('message');
-    const submitButton = document.getElementById('submitBtn');
+    // Animasyonlu giriş efektleri
+    animateOnScroll();
+    initFaqAccordion();
+    setupContactForm();
+    setupNotificationToast();
 
-    if (contactForm) {
+    // Formu ayarla ve dinleyicileri ekle
+    function setupContactForm() {
+        const contactForm = document.getElementById('contactForm');
+
+        if (!contactForm) return;
+
+        const formGroups = document.querySelectorAll('.form-group');
+
+        // Form grup elemanlarına animasyon için index ekle
+        formGroups.forEach((group, index) => {
+            group.style.setProperty('--item-index', index);
+        });
+
+        const submitBtn = document.querySelector('.submit-btn');
+
         contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Yükleme durumunu göster
-            showLoading(true);
+            // Formu doğrula
+            if (!validateForm(contactForm)) return;
 
-            // Form verilerini al ve doğrula
-            const name = sanitizeInput(nameInput.value.trim());
-            const email = sanitizeInput(emailInput.value.trim());
-            const message = sanitizeInput(messageInput.value.trim());
-
-            // Form doğrulama
-            if (!validateForm(name, email, message)) {
-                showLoading(false);
-                return;
-            }
+            // Form gönderme animasyonunu göster
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Gönderiliyor...';
 
             try {
-                // Mesajı veritabanına kaydet
-                const { data, error } = await supabase
-                    .from('contact_messages')
-                    .insert([
-                        { name, email, message, created_at: new Date().toISOString() }
-                    ]);
+                await submitContactForm(contactForm);
 
-                if (error) throw error;
-
-                // Başarılı mesaj
-                showSuccessMessage('Mesajınız başarıyla gönderildi. En kısa sürede size dönüş yapacağız.');
+                // Bildirim göster
+                showNotification('Mesajınız başarıyla gönderildi!', 'success');
 
                 // Formu temizle
                 contactForm.reset();
 
             } catch (error) {
-                console.error('Mesaj gönderme hatası:', error);
-                showErrorMessage('Mesaj gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+                console.error('Form gönderme hatası:', error);
+                showNotification('Mesajınız gönderilirken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
             } finally {
-                showLoading(false);
+                // Butonu normale çevir
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Gönder';
             }
         });
     }
 
-    // HTML özel karakterlerini escape ederek XSS'i önle
-    function sanitizeInput(input) {
-        if (!input) return '';
+    // Form alanları doğrulama
+    function validateForm(form) {
+        const nameInput = form.querySelector('#name');
+        const emailInput = form.querySelector('#email');
+        const subjectSelect = form.querySelector('#subject');
+        const messageTextarea = form.querySelector('#message');
+        const privacyCheckbox = form.querySelector('#privacy');
 
-        const element = document.createElement('div');
-        element.textContent = input;
-        return element.innerHTML;
-    }
-
-    // Girişleri doğrula
-    function validateForm(name, email, message) {
         let isValid = true;
 
-        // İsim kontrolü
-        if (!name || name.length < 2) {
-            showInputError(nameInput, 'Lütfen geçerli bir isim girin.');
+        // Şu anki hata mesajlarını temizle
+        clearValidationErrors();
+
+        // Ad kontrol
+        if (!nameInput.value.trim()) {
+            showValidationError(nameInput, 'Lütfen adınızı giriniz');
             isValid = false;
-        } else {
-            clearInputError(nameInput);
         }
 
-        // E-posta kontrolü
+        // Email kontrol
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!email || !emailRegex.test(email)) {
-            showInputError(emailInput, 'Lütfen geçerli bir e-posta adresi girin.');
+        if (!emailInput.value.trim() || !emailRegex.test(emailInput.value.trim())) {
+            showValidationError(emailInput, 'Lütfen geçerli bir e-posta adresi giriniz');
             isValid = false;
-        } else {
-            clearInputError(emailInput);
         }
 
-        // Mesaj kontrolü
-        if (!message || message.length < 10) {
-            showInputError(messageInput, 'Mesajınız en az 10 karakter olmalıdır.');
+        // Konu kontrol
+        if (subjectSelect.value === '') {
+            showValidationError(subjectSelect, 'Lütfen bir konu seçiniz');
             isValid = false;
-        } else {
-            clearInputError(messageInput);
+        }
+
+        // Mesaj kontrol
+        if (!messageTextarea.value.trim() || messageTextarea.value.trim().length < 10) {
+            showValidationError(messageTextarea, 'Lütfen en az 10 karakter içeren bir mesaj giriniz');
+            isValid = false;
+        }
+
+        // Gizlilik politikası kontrol
+        if (!privacyCheckbox.checked) {
+            showValidationError(privacyCheckbox, 'Devam etmek için gizlilik politikasını kabul etmelisiniz');
+            isValid = false;
         }
 
         return isValid;
     }
 
-    // Hata mesajını göster
-    function showInputError(input, message) {
-        const formGroup = input.closest('.form-group');
-        const errorElement = formGroup.querySelector('.error-message') || document.createElement('div');
+    // Validasyon hatası gösterme
+    function showValidationError(inputElement, errorMessage) {
+        const formGroup = inputElement.closest('.form-group');
 
-        if (!errorElement.classList.contains('error-message')) {
-            errorElement.className = 'error-message';
+        // Hata mesajı ekle
+        const errorElement = document.createElement('div');
+        errorElement.className = 'validation-error';
+        errorElement.textContent = errorMessage;
+
+        // Eğer hata mesajı yoksa ekle
+        if (!formGroup.querySelector('.validation-error')) {
             formGroup.appendChild(errorElement);
         }
 
-        errorElement.textContent = message;
-        input.classList.add('error');
-    }
+        // Input'a hata stili ekle
+        inputElement.classList.add('error');
 
-    // Hata mesajını temizle
-    function clearInputError(input) {
-        const formGroup = input.closest('.form-group');
-        const errorElement = formGroup.querySelector('.error-message');
-
-        if (errorElement) {
-            errorElement.textContent = '';
-        }
-
-        input.classList.remove('error');
-    }
-
-    // Yükleme durumunu göster/gizle
-    function showLoading(isLoading) {
-        if (isLoading) {
-            submitButton.disabled = true;
-            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
-        } else {
-            submitButton.disabled = false;
-            submitButton.innerHTML = 'Gönder';
+        // Checkbox için özel işleme
+        if (inputElement.type === 'checkbox') {
+            inputElement.parentElement.classList.add('checkbox-error');
         }
     }
 
-    // Başarı mesajını göster
-    function showSuccessMessage(message) {
-        const messageContainer = document.getElementById('formMessages') || createMessageContainer();
-        messageContainer.innerHTML = `<div class="alert alert-success">${sanitizeInput(message)}</div>`;
-        messageContainer.style.display = 'block';
+    // Hata mesajlarını temizleme
+    function clearValidationErrors() {
+        // Hata mesajlarını kaldır
+        document.querySelectorAll('.validation-error').forEach(el => el.remove());
 
-        // 5 saniye sonra mesajı gizle
+        // Hata stillerini kaldır
+        document.querySelectorAll('input.error, textarea.error, select.error').forEach(el => {
+            el.classList.remove('error');
+        });
+
+        // Checkbox hata stilini kaldır
+        document.querySelectorAll('.checkbox-error').forEach(el => {
+            el.classList.remove('checkbox-error');
+        });
+    }
+
+    // Form verilerini Supabase'e gönderme
+    async function submitContactForm(form) {
+        const formData = new FormData(form);
+
+        const formPayload = {
+            name: sanitizeInput(formData.get('name')),
+            email: sanitizeInput(formData.get('email')),
+            subject: sanitizeInput(formData.get('subject')),
+            message: sanitizeInput(formData.get('message')),
+            created_at: new Date().toISOString()
+        };
+
+        // Supabase'e gönder
+        const { data, error } = await supabase
+            .from('contact_messages')
+            .insert([formPayload]);
+
+        if (error) {
+            console.error('Supabase hata:', error);
+            throw new Error('Mesaj kaydedilirken bir hata oluştu');
+        }
+
+        return data;
+    }
+
+    // XSS koruması için input temizleme
+    function sanitizeInput(input) {
+        if (!input) return '';
+        const div = document.createElement('div');
+        div.textContent = input;
+        return div.innerHTML;
+    }
+
+    // Bildirim toast'u ayarları
+    function setupNotificationToast() {
+        const closeBtn = document.querySelector('.notification-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', hideNotification);
+        }
+    }
+
+    // Bildirim gösterme
+    function showNotification(message, type = 'success') {
+        const toast = document.getElementById('notificationToast');
+        const messageElement = toast.querySelector('.notification-message');
+        const iconElement = toast.querySelector('.notification-icon i');
+
+        messageElement.textContent = message;
+
+        // İkonu tipi değiştir
+        iconElement.className = type === 'success'
+            ? 'fas fa-check-circle'
+            : 'fas fa-exclamation-circle';
+
+        // Toast tipi
+        toast.className = 'notification-toast ' + type;
+
+        // Göster
+        toast.classList.add('show');
+
+        // 5 saniye sonra otomatik kapat
         setTimeout(() => {
-            messageContainer.style.display = 'none';
+            hideNotification();
         }, 5000);
     }
 
-    // Hata mesajını göster
-    function showErrorMessage(message) {
-        const messageContainer = document.getElementById('formMessages') || createMessageContainer();
-        messageContainer.innerHTML = `<div class="alert alert-danger">${sanitizeInput(message)}</div>`;
-        messageContainer.style.display = 'block';
+    // Bildirimi gizle
+    function hideNotification() {
+        const toast = document.getElementById('notificationToast');
+        toast.classList.remove('show');
     }
 
-    // Mesaj konteynerini oluştur
-    function createMessageContainer() {
-        const container = document.createElement('div');
-        container.id = 'formMessages';
-        container.className = 'message-container';
-        contactForm.prepend(container);
-        return container;
+    // Scroll animasyonu
+    function animateOnScroll() {
+        const infoCards = document.querySelectorAll('.info-card');
+
+        // Bilgi kartlarına animasyon için index ekle
+        infoCards.forEach((card, index) => {
+            card.style.setProperty('--item-index', index);
+        });
+
+        // FAQ öğelerine animasyon için index ekle
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach((item, index) => {
+            item.style.setProperty('--item-index', index);
+        });
     }
 
-    // Sayfadan ayrılırken form verilerini doğrula
-    window.addEventListener('beforeunload', (event) => {
-        if (nameInput.value || emailInput.value || messageInput.value) {
-            event.preventDefault();
-            return event.returnValue = 'Formu tamamlamadan sayfadan ayrılmak istediğinize emin misiniz?';
-        }
-    });
+    // SSS akordiyon işlevselliği
+    function initFaqAccordion() {
+        const faqItems = document.querySelectorAll('.faq-item');
+
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            const answer = item.querySelector('.faq-answer');
+
+            question.addEventListener('click', () => {
+                // Aktif/pasif durumunu değiştir
+                const isActive = item.classList.toggle('active');
+
+                // Açık/kapalı durumuna göre yüksekliği ayarla
+                if (isActive) {
+                    const answerHeight = answer.scrollHeight;
+                    answer.style.height = answerHeight + 'px';
+                } else {
+                    answer.style.height = '0';
+                }
+
+                // Diğer açık FAQ öğelerini kapat
+                faqItems.forEach(otherItem => {
+                    if (otherItem !== item && otherItem.classList.contains('active')) {
+                        otherItem.classList.remove('active');
+                        otherItem.querySelector('.faq-answer').style.height = '0';
+                    }
+                });
+            });
+        });
+    }
+
+    // Mobil menü açma/kapatma
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+
+    if (mobileMenuToggle && navLinks) {
+        mobileMenuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileMenuToggle.classList.toggle('active');
+        });
+    }
 }); 
