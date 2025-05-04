@@ -1,0 +1,33 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+
+# Environment variables
+.env
+.env.local
+
+# Build dosyaları
+dist/
+build/
+*.min.js
+*.min.css
+
+# IDE ve editör dosyaları
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS dosyaları
+.DS_Store
+Thumbs.db
+
+# Netlify dosyaları
+.netlify/
+.netlify/functions/
+
+# Logs
+logs/
+*.log 

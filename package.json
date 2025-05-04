@@ -1,0 +1,31 @@
+{
+    "name": "chatlify",
+    "version": "1.0.0",
+    "description": "Modern ve güvenli bir iletişim platformu",
+    "main": "index.js",
+    "scripts": {
+        "dev": "npm run serve",
+        "serve": "http-server . -p 3000",
+        "build": "npm run optimize-js && npm run optimize-css",
+        "optimize-js": "uglifyjs js/*.js -o js/main.min.js -c -m",
+        "optimize-css": "cleancss -o css/style.min.css css/*.css",
+        "deploy": "netlify deploy --prod"
+    },
+    "keywords": [
+        "chat",
+        "communication",
+        "voice",
+        "video"
+    ],
+    "author": "",
+    "license": "MIT",
+    "devDependencies": {
+        "clean-css-cli": "^5.6.0",
+        "http-server": "^14.1.1",
+        "netlify-cli": "^12.10.0",
+        "uglify-js": "^3.17.4"
+    },
+    "dependencies": {
+        "@supabase/supabase-js": "^2.12.0"
+    }
+}
