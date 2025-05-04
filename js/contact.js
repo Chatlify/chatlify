@@ -1,232 +1,279 @@
 import { supabase } from './auth_config.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Animated entrance effects
-    animateOnScroll();
-    setupContactForm();
-    setupNotificationToast();
+    // Form elementlerini seç
+    const contactForm = document.getElementById('contactForm');
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const subjectSelect = document.getElementById('subject');
+    const messageInput = document.getElementById('message');
+    const submitButton = document.getElementById('submitBtn');
+    const formSuccess = document.getElementById('formSuccess');
 
-    // Setup form and add listeners
-    function setupContactForm() {
-        const contactForm = document.getElementById('contactForm');
+    // Kaydırma animasyonlarını etkinleştir
+    initScrollAnimations();
 
-        if (!contactForm) return;
+    // Mobil menü için event listener
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const mainNav = document.querySelector('.main-nav');
 
-        const formGroups = document.querySelectorAll('.form-group');
-
-        // Add animation index to form group elements
-        formGroups.forEach((group, index) => {
-            group.style.setProperty('--item-index', index);
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenuBtn.classList.toggle('active');
+            mainNav.classList.toggle('active');
         });
+    }
 
-        const submitBtn = document.querySelector('.submit-btn');
-
+    // Form işleyici
+    if (contactForm) {
         contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Validate form
-            if (!validateForm(contactForm)) return;
+            // Yükleme durumunu göster
+            showLoading(true);
 
-            // Show form submission animation
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Submitting...';
+            // Form verilerini al ve doğrula
+            const name = sanitizeInput(nameInput.value.trim());
+            const email = sanitizeInput(emailInput.value.trim());
+            const subject = sanitizeInput(subjectSelect.value);
+            const message = sanitizeInput(messageInput.value.trim());
+
+            // Form doğrulama
+            if (!validateForm(name, email, message)) {
+                showLoading(false);
+                return;
+            }
 
             try {
-                await submitContactForm(contactForm);
+                // Mesajı veritabanına kaydet
+                const { data, error } = await supabase
+                    .from('contact_messages')
+                    .insert([
+                        { name, email, subject, message, created_at: new Date().toISOString() }
+                    ]);
 
-                // Show notification
-                showNotification('Your message has been sent successfully!', 'success');
+                if (error) throw error;
 
-                // Clear form
+                // Başarılı formu göster
+                showSuccessForm();
+
+                // Formu temizle
                 contactForm.reset();
 
             } catch (error) {
-                console.error('Form submission error:', error);
-                showNotification('An error occurred while sending your message. Please try again.', 'error');
+                console.error('Mesaj gönderme hatası:', error);
+                showErrorMessage('Mesaj gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
             } finally {
-                // Reset button
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit';
+                showLoading(false);
             }
         });
     }
 
-    // Form field validation
-    function validateForm(form) {
-        const nameInput = form.querySelector('#name');
-        const emailInput = form.querySelector('#email');
-        const subjectSelect = form.querySelector('#subject');
-        const messageTextarea = form.querySelector('#message');
-        const privacyCheckbox = form.querySelector('#privacy');
+    // HTML özel karakterlerini escape ederek XSS'i önle
+    function sanitizeInput(input) {
+        if (!input) return '';
 
+        const element = document.createElement('div');
+        element.textContent = input;
+        return element.innerHTML;
+    }
+
+    // Girişleri doğrula
+    function validateForm(name, email, message) {
         let isValid = true;
 
-        // Clear current validation errors
-        clearValidationErrors();
-
-        // Name check
-        if (!nameInput.value.trim()) {
-            showValidationError(nameInput, 'Please enter your name');
+        // İsim kontrolü
+        if (!name || name.length < 2) {
+            showInputError(nameInput, 'Lütfen geçerli bir isim girin.');
             isValid = false;
+        } else {
+            clearInputError(nameInput);
         }
 
-        // Email check
+        // E-posta kontrolü
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailInput.value.trim() || !emailRegex.test(emailInput.value.trim())) {
-            showValidationError(emailInput, 'Please enter a valid email address');
+        if (!email || !emailRegex.test(email)) {
+            showInputError(emailInput, 'Lütfen geçerli bir e-posta adresi girin.');
             isValid = false;
+        } else {
+            clearInputError(emailInput);
         }
 
-        // Subject check
-        if (subjectSelect.value === '') {
-            showValidationError(subjectSelect, 'Please select a subject');
+        // Mesaj kontrolü
+        if (!message || message.length < 10) {
+            showInputError(messageInput, 'Mesajınız en az 10 karakter olmalıdır.');
             isValid = false;
-        }
-
-        // Message check
-        if (!messageTextarea.value.trim() || messageTextarea.value.trim().length < 10) {
-            showValidationError(messageTextarea, 'Please enter a message with at least 10 characters');
-            isValid = false;
-        }
-
-        // Privacy policy check
-        if (!privacyCheckbox.checked) {
-            showValidationError(privacyCheckbox, 'You must accept the privacy policy to continue');
-            isValid = false;
+        } else {
+            clearInputError(messageInput);
         }
 
         return isValid;
     }
 
-    // Show validation error
-    function showValidationError(inputElement, errorMessage) {
-        const formGroup = inputElement.closest('.form-group');
+    // Hata mesajını göster
+    function showInputError(input, message) {
+        const formGroup = input.closest('.form-group');
+        const errorElement = formGroup.querySelector('.error-message') || document.createElement('div');
 
-        // Add error message
-        const errorElement = document.createElement('div');
-        errorElement.className = 'validation-error';
-        errorElement.textContent = errorMessage;
-
-        // Add error message if not exists
-        if (!formGroup.querySelector('.validation-error')) {
+        if (!errorElement.classList.contains('error-message')) {
+            errorElement.className = 'error-message';
             formGroup.appendChild(errorElement);
         }
 
-        // Add error style to input
-        inputElement.classList.add('error');
+        errorElement.textContent = message;
+        input.classList.add('error');
 
-        // Special handling for checkbox
-        if (inputElement.type === 'checkbox') {
-            inputElement.parentElement.classList.add('checkbox-error');
-        }
-    }
-
-    // Clear validation errors
-    function clearValidationErrors() {
-        // Remove error messages
-        document.querySelectorAll('.validation-error').forEach(el => el.remove());
-
-        // Remove error styles
-        document.querySelectorAll('input.error, textarea.error, select.error').forEach(el => {
-            el.classList.remove('error');
-        });
-
-        // Remove checkbox error style
-        document.querySelectorAll('.checkbox-error').forEach(el => {
-            el.classList.remove('checkbox-error');
-        });
-    }
-
-    // Submit form data to Supabase
-    async function submitContactForm(form) {
-        const formData = new FormData(form);
-
-        const formPayload = {
-            name: sanitizeInput(formData.get('name')),
-            email: sanitizeInput(formData.get('email')),
-            subject: sanitizeInput(formData.get('subject')),
-            message: sanitizeInput(formData.get('message')),
-            created_at: new Date().toISOString()
-        };
-
-        // Send to Supabase
-        const { data, error } = await supabase
-            .from('contact_messages')
-            .insert([formPayload]);
-
-        if (error) {
-            console.error('Supabase error:', error);
-            throw new Error('Error saving message');
-        }
-
-        return data;
-    }
-
-    // Sanitize input for XSS protection
-    function sanitizeInput(input) {
-        if (!input) return '';
-        const div = document.createElement('div');
-        div.textContent = input;
-        return div.innerHTML;
-    }
-
-    // Notification toast setup
-    function setupNotificationToast() {
-        const closeBtn = document.querySelector('.notification-close');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', hideNotification);
-        }
-    }
-
-    // Show notification
-    function showNotification(message, type = 'success') {
-        const toast = document.getElementById('notificationToast');
-        const messageElement = toast.querySelector('.notification-message');
-        const iconElement = toast.querySelector('.notification-icon i');
-
-        messageElement.textContent = message;
-
-        // Change icon based on type
-        iconElement.className = type === 'success'
-            ? 'fas fa-check-circle'
-            : 'fas fa-exclamation-circle';
-
-        // Toast type
-        toast.className = 'notification-toast ' + type;
-
-        // Show
-        toast.classList.add('show');
-
-        // Auto-hide after 5 seconds
+        // Input'u hafifçe titre
+        input.classList.add('shake');
         setTimeout(() => {
-            hideNotification();
+            input.classList.remove('shake');
+        }, 500);
+    }
+
+    // Hata mesajını temizle
+    function clearInputError(input) {
+        const formGroup = input.closest('.form-group');
+        const errorElement = formGroup.querySelector('.error-message');
+
+        if (errorElement) {
+            errorElement.textContent = '';
+        }
+
+        input.classList.remove('error');
+    }
+
+    // Yükleme durumunu göster/gizle
+    function showLoading(isLoading) {
+        if (isLoading) {
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
+        } else {
+            submitButton.disabled = false;
+            submitButton.innerHTML = 'Gönder';
+        }
+    }
+
+    // Başarı mesajını göster
+    function showSuccessMessage(message) {
+        const alertContainer = document.createElement('div');
+        alertContainer.className = 'alert alert-success';
+        alertContainer.textContent = message;
+
+        // Form üzerine ekle
+        contactForm.prepend(alertContainer);
+
+        // CSS animasyonu için timeout
+        setTimeout(() => {
+            alertContainer.style.opacity = '1';
+        }, 10);
+
+        // 5 saniye sonra mesajı kaldır
+        setTimeout(() => {
+            alertContainer.style.opacity = '0';
+            setTimeout(() => {
+                alertContainer.remove();
+            }, 300);
         }, 5000);
     }
 
-    // Hide notification
-    function hideNotification() {
-        const toast = document.getElementById('notificationToast');
-        toast.classList.remove('show');
+    // Hata mesajını göster
+    function showErrorMessage(message) {
+        const alertContainer = document.createElement('div');
+        alertContainer.className = 'alert alert-danger';
+        alertContainer.textContent = message;
+
+        // Form üzerine ekle
+        contactForm.prepend(alertContainer);
+
+        // CSS animasyonu için timeout
+        setTimeout(() => {
+            alertContainer.style.opacity = '1';
+        }, 10);
+
+        // 5 saniye sonra mesajı kaldır
+        setTimeout(() => {
+            alertContainer.style.opacity = '0';
+            setTimeout(() => {
+                alertContainer.remove();
+            }, 300);
+        }, 5000);
     }
 
-    // Scroll animation
-    function animateOnScroll() {
-        const infoCards = document.querySelectorAll('.info-card');
+    // Başarılı form gönderimi durumunda
+    function showSuccessForm() {
+        if (formSuccess) {
+            // Form container'ı gizle ve başarı mesajını göster
+            contactForm.style.opacity = '0';
 
-        // Add animation index to info cards
-        infoCards.forEach((card, index) => {
-            card.style.setProperty('--item-index', index);
+            setTimeout(() => {
+                contactForm.style.display = 'none';
+                formSuccess.classList.add('show');
+            }, 300);
+
+            // 5 saniye sonra formu geri getir
+            setTimeout(() => {
+                formSuccess.classList.remove('show');
+                setTimeout(() => {
+                    contactForm.style.display = 'block';
+                    setTimeout(() => {
+                        contactForm.style.opacity = '1';
+                    }, 10);
+                }, 300);
+            }, 5000);
+        }
+    }
+
+    // Kaydırma animasyonları
+    function initScrollAnimations() {
+        const sections = [
+            document.querySelector('.map-section'),
+            document.querySelector('.faq-preview')
+        ];
+
+        const infoCards = document.querySelectorAll('.info-card');
+        const formGroups = document.querySelectorAll('.form-group');
+
+        // IntersectionObserver ile görünüm kontrolü
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('scrolled');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2 });
+
+        // Bölümleri gözlemle
+        sections.forEach(section => {
+            if (section) observer.observe(section);
         });
     }
 
-    // Mobile menu toggle
-    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
+    // Sayfadan ayrılırken form verilerini doğrula
+    window.addEventListener('beforeunload', (event) => {
+        if (nameInput.value || emailInput.value || messageInput.value) {
+            event.preventDefault();
+            return event.returnValue = 'Formu tamamlamadan sayfadan ayrılmak istediğinize emin misiniz?';
+        }
+    });
 
-    if (mobileMenuToggle && navLinks) {
-        mobileMenuToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            mobileMenuToggle.classList.toggle('active');
+    // Harita bölümü için animasyon
+    const mapSection = document.querySelector('.map-section');
+    if (mapSection) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > mapSection.offsetTop - window.innerHeight / 1.5) {
+                mapSection.classList.add('scrolled');
+            }
+        });
+    }
+
+    // SSS bölümü için animasyon
+    const faqPreview = document.querySelector('.faq-preview');
+    if (faqPreview) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > faqPreview.offsetTop - window.innerHeight / 1.5) {
+                faqPreview.classList.add('scrolled');
+            }
         });
     }
 }); 
